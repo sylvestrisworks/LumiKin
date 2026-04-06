@@ -4,9 +4,9 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { games, gameScores, reviews } from '@/lib/db/schema'
+import { games, gameScores, reviews, darkPatterns } from '@/lib/db/schema'
 import GameCard from '@/components/GameCard'
-import type { GameCardProps, SerializedGame, SerializedScores, SerializedReview } from '@/types/game'
+import type { DarkPattern, GameCardProps, SerializedGame, SerializedScores, SerializedReview } from '@/types/game'
 
 type Props = { params: { slug: string } }
 
@@ -28,6 +28,14 @@ async function fetchGameData(slug: string): Promise<GameCardProps | null> {
   const review = score
     ? (await db.select().from(reviews).where(eq(reviews.id, score.reviewId)).limit(1))[0] ?? null
     : null
+
+  const serializedDarkPatterns: DarkPattern[] = review
+    ? (await db.select().from(darkPatterns).where(eq(darkPatterns.reviewId, review.id))).map((dp) => ({
+        patternId: dp.patternId,
+        severity: dp.severity as DarkPattern['severity'],
+        description: dp.description,
+      }))
+    : []
 
   // Serialize dates → strings for client component
   const serializedGame: SerializedGame = {
@@ -132,13 +140,16 @@ async function fetchGameData(slug: string): Promise<GameCardProps | null> {
         hasNaturalStoppingPoints:  review.hasNaturalStoppingPoints,
         penalizesBreaks:           review.penalizesBreaks,
         stoppingPointsDescription: review.stoppingPointsDescription ?? null,
+        usesVirtualCurrency:       review.usesVirtualCurrency,
+        virtualCurrencyName:       review.virtualCurrencyName ?? null,
+        virtualCurrencyRate:       review.virtualCurrencyRate ?? null,
         benefitsNarrative:         review.benefitsNarrative,
         risksNarrative:            review.risksNarrative,
         parentTip:                 review.parentTip,
       }
     : null
 
-  return { game: serializedGame, scores: serializedScores, review: serializedReview }
+  return { game: serializedGame, scores: serializedScores, review: serializedReview, darkPatterns: serializedDarkPatterns }
 }
 
 // ─── Metadata ────────────────────────────────────────────────────────────────

@@ -138,6 +138,11 @@ export const reviews = pgTable('reviews', {
   penalizesBreaks: boolean('penalizes_breaks'),
   stoppingPointsDescription: text('stopping_points_desc'),
 
+  // Virtual currency (for DP04 banner)
+  usesVirtualCurrency: boolean('uses_virtual_currency').default(false),
+  virtualCurrencyName: varchar('virtual_currency_name', { length: 50 }),
+  virtualCurrencyRate: text('virtual_currency_rate'),  // e.g. "100 = $1.99"
+
   // Reviewer notes
   benefitsNarrative: text('benefits_narrative'),  // "What your child develops" explanation
   risksNarrative: text('risks_narrative'),         // "What to watch out for" explanation
@@ -193,6 +198,22 @@ export const gameScores = pgTable('game_scores', {
   // Timestamps
   calculatedAt: timestamp('calculated_at').defaultNow(),
 });
+
+
+// ============================================
+// DARK PATTERNS (manipulation tactics per review)
+// ============================================
+
+export const darkPatterns = pgTable('dark_patterns', {
+  id: serial('id').primaryKey(),
+  reviewId: integer('review_id').notNull().references(() => reviews.id),
+  patternId: varchar('pattern_id', { length: 4 }).notNull(),   // DP01–DP12
+  severity: varchar('severity', { length: 6 }).notNull(),       // low, medium, high
+  description: text('description'),  // reviewer's game-specific note
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  reviewIdx: index('dp_review_idx').on(table.reviewId),
+}));
 
 
 // ============================================

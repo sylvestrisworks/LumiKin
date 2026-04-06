@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { games, gameScores, reviews } from '@/lib/db/schema'
-import type { GameCardProps, SerializedGame, SerializedScores, SerializedReview } from '@/types/game'
+import { games, gameScores, reviews, darkPatterns } from '@/lib/db/schema'
+import type { DarkPattern, GameCardProps, SerializedGame, SerializedScores, SerializedReview } from '@/types/game'
 
 export async function GET(_req: NextRequest, { params }: { params: { slug: string } }) {
   const [game] = await db
@@ -22,6 +22,14 @@ export async function GET(_req: NextRequest, { params }: { params: { slug: strin
   const review = score
     ? (await db.select().from(reviews).where(eq(reviews.id, score.reviewId)).limit(1))[0] ?? null
     : null
+
+  const rawDarkPatterns: DarkPattern[] = review
+    ? (await db.select().from(darkPatterns).where(eq(darkPatterns.reviewId, review.id))).map((dp) => ({
+        patternId: dp.patternId,
+        severity: dp.severity as DarkPattern['severity'],
+        description: dp.description,
+      }))
+    : []
 
   const serializedGame: SerializedGame = {
     id:               game.id,
@@ -97,11 +105,14 @@ export async function GET(_req: NextRequest, { params }: { params: { slug: strin
     hasNaturalStoppingPoints: review.hasNaturalStoppingPoints,
     penalizesBreaks: review.penalizesBreaks,
     stoppingPointsDescription: review.stoppingPointsDescription ?? null,
+    usesVirtualCurrency: review.usesVirtualCurrency,
+    virtualCurrencyName: review.virtualCurrencyName ?? null,
+    virtualCurrencyRate: review.virtualCurrencyRate ?? null,
     benefitsNarrative: review.benefitsNarrative,
     risksNarrative: review.risksNarrative,
     parentTip: review.parentTip,
   } : null
 
-  const result: GameCardProps = { game: serializedGame, scores: serializedScores, review: serializedReview }
+  const result: GameCardProps = { game: serializedGame, scores: serializedScores, review: serializedReview, darkPatterns: rawDarkPatterns }
   return NextResponse.json(result)
 }

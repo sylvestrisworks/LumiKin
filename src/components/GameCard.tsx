@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import type { GameCardProps, SerializedReview, SerializedScores } from '@/types/game'
+import type { DarkPattern, GameCardProps, SerializedReview, SerializedScores } from '@/types/game'
+import DarkPatternPills from './DarkPatternPills'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -233,10 +234,12 @@ function RisksTab({
   scores,
   game,
   review,
+  darkPatterns,
 }: {
   scores: SerializedScores
   game: GameCardProps['game']
   review: SerializedReview | null
+  darkPatterns: DarkPattern[]
 }) {
   const flags = [
     game.hasMicrotransactions && 'In-app purchases',
@@ -299,6 +302,16 @@ function RisksTab({
         <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
           <h3 className="text-sm font-semibold text-slate-700 mb-1">What to watch for</h3>
           <p className="text-sm text-slate-700 leading-relaxed">{review.risksNarrative}</p>
+        </div>
+      )}
+
+      {/* Dark pattern pills */}
+      <DarkPatternPills patterns={darkPatterns} />
+
+      {/* DP05 special banner */}
+      {darkPatterns.some((p) => p.patternId === 'DP05') && (
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 text-sm text-purple-900">
+          🧸 Characters in this game directly ask players to make purchases
         </div>
       )}
 
@@ -431,7 +444,7 @@ function FullScoresTab({
 
 type Tab = 'benefits' | 'risks' | 'scores'
 
-export default function GameCard({ game, scores, review }: GameCardProps) {
+export default function GameCard({ game, scores, review, darkPatterns }: GameCardProps) {
   const [activeTab, setActiveTab] = useState<Tab>('benefits')
 
   const color = placeholderColor(game.title)
@@ -560,11 +573,25 @@ export default function GameCard({ game, scores, review }: GameCardProps) {
         ) : activeTab === 'benefits' ? (
           <BenefitsTab scores={scores} review={review} />
         ) : activeTab === 'risks' ? (
-          <RisksTab scores={scores} game={game} review={review} />
+          <RisksTab scores={scores} game={game} review={review} darkPatterns={darkPatterns} />
         ) : (
           <FullScoresTab scores={scores} review={review} />
         )}
       </div>
+
+      {/* ── DP04 virtual currency banner ─────────────────────────────────────── */}
+      {darkPatterns.some((p) => p.patternId === 'DP04') && (
+        <div className="mx-5 mb-3 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2.5 text-sm text-amber-900">
+          <span className="font-medium">💱 This game uses virtual currency</span>
+          {' — real costs may not be obvious to children'}
+          {review?.virtualCurrencyName && (
+            <span className="block text-xs text-amber-700 mt-0.5">
+              {review.virtualCurrencyName}
+              {review.virtualCurrencyRate && ` — ${review.virtualCurrencyRate}`}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* ── Footer ───────────────────────────────────────────────────────────── */}
       <div className="border-t border-slate-100 px-5 py-3 flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-500">

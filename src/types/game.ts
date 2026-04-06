@@ -1,6 +1,12 @@
 // Serializable prop types for GameCard and related components.
 // Dates are strings (ISO) since these types cross the server→client boundary.
 
+export type DarkPattern = {
+  patternId: string       // DP01–DP12
+  severity: 'low' | 'medium' | 'high'
+  description: string | null
+}
+
 export type SerializedGame = {
   id: number
   slug: string
@@ -108,6 +114,10 @@ export type SerializedReview = {
   hasNaturalStoppingPoints: boolean | null
   penalizesBreaks: boolean | null
   stoppingPointsDescription: string | null
+  // Virtual currency
+  usesVirtualCurrency: boolean | null
+  virtualCurrencyName: string | null
+  virtualCurrencyRate: string | null
   // Narratives
   benefitsNarrative: string | null
   risksNarrative: string | null
@@ -118,6 +128,7 @@ export type GameCardProps = {
   game: SerializedGame
   scores: SerializedScores | null
   review: SerializedReview | null
+  darkPatterns: DarkPattern[]
 }
 
 // Lightweight type for search results and cards in list views

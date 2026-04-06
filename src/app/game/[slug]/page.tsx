@@ -79,6 +79,7 @@ async function fetchGameData(slug: string): Promise<GameCardProps | null> {
         timeRecommendationReasoning: score.timeRecommendationReasoning,
         timeRecommendationColor:  score.timeRecommendationColor as 'green' | 'amber' | 'red' | null,
         topBenefits:              score.topBenefits as SerializedScores['topBenefits'],
+        executiveSummary:         score.executiveSummary ?? null,
         calculatedAt:             score.calculatedAt?.toISOString() ?? null,
       }
     : null

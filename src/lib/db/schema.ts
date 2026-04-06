@@ -188,6 +188,9 @@ export const gameScores = pgTable('game_scores', {
   // Age recommendation (our own, may differ from ESRB/PEGI)
   recommendedMinAge: integer('recommended_min_age'),
 
+  // Executive summary — one plain-language sentence for parents
+  executiveSummary: text('executive_summary'),
+
   // Top benefit skills for display (ordered by score)
   topBenefits: jsonb('top_benefits').$type<Array<{
     skill: string;

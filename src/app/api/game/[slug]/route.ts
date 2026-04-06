@@ -71,6 +71,7 @@ export async function GET(_req: NextRequest, { params }: { params: { slug: strin
     timeRecommendationReasoning: score.timeRecommendationReasoning,
     timeRecommendationColor:   score.timeRecommendationColor as 'green' | 'amber' | 'red' | null,
     topBenefits:               score.topBenefits as SerializedScores['topBenefits'],
+    executiveSummary:          score.executiveSummary ?? null,
     calculatedAt:              score.calculatedAt?.toISOString() ?? null,
   } : null
 

@@ -47,6 +47,7 @@ export type SerializedScores = {
   timeRecommendationReasoning: string | null
   timeRecommendationColor: 'green' | 'amber' | 'red' | null
   topBenefits: Array<{ skill: string; score: number; maxScore: number }> | null
+  executiveSummary: string | null
   calculatedAt: string | null
 }
 

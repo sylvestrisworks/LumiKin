@@ -513,6 +513,13 @@ export default function GameCard({ game, scores, review, darkPatterns }: GameCar
         </div>
       </div>
 
+      {/* ── Executive summary ────────────────────────────────────────────────── */}
+      {scores?.executiveSummary && (
+        <p className="px-5 pb-3 text-sm text-slate-500 leading-snug">
+          {scores.executiveSummary}
+        </p>
+      )}
+
       {/* ── Time recommendation ───────────────────────────────────────────────── */}
       {hasReview && scores.timeRecommendationMinutes != null ? (
         <div className={`mx-5 mb-4 rounded-xl px-5 py-4 ${timeBoxColors(scores.timeRecommendationColor)}`}>

@@ -15,13 +15,14 @@ type Props = {
   review: SerializedReview | null
 }
 
-const AXES = [
-  { key: 'addictive',      label: 'Addictive Design'   },
-  { key: 'monetization',   label: 'Monetization'        },
-  { key: 'social',         label: 'Social / Emotional'  },
-  { key: 'accessibility',  label: 'Accessibility Risk'  },
-  { key: 'endless',        label: 'Endless Design'      },
-]
+// Short labels that fit inside a polar chart without wrapping
+const AXIS_LABELS: Record<string, string> = {
+  addictive:     'Addictive',
+  monetization:  'Monetization',
+  social:        'Social',
+  accessibility: 'Accessibility*',
+  endless:       'Endless*',
+}
 
 function r5Normalized(review: SerializedReview | null): number {
   if (!review) return 0
@@ -43,62 +44,98 @@ function r6Normalized(review: SerializedReview | null): number {
   return total / 12
 }
 
-// Custom tooltip
-function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: { label: string; value: number } }> }) {
+function CustomTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean
+  payload?: Array<{ payload: { label: string; value: number; displayOnly?: boolean } }>
+}) {
   if (!active || !payload?.length) return null
-  const { label, value } = payload[0].payload
+  const { label, value, displayOnly } = payload[0].payload
   return (
-    <div className="bg-white border border-slate-200 rounded-lg px-3 py-2 shadow-sm text-xs">
+    <div className="bg-white border border-slate-200 rounded-lg px-3 py-2 shadow-sm text-xs max-w-[160px]">
       <p className="font-semibold text-slate-700">{label}</p>
       <p className="text-slate-500">{Math.round(value * 100)}/100</p>
+      {displayOnly && (
+        <p className="text-slate-400 mt-0.5">Context only — not in time score</p>
+      )}
     </div>
   )
 }
 
 export default function RiskRadarChart({ scores, review }: Props) {
+  const accessibility = scores.accessibilityRisk ?? r5Normalized(review)
+  const endless       = scores.endlessDesignRisk  ?? r6Normalized(review)
+
   const data = [
-    { key: 'addictive',     label: 'Addictive Design',  value: scores.dopamineRisk     ?? 0, baseline: 0.2 },
-    { key: 'monetization',  label: 'Monetization',       value: scores.monetizationRisk ?? 0, baseline: 0.2 },
-    { key: 'social',        label: 'Social / Emotional', value: scores.socialRisk       ?? 0, baseline: 0.2 },
-    { key: 'accessibility', label: 'Accessibility Risk', value: scores.accessibilityRisk ?? r5Normalized(review), baseline: 0.2 },
-    { key: 'endless',       label: 'Endless Design',     value: scores.endlessDesignRisk ?? r6Normalized(review), baseline: 0.2 },
+    { key: 'addictive',     label: 'Addictive',       value: scores.dopamineRisk     ?? 0, baseline: 0.08, displayOnly: false },
+    { key: 'monetization',  label: 'Monetization',    value: scores.monetizationRisk ?? 0, baseline: 0.08, displayOnly: false },
+    { key: 'social',        label: 'Social',           value: scores.socialRisk       ?? 0, baseline: 0.08, displayOnly: false },
+    { key: 'accessibility', label: 'Accessibility',   value: accessibility,                baseline: 0.08, displayOnly: true  },
+    { key: 'endless',       label: 'Endless Design',  value: endless,                      baseline: 0.08, displayOnly: true  },
   ]
+
+  // Custom tick — asterisk axes get a muted colour to signal "display only"
+  const renderTick = ({
+    x, y, payload,
+  }: {
+    x: number
+    y: number
+    payload: { value: string }
+  }) => {
+    const isDisplayOnly = payload.value.endsWith('*')
+    const label = isDisplayOnly ? payload.value.slice(0, -1) : payload.value
+    return (
+      <text
+        x={x}
+        y={y}
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize={11}
+        fill={isDisplayOnly ? '#94a3b8' : '#475569'}
+      >
+        {label}{isDisplayOnly ? <tspan fill="#94a3b8">*</tspan> : null}
+      </text>
+    )
+  }
 
   return (
     <div>
       <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-1">
         Risk Profile Shape
       </h3>
-      <p className="text-xs text-slate-400 mb-4">
-        Axes 1–3 feed into the time recommendation. Accessibility &amp; Endless Design are context only.
-      </p>
-      <ResponsiveContainer width="100%" height={260}>
-        <RadarChart data={data} margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
+      <ResponsiveContainer width="100%" height={250}>
+        <RadarChart data={data} margin={{ top: 10, right: 40, bottom: 10, left: 40 }}>
           <PolarGrid stroke="#e2e8f0" />
           <PolarAngleAxis
-            dataKey="label"
-            tick={{ fontSize: 11, fill: '#64748b' }}
+            dataKey="key"
+            tickFormatter={(key: string) => AXIS_LABELS[key] ?? key}
+            tick={renderTick}
           />
-          {/* Safe baseline polygon */}
+          {/* Subtle reference baseline */}
           <Radar
             name="baseline"
             dataKey="baseline"
             stroke="#cbd5e1"
-            fill="#f1f5f9"
-            fillOpacity={0.8}
+            fill="#f8fafc"
+            fillOpacity={1}
             isAnimationActive={false}
           />
-          {/* Actual risk polygon */}
+          {/* Actual risk */}
           <Radar
             name="risk"
             dataKey="value"
             stroke="#ef4444"
             fill="#ef4444"
-            fillOpacity={0.25}
+            fillOpacity={0.28}
           />
           <Tooltip content={<CustomTooltip />} />
         </RadarChart>
       </ResponsiveContainer>
+      <p className="text-xs text-slate-400 -mt-1">
+        * Accessibility &amp; Endless Design are context only — they don&apos;t affect the time recommendation.
+      </p>
     </div>
   )
 }

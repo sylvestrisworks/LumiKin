@@ -342,6 +342,7 @@ export default function ReviewForm({ game, existingReview }: Props) {
     game,
     scores: liveScores,
     review: liveReview,
+    darkPatterns: [],
   }), [game, liveScores, liveReview])
 
   // Submit

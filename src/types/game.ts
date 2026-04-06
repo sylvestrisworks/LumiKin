@@ -1,6 +1,12 @@
 // Serializable prop types for GameCard and related components.
 // Dates are strings (ISO) since these types cross the server→client boundary.
 
+export type ComplianceBadge = {
+  regulation: string  // DSA, GDPR-K, ODDS
+  status: 'compliant' | 'non_compliant' | 'not_assessed'
+  notes: string | null
+}
+
 export type DarkPattern = {
   patternId: string       // DP01–DP12
   severity: 'low' | 'medium' | 'high'
@@ -142,6 +148,7 @@ export type GameCardProps = {
   scores: SerializedScores | null
   review: SerializedReview | null
   darkPatterns: DarkPattern[]
+  compliance: ComplianceBadge[]
 }
 
 // Lightweight type for search results and cards in list views

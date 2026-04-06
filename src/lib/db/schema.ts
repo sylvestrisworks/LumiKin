@@ -220,6 +220,23 @@ export const gameScores = pgTable('game_scores', {
 
 
 // ============================================
+// COMPLIANCE STATUS (regulatory badges per game)
+// ============================================
+
+export const complianceStatus = pgTable('compliance_status', {
+  id: serial('id').primaryKey(),
+  gameId: integer('game_id').notNull().references(() => games.id),
+  regulation: varchar('regulation', { length: 10 }).notNull(),  // DSA, GDPR-K, ODDS
+  status: varchar('status', { length: 15 }).notNull().default('not_assessed'),  // compliant, non_compliant, not_assessed
+  notes: text('notes'),
+  assessedAt: timestamp('assessed_at'),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  complianceUnique: uniqueIndex('compliance_unique').on(table.gameId, table.regulation),
+}));
+
+
+// ============================================
 // DARK PATTERNS (manipulation tactics per review)
 // ============================================
 

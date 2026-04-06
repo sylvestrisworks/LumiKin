@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { games, gameScores, reviews, darkPatterns } from '@/lib/db/schema'
-import type { DarkPattern, GameCardProps, SerializedGame, SerializedScores, SerializedReview } from '@/types/game'
+import { games, gameScores, reviews, darkPatterns, complianceStatus } from '@/lib/db/schema'
+import type { ComplianceBadge, DarkPattern, GameCardProps, SerializedGame, SerializedScores, SerializedReview } from '@/types/game'
 
 export async function GET(_req: NextRequest, { params }: { params: { slug: string } }) {
   const [game] = await db
@@ -22,6 +22,14 @@ export async function GET(_req: NextRequest, { params }: { params: { slug: strin
   const review = score
     ? (await db.select().from(reviews).where(eq(reviews.id, score.reviewId)).limit(1))[0] ?? null
     : null
+
+  const rawCompliance: ComplianceBadge[] = (
+    await db.select().from(complianceStatus).where(eq(complianceStatus.gameId, game.id))
+  ).map((c) => ({
+    regulation: c.regulation,
+    status: c.status as ComplianceBadge['status'],
+    notes: c.notes,
+  }))
 
   const rawDarkPatterns: DarkPattern[] = review
     ? (await db.select().from(darkPatterns).where(eq(darkPatterns.reviewId, review.id))).map((dp) => ({
@@ -124,6 +132,6 @@ export async function GET(_req: NextRequest, { params }: { params: { slug: strin
     parentTip: review.parentTip,
   } : null
 
-  const result: GameCardProps = { game: serializedGame, scores: serializedScores, review: serializedReview, darkPatterns: rawDarkPatterns }
+  const result: GameCardProps = { game: serializedGame, scores: serializedScores, review: serializedReview, darkPatterns: rawDarkPatterns, compliance: rawCompliance }
   return NextResponse.json(result)
 }

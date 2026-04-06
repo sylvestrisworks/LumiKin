@@ -4,9 +4,9 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { games, gameScores, reviews, darkPatterns } from '@/lib/db/schema'
+import { games, gameScores, reviews, darkPatterns, complianceStatus } from '@/lib/db/schema'
 import GameCard from '@/components/GameCard'
-import type { DarkPattern, GameCardProps, SerializedGame, SerializedScores, SerializedReview } from '@/types/game'
+import type { ComplianceBadge, DarkPattern, GameCardProps, SerializedGame, SerializedScores, SerializedReview } from '@/types/game'
 
 type Props = { params: { slug: string } }
 
@@ -28,6 +28,14 @@ async function fetchGameData(slug: string): Promise<GameCardProps | null> {
   const review = score
     ? (await db.select().from(reviews).where(eq(reviews.id, score.reviewId)).limit(1))[0] ?? null
     : null
+
+  const serializedCompliance: ComplianceBadge[] = (
+    await db.select().from(complianceStatus).where(eq(complianceStatus.gameId, game.id))
+  ).map((c) => ({
+    regulation: c.regulation,
+    status: c.status as ComplianceBadge['status'],
+    notes: c.notes,
+  }))
 
   const serializedDarkPatterns: DarkPattern[] = review
     ? (await db.select().from(darkPatterns).where(eq(darkPatterns.reviewId, review.id))).map((dp) => ({
@@ -160,7 +168,7 @@ async function fetchGameData(slug: string): Promise<GameCardProps | null> {
       }
     : null
 
-  return { game: serializedGame, scores: serializedScores, review: serializedReview, darkPatterns: serializedDarkPatterns }
+  return { game: serializedGame, scores: serializedScores, review: serializedReview, darkPatterns: serializedDarkPatterns, compliance: serializedCompliance }
 }
 
 // ─── Metadata ────────────────────────────────────────────────────────────────

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { DarkPattern, GameCardProps, SerializedReview, SerializedScores } from '@/types/game'
 import DarkPatternPills from './DarkPatternPills'
 import RiskRadarChart from './RiskRadarChart'
+import ComplianceBadges from './ComplianceBadges'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -488,7 +489,7 @@ function FullScoresTab({
 
 type Tab = 'benefits' | 'risks' | 'scores'
 
-export default function GameCard({ game, scores, review, darkPatterns }: GameCardProps) {
+export default function GameCard({ game, scores, review, darkPatterns, compliance }: GameCardProps) {
   const [activeTab, setActiveTab] = useState<Tab>('benefits')
 
   const color = placeholderColor(game.title)
@@ -643,6 +644,9 @@ export default function GameCard({ game, scores, review, darkPatterns }: GameCar
           )}
         </div>
       )}
+
+      {/* ── Compliance badges ────────────────────────────────────────────────── */}
+      <ComplianceBadges compliance={compliance} />
 
       {/* ── Footer ───────────────────────────────────────────────────────────── */}
       <div className="border-t border-slate-100 px-5 py-3 flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-500">

@@ -20,10 +20,12 @@ function getDb(): PostgresJsDatabase<typeof schema> {
   const client =
     globalForDb.pgClient ??
     postgres(process.env.DATABASE_URL, {
-      // Production: cap at 10 to stay within Neon free-tier limits.
-      // Development: use 5 so concurrent generateMetadata + page queries
-      // don't contend on a single connection and cause 500 errors.
-      max: process.env.NODE_ENV === "production" ? 10 : 5,
+      // Vercel serverless: each function invocation is isolated, so a pool
+      // of 1 is correct — multiple connections per invocation waste Neon's
+      // connection limit. In dev, use 5 to avoid contention across
+      // concurrent generateMetadata + page queries during hot-reload.
+      max: process.env.NODE_ENV === "production" ? 1 : 5,
+      ssl: "require",
     });
 
   if (process.env.NODE_ENV !== "production") globalForDb.pgClient = client;

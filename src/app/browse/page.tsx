@@ -90,9 +90,7 @@ async function queryGames(filters: ActiveFilters): Promise<{ rows: Row[]; total:
 
   // Price
   if (filters.price === 'free') {
-    conditions.push(
-      sql`(${games.basePrice} IS NULL OR ${games.basePrice} = 0)`
-    )
+    conditions.push(eq(games.basePrice, 0))
   } else if (filters.price === '20') {
     conditions.push(lte(games.basePrice, 20))
   } else if (filters.price === '40') {

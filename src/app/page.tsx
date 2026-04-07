@@ -238,7 +238,7 @@ export default async function HomePage({ searchParams }: Props) {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4">
+      <main className="max-w-4xl mx-auto px-4 overflow-x-hidden">
 
         {/* Hero */}
         <section className="py-10 text-center space-y-4">
@@ -282,12 +282,12 @@ export default async function HomePage({ searchParams }: Props) {
 
         {/* Quick-filter pills */}
         <section className="pb-6">
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {QUICK_LINKS.map((c) => (
               <Link
                 key={c.href}
                 href={c.href}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-full text-sm text-slate-700 hover:border-indigo-300 hover:text-indigo-700 hover:bg-indigo-50 transition-colors shadow-sm"
+                className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-full text-sm text-slate-700 hover:border-indigo-300 hover:text-indigo-700 hover:bg-indigo-50 transition-colors shadow-sm"
               >
                 <span>{c.emoji}</span>
                 <span>{c.label}</span>

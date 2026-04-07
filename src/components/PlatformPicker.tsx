@@ -29,12 +29,12 @@ function PlatformPickerInner({ current }: { current?: string }) {
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {PLATFORMS.map(p => (
         <button
           key={p.value}
           onClick={() => select(p.value)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border transition-all ${
+          className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border transition-all ${
             current === p.value
               ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
               : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300 hover:text-indigo-700'

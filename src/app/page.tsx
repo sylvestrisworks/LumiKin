@@ -134,21 +134,7 @@ export default async function HomePage({ searchParams }: Props) {
   const carousels = await getCarouselRows(platforms, age)
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto px-4 h-14 flex items-center gap-4">
-          <span className="text-lg font-bold text-indigo-700 tracking-tight shrink-0">PlaySmart</span>
-          {/* Search — hidden on mobile (hero has a full search bar already) */}
-          <div className="hidden sm:block flex-1 max-w-sm">
-            <SearchBar placeholder="Search games…" />
-          </div>
-          <nav className="ml-auto flex items-center gap-4 text-sm text-slate-600 shrink-0">
-            <a href="/browse" className="hover:text-indigo-700 transition-colors">Browse</a>
-            <a href="/faq" className="hover:text-indigo-700 transition-colors">How it works</a>
-          </nav>
-        </div>
-      </header>
-
+    <div className="bg-slate-50">
       <main className="max-w-4xl mx-auto px-4 overflow-x-hidden">
 
         {/* Hero */}
@@ -239,11 +225,6 @@ export default async function HomePage({ searchParams }: Props) {
           </div>
         </section>
       </main>
-
-      <footer className="border-t border-slate-200 bg-white py-10 text-center text-xs text-slate-400">
-        PlaySmart — game ratings for parents ·{' '}
-        <a href="/faq" className="hover:text-indigo-600 transition-colors">How it works</a>
-      </footer>
     </div>
   )
 }

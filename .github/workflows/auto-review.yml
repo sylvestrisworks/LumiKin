@@ -66,4 +66,4 @@ jobs:
           fi
 
           echo "Running: auto-review-pending.ts $ARGS"
-          node node_modules/tsx/dist/cli.cjs scripts/auto-review-pending.ts $ARGS
+          npx tsx scripts/auto-review-pending.ts $ARGS

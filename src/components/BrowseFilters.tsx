@@ -195,8 +195,8 @@ export default function BrowseFilters({ active, totalCount }: Props) {
       {/* Max risk */}
       <FilterSection title="Max risk level" note="Requires a review">
         {[
-          { value: 'low',    label: 'Low only (RIS < 30)' },
-          { value: 'medium', label: 'Low–Medium (< 60)' },
+          { value: 'low',    label: 'Low only (RIS < 0.30)' },
+          { value: 'medium', label: 'Low–Medium (RIS < 0.60)' },
         ].map(o => (
           <Chip
             key={o.value}

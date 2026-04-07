@@ -101,7 +101,7 @@ async function queryGames(filters: ActiveFilters): Promise<{ rows: Row[]; total:
   if (filters.risk === 'low') {
     conditions.push(lte(gameScores.ris, 0.3))
   } else if (filters.risk === 'medium') {
-    conditions.push(gte(gameScores.ris, 0.31), lte(gameScores.ris, 0.6))
+    conditions.push(lte(gameScores.ris, 0.6))
   }
 
   // Time recommendation

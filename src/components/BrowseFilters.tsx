@@ -1,7 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useCallback } from 'react'
+import { SlidersHorizontal, X } from 'lucide-react'
 
 // ─── Filter definitions ───────────────────────────────────────────────────────
 
@@ -18,35 +20,36 @@ export const GENRE_OPTIONS = [
 ]
 
 export const PLATFORM_OPTIONS = [
-  { value: 'PC',     label: 'PC' },
-  { value: 'PlayStation', label: 'PlayStation' },
-  { value: 'Xbox',   label: 'Xbox' },
-  { value: 'Switch', label: 'Nintendo Switch' },
-  { value: 'iOS',    label: 'iOS' },
-  { value: 'Android',label: 'Android' },
+  { value: 'PC',          label: 'PC'               },
+  { value: 'PlayStation', label: 'PlayStation'       },
+  { value: 'Xbox',        label: 'Xbox'              },
+  { value: 'Switch',      label: 'Nintendo Switch'   },
+  { value: 'iOS',         label: 'iOS'               },
+  { value: 'Android',     label: 'Android'           },
 ]
 
 export const COMPLIANCE_OPTIONS = [
-  { value: 'DSA',    label: 'DSA compliant' },
+  { value: 'DSA',    label: 'DSA compliant'    },
   { value: 'GDPR-K', label: 'GDPR-K compliant' },
-  { value: 'ODDS',   label: 'ODDS compliant' },
+  { value: 'ODDS',   label: 'ODDS compliant'   },
 ]
 
 export const BENEFIT_OPTIONS = [
-  { value: 'problem-solving', label: 'Problem Solving' },
+  { value: 'problem-solving', label: 'Problem Solving'   },
   { value: 'spatial',         label: 'Spatial Awareness' },
-  { value: 'teamwork',        label: 'Teamwork' },
-  { value: 'creativity',      label: 'Creativity' },
-  { value: 'communication',   label: 'Communication' },
+  { value: 'teamwork',        label: 'Teamwork'          },
+  { value: 'creativity',      label: 'Creativity'        },
+  { value: 'communication',   label: 'Communication'     },
 ]
 
 export const SORT_OPTIONS = [
-  { value: 'curascore',  label: 'Curascore' },
+  { value: 'curascore',  label: 'Curascore'         },
   { value: 'benefit',    label: 'Best benefit score' },
-  { value: 'safest',     label: 'Lowest risk' },
-  { value: 'metacritic', label: 'Metacritic score' },
-  { value: 'newest',     label: 'Newest' },
-  { value: 'alpha',      label: 'A–Z' },
+  { value: 'safest',     label: 'Lowest risk'        },
+  { value: 'riskiest',   label: 'Highest risk'       },
+  { value: 'metacritic', label: 'Metacritic score'   },
+  { value: 'newest',     label: 'Newest'             },
+  { value: 'alpha',      label: 'A–Z'                },
 ]
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -56,10 +59,10 @@ export type ActiveFilters = {
   genres: string[]
   platforms: string[]
   benefits: string[]
-  compliance: string[]  // 'DSA' | 'GDPR-K' | 'ODDS'
-  risk?: string         // 'low' | 'medium' | ''
-  time?: string         // '30' | '60' | '90' | ''
-  price?: string        // 'free' | '20' | '40' | ''
+  compliance: string[]
+  risk?: string
+  time?: string
+  price?: string
   sort: string
   q?: string
 }
@@ -72,22 +75,23 @@ type Props = {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function BrowseFilters({ active, totalCount }: Props) {
-  const router = useRouter()
+  const router   = useRouter()
   const pathname = usePathname()
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const push = useCallback((updates: Partial<ActiveFilters>) => {
     const merged = { ...active, ...updates }
     const params = new URLSearchParams()
-    if (merged.age)               params.set('age', merged.age)
-    if (merged.genres.length)     params.set('genres', merged.genres.join(','))
-    if (merged.platforms.length)  params.set('platforms', merged.platforms.join(','))
-    if (merged.benefits.length)   params.set('benefits', merged.benefits.join(','))
+    if (merged.age)               params.set('age',        merged.age)
+    if (merged.genres.length)     params.set('genres',     merged.genres.join(','))
+    if (merged.platforms.length)  params.set('platforms',  merged.platforms.join(','))
+    if (merged.benefits.length)   params.set('benefits',   merged.benefits.join(','))
     if (merged.compliance.length) params.set('compliance', merged.compliance.join(','))
-    if (merged.risk)              params.set('risk', merged.risk)
-    if (merged.time)              params.set('time', merged.time)
-    if (merged.price)             params.set('price', merged.price)
+    if (merged.risk)              params.set('risk',       merged.risk)
+    if (merged.time)              params.set('time',       merged.time)
+    if (merged.price)             params.set('price',      merged.price)
     if (merged.sort && merged.sort !== 'curascore') params.set('sort', merged.sort)
-    if (merged.q)                 params.set('q', merged.q)
+    if (merged.q)                 params.set('q',          merged.q)
     router.push(`${pathname}?${params.toString()}`)
   }, [active, pathname, router])
 
@@ -96,18 +100,20 @@ export default function BrowseFilters({ active, totalCount }: Props) {
     push({ [key]: arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value] })
   }
 
-  const clearAll = () => router.push(pathname)
+  const clearAll = () => { router.push(pathname); setDrawerOpen(false) }
 
-  const hasFilters = active.age || active.genres.length || active.platforms.length ||
-    active.benefits.length || active.compliance.length || active.risk || active.time || active.price
+  const activeCount = [
+    active.age, ...active.genres, ...active.platforms,
+    ...active.benefits, ...active.compliance, active.risk, active.time, active.price,
+  ].filter(Boolean).length
 
-  return (
-    <aside className="w-64 shrink-0 space-y-6">
+  const panel = (
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="font-bold text-slate-800">Filters</h2>
-        {hasFilters && (
-          <button onClick={clearAll} className="text-xs text-indigo-600 hover:text-indigo-800">
+        {activeCount > 0 && (
+          <button onClick={clearAll} className="text-xs text-indigo-600 hover:text-indigo-800 font-medium">
             Clear all
           </button>
         )}
@@ -119,131 +125,153 @@ export default function BrowseFilters({ active, totalCount }: Props) {
         <select
           value={active.sort}
           onChange={e => push({ sort: e.target.value })}
-          className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-700
+            focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
         >
           {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
       </div>
 
-      {/* Age / ESRB */}
       <FilterSection title="Age range">
         {AGE_OPTIONS.map(o => (
-          <Chip
-            key={o.value}
-            label={o.label}
-            active={active.age === o.value}
-            onClick={() => push({ age: active.age === o.value ? undefined : o.value })}
-          />
+          <Chip key={o.value} label={o.label} active={active.age === o.value}
+            onClick={() => push({ age: active.age === o.value ? undefined : o.value })} />
         ))}
       </FilterSection>
 
-      {/* Genre */}
       <FilterSection title="Genre">
         <div className="flex flex-wrap gap-1.5">
           {GENRE_OPTIONS.map(g => (
-            <Chip
-              key={g}
-              label={g}
-              active={active.genres.includes(g)}
-              onClick={() => toggle('genres', g)}
-            />
+            <Chip key={g} label={g} active={active.genres.includes(g)}
+              onClick={() => toggle('genres', g)} />
           ))}
         </div>
       </FilterSection>
 
-      {/* Platform */}
       <FilterSection title="Platform">
         <div className="flex flex-wrap gap-1.5">
           {PLATFORM_OPTIONS.map(o => (
-            <Chip
-              key={o.value}
-              label={o.label}
-              active={active.platforms.includes(o.value)}
-              onClick={() => toggle('platforms', o.value)}
-            />
+            <Chip key={o.value} label={o.label} active={active.platforms.includes(o.value)}
+              onClick={() => toggle('platforms', o.value)} />
           ))}
         </div>
       </FilterSection>
 
-      {/* Benefit focus */}
       <FilterSection title="Benefit focus" note="Requires a review">
         {BENEFIT_OPTIONS.map(o => (
           <label key={o.value} className="flex items-center gap-2 cursor-pointer group">
-            <input
-              type="checkbox"
-              checked={active.benefits.includes(o.value)}
+            <input type="checkbox" checked={active.benefits.includes(o.value)}
               onChange={() => toggle('benefits', o.value)}
-              className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-400"
+              className="rounded border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             />
             <span className="text-sm text-slate-700 group-hover:text-slate-900">{o.label}</span>
           </label>
         ))}
       </FilterSection>
 
-      {/* Regulatory compliance */}
       <FilterSection title="Compliance" note="Estimated">
         {COMPLIANCE_OPTIONS.map(o => (
-          <Chip
-            key={o.value}
-            label={o.label}
-            active={active.compliance.includes(o.value)}
-            onClick={() => toggle('compliance', o.value)}
-          />
+          <Chip key={o.value} label={o.label} active={active.compliance.includes(o.value)}
+            onClick={() => toggle('compliance', o.value)} />
         ))}
       </FilterSection>
 
-      {/* Max risk */}
       <FilterSection title="Max risk level" note="Requires a review">
         {[
-          { value: 'low',    label: 'Low only (RIS < 30)' },
-          { value: 'medium', label: 'Low–Medium (< 60)' },
+          { value: 'low',    label: 'Low only (RIS < 30)'  },
+          { value: 'medium', label: 'Low–Medium (< 60)'    },
         ].map(o => (
-          <Chip
-            key={o.value}
-            label={o.label}
-            active={active.risk === o.value}
-            onClick={() => push({ risk: active.risk === o.value ? undefined : o.value })}
-          />
+          <Chip key={o.value} label={o.label} active={active.risk === o.value}
+            onClick={() => push({ risk: active.risk === o.value ? undefined : o.value })} />
         ))}
       </FilterSection>
 
-      {/* Time recommendation */}
       <FilterSection title="Min. daily time" note="Requires a review">
         {[
-          { value: '30',  label: '30+ min' },
-          { value: '60',  label: '60+ min' },
-          { value: '90',  label: '90+ min' },
+          { value: '30', label: '30+ min' },
+          { value: '60', label: '60+ min' },
+          { value: '90', label: '90+ min' },
         ].map(o => (
-          <Chip
-            key={o.value}
-            label={o.label}
-            active={active.time === o.value}
-            onClick={() => push({ time: active.time === o.value ? undefined : o.value })}
-          />
+          <Chip key={o.value} label={o.label} active={active.time === o.value}
+            onClick={() => push({ time: active.time === o.value ? undefined : o.value })} />
         ))}
       </FilterSection>
 
-      {/* Price */}
       <FilterSection title="Price">
         {[
           { value: 'free', label: 'Free to play' },
-          { value: '20',   label: 'Under $20' },
-          { value: '40',   label: 'Under $40' },
+          { value: '20',   label: 'Under $20'    },
+          { value: '40',   label: 'Under $40'    },
         ].map(o => (
-          <Chip
-            key={o.value}
-            label={o.label}
-            active={active.price === o.value}
-            onClick={() => push({ price: active.price === o.value ? undefined : o.value })}
-          />
+          <Chip key={o.value} label={o.label} active={active.price === o.value}
+            onClick={() => push({ price: active.price === o.value ? undefined : o.value })} />
         ))}
       </FilterSection>
 
-      {/* Count */}
       <p className="text-xs text-slate-400 pt-2 border-t border-slate-100">
         {totalCount} game{totalCount !== 1 ? 's' : ''} found
       </p>
-    </aside>
+    </div>
+  )
+
+  return (
+    <>
+      {/* ── Desktop sidebar (lg+) ──────────────────────────────────────────── */}
+      <aside className="hidden lg:block w-64 shrink-0">
+        {panel}
+      </aside>
+
+      {/* ── Mobile filter button ───────────────────────────────────────────── */}
+      <div className="lg:hidden mb-4">
+        <button
+          onClick={() => setDrawerOpen(true)}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white
+            text-sm font-semibold text-slate-700 hover:border-indigo-300 hover:text-indigo-700
+            shadow-sm transition-colors"
+        >
+          <SlidersHorizontal size={15} />
+          Filters
+          {activeCount > 0 && (
+            <span className="ml-1 bg-indigo-600 text-white text-xs font-black px-1.5 py-0.5 rounded-full">
+              {activeCount}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* ── Mobile drawer overlay ──────────────────────────────────────────── */}
+      {drawerOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 flex">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/40" onClick={() => setDrawerOpen(false)} />
+
+          {/* Drawer panel */}
+          <aside className="relative ml-auto w-80 max-w-full h-full bg-white shadow-xl overflow-y-auto">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
+              <h2 className="font-bold text-slate-800">Filters</h2>
+              <button onClick={() => setDrawerOpen(false)}
+                className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+                aria-label="Close filters"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="px-5 py-4">
+              {panel}
+            </div>
+            {/* Apply button */}
+            <div className="sticky bottom-0 px-5 py-4 bg-white border-t border-slate-100">
+              <button
+                onClick={() => setDrawerOpen(false)}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors"
+              >
+                Show {totalCount} game{totalCount !== 1 ? 's' : ''}
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
+    </>
   )
 }
 

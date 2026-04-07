@@ -152,6 +152,24 @@ export type GameCardProps = {
   compliance: ComplianceBadge[]
 }
 
+// Safe Swap pair for the discovery dashboard
+export type SwapPair = {
+  from: {
+    title:     string
+    genre:     string
+    curascore: number
+    reason:    string
+    href:      string
+  }
+  to: {
+    title:     string
+    genre:     string
+    curascore: number
+    reason:    string
+    href:      string
+  }
+}
+
 // Lightweight type for search results and cards in list views
 export type GameSummary = {
   slug: string

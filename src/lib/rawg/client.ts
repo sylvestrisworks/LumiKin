@@ -72,6 +72,6 @@ export async function rawgGetByGenre(
   })
 }
 
-export async function rawgGetDetail(id: number): Promise<RawgGameDetail> {
+export async function rawgGetDetail(id: number | string): Promise<RawgGameDetail> {
   return rawgFetch<RawgGameDetail>(`/games/${id}`)
 }

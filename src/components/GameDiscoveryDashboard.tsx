@@ -4,7 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Sparkles, Ban, Users, Timer, Brain, Star, Leaf, BookOpen } from 'lucide-react'
 import GameCompactCard from './GameCompactCard'
-import type { GameSummary } from '@/types/game'
+import { curascoreGradient, curascoreRing } from '@/lib/ui'
+import type { GameSummary, SwapPair } from '@/types/game'
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -25,39 +26,6 @@ const CATEGORY_PILLS = [
   { icon: Leaf,     emoji: '🌱', label: 'Great for Young Kids',    href: '/browse?age=E'                    },
   { icon: BookOpen, emoji: '🧠', label: 'Learning Focus',          href: '/browse?benefits=problem-solving' },
 ]
-
-// ─── Safe Swap spotlight data (static/curated) ────────────────────────────────
-
-const SWAP = {
-  from: {
-    title:     'Roblox',
-    genre:     'Social / User-Generated',
-    curascore: 28,
-    reason:    'Heavy microtransactions & unmoderated social risk',
-    href:      '/game/roblox',
-  },
-  to: {
-    title:     'Dragon Quest Builders 2',
-    genre:     'Sandbox / Creative',
-    curascore: 84,
-    reason:    'Same creative sandbox energy, no spending pressure',
-    href:      '/game/dragon-quest-builders-2',
-  },
-}
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function curascoreGradient(score: number) {
-  if (score >= 70) return 'from-emerald-400 to-teal-500'
-  if (score >= 40) return 'from-amber-400 to-orange-500'
-  return 'from-red-400 to-rose-500'
-}
-
-function curascoreBg(score: number) {
-  if (score >= 70) return 'bg-emerald-50 border-emerald-200'
-  if (score >= 40) return 'bg-amber-50 border-amber-200'
-  return 'bg-red-50 border-red-200'
-}
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -88,7 +56,7 @@ function CategoryPill({ emoji, label, href, active, onClick }: {
         border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm
         ${active
           ? 'bg-indigo-100 border-indigo-200 text-indigo-700 -translate-y-0.5 shadow-sm'
-          : 'bg-white border-gray-200 text-gray-600 hover:border-indigo-200 hover:text-indigo-600'
+          : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-200 hover:text-indigo-600'
         }`}
     >
       <span>{emoji}</span>
@@ -105,7 +73,7 @@ function PlaceholderCard({ rank }: { rank: number }) {
   ][rank] ?? { bg: 'from-slate-400 to-slate-500', score: 0, title: '—', genre: '—', time: '—' }
 
   return (
-    <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100">
+    <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100">
       <div className={`h-32 bg-gradient-to-br ${colors.bg} relative`}>
         <span className={`absolute top-3 right-3 text-xs font-black px-2.5 py-1 rounded-full
           ${colors.score >= 70 ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'}`}>
@@ -128,9 +96,10 @@ function PlaceholderCard({ rank }: { rank: number }) {
 
 type Props = {
   topGames?: GameSummary[]
+  swap?: SwapPair
 }
 
-export default function GameDiscoveryDashboard({ topGames = [] }: Props) {
+export default function GameDiscoveryDashboard({ topGames = [], swap }: Props) {
   const [activeAge, setActiveAge]           = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
@@ -142,7 +111,7 @@ export default function GameDiscoveryDashboard({ topGames = [] }: Props) {
   const browseHref = activeSeg ? `/browse?age=${activeSeg.value}` : '/browse'
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
 
         {/* ── 1. HEADER ────────────────────────────────────────────────────────── */}
@@ -157,7 +126,7 @@ export default function GameDiscoveryDashboard({ topGames = [] }: Props) {
           </div>
 
           {/* Age segmented control */}
-          <div className="bg-gray-100 rounded-2xl p-1.5 flex gap-1">
+          <div className="bg-slate-100 rounded-2xl p-1.5 flex gap-1">
             {AGE_SEGMENTS.map((seg) => (
               <AgePill
                 key={seg.value}
@@ -184,59 +153,61 @@ export default function GameDiscoveryDashboard({ topGames = [] }: Props) {
         </div>
 
         {/* ── 3. SAFE SWAP SPOTLIGHT ───────────────────────────────────────────── */}
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 pt-5 pb-3">
-            <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">
-              Safe Swap
-            </p>
-            <p className="text-lg font-black tracking-tight text-slate-800">
-              Is your child asking for{' '}
-              <span className="text-red-500">{SWAP.from.title}</span>?
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 divide-x divide-gray-100 border-t border-gray-100">
-            {/* From */}
-            <div className="bg-red-50/60 p-5 space-y-3">
-              <div className={`inline-flex items-baseline gap-1 px-3 py-1 rounded-2xl border ${curascoreBg(SWAP.from.curascore)}`}>
-                <span className={`text-3xl font-black tracking-tighter bg-gradient-to-br ${curascoreGradient(SWAP.from.curascore)} bg-clip-text text-transparent`}>
-                  {SWAP.from.curascore}
-                </span>
-                <span className="text-sm text-slate-400 font-bold">/100</span>
-              </div>
-              <div>
-                <p className="font-black tracking-tight text-slate-900">{SWAP.from.title}</p>
-                <p className="text-xs text-slate-400 mt-0.5">{SWAP.from.genre}</p>
-              </div>
-              <p className="text-xs text-red-600 leading-snug">{SWAP.from.reason}</p>
+        {swap && (
+          <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+            <div className="px-6 pt-5 pb-3">
+              <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">
+                Safe Swap
+              </p>
+              <p className="text-lg font-black tracking-tight text-slate-800">
+                Is your child asking for{' '}
+                <span className="text-red-500">{swap.from.title}</span>?
+              </p>
             </div>
 
-            {/* To */}
-            <div className="bg-emerald-50/60 p-5 space-y-3">
-              <div className={`inline-flex items-baseline gap-1 px-3 py-1 rounded-2xl border ${curascoreBg(SWAP.to.curascore)}`}>
-                <span className={`text-3xl font-black tracking-tighter bg-gradient-to-br ${curascoreGradient(SWAP.to.curascore)} bg-clip-text text-transparent`}>
-                  {SWAP.to.curascore}
-                </span>
-                <span className="text-sm text-slate-400 font-bold">/100</span>
+            <div className="grid grid-cols-2 divide-x divide-slate-100 border-t border-slate-100">
+              {/* From */}
+              <div className="bg-red-50/60 p-5 space-y-3">
+                <div className={`inline-flex items-baseline gap-1 px-3 py-1 rounded-2xl border ${curascoreRing(swap.from.curascore)}`}>
+                  <span className={`text-3xl font-black tracking-tighter bg-gradient-to-br ${curascoreGradient(swap.from.curascore)} bg-clip-text text-transparent`}>
+                    {swap.from.curascore}
+                  </span>
+                  <span className="text-sm text-slate-400 font-bold">/100</span>
+                </div>
+                <div>
+                  <p className="font-black tracking-tight text-slate-900">{swap.from.title}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{swap.from.genre}</p>
+                </div>
+                <p className="text-xs text-red-600 leading-snug">{swap.from.reason}</p>
               </div>
-              <div>
-                <p className="font-black tracking-tight text-slate-900">{SWAP.to.title}</p>
-                <p className="text-xs text-slate-400 mt-0.5">{SWAP.to.genre}</p>
+
+              {/* To */}
+              <div className="bg-emerald-50/60 p-5 space-y-3">
+                <div className={`inline-flex items-baseline gap-1 px-3 py-1 rounded-2xl border ${curascoreRing(swap.to.curascore)}`}>
+                  <span className={`text-3xl font-black tracking-tighter bg-gradient-to-br ${curascoreGradient(swap.to.curascore)} bg-clip-text text-transparent`}>
+                    {swap.to.curascore}
+                  </span>
+                  <span className="text-sm text-slate-400 font-bold">/100</span>
+                </div>
+                <div>
+                  <p className="font-black tracking-tight text-slate-900">{swap.to.title}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{swap.to.genre}</p>
+                </div>
+                <p className="text-xs text-emerald-700 leading-snug">{swap.to.reason}</p>
               </div>
-              <p className="text-xs text-emerald-700 leading-snug">{SWAP.to.reason}</p>
+            </div>
+
+            <div className="px-6 py-4 flex items-center justify-between border-t border-slate-100">
+              <p className="text-xs text-slate-400">Same genre appeal — much safer by the numbers</p>
+              <Link
+                href={swap.to.href}
+                className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-full transition-colors"
+              >
+                View Details <ArrowRight size={13} strokeWidth={2.5} />
+              </Link>
             </div>
           </div>
-
-          <div className="px-6 py-4 flex items-center justify-between border-t border-gray-100">
-            <p className="text-xs text-slate-400">Same creative appeal — much safer by the numbers</p>
-            <Link
-              href={SWAP.to.href}
-              className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-full transition-colors"
-            >
-              View Details <ArrowRight size={13} strokeWidth={2.5} />
-            </Link>
-          </div>
-        </div>
+        )}
 
         {/* ── 4. DISCOVERY GRID ────────────────────────────────────────────────── */}
         <div>
@@ -261,7 +232,7 @@ export default function GameDiscoveryDashboard({ topGames = [] }: Props) {
               ))}
             </div>
           ) : activeSeg ? (
-            <div className="text-center py-12 bg-white rounded-3xl border border-gray-100">
+            <div className="text-center py-12 bg-white rounded-3xl border border-slate-100">
               <p className="text-3xl mb-2">🎮</p>
               <p className="font-semibold text-slate-600">No rated games yet for ages {activeSeg.label}</p>
               <Link href={browseHref} className="mt-3 inline-block text-sm text-indigo-600 hover:underline">

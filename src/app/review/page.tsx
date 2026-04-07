@@ -8,7 +8,7 @@ import { games, reviews, gameScores } from '@/lib/db/schema'
 import { authOptions } from '@/lib/auth'
 
 export const metadata = {
-  title: 'Reviewer Dashboard — PlaySmart',
+  title: 'Reviewer Dashboard — Good Game Parent',
 }
 
 type GameRow = {
@@ -95,7 +95,7 @@ export default async function ReviewDashboard() {
       {/* Header */}
       <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center gap-3">
-          <a href="/" className="text-2xl font-extrabold text-indigo-700">PlaySmart</a>
+          <a href="/" className="text-2xl font-extrabold text-indigo-700">Good Game Parent</a>
           <span className="text-slate-300">/</span>
           <span className="text-sm font-semibold text-slate-600">Reviewer Dashboard</span>
         </div>

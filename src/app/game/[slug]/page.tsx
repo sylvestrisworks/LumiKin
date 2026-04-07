@@ -181,24 +181,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .where(eq(games.slug, params.slug))
     .limit(1)
 
-  if (!game) return { title: 'Game not found — PlaySmart' }
+  if (!game) return { title: 'Game not found — Good Game Parent' }
 
   const desc = game.description
     ? game.description.slice(0, 160)
-    : `See the PlaySmart rating for ${game.title} — benefits, risks, and time recommendations for parents.`
+    : `See the Good Game Parent rating for ${game.title} — benefits, risks, and time recommendations for parents.`
 
   return {
-    title: `${game.title} — PlaySmart`,
+    title: `${game.title} — Good Game Parent`,
     description: desc,
     openGraph: {
-      title: `${game.title} — PlaySmart`,
+      title: `${game.title} — Good Game Parent`,
       description: desc,
       images: game.backgroundImage ? [{ url: game.backgroundImage }] : [],
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${game.title} — PlaySmart`,
+      title: `${game.title} — Good Game Parent`,
       description: desc,
       images: game.backgroundImage ? [game.backgroundImage] : [],
     },
@@ -239,36 +239,16 @@ export default async function GamePage({ params }: Props) {
       />
 
       <div className="min-h-screen bg-slate-50">
-        {/* Nav */}
-        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
-          <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
-            <a href="/" className="text-lg font-bold text-indigo-700 tracking-tight">
-              PlaySmart
-            </a>
-            {scores?.curascore != null && (
-              <div className="flex items-center gap-2 text-sm">
-                <span className="text-slate-500">Curascore</span>
-                <span className={`font-black px-2.5 py-0.5 rounded-full text-white text-sm
-                  ${scores.curascore >= 70 ? 'bg-emerald-600'
-                  : scores.curascore >= 40 ? 'bg-amber-500'
-                  : 'bg-red-600'}`}>
-                  {scores.curascore}
-                </span>
-              </div>
-            )}
-          </div>
-        </header>
-
         <main className="max-w-2xl mx-auto px-4 py-6">
           <GameCard {...data} />
 
           {/* Description */}
           {game.description && (
             <div className="mt-6 bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
-              <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-2">
+              <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">
                 About this game
               </h2>
-              <p className="text-sm text-slate-700 leading-relaxed line-clamp-6">
+              <p className="text-sm text-slate-700 leading-relaxed">
                 {game.description}
               </p>
             </div>

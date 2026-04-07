@@ -235,7 +235,7 @@ export default async function BrowsePage({ searchParams }: Props) {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 py-6">
-        <div className="flex gap-8">
+        <div className="flex flex-col md:flex-row gap-8">
 
           {/* Filters sidebar */}
           <Suspense>

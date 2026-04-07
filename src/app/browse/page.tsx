@@ -234,7 +234,7 @@ export default async function BrowsePage({ searchParams }: Props) {
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-8">
 
           {/* Filters sidebar */}
@@ -244,7 +244,7 @@ export default async function BrowsePage({ searchParams }: Props) {
 
           {/* Main content */}
           <main className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-6">
               <div>
                 <h1 className="text-xl font-bold text-slate-900">Browse games</h1>
                 <p className="text-sm text-slate-500 mt-0.5">
@@ -278,7 +278,7 @@ export default async function BrowsePage({ searchParams }: Props) {
                     <li key={row.slug}>
                       <Link
                         href={`/game/${row.slug}`}
-                        className="flex items-center gap-4 py-3 px-2 rounded-lg hover:bg-indigo-50 transition-colors group"
+                        className="flex items-center gap-4 py-4 px-2 rounded-lg hover:bg-indigo-50 transition-colors group"
                       >
                         {/* Rank number */}
                         <span className="w-7 text-right text-sm font-semibold text-slate-400 shrink-0">
@@ -286,7 +286,7 @@ export default async function BrowsePage({ searchParams }: Props) {
                         </span>
 
                         {/* Thumbnail */}
-                        <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-indigo-100">
+                        <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-indigo-100">
                           {row.backgroundImage ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img

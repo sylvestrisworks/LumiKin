@@ -162,7 +162,7 @@ function DetailRow({ label, score, max }: { label: string; score: number | null;
 
 function BenefitsTab({ scores, review }: { scores: SerializedScores; review: SerializedReview | null }) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {scores.topBenefits && scores.topBenefits.length > 0 && (
         <div>
           <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Top Skills Developed</h3>
@@ -190,7 +190,7 @@ function BenefitsTab({ scores, review }: { scores: SerializedScores; review: Ser
         </div>
       </div>
       {review?.benefitsNarrative && (
-        <div className="bg-emerald-50 rounded-2xl p-4">
+        <div className="bg-emerald-50 rounded-2xl p-5">
           <h3 className="text-sm font-semibold text-emerald-800 mb-1">What your child develops</h3>
           <p className="text-sm text-emerald-900 leading-relaxed">{review.benefitsNarrative}</p>
         </div>
@@ -224,7 +224,7 @@ function RisksTab({ scores, game, review, darkPatterns }: {
       </div>
 
       {flags.length > 0 && (
-        <div className="bg-amber-50 rounded-2xl p-4">
+        <div className="bg-amber-50 rounded-2xl p-5">
           <h3 className="text-sm font-semibold text-amber-800 mb-2">Flags</h3>
           <div className="flex flex-wrap gap-2">
             {flags.map((f) => (
@@ -235,7 +235,7 @@ function RisksTab({ scores, game, review, darkPatterns }: {
       )}
 
       {review?.risksNarrative && (
-        <div className="bg-slate-50 rounded-2xl p-4">
+        <div className="bg-slate-50 rounded-2xl p-5">
           <h3 className="text-sm font-semibold text-slate-700 mb-1">What to watch for</h3>
           <p className="text-sm text-slate-700 leading-relaxed">{review.risksNarrative}</p>
         </div>
@@ -250,7 +250,7 @@ function RisksTab({ scores, game, review, darkPatterns }: {
       )}
 
       {review?.parentTip && (
-        <div className="bg-blue-50 rounded-2xl p-4">
+        <div className="bg-blue-50 rounded-2xl p-5">
           <h3 className="text-sm font-semibold text-blue-800 mb-1">Parent tip</h3>
           <p className="text-sm text-blue-900 leading-relaxed">{review.parentTip}</p>
         </div>
@@ -430,7 +430,7 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
     }`
 
   return (
-    <div className="bg-gray-50 rounded-3xl p-4 space-y-3">
+    <div className="bg-gray-50 rounded-3xl p-5 space-y-4">
 
       {/* ── 1. HEADER BOX ──────────────────────────────────────────────────────── */}
       <div className="bg-white rounded-3xl shadow-sm overflow-hidden">

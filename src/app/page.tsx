@@ -231,7 +231,7 @@ export default async function HomePage({ searchParams }: Props) {
       <main className="max-w-4xl mx-auto px-4 overflow-x-hidden">
 
         {/* Hero */}
-        <section className="py-10 text-center space-y-4">
+        <section className="py-12 sm:py-16 text-center space-y-5">
           <p className="text-xs font-semibold uppercase tracking-widest text-indigo-500">
             Grounded in child development
           </p>
@@ -239,17 +239,17 @@ export default async function HomePage({ searchParams }: Props) {
             Game ratings that go{' '}
             <span className="text-indigo-600">beyond the age label</span>
           </h1>
-          <p className="text-slate-500 text-lg max-w-xl mx-auto">
+          <p className="text-slate-500 text-lg max-w-xl mx-auto leading-relaxed">
             Every Curascore reflects what a game actually does to a developing mind —
             the skills it builds, the habits it forms, and how much daily play makes sense.
           </p>
-          <div className="max-w-xl mx-auto pt-2">
+          <div className="max-w-xl mx-auto pt-4">
             <SearchBar placeholder="Search 500+ games…" />
           </div>
         </section>
 
         {/* Age + Platform pickers */}
-        <section className="pb-5 space-y-4">
+        <section className="pb-10 space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
               Your child&apos;s age
@@ -273,7 +273,7 @@ export default async function HomePage({ searchParams }: Props) {
 
         {/* Carousels */}
         {carousels.length > 0 ? (
-          <div className="space-y-8 pb-12">
+          <div className="space-y-10 pb-16">
             {carousels.map(row => <Carousel key={row.id} row={row} />)}
           </div>
         ) : (
@@ -300,16 +300,16 @@ export default async function HomePage({ searchParams }: Props) {
         )}
 
         {/* About */}
-        <section className="border-t border-slate-200 py-8 pb-12">
-          <div className="grid sm:grid-cols-3 gap-6">
+        <section className="border-t border-slate-200 py-14 pb-16">
+          <div className="grid sm:grid-cols-3 gap-10">
             {[
               { icon: '🧠', title: 'Developmental lens',       body: 'Our scoring framework draws on cognitive science, social-emotional learning, and behavioral development — translated into a single, clear score.' },
               { icon: '⚠️', title: 'Honest about risks',      body: 'We identify dopamine loops, loot boxes, spending pressure, and social mechanics — the design patterns that matter most for developing minds.' },
               { icon: '⏱',  title: 'Time limits that hold up', body: "Each game's daily limit follows from its actual benefit and risk profile. Better games earn more time." },
             ].map((item) => (
-              <div key={item.title} className="text-center px-2">
-                <div className="text-3xl mb-2">{item.icon}</div>
-                <h3 className="font-semibold text-slate-800 mb-1">{item.title}</h3>
+              <div key={item.title} className="text-center px-4">
+                <div className="text-4xl mb-4">{item.icon}</div>
+                <h3 className="font-semibold text-slate-800 mb-2">{item.title}</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">{item.body}</p>
               </div>
             ))}
@@ -317,7 +317,7 @@ export default async function HomePage({ searchParams }: Props) {
         </section>
       </main>
 
-      <footer className="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-400">
+      <footer className="border-t border-slate-200 bg-white py-10 text-center text-xs text-slate-400">
         PlaySmart — game ratings for parents ·{' '}
         <a href="/faq" className="hover:text-indigo-600 transition-colors">How it works</a>
       </footer>

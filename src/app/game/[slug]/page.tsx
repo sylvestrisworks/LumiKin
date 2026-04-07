@@ -307,13 +307,13 @@ export default async function GamePage({ params }: Props) {
           </div>
         </header>
 
-        <main className="max-w-2xl mx-auto px-4 py-6">
+        <main className="max-w-2xl mx-auto px-4 py-10">
           <GameCard {...data} />
 
           {/* Description */}
           {game.description && (
-            <div className="mt-6 bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
-              <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-2">
+            <div className="mt-8 bg-white rounded-2xl border border-slate-200 shadow-sm px-6 py-6">
+              <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
                 About this game
               </h2>
               <ExpandableText text={game.description} lines={4} />
@@ -321,17 +321,17 @@ export default async function GamePage({ params }: Props) {
           )}
 
           {/* Feedback */}
-          <div className="mt-4 flex justify-end">
+          <div className="mt-6 flex justify-end">
             <FeedbackForm gameSlug={game.slug} />
           </div>
 
           {/* Similar games */}
           {similarGames.length > 0 && (
-            <div className="mt-6">
-              <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
+            <div className="mt-10">
+              <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-4">
                 More {game.genres[0]} games
               </h2>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 {similarGames.map(s => {
                   const scoreBg =
                     s.curascore == null   ? 'bg-slate-300 text-slate-600' :

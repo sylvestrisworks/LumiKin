@@ -9,7 +9,8 @@ export const metadata: Metadata = {
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 type QA = { q: string; a: React.ReactNode }
-type Section = { id: string; heading: string; items: QA[] }
+type ResearchLink = { label: string; authors: string; url: string }
+type Section = { id: string; heading: string; items: QA[]; research: ResearchLink[] }
 
 const SECTIONS: Section[] = [
   {
@@ -57,11 +58,28 @@ const SECTIONS: Section[] = [
         ),
       },
       {
-        q: 'Why isn\'t the ESRB rating enough?',
+        q: "Why isn't the ESRB rating enough?",
         a: `ESRB rates content (violence, language, sexual themes) — not design. A game can be rated E
             for Everyone and still use slot-machine reward loops, aggressive push notifications, or
             unlimited in-app purchases targeting children. The Curascore captures those design
             decisions, which are invisible to ESRB but highly relevant to parents.`,
+      },
+    ],
+    research: [
+      {
+        label: 'The Benefits of Playing Video Games',
+        authors: 'Granic, Lobel & Engels — American Psychologist, APA (2014)',
+        url: 'https://www.apa.org/pubs/journals/releases/amp-a0034857.pdf',
+      },
+      {
+        label: 'Development of the SHARP-G Scale: An International Delphi Study',
+        authors: 'Saini & Hodgins et al. — PMC (2024)',
+        url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC11220801/',
+      },
+      {
+        label: 'Association of Video Gaming With Cognitive Performance Among Children',
+        authors: 'Chaarani et al. — JAMA Network Open / PMC (2022)',
+        url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9593235/',
       },
     ],
   },
@@ -110,6 +128,28 @@ const SECTIONS: Section[] = [
             reaction time. Stardew Valley scores well on planning and emotional regulation. A game
             doesn't need to be complex — it needs to build real skills rather than just provide
             passive stimulation.`,
+      },
+    ],
+    research: [
+      {
+        label: 'The impact of digital media on children\'s intelligence',
+        authors: 'Sauce et al. — Scientific Reports / Nature (2022)',
+        url: 'https://www.nature.com/articles/s41598-022-11341-2',
+      },
+      {
+        label: 'Video games as virtual teachers: prosocial use associated with empathy',
+        authors: 'Prot et al. — Computers in Human Behavior (2014)',
+        url: 'https://www.sciencedirect.com/science/article/abs/pii/S0747563216303892',
+      },
+      {
+        label: 'Neural correlates of video game empathy training in adolescents',
+        authors: 'Szymanski et al. — npj Science of Learning / PMC (2018)',
+        url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6220300/',
+      },
+      {
+        label: 'Game-based social-emotional learning for youth: a school-based analysis',
+        authors: 'Lamb et al. — PMC (2025)',
+        url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC12289224/',
       },
     ],
   },
@@ -173,6 +213,28 @@ const SECTIONS: Section[] = [
             child about why the game is designed the way it is.`,
       },
     ],
+    research: [
+      {
+        label: 'Engineered highs: Reward variability as a prerequisite of behavioural addiction',
+        authors: 'Newall et al. — Drug and Alcohol Dependence / PMC (2023)',
+        url: 'https://www.sciencedirect.com/science/article/pii/S0306460323000217',
+      },
+      {
+        label: 'Loot boxes, gambling, and problem gambling among young people',
+        authors: 'Zendle et al. — PMC (2021)',
+        url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8064953/',
+      },
+      {
+        label: 'Prevalence and characteristics of manipulative design in apps used by children',
+        authors: 'Frik et al. — JMIR mHealth / PMC (2022)',
+        url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9206186/',
+      },
+      {
+        label: 'The role of microtransactions in Internet Gaming Disorder: a systematic review',
+        authors: 'Kristiansen & Severin — PMC (2022)',
+        url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9006671/',
+      },
+    ],
   },
   {
     id: 'time',
@@ -233,7 +295,7 @@ const SECTIONS: Section[] = [
         ),
       },
       {
-        q: 'Does the recommendation account for the child\'s age?',
+        q: "Does the recommendation account for the child's age?",
         a: (
           <div className="space-y-1.5">
             <p>Age adjustments are applied on top of the formula-based recommendation:</p>
@@ -245,6 +307,23 @@ const SECTIONS: Section[] = [
             </ul>
           </div>
         ),
+      },
+    ],
+    research: [
+      {
+        label: 'WHO guidelines on physical activity, sedentary behaviour and sleep for children under 5',
+        authors: 'World Health Organization (2019)',
+        url: 'https://www.who.int/news/item/24-04-2019-to-grow-up-healthy-children-need-to-sit-less-and-play-more',
+      },
+      {
+        label: 'AAP screen time guidelines — Center of Excellence on Social Media and Youth Mental Health',
+        authors: 'American Academy of Pediatrics',
+        url: 'https://www.aap.org/en/patient-care/media-and-children/center-of-excellence-on-social-media-and-youth-mental-health/qa-portal/qa-portal-library/qa-portal-library-questions/screen-time-guidelines/',
+      },
+      {
+        label: 'Media and Young Minds',
+        authors: 'AAP Council on Communications and Media — Pediatrics (2016)',
+        url: 'https://publications.aap.org/pediatrics/article/138/5/e20162591/60503/Media-and-Young-Minds',
       },
     ],
   },
@@ -262,7 +341,7 @@ const SECTIONS: Section[] = [
       },
       {
         q: 'How do I know if a game has been reviewed?',
-        a: `On a game\'s detail page, filters for risk level, time recommendation, and benefit focus
+        a: `On a game's detail page, filters for risk level, time recommendation, and benefit focus
             all require a human review to be present. If those fields show "—" or are absent,
             the game has not yet received a full human review. The automated Curascore may still
             be shown, clearly marked as estimated.`,
@@ -280,6 +359,23 @@ const SECTIONS: Section[] = [
             if community feedback reveals a systematic error in the rubric, it feeds into the
             next version of the methodology. All rubric weights and thresholds are publicly
             documented and designed to be transparent.`,
+      },
+    ],
+    research: [
+      {
+        label: 'Development of the SHARP-G Scale (the framework our rubric extends)',
+        authors: 'Saini & Hodgins et al. — PMC (2024)',
+        url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC11220801/',
+      },
+      {
+        label: 'Adolescents and loot boxes: links with problem gambling and motivations for purchase',
+        authors: 'Zendle et al. — Royal Society Open Science / PMC (2019)',
+        url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6599795/',
+      },
+      {
+        label: 'Understanding the interplay between video game design features and dysregulated gaming',
+        authors: 'King et al. — PMC (2025)',
+        url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC12033933/',
       },
     ],
   },
@@ -336,12 +432,11 @@ export default function FaqPage() {
               <h2 className="text-lg font-bold text-slate-900 mb-5 pb-2 border-b border-slate-200">
                 {section.heading}
               </h2>
-              <div className="space-y-0 divide-y divide-slate-100">
+
+              {/* Q&A accordion */}
+              <div className="divide-y divide-slate-100">
                 {section.items.map(item => (
-                  <details
-                    key={item.q}
-                    className="group py-4 open:pb-5"
-                  >
+                  <details key={item.q} className="group py-4 open:pb-5">
                     <summary className="flex items-start justify-between gap-4 cursor-pointer list-none">
                       <span className="font-medium text-slate-800 group-open:text-indigo-700 transition-colors">
                         {item.q}
@@ -355,6 +450,31 @@ export default function FaqPage() {
                     </div>
                   </details>
                 ))}
+              </div>
+
+              {/* Research links */}
+              <div className="mt-5 pt-4 border-t border-dashed border-slate-200">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
+                  Research
+                </p>
+                <ul className="space-y-2">
+                  {section.research.map(r => (
+                    <li key={r.url} className="flex items-start gap-2">
+                      <span className="text-indigo-300 mt-0.5 shrink-0">↗</span>
+                      <span className="text-sm">
+                        <a
+                          href={r.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-indigo-600 hover:text-indigo-800 hover:underline font-medium"
+                        >
+                          {r.label}
+                        </a>
+                        <span className="text-slate-400 ml-1.5">{r.authors}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </section>
           ))}

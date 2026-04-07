@@ -1,10 +1,11 @@
 export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
-import { eq, desc, lte, gte, isNotNull, sql, and } from 'drizzle-orm'
+import { eq, desc, lte, gte, isNotNull, sql, and, type SQL } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
 import SearchBar from '@/components/SearchBar'
+import PlatformPicker from '@/components/PlatformPicker'
 import type { GameSummary } from '@/types/game'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -48,44 +49,47 @@ function toSummary(r: any): GameSummary {
   }
 }
 
-async function getCarouselRows(): Promise<CarouselRow[]> {
+async function getCarouselRows(platform?: string): Promise<CarouselRow[]> {
+  const platformFilter: SQL | undefined = platform
+    ? sql`${games.platforms}::text ILIKE ${'%' + platform + '%'}`
+    : undefined
+
+  const base  = (extra?: SQL) => and(isNotNull(gameScores.curascore), platformFilter, extra)
+
   const [topRated, forYoungKids, lowRisk, highBenefit, teamwork] = await Promise.all([
 
     // Top rated overall
     db.select(BASE_SELECT).from(games)
       .innerJoin(gameScores, eq(gameScores.gameId, games.id))
-      .where(isNotNull(gameScores.curascore))
+      .where(base())
       .orderBy(desc(gameScores.curascore))
       .limit(12),
 
     // Great for young kids — ESRB E
     db.select(BASE_SELECT).from(games)
       .innerJoin(gameScores, eq(gameScores.gameId, games.id))
-      .where(and(isNotNull(gameScores.curascore), eq(games.esrbRating, 'E')))
+      .where(base(eq(games.esrbRating, 'E')))
       .orderBy(desc(gameScores.curascore))
       .limit(12),
 
     // Low risk — RIS ≤ 0.30
     db.select(BASE_SELECT).from(games)
       .innerJoin(gameScores, eq(gameScores.gameId, games.id))
-      .where(and(isNotNull(gameScores.curascore), lte(gameScores.ris, 0.3)))
+      .where(base(lte(gameScores.ris, 0.3)))
       .orderBy(desc(gameScores.curascore))
       .limit(12),
 
     // Build your brain — high cognitive score
     db.select(BASE_SELECT).from(games)
       .innerJoin(gameScores, eq(gameScores.gameId, games.id))
-      .where(and(isNotNull(gameScores.curascore), gte(gameScores.cognitiveScore, 0.6)))
+      .where(base(gte(gameScores.cognitiveScore, 0.6)))
       .orderBy(desc(gameScores.bds))
       .limit(12),
 
     // Team up — games with teamwork in topBenefits
     db.select(BASE_SELECT).from(games)
       .innerJoin(gameScores, eq(gameScores.gameId, games.id))
-      .where(and(
-        isNotNull(gameScores.curascore),
-        sql`${gameScores.topBenefits}::jsonb @> ${JSON.stringify([{ skill: 'Teamwork' }])}::jsonb`,
-      ))
+      .where(base(sql`${gameScores.topBenefits}::jsonb @> ${JSON.stringify([{ skill: 'Teamwork' }])}::jsonb`))
       .orderBy(desc(gameScores.curascore))
       .limit(12),
   ])
@@ -199,8 +203,11 @@ const QUICK_LINKS = [
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default async function HomePage() {
-  const carousels = await getCarouselRows()
+type Props = { searchParams: Record<string, string | string[] | undefined> }
+
+export default async function HomePage({ searchParams }: Props) {
+  const platform = typeof searchParams.platform === 'string' ? searchParams.platform : undefined
+  const carousels = await getCarouselRows(platform)
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -235,6 +242,19 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* Platform picker */}
+        <section className="pb-5">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2.5">
+            Your platform
+            {platform && (
+              <a href="/" className="ml-2 normal-case font-normal text-indigo-500 hover:text-indigo-700">
+                (clear)
+              </a>
+            )}
+          </p>
+          <PlatformPicker current={platform} />
+        </section>
+
         {/* Quick-filter pills */}
         <section className="pb-6">
           <div className="flex flex-wrap gap-2">
@@ -257,10 +277,21 @@ export default async function HomePage() {
             {carousels.map(row => <Carousel key={row.id} row={row} />)}
           </div>
         ) : (
-          <div className="text-center py-16 text-slate-400 pb-12">
+          <div className="text-center py-16 pb-12">
             <p className="text-4xl mb-3">🎮</p>
-            <p className="font-medium text-slate-600">Game ratings coming soon</p>
-            <p className="text-sm mt-1">We&apos;re reviewing games now — check back shortly.</p>
+            {platform ? (
+              <>
+                <p className="font-medium text-slate-600">No reviewed games found for {platform} yet</p>
+                <a href="/" className="mt-2 inline-block text-sm text-indigo-600 hover:underline">
+                  Show all platforms
+                </a>
+              </>
+            ) : (
+              <>
+                <p className="font-medium text-slate-600">Game ratings coming soon</p>
+                <p className="text-sm text-slate-400 mt-1">We&apos;re reviewing games now — check back shortly.</p>
+              </>
+            )}
           </div>
         )}
 

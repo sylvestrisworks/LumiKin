@@ -51,7 +51,7 @@ const ANTHROPIC_MODELS: Record<string, string> = {
   opus:   'claude-opus-4-6',
 }
 const GOOGLE_MODELS: Record<string, string> = {
-  flash:  'gemini-2.0-flash-001',
+  flash:  'gemini-2.0-flash',
   pro:    'gemini-1.5-pro-002',
   flash15: 'gemini-1.5-flash-002',
 }

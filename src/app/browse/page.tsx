@@ -3,14 +3,14 @@ export const dynamic = 'force-dynamic'
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { eq, desc, asc, sql, and, lte, gte, ilike, type SQL } from 'drizzle-orm'
+import { curascoreBg } from '@/lib/ui'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
 import BrowseFilters, { type ActiveFilters } from '@/components/BrowseFilters'
-import SearchBar from '@/components/SearchBar'
 
 export const metadata: Metadata = {
-  title: 'Browse Games — PlaySmart',
+  title: 'Browse Games — Good Game Parent',
   description: 'Find the right game for your child. Filter by age, genre, platform, and risk level.',
 }
 
@@ -77,9 +77,9 @@ async function queryGames(filters: ActiveFilters): Promise<{ rows: Row[]; total:
     }
   }
 
-  // Genre (jsonb array contains)
+  // Genre (case-insensitive text search within jsonb array)
   for (const genre of filters.genres) {
-    conditions.push(sql`${games.genres}::jsonb @> ${JSON.stringify([genre])}::jsonb`)
+    conditions.push(sql`${games.genres}::text ILIKE ${'%' + genre + '%'}`)
   }
 
   // Platform (text search within jsonb array)
@@ -101,7 +101,7 @@ async function queryGames(filters: ActiveFilters): Promise<{ rows: Row[]; total:
   if (filters.risk === 'low') {
     conditions.push(lte(gameScores.ris, 0.3))
   } else if (filters.risk === 'medium') {
-    conditions.push(lte(gameScores.ris, 0.6))
+    conditions.push(gte(gameScores.ris, 0.31), lte(gameScores.ris, 0.6))
   }
 
   // Time recommendation
@@ -139,6 +139,7 @@ async function queryGames(filters: ActiveFilters): Promise<{ rows: Row[]; total:
   switch (filters.sort) {
     case 'benefit':   orderBy = [desc(gameScores.bds), desc(gameScores.curascore)]; break
     case 'safest':    orderBy = [asc(gameScores.ris), desc(gameScores.curascore)];  break
+    case 'riskiest':  orderBy = [desc(gameScores.ris), asc(gameScores.curascore)];  break
     case 'newest':    orderBy = [desc(games.releaseDate)];                          break
     case 'alpha':     orderBy = [asc(games.title)];                                break
     case 'metacritic': orderBy = [desc(games.metacriticScore)];                    break
@@ -219,32 +220,17 @@ export default async function BrowsePage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Nav */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-4">
-          <Link href="/" className="text-lg font-bold text-indigo-700 tracking-tight shrink-0">
-            PlaySmart
-          </Link>
-          <div className="flex-1 max-w-md">
-            <SearchBar placeholder="Search games…" />
-          </div>
-          <Link href="/compare" className="text-sm text-slate-600 hover:text-indigo-700 shrink-0 transition-colors">
-            Compare
-          </Link>
-        </div>
-      </header>
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="lg:flex gap-8">
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row gap-8">
-
-          {/* Filters sidebar */}
+          {/* Filters — sidebar on desktop, drawer on mobile */}
           <Suspense>
             <BrowseFilters active={filters} totalCount={total} />
           </Suspense>
 
           {/* Main content */}
           <main className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4">
               <div>
                 <h1 className="text-xl font-bold text-slate-900">Browse games</h1>
                 <p className="text-sm text-slate-500 mt-0.5">
@@ -255,47 +241,46 @@ export default async function BrowsePage({ searchParams }: Props) {
             </div>
 
             {rows.length === 0 ? (
-              <div className="text-center py-20 text-slate-400">
+              <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
                 <p className="text-4xl mb-3">🔍</p>
-                <p className="font-medium text-slate-600">No games match these filters</p>
-                <p className="text-sm mt-1">
-                  Try removing some filters.{' '}
+                <p className="font-semibold text-slate-700">No games match these filters</p>
+                <p className="text-sm text-slate-500 mt-1 max-w-xs mx-auto">
+                  Try removing a filter or two.
                   {(filters.risk || filters.time || filters.benefits.length > 0) && (
-                    <span>Note: risk and benefit filters only apply to reviewed games.</span>
+                    <> Risk and benefit filters only apply to reviewed games.</>
                   )}
                 </p>
+                <Link href="/browse" className="mt-4 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-800 hover:underline">
+                  Clear all filters →
+                </Link>
               </div>
             ) : (
               <ol className="divide-y divide-slate-100">
                 {rows.map((row, i) => {
                   const score = row.curascore
-                  const scoreBg =
-                    score == null   ? 'bg-slate-200 text-slate-500' :
-                    score >= 70     ? 'bg-emerald-600 text-white' :
-                    score >= 40     ? 'bg-amber-500 text-white' :
-                                      'bg-red-600 text-white'
+                  const badgeCls = score == null
+                    ? 'bg-slate-200 text-slate-500'
+                    : `${curascoreBg(score)} text-white`
                   return (
                     <li key={row.slug}>
                       <Link
                         href={`/game/${row.slug}`}
-                        className="flex items-center gap-4 py-4 px-2 rounded-lg hover:bg-indigo-50 transition-colors group"
+                        className="flex items-center gap-4 py-3 px-2 rounded-lg hover:bg-indigo-50 hover:translate-x-0.5 transition-all group"
                       >
-                        {/* Rank number */}
-                        <span className="w-7 text-right text-sm font-semibold text-slate-400 shrink-0">
+                        {/* Rank */}
+                        <span className="w-7 text-right text-sm font-semibold text-slate-400 shrink-0 group-hover:text-indigo-400 transition-colors">
                           {i + 1}
                         </span>
 
                         {/* Thumbnail */}
-                        <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-indigo-100">
+                        <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-indigo-100">
                           {row.backgroundImage ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={row.backgroundImage}
-                              alt=""
-                              className="w-full h-full object-cover"
+                            <img src={row.backgroundImage} alt={row.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center">
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-violet-100">
                               <span className="text-sm font-black text-indigo-300">
                                 {row.title.slice(0, 2).toUpperCase()}
                               </span>
@@ -324,7 +309,7 @@ export default async function BrowsePage({ searchParams }: Props) {
                         )}
 
                         {/* Curascore badge */}
-                        <span className={`w-10 text-center text-xs font-black px-2 py-1 rounded-full shrink-0 ${scoreBg}`}>
+                        <span className={`w-10 text-center text-xs font-black px-2 py-1 rounded-full shrink-0 ${badgeCls}`}>
                           {score ?? '—'}
                         </span>
                       </Link>
@@ -336,7 +321,7 @@ export default async function BrowsePage({ searchParams }: Props) {
 
             {total > 48 && (
               <p className="text-center text-sm text-slate-400 mt-8">
-                Showing first 48 of {total} games. Refine filters to narrow results.
+                Showing first 48 of {total}. Refine filters to narrow results.
               </p>
             )}
           </main>

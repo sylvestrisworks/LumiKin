@@ -1,15 +1,9 @@
 import Link from 'next/link'
+import { curascoreBg } from '@/lib/ui'
 import type { GameSummary } from '@/types/game'
 
 type Props = {
   game: GameSummary
-}
-
-function curascoreBg(score: number | null | undefined): string {
-  if (score == null) return 'bg-slate-400'
-  if (score >= 70) return 'bg-emerald-600'
-  if (score >= 40) return 'bg-amber-500'
-  return 'bg-red-600'
 }
 
 export default function GameCompactCard({ game }: Props) {

@@ -2,13 +2,10 @@ export const dynamic = 'force-dynamic'
 
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { eq, desc, and, isNotNull, sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { games, gameScores, reviews, darkPatterns, complianceStatus } from '@/lib/db/schema'
 import GameCard from '@/components/GameCard'
-import ExpandableText from '@/components/ExpandableText'
-import FeedbackForm from '@/components/FeedbackForm'
-import Link from 'next/link'
 import type { ComplianceBadge, DarkPattern, GameCardProps, SerializedGame, SerializedScores, SerializedReview } from '@/types/game'
 
 type Props = { params: { slug: string } }
@@ -175,42 +172,6 @@ async function fetchGameData(slug: string): Promise<GameCardProps | null> {
   return { game: serializedGame, scores: serializedScores, review: serializedReview, darkPatterns: serializedDarkPatterns, compliance: serializedCompliance }
 }
 
-// ─── Similar games ────────────────────────────────────────────────────────────
-
-type SimilarGame = {
-  slug: string
-  title: string
-  backgroundImage: string | null
-  esrbRating: string | null
-  curascore: number | null
-  timeRecommendationMinutes: number | null
-  timeRecommendationColor: string | null
-}
-
-async function getSimilarGames(genre: string | undefined, currentSlug: string): Promise<SimilarGame[]> {
-  if (!genre) return []
-  const rows = await db
-    .select({
-      slug:            games.slug,
-      title:           games.title,
-      backgroundImage: games.backgroundImage,
-      esrbRating:      games.esrbRating,
-      curascore:       gameScores.curascore,
-      timeRecommendationMinutes: gameScores.timeRecommendationMinutes,
-      timeRecommendationColor:   gameScores.timeRecommendationColor,
-    })
-    .from(games)
-    .innerJoin(gameScores, eq(gameScores.gameId, games.id))
-    .where(and(
-      sql`${games.genres}::jsonb @> ${JSON.stringify([genre])}::jsonb`,
-      sql`${games.slug} != ${currentSlug}`,
-      isNotNull(gameScores.curascore),
-    ))
-    .orderBy(desc(gameScores.curascore))
-    .limit(4)
-  return rows as SimilarGame[]
-}
-
 // ─── Metadata ────────────────────────────────────────────────────────────────
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -220,24 +181,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .where(eq(games.slug, params.slug))
     .limit(1)
 
-  if (!game) return { title: 'Game not found — PlaySmart' }
+  if (!game) return { title: 'Game not found — Good Game Parent' }
 
   const desc = game.description
     ? game.description.slice(0, 160)
-    : `See the PlaySmart rating for ${game.title} — benefits, risks, and time recommendations for parents.`
+    : `See the Good Game Parent rating for ${game.title} — benefits, risks, and time recommendations for parents.`
 
   return {
-    title: `${game.title} — PlaySmart`,
+    title: `${game.title} — Good Game Parent`,
     description: desc,
     openGraph: {
-      title: `${game.title} — PlaySmart`,
+      title: `${game.title} — Good Game Parent`,
       description: desc,
       images: game.backgroundImage ? [{ url: game.backgroundImage }] : [],
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${game.title} — PlaySmart`,
+      title: `${game.title} — Good Game Parent`,
       description: desc,
       images: game.backgroundImage ? [game.backgroundImage] : [],
     },
@@ -251,7 +212,6 @@ export default async function GamePage({ params }: Props) {
   if (!data) notFound()
 
   const { game, scores } = data
-  const similarGames = await getSimilarGames(game.genres[0] ?? undefined, game.slug)
 
   // JSON-LD structured data
   const jsonLd = {
@@ -279,99 +239,18 @@ export default async function GamePage({ params }: Props) {
       />
 
       <div className="min-h-screen bg-slate-50">
-        {/* Nav */}
-        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
-          <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
-            <a href="/" className="text-lg font-bold text-indigo-700 tracking-tight">
-              PlaySmart
-            </a>
-            <div className="flex items-center gap-3">
-              <Link
-                href={`/compare?a=${game.slug}`}
-                className="text-xs font-semibold text-slate-500 hover:text-indigo-700 border border-slate-200 hover:border-indigo-300 px-3 py-1 rounded-full transition-colors"
-              >
-                Compare
-              </Link>
-              {scores?.curascore != null && (
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-slate-500">Curascore</span>
-                  <span className={`font-black px-2.5 py-0.5 rounded-full text-white text-sm
-                    ${scores.curascore >= 70 ? 'bg-emerald-600'
-                    : scores.curascore >= 40 ? 'bg-amber-500'
-                    : 'bg-red-600'}`}>
-                    {scores.curascore}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </header>
-
-        <main className="max-w-2xl mx-auto px-4 py-10">
+        <main className="max-w-2xl mx-auto px-4 py-6">
           <GameCard {...data} />
 
           {/* Description */}
           {game.description && (
-            <div className="mt-8 bg-white rounded-2xl border border-slate-200 shadow-sm px-6 py-6">
-              <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
+            <div className="mt-6 bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
+              <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">
                 About this game
               </h2>
-              <ExpandableText text={game.description} lines={4} />
-            </div>
-          )}
-
-          {/* Feedback */}
-          <div className="mt-6 flex justify-end">
-            <FeedbackForm gameSlug={game.slug} />
-          </div>
-
-          {/* Similar games */}
-          {similarGames.length > 0 && (
-            <div className="mt-10">
-              <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-4">
-                More {game.genres[0]} games
-              </h2>
-              <div className="grid grid-cols-2 gap-4">
-                {similarGames.map(s => {
-                  const scoreBg =
-                    s.curascore == null   ? 'bg-slate-300 text-slate-600' :
-                    s.curascore >= 70     ? 'bg-emerald-600 text-white' :
-                    s.curascore >= 40     ? 'bg-amber-500 text-white' :
-                                            'bg-red-600 text-white'
-                  return (
-                    <Link
-                      key={s.slug}
-                      href={`/game/${s.slug}`}
-                      className="flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-3 py-2.5 hover:border-indigo-300 hover:shadow-sm transition-all group"
-                    >
-                      <div className="w-10 h-10 rounded-lg overflow-hidden bg-indigo-100 shrink-0">
-                        {s.backgroundImage ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={s.backgroundImage} alt="" className="w-full h-full object-cover" />
-                        ) : (
-                          <span className="w-full h-full flex items-center justify-center text-xs font-bold text-indigo-400">
-                            {s.title.slice(0, 2).toUpperCase()}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-slate-800 truncate group-hover:text-indigo-700 transition-colors">
-                          {s.title}
-                        </p>
-                        {/* Always render so card heights stay consistent when ESRB is null */}
-                        <p className="text-xs text-slate-400 mt-0.5 h-4 leading-4">
-                          {s.esrbRating ?? ''}
-                        </p>
-                      </div>
-                      {s.curascore != null && (
-                        <span className={`text-xs font-black px-2 py-0.5 rounded-full shrink-0 ${scoreBg}`}>
-                          {s.curascore}
-                        </span>
-                      )}
-                    </Link>
-                  )
-                })}
-              </div>
+              <p className="text-sm text-slate-700 leading-relaxed">
+                {game.description}
+              </p>
             </div>
           )}
         </main>

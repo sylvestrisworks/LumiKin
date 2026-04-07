@@ -102,8 +102,8 @@ export default function SearchBar({ placeholder = 'Search games…' }: { placeho
               placeholder:text-slate-400"
           />
           {loading && (
-            <div className="absolute right-4 top-1/2 -translate-y-1/2">
-              <div className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2" aria-label="Loading results" role="status">
+              <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
             </div>
           )}
         </div>

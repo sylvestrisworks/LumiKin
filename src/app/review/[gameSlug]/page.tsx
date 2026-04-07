@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: { gameSlug: string 
     .limit(1)
 
   return {
-    title: game ? `Review: ${game.title} — PlaySmart` : 'Review — PlaySmart',
+    title: game ? `Review: ${game.title} — Good Game Parent` : 'Review — Good Game Parent',
   }
 }
 

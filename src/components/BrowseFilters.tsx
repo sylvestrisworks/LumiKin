@@ -1,7 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
+import { SlidersHorizontal, X } from 'lucide-react'
 
 // ─── Filter definitions ───────────────────────────────────────────────────────
 
@@ -18,35 +20,36 @@ export const GENRE_OPTIONS = [
 ]
 
 export const PLATFORM_OPTIONS = [
-  { value: 'PC',          label: 'PC' },
-  { value: 'PlayStation', label: 'PlayStation' },
-  { value: 'Xbox',        label: 'Xbox' },
-  { value: 'Switch',      label: 'Nintendo Switch' },
-  { value: 'iOS',         label: 'iOS' },
-  { value: 'Android',     label: 'Android' },
+  { value: 'PC',          label: 'PC'               },
+  { value: 'PlayStation', label: 'PlayStation'       },
+  { value: 'Xbox',        label: 'Xbox'              },
+  { value: 'Switch',      label: 'Nintendo Switch'   },
+  { value: 'iOS',         label: 'iOS'               },
+  { value: 'Android',     label: 'Android'           },
 ]
 
 export const COMPLIANCE_OPTIONS = [
-  { value: 'DSA',    label: 'DSA compliant' },
+  { value: 'DSA',    label: 'DSA compliant'    },
   { value: 'GDPR-K', label: 'GDPR-K compliant' },
-  { value: 'ODDS',   label: 'ODDS compliant' },
+  { value: 'ODDS',   label: 'ODDS compliant'   },
 ]
 
 export const BENEFIT_OPTIONS = [
-  { value: 'problem-solving', label: 'Problem Solving' },
+  { value: 'problem-solving', label: 'Problem Solving'   },
   { value: 'spatial',         label: 'Spatial Awareness' },
-  { value: 'teamwork',        label: 'Teamwork' },
-  { value: 'creativity',      label: 'Creativity' },
-  { value: 'communication',   label: 'Communication' },
+  { value: 'teamwork',        label: 'Teamwork'          },
+  { value: 'creativity',      label: 'Creativity'        },
+  { value: 'communication',   label: 'Communication'     },
 ]
 
 export const SORT_OPTIONS = [
-  { value: 'curascore',  label: 'Curascore' },
+  { value: 'curascore',  label: 'Curascore'         },
   { value: 'benefit',    label: 'Best benefit score' },
-  { value: 'safest',     label: 'Lowest risk' },
-  { value: 'metacritic', label: 'Metacritic score' },
-  { value: 'newest',     label: 'Newest' },
-  { value: 'alpha',      label: 'A–Z' },
+  { value: 'safest',     label: 'Lowest risk'        },
+  { value: 'riskiest',   label: 'Highest risk'       },
+  { value: 'metacritic', label: 'Metacritic score'   },
+  { value: 'newest',     label: 'Newest'             },
+  { value: 'alpha',      label: 'A–Z'                },
 ]
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -74,7 +77,7 @@ type Props = {
 export default function BrowseFilters({ active, totalCount }: Props) {
   const router   = useRouter()
   const pathname = usePathname()
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const push = useCallback((updates: Partial<ActiveFilters>) => {
     const merged = { ...active, ...updates }
@@ -97,242 +100,200 @@ export default function BrowseFilters({ active, totalCount }: Props) {
     push({ [key]: arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value] })
   }
 
-  const clearAll = () => router.push(pathname)
-
-  const hasFilters = !!(active.age || active.genres.length || active.platforms.length ||
-    active.benefits.length || active.compliance.length || active.risk || active.time || active.price)
+  const clearAll = () => { router.push(pathname); setDrawerOpen(false) }
 
   const activeCount = [
     active.age, ...active.genres, ...active.platforms,
     ...active.benefits, ...active.compliance, active.risk, active.time, active.price,
   ].filter(Boolean).length
 
-  // ── Shared filter content ──────────────────────────────────────────────────
-
-  const filterSections = (compact: boolean) => (
-    <>
-      <Accordion title="Age range" dot={!!active.age} compact={compact}>
-        <PillGroup>
-          {AGE_OPTIONS.map(o => (
-            <Pill key={o.value} label={o.label} active={active.age === o.value} compact={compact}
-              onClick={() => push({ age: active.age === o.value ? undefined : o.value })} />
-          ))}
-        </PillGroup>
-      </Accordion>
-
-      <Accordion title="Platform" dot={active.platforms.length > 0} compact={compact}>
-        <PillGroup>
-          {PLATFORM_OPTIONS.map(o => (
-            <Pill key={o.value} label={o.label} active={active.platforms.includes(o.value)} compact={compact}
-              onClick={() => toggle('platforms', o.value)} />
-          ))}
-        </PillGroup>
-      </Accordion>
-
-      <Accordion title="Genre" dot={active.genres.length > 0} compact={compact}>
-        <PillGroup>
-          {GENRE_OPTIONS.map(g => (
-            <Pill key={g} label={g} active={active.genres.includes(g)} compact={compact}
-              onClick={() => toggle('genres', g)} />
-          ))}
-        </PillGroup>
-      </Accordion>
-
-      <Accordion title="Benefit focus" note="Requires a review" dot={active.benefits.length > 0} compact={compact}>
-        <PillGroup>
-          {BENEFIT_OPTIONS.map(o => (
-            <Pill key={o.value} label={o.label} active={active.benefits.includes(o.value)} compact={compact}
-              onClick={() => toggle('benefits', o.value)} />
-          ))}
-        </PillGroup>
-      </Accordion>
-
-      <Accordion title="Max risk" note="Requires a review" dot={!!active.risk} compact={compact}>
-        <PillGroup>
-          {[
-            { value: 'low',    label: 'Low (RIS < 0.30)' },
-            { value: 'medium', label: 'Low–Medium (RIS < 0.60)' },
-          ].map(o => (
-            <Pill key={o.value} label={o.label} active={active.risk === o.value} compact={compact}
-              onClick={() => push({ risk: active.risk === o.value ? undefined : o.value })} />
-          ))}
-        </PillGroup>
-      </Accordion>
-
-      <Accordion title="Min. daily time" note="Requires a review" dot={!!active.time} compact={compact}>
-        <PillGroup>
-          {[
-            { value: '30', label: '30+ min' },
-            { value: '60', label: '60+ min' },
-            { value: '90', label: '90+ min' },
-          ].map(o => (
-            <Pill key={o.value} label={o.label} active={active.time === o.value} compact={compact}
-              onClick={() => push({ time: active.time === o.value ? undefined : o.value })} />
-          ))}
-        </PillGroup>
-      </Accordion>
-
-      <Accordion title="Price" dot={!!active.price} compact={compact}>
-        <PillGroup>
-          {[
-            { value: 'free', label: 'Free to play' },
-            { value: '20',   label: 'Under $20' },
-            { value: '40',   label: 'Under $40' },
-          ].map(o => (
-            <Pill key={o.value} label={o.label} active={active.price === o.value} compact={compact}
-              onClick={() => push({ price: active.price === o.value ? undefined : o.value })} />
-          ))}
-        </PillGroup>
-      </Accordion>
-
-      <Accordion title="Compliance" note="Estimated" dot={active.compliance.length > 0} compact={compact}>
-        <PillGroup>
-          {COMPLIANCE_OPTIONS.map(o => (
-            <Pill key={o.value} label={o.label} active={active.compliance.includes(o.value)} compact={compact}
-              onClick={() => toggle('compliance', o.value)} />
-          ))}
-        </PillGroup>
-      </Accordion>
-    </>
-  )
-
-  // ── Mobile bar (top, collapsible) ──────────────────────────────────────────
-
-  const mobileBar = (
-    <div className="md:hidden mb-4">
-      {/* Toolbar */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => setMobileOpen(v => !v)}
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold border transition-all ${
-            hasFilters
-              ? 'bg-indigo-600 text-white border-indigo-600'
-              : 'bg-white text-slate-700 border-slate-200'
-          }`}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18M7 10h10M11 16h2" />
-          </svg>
-          Filters
-          {activeCount > 0 && (
-            <span className="bg-white text-indigo-600 text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center leading-none">
-              {activeCount}
-            </span>
-          )}
-          <span className="text-xs opacity-70">{mobileOpen ? '▲' : '▼'}</span>
-        </button>
-
-        <select
-          value={active.sort}
-          onChange={e => push({ sort: e.target.value })}
-          className="flex-1 text-sm border border-slate-200 rounded-xl px-3 py-2 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        >
-          {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
-
-        {hasFilters && (
-          <button onClick={clearAll} className="text-xs text-indigo-600 font-semibold px-2 shrink-0">
-            Clear
-          </button>
-        )}
-      </div>
-
-      {/* Collapsible panel */}
-      {mobileOpen && (
-        <div className="mt-3 bg-white border border-slate-200 rounded-2xl overflow-hidden divide-y divide-slate-100">
-          {filterSections(true)}
-          <p className="text-xs text-slate-400 px-4 py-3">
-            {totalCount} game{totalCount !== 1 ? 's' : ''} found
-          </p>
-        </div>
-      )}
-    </div>
-  )
-
-  // ── Desktop sidebar ────────────────────────────────────────────────────────
-
-  const desktopSidebar = (
-    <aside className="hidden md:block w-64 shrink-0 space-y-1">
-      <div className="flex items-center justify-between mb-4">
+  const panel = (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <h2 className="font-bold text-slate-800">Filters</h2>
-        {hasFilters && (
-          <button onClick={clearAll} className="text-xs text-indigo-600 hover:text-indigo-800">
+        {activeCount > 0 && (
+          <button onClick={clearAll} className="text-xs text-indigo-600 hover:text-indigo-800 font-medium">
             Clear all
           </button>
         )}
       </div>
 
       {/* Sort */}
-      <div className="pb-4">
+      <div>
         <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Sort by</p>
         <select
           value={active.sort}
           onChange={e => push({ sort: e.target.value })}
-          className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-700
+            focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
         >
           {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
       </div>
 
-      <div className="divide-y divide-slate-100">
-        {filterSections(false)}
-      </div>
+      <FilterSection title="Age range">
+        {AGE_OPTIONS.map(o => (
+          <Chip key={o.value} label={o.label} active={active.age === o.value}
+            onClick={() => push({ age: active.age === o.value ? undefined : o.value })} />
+        ))}
+      </FilterSection>
 
-      <p className="text-xs text-slate-400 pt-4 border-t border-slate-100">
+      <FilterSection title="Genre">
+        <div className="flex flex-wrap gap-1.5">
+          {GENRE_OPTIONS.map(g => (
+            <Chip key={g} label={g} active={active.genres.includes(g)}
+              onClick={() => toggle('genres', g)} />
+          ))}
+        </div>
+      </FilterSection>
+
+      <FilterSection title="Platform">
+        <div className="flex flex-wrap gap-1.5">
+          {PLATFORM_OPTIONS.map(o => (
+            <Chip key={o.value} label={o.label} active={active.platforms.includes(o.value)}
+              onClick={() => toggle('platforms', o.value)} />
+          ))}
+        </div>
+      </FilterSection>
+
+      <FilterSection title="Benefit focus" note="Requires a review">
+        {BENEFIT_OPTIONS.map(o => (
+          <label key={o.value} className="flex items-center gap-2 cursor-pointer group">
+            <input type="checkbox" checked={active.benefits.includes(o.value)}
+              onChange={() => toggle('benefits', o.value)}
+              className="rounded border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            />
+            <span className="text-sm text-slate-700 group-hover:text-slate-900">{o.label}</span>
+          </label>
+        ))}
+      </FilterSection>
+
+      <FilterSection title="Compliance" note="Estimated">
+        {COMPLIANCE_OPTIONS.map(o => (
+          <Chip key={o.value} label={o.label} active={active.compliance.includes(o.value)}
+            onClick={() => toggle('compliance', o.value)} />
+        ))}
+      </FilterSection>
+
+      <FilterSection title="Max risk level" note="Requires a review">
+        {[
+          { value: 'low',    label: 'Low only (RIS < 30)'  },
+          { value: 'medium', label: 'Low–Medium (< 60)'    },
+        ].map(o => (
+          <Chip key={o.value} label={o.label} active={active.risk === o.value}
+            onClick={() => push({ risk: active.risk === o.value ? undefined : o.value })} />
+        ))}
+      </FilterSection>
+
+      <FilterSection title="Min. daily time" note="Requires a review">
+        {[
+          { value: '30', label: '30+ min' },
+          { value: '60', label: '60+ min' },
+          { value: '90', label: '90+ min' },
+        ].map(o => (
+          <Chip key={o.value} label={o.label} active={active.time === o.value}
+            onClick={() => push({ time: active.time === o.value ? undefined : o.value })} />
+        ))}
+      </FilterSection>
+
+      <FilterSection title="Price">
+        {[
+          { value: 'free', label: 'Free to play' },
+          { value: '20',   label: 'Under $20'    },
+          { value: '40',   label: 'Under $40'    },
+        ].map(o => (
+          <Chip key={o.value} label={o.label} active={active.price === o.value}
+            onClick={() => push({ price: active.price === o.value ? undefined : o.value })} />
+        ))}
+      </FilterSection>
+
+      <p className="text-xs text-slate-400 pt-2 border-t border-slate-100">
         {totalCount} game{totalCount !== 1 ? 's' : ''} found
       </p>
-    </aside>
+    </div>
   )
 
   return (
     <>
-      {mobileBar}
-      {desktopSidebar}
+      {/* ── Desktop sidebar (lg+) ──────────────────────────────────────────── */}
+      <aside className="hidden lg:block w-64 shrink-0">
+        {panel}
+      </aside>
+
+      {/* ── Mobile filter button ───────────────────────────────────────────── */}
+      <div className="lg:hidden mb-4">
+        <button
+          onClick={() => setDrawerOpen(true)}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white
+            text-sm font-semibold text-slate-700 hover:border-indigo-300 hover:text-indigo-700
+            shadow-sm transition-colors"
+        >
+          <SlidersHorizontal size={15} />
+          Filters
+          {activeCount > 0 && (
+            <span className="ml-1 bg-indigo-600 text-white text-xs font-black px-1.5 py-0.5 rounded-full">
+              {activeCount}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* ── Mobile drawer overlay ──────────────────────────────────────────── */}
+      {drawerOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 flex">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/40" onClick={() => setDrawerOpen(false)} />
+
+          {/* Drawer panel */}
+          <aside className="relative ml-auto w-80 max-w-full h-full bg-white shadow-xl overflow-y-auto">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
+              <h2 className="font-bold text-slate-800">Filters</h2>
+              <button onClick={() => setDrawerOpen(false)}
+                className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+                aria-label="Close filters"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="px-5 py-4">
+              {panel}
+            </div>
+            {/* Apply button */}
+            <div className="sticky bottom-0 px-5 py-4 bg-white border-t border-slate-100">
+              <button
+                onClick={() => setDrawerOpen(false)}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors"
+              >
+                Show {totalCount} game{totalCount !== 1 ? 's' : ''}
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
     </>
   )
 }
 
 // ─── Small helpers ────────────────────────────────────────────────────────────
 
-function Accordion({
-  title, note, dot, compact, children,
-}: {
-  title: string; note?: string; dot: boolean; compact: boolean; children: React.ReactNode
-}) {
+function FilterSection({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {
   return (
-    <details className="group" open={dot || !compact}>
-      <summary className={`flex items-center justify-between cursor-pointer select-none list-none ${
-        compact ? 'px-4 py-3' : 'py-2.5'
-      } text-xs font-semibold text-slate-500 uppercase tracking-wide hover:text-slate-700 transition-colors`}>
-        <span className="flex items-center gap-1.5">
-          {title}
-          {note && <span className="font-normal normal-case text-slate-400">({note})</span>}
-          {dot && <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 inline-block" />}
-        </span>
-        <svg className="w-3.5 h-3.5 text-slate-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
-      </summary>
-      <div className={compact ? 'px-4 pb-3' : 'pb-3'}>
-        {children}
-      </div>
-    </details>
+    <div>
+      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+        {title}
+        {note && <span className="ml-1 font-normal normal-case text-slate-400">({note})</span>}
+      </p>
+      <div className="space-y-1.5">{children}</div>
+    </div>
   )
 }
 
-function PillGroup({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-wrap gap-1.5 pt-1">{children}</div>
-}
-
-function Pill({ label, active, compact, onClick }: { label: string; active: boolean; compact: boolean; onClick: () => void }) {
+function Chip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className={`text-sm border rounded-lg transition-colors ${
-        compact
-          ? 'px-2.5 py-1 text-xs'
-          : 'w-full text-left px-3 py-1.5'
-      } ${
+      className={`w-full text-left text-sm px-3 py-1.5 rounded-lg border transition-colors ${
         active
           ? 'bg-indigo-600 text-white border-indigo-600'
           : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-300 hover:text-indigo-700'

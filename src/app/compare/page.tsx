@@ -335,16 +335,6 @@ function ComparePageInner() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Nav */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-4">
-          <Link href="/" className="text-lg font-bold text-indigo-700 tracking-tight shrink-0">PlaySmart</Link>
-          <span className="text-slate-400">/</span>
-          <span className="text-sm font-medium text-slate-700">Compare games</span>
-          <Link href="/browse" className="ml-auto text-sm text-slate-500 hover:text-indigo-700 transition-colors">Browse</Link>
-        </div>
-      </header>
-
       <main className="max-w-5xl mx-auto px-4 py-6 space-y-6">
 
         {/* Pickers */}

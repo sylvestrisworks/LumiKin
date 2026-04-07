@@ -4,10 +4,10 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 
 const AGE_SEGMENTS = [
-  { value: 'E',   label: 'Under 10', sub: 'ESRB E'      },
-  { value: 'E10', label: '10+',      sub: 'ESRB E10+'   },
-  { value: 'T',   label: '13+ Teen', sub: 'ESRB T'      },
-  { value: 'M',   label: '17+ Mature', sub: 'ESRB M'    },
+  { value: 'E',   label: 'Early Years',     sub: 'Ages 5–7'   },
+  { value: 'E10', label: 'Middle Childhood', sub: 'Ages 8–12'  },
+  { value: 'T',   label: 'Early Teens',      sub: 'Ages 13–15' },
+  { value: 'M',   label: 'Older Teens',      sub: 'Ages 16+'   },
 ]
 
 function AgePickerInner({ current }: { current?: string }) {

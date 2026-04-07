@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
-import { eq, desc, lte, gte, isNotNull, sql, and, type SQL } from 'drizzle-orm'
+import { eq, desc, lte, gte, isNotNull, sql, and, or, type SQL } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
 import SearchBar from '@/components/SearchBar'
@@ -59,9 +59,9 @@ function toSummary(r: any): GameSummary {
   }
 }
 
-async function getCarouselRows(platform?: string, age?: string): Promise<CarouselRow[]> {
-  const platformFilter: SQL | undefined = platform
-    ? sql`${games.platforms}::text ILIKE ${'%' + platform + '%'}`
+async function getCarouselRows(platforms: string[], age?: string): Promise<CarouselRow[]> {
+  const platformFilter: SQL | undefined = platforms.length > 0
+    ? or(...platforms.map(p => sql`${games.platforms}::text ILIKE ${'%' + p + '%'}`))
     : undefined
 
   const ratings = age ? ESRB_FOR_AGE[age] : undefined
@@ -221,9 +221,10 @@ const QUICK_LINKS = [
 type Props = { searchParams: Record<string, string | string[] | undefined> }
 
 export default async function HomePage({ searchParams }: Props) {
-  const platform = typeof searchParams.platform === 'string' ? searchParams.platform : undefined
-  const age      = typeof searchParams.age === 'string' ? searchParams.age : undefined
-  const carousels = await getCarouselRows(platform, age)
+  const platformParam = typeof searchParams.platform === 'string' ? searchParams.platform : ''
+  const platforms = platformParam ? platformParam.split(',').filter(Boolean) : []
+  const age       = typeof searchParams.age === 'string' ? searchParams.age : undefined
+  const carousels = await getCarouselRows(platforms, age)
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -269,15 +270,15 @@ export default async function HomePage({ searchParams }: Props) {
 
           <div className="flex items-center justify-between pt-1">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-              Your platform
+              Your platforms
             </p>
-            {(platform || age) && (
+            {(platforms.length > 0 || age) && (
               <a href="/" className="text-xs font-normal text-indigo-500 hover:text-indigo-700 transition-colors">
                 Clear filters
               </a>
             )}
           </div>
-          <PlatformPicker current={platform} />
+          <PlatformPicker current={platforms} />
         </section>
 
         {/* Quick-filter pills */}
@@ -304,12 +305,12 @@ export default async function HomePage({ searchParams }: Props) {
         ) : (
           <div className="text-center py-16 pb-12">
             <p className="text-4xl mb-3">🎮</p>
-            {(platform || age) ? (
+            {(platforms.length > 0 || age) ? (
               <>
                 <p className="font-medium text-slate-600">
                   No reviewed games found
                   {age && ` for that age group`}
-                  {platform && ` on ${platform}`}
+                  {platforms.length > 0 && ` on ${platforms.join(' / ')}`}
                 </p>
                 <a href="/" className="mt-2 inline-block text-sm text-indigo-600 hover:underline">
                   Clear filters

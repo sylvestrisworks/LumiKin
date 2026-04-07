@@ -12,17 +12,21 @@ const PLATFORMS = [
   { value: 'Android',     label: 'Android',     emoji: '🤖' },
 ]
 
-function PlatformPickerInner({ current }: { current?: string }) {
+function PlatformPickerInner({ current }: { current: string[] }) {
   const router       = useRouter()
   const pathname     = usePathname()
   const searchParams = useSearchParams()
 
-  function select(value: string) {
+  function toggle(value: string) {
+    const next = current.includes(value)
+      ? current.filter(v => v !== value)
+      : [...current, value]
+
     const params = new URLSearchParams(searchParams.toString())
-    if (value === current) {
+    if (next.length === 0) {
       params.delete('platform')
     } else {
-      params.set('platform', value)
+      params.set('platform', next.join(','))
     }
     const qs = params.toString()
     router.push(qs ? `${pathname}?${qs}` : pathname)
@@ -30,25 +34,28 @@ function PlatformPickerInner({ current }: { current?: string }) {
 
   return (
     <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-      {PLATFORMS.map(p => (
-        <button
-          key={p.value}
-          onClick={() => select(p.value)}
-          className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border transition-all ${
-            current === p.value
-              ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
-              : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300 hover:text-indigo-700'
-          }`}
-        >
-          <span>{p.emoji}</span>
-          <span>{p.label}</span>
-        </button>
-      ))}
+      {PLATFORMS.map(p => {
+        const active = current.includes(p.value)
+        return (
+          <button
+            key={p.value}
+            onClick={() => toggle(p.value)}
+            className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border transition-all ${
+              active
+                ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300 hover:text-indigo-700'
+            }`}
+          >
+            <span>{p.emoji}</span>
+            <span>{p.label}</span>
+          </button>
+        )
+      })}
     </div>
   )
 }
 
-export default function PlatformPicker({ current }: { current?: string }) {
+export default function PlatformPicker({ current }: { current: string[] }) {
   return (
     <Suspense fallback={<div className="h-9 w-full" />}>
       <PlatformPickerInner current={current} />

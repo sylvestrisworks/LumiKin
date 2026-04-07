@@ -6,7 +6,17 @@ import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
 import SearchBar from '@/components/SearchBar'
 import PlatformPicker from '@/components/PlatformPicker'
+import AgePicker from '@/components/AgePicker'
 import type { GameSummary } from '@/types/game'
+
+// ─── Age → ESRB mapping ───────────────────────────────────────────────────────
+
+const ESRB_FOR_AGE: Record<string, string[]> = {
+  E:   ['E'],
+  E10: ['E', 'E10+'],
+  T:   ['E', 'E10+', 'T'],
+  M:   ['T', 'M'],
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -49,12 +59,17 @@ function toSummary(r: any): GameSummary {
   }
 }
 
-async function getCarouselRows(platform?: string): Promise<CarouselRow[]> {
+async function getCarouselRows(platform?: string, age?: string): Promise<CarouselRow[]> {
   const platformFilter: SQL | undefined = platform
     ? sql`${games.platforms}::text ILIKE ${'%' + platform + '%'}`
     : undefined
 
-  const base  = (extra?: SQL) => and(isNotNull(gameScores.curascore), platformFilter, extra)
+  const ratings = age ? ESRB_FOR_AGE[age] : undefined
+  const ageFilter: SQL | undefined = ratings
+    ? sql`${games.esrbRating} = ANY(ARRAY[${sql.join(ratings.map(r => sql`${r}`), sql`, `)}])`
+    : undefined
+
+  const base = (extra?: SQL) => and(isNotNull(gameScores.curascore), platformFilter, ageFilter, extra)
 
   const [topRated, forYoungKids, lowRisk, highBenefit, teamwork] = await Promise.all([
 
@@ -207,7 +222,8 @@ type Props = { searchParams: Record<string, string | string[] | undefined> }
 
 export default async function HomePage({ searchParams }: Props) {
   const platform = typeof searchParams.platform === 'string' ? searchParams.platform : undefined
-  const carousels = await getCarouselRows(platform)
+  const age      = typeof searchParams.age === 'string' ? searchParams.age : undefined
+  const carousels = await getCarouselRows(platform, age)
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -242,16 +258,25 @@ export default async function HomePage({ searchParams }: Props) {
           </div>
         </section>
 
-        {/* Platform picker */}
-        <section className="pb-5">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2.5">
-            Your platform
-            {platform && (
-              <a href="/" className="ml-2 normal-case font-normal text-indigo-500 hover:text-indigo-700">
-                (clear)
+        {/* Age + Platform pickers */}
+        <section className="pb-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              Your child&apos;s age
+            </p>
+          </div>
+          <AgePicker current={age} />
+
+          <div className="flex items-center justify-between pt-1">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              Your platform
+            </p>
+            {(platform || age) && (
+              <a href="/" className="text-xs font-normal text-indigo-500 hover:text-indigo-700 transition-colors">
+                Clear filters
               </a>
             )}
-          </p>
+          </div>
           <PlatformPicker current={platform} />
         </section>
 
@@ -279,11 +304,15 @@ export default async function HomePage({ searchParams }: Props) {
         ) : (
           <div className="text-center py-16 pb-12">
             <p className="text-4xl mb-3">🎮</p>
-            {platform ? (
+            {(platform || age) ? (
               <>
-                <p className="font-medium text-slate-600">No reviewed games found for {platform} yet</p>
+                <p className="font-medium text-slate-600">
+                  No reviewed games found
+                  {age && ` for that age group`}
+                  {platform && ` on ${platform}`}
+                </p>
                 <a href="/" className="mt-2 inline-block text-sm text-indigo-600 hover:underline">
-                  Show all platforms
+                  Clear filters
                 </a>
               </>
             ) : (

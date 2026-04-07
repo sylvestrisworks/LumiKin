@@ -1,23 +1,29 @@
 'use client'
 
-import { useRouter, usePathname } from 'next/navigation'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 
 const PLATFORMS = [
-  { value: 'PC',          label: 'PC',        emoji: '🖥️' },
+  { value: 'PC',          label: 'PC',         emoji: '🖥️' },
   { value: 'PlayStation', label: 'PlayStation', emoji: '🎮' },
-  { value: 'Xbox',        label: 'Xbox',       emoji: '🟢' },
-  { value: 'Switch',      label: 'Switch',     emoji: '🕹️' },
-  { value: 'iOS',         label: 'iOS',        emoji: '📱' },
-  { value: 'Android',     label: 'Android',    emoji: '🤖' },
+  { value: 'Xbox',        label: 'Xbox',        emoji: '🟢' },
+  { value: 'Switch',      label: 'Switch',      emoji: '🕹️' },
+  { value: 'iOS',         label: 'iOS',         emoji: '📱' },
+  { value: 'Android',     label: 'Android',     emoji: '🤖' },
 ]
 
-export default function PlatformPicker({ current }: { current?: string }) {
-  const router   = useRouter()
-  const pathname = usePathname()
+function PlatformPickerInner({ current }: { current?: string }) {
+  const router       = useRouter()
+  const pathname     = usePathname()
+  const searchParams = useSearchParams()
 
   function select(value: string) {
-    const params = new URLSearchParams()
-    if (value !== current) params.set('platform', value)
+    const params = new URLSearchParams(searchParams.toString())
+    if (value === current) {
+      params.delete('platform')
+    } else {
+      params.set('platform', value)
+    }
     const qs = params.toString()
     router.push(qs ? `${pathname}?${qs}` : pathname)
   }
@@ -39,5 +45,13 @@ export default function PlatformPicker({ current }: { current?: string }) {
         </button>
       ))}
     </div>
+  )
+}
+
+export default function PlatformPicker({ current }: { current?: string }) {
+  return (
+    <Suspense fallback={<div className="h-9 w-full" />}>
+      <PlatformPickerInner current={current} />
+    </Suspense>
   )
 }

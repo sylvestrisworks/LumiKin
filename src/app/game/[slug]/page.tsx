@@ -358,9 +358,10 @@ export default async function GamePage({ params }: Props) {
                         <p className="text-sm font-semibold text-slate-800 truncate group-hover:text-indigo-700 transition-colors">
                           {s.title}
                         </p>
-                        {s.esrbRating && (
-                          <p className="text-xs text-slate-400 mt-0.5">{s.esrbRating}</p>
-                        )}
+                        {/* Always render so card heights stay consistent when ESRB is null */}
+                        <p className="text-xs text-slate-400 mt-0.5 h-4 leading-4">
+                          {s.esrbRating ?? ''}
+                        </p>
                       </div>
                       {s.curascore != null && (
                         <span className={`text-xs font-black px-2 py-0.5 rounded-full shrink-0 ${scoreBg}`}>

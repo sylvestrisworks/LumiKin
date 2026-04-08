@@ -42,9 +42,10 @@ const MESSAGES_DIR = nodePath.join(process.cwd(), 'messages')
 const EN_FILE      = nodePath.join(MESSAGES_DIR, 'en.json')
 
 const args    = process.argv.slice(2)
-const langArg = args.find(a => a.startsWith('--lang='))?.split('=')[1]
-         ?? args[args.indexOf('--lang') + 1]
 const force   = args.includes('--force')
+const langIdx = args.indexOf('--lang')
+const langArg = args.find(a => a.startsWith('--lang='))?.split('=')[1]
+         ?? (langIdx !== -1 ? args[langIdx + 1] : undefined)
 
 const targetLocales = langArg
   ? langArg.split(',').map(l => l.trim()).filter(l => SUPPORTED_LOCALES.includes(l))

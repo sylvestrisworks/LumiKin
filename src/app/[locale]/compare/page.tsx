@@ -54,8 +54,12 @@ function GamePicker({
     setOpen(false); setQuery(''); setLoading(true)
     try {
       const res = await fetch(`/api/game/${slug}`)
-      if (!res.ok) return
-      const data: GameCardProps = await res.json()
+      const text = await res.text()
+      if (!res.ok || !text) {
+        console.error(`[compare/pick] ${res.status} for ${slug}:`, text)
+        return
+      }
+      const data: GameCardProps = JSON.parse(text)
       onSelect(data)
     } finally { setLoading(false) }
   }

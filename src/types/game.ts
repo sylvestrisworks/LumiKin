@@ -56,6 +56,8 @@ export type SerializedScores = {
   topBenefits: Array<{ skill: string; score: number; maxScore: number }> | null
   accessibilityRisk: number | null
   endlessDesignRisk: number | null
+  representationScore: number | null
+  propagandaLevel: number | null
   executiveSummary: string | null
   calculatedAt: string | null
 }
@@ -134,6 +136,12 @@ export type SerializedReview = {
   r6NoStoppingPoints: number | null
   r6NoGameOver: number | null
   r6NoChapterStructure: number | null
+  // REP: Representation (display only, higher = better)
+  repGenderBalance: number | null
+  repEthnicDiversity: number | null
+  // PROP: Propaganda / ideology (display only)
+  propagandaLevel: number | null
+  propagandaNotes: string | null
   // Virtual currency
   usesVirtualCurrency: boolean | null
   virtualCurrencyName: string | null

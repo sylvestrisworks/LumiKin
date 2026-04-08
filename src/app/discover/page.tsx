@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic'
 
-import { desc, eq, isNotNull, lte, gte, and, sql } from 'drizzle-orm'
+import { desc, eq, isNotNull, lte, gte, and, sql, inArray } from 'drizzle-orm'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
@@ -84,8 +84,7 @@ async function getSwapPair(): Promise<SwapPair | null> {
       lte(gameScores.curascore, 40),
       gte(gameScores.ris, 0.45),
       isNotNull(games.genres),
-      sql`jsonb_typeof(${games.genres}::jsonb) = 'array'`,
-      sql`jsonb_array_length(${games.genres}::jsonb) > 0`,
+      sql`jsonb_typeof(${games.genres}) = 'array' AND ${games.genres} != '[]'::jsonb`,
     ))
     .orderBy(desc(gameScores.ris))
     .limit(20)
@@ -118,7 +117,7 @@ async function getSwapPair(): Promise<SwapPair | null> {
       gte(gameScores.curascore, 65),
       lte(gameScores.ris, 0.3),
       sql`${games.id} != ${fromGame.id}`,
-      sql`${games.esrbRating} = ANY(ARRAY[${sql.join(allowedEsrb.map(r => sql`${r}`), sql`, `)}])`,
+      inArray(games.esrbRating, allowedEsrb),
     ))
     .orderBy(desc(gameScores.curascore))
     .limit(40)

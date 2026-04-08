@@ -133,7 +133,33 @@ Each item scored 0–3 where 0 = not present, 1 = mild/optional, 2 = significant
 
 ---
 
-## PART C: PRACTICAL INFORMATION
+## PART C: REPRESENTATION & IDEOLOGY (display only — does not affect time recommendation)
+
+These dimensions give parents context about the world the game presents. They are informational, not punitive. A game can score low on representation and still be recommended; a game with propaganda content gets a flag, not a lower time limit.
+
+### REP: Representation (0–3 per dimension, higher = better)
+
+| # | Dimension | 0 | 1 | 2 | 3 |
+|---|-----------|---|---|---|---|
+| REP.1 | Gender balance | All playable/main characters one gender, or heavily stereotyped portrayals | Mostly one gender; token representation | Some diversity; secondary characters varied | Authentic diverse gender representation; non-stereotyped roles |
+| REP.2 | Ethnic & cultural diversity | Monoculture / whitewashed / ethnically stereotyped | Minimal or token diversity | Moderate diversity; some cultures represented authentically | Rich, authentic representation of multiple ethnicities/cultures |
+
+**Scoring note:** Score what the game ships with by default, not fan mods. Historical games set in homogeneous contexts can score 1–2 without penalty — context matters.
+
+### PROP: Propaganda / Ideological content (0–3, lower = more neutral)
+
+| Score | Description | Examples |
+|-------|-------------|---------|
+| 0 | Neutral — no discernible ideological framing | Most puzzle, sports, and sandbox games |
+| 1 | Mild cultural perspective — common in historical or nationally-developed games; unlikely to concern most parents | Historical games depicting one nation's view, games with patriotic themes |
+| 2 | Notable ideological framing — parents should be aware; game presents a clear political, religious, or nationalist lens | Games glorifying a specific regime, strong religious messaging, heavy nationalist narrative |
+| 3 | Heavy propaganda — game is primarily a vehicle for ideology; content is one-sided, factually distorted, or designed to shape political views | State-sponsored propaganda games, games designed to radicalize |
+
+**propagandaNotes:** If score ≥ 1, include a brief note: what type of content and where it appears (e.g., "Nationalist framing in WWII campaign — Japanese/German forces dehumanized").
+
+---
+
+## PART D: PRACTICAL INFORMATION
 
 These are not scored on a scale — they are factual fields captured by the reviewer.
 
@@ -154,7 +180,7 @@ These are not scored on a scale — they are factual fields captured by the revi
 
 ---
 
-## PART D: TIME RECOMMENDATION ENGINE
+## PART E: TIME RECOMMENDATION ENGINE
 
 The time recommendation is the headline output. It is generated from a formula that weighs risk factors against benefits and considers the child's age.
 
@@ -224,7 +250,7 @@ The time recommendation always includes a brief text explanation. These are temp
 
 ---
 
-## PART E: DISPLAY FRAMEWORK
+## PART F: DISPLAY FRAMEWORK
 
 ### The Game Card (as shown in the mockup)
 
@@ -252,7 +278,7 @@ The searchable database allows filtering by:
 
 ---
 
-## PART F: REVIEW PROCESS
+## PART G: REVIEW PROCESS
 
 ### Tier 1: Automated Screening (all games)
 
@@ -286,7 +312,7 @@ Estimated cost: $300–800 per review.
 
 ---
 
-## PART G: VALIDATION PLAN
+## PART H: VALIDATION PLAN
 
 ### Internal Validation
 

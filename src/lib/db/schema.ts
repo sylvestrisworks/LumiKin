@@ -138,6 +138,14 @@ export const reviews = pgTable('reviews', {
   penalizesBreaks: boolean('penalizes_breaks'),
   stoppingPointsDescription: text('stopping_points_desc'),
 
+  // REP: Representation (0-3 each) — DISPLAY ONLY, higher = better
+  repGenderBalance:   integer('rep_gender_balance'),   // 0=stereotyped/absent, 3=authentic diverse
+  repEthnicDiversity: integer('rep_ethnic_diversity'),  // 0=monoculture/stereotyped, 3=authentic diverse
+
+  // PROP: Propaganda / ideological content (0-3) — DISPLAY ONLY
+  propagandaLevel: integer('propaganda_level'),         // 0=neutral, 3=heavy ideological content
+  propagandaNotes: text('propaganda_notes'),            // context: type/source of ideological framing
+
   // R5: Accessibility risk (0-3 each, max 12) — DISPLAY ONLY, not in RIS
   r5CrossPlatform:    integer('r5_cross_platform'),
   r5LoadTime:         integer('r5_load_time'),
@@ -205,6 +213,11 @@ export const gameScores = pgTable('game_scores', {
   accessibilityRisk: real('accessibility_risk'),
   endlessDesignRisk: real('endless_design_risk'),
 
+  // Representation score (display only — avg of gender + ethnic, normalized 0–1, higher = better)
+  representationScore: real('representation_score'),
+  // Propaganda level pass-through (display only)
+  propagandaLevel: integer('propaganda_level'),
+
   // Executive summary — one plain-language sentence for parents
   executiveSummary: text('executive_summary'),
 
@@ -214,6 +227,10 @@ export const gameScores = pgTable('game_scores', {
     score: number;
     maxScore: number;
   }>>(),
+
+  // Adversarial debate scoring
+  debateTranscript: text('debate_transcript'),       // full round-by-round transcript
+  debateRounds:     integer('debate_rounds'),         // number of rounds completed
 
   // Timestamps
   calculatedAt: timestamp('calculated_at').defaultNow(),

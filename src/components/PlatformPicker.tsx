@@ -33,7 +33,7 @@ function PlatformPickerInner({ current }: { current: string[] }) {
   }
 
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div className="flex gap-2 overflow-x-auto pb-1 justify-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {PLATFORMS.map(p => {
         const active = current.includes(p.value)
         return (

@@ -234,6 +234,56 @@ function RisksTab({ scores, game, review, darkPatterns }: {
         </div>
       )}
 
+      {/* Representation */}
+      {(review?.repGenderBalance != null || review?.repEthnicDiversity != null) && (
+        <div className="bg-purple-50 rounded-2xl p-5 space-y-2">
+          <h3 className="text-sm font-semibold text-purple-800 flex items-center gap-1.5">
+            Representation
+            <Tooltip text="How diverse the game's characters are in gender and ethnicity. Higher = more authentic representation. Display only — does not affect time recommendation." />
+          </h3>
+          <div className="space-y-1.5">
+            {review.repGenderBalance != null && (
+              <div className="flex items-center gap-3">
+                <span className="w-36 text-xs text-purple-700 shrink-0">Gender balance</span>
+                <div className="flex-1 bg-purple-100 rounded-full h-2 overflow-hidden">
+                  <div className="h-full rounded-full bg-purple-400 transition-all" style={{ width: `${(review.repGenderBalance / 3) * 100}%` }} />
+                </div>
+                <span className="w-8 text-right text-xs font-medium text-purple-700">{review.repGenderBalance}/3</span>
+              </div>
+            )}
+            {review.repEthnicDiversity != null && (
+              <div className="flex items-center gap-3">
+                <span className="w-36 text-xs text-purple-700 shrink-0">Ethnic diversity</span>
+                <div className="flex-1 bg-purple-100 rounded-full h-2 overflow-hidden">
+                  <div className="h-full rounded-full bg-purple-400 transition-all" style={{ width: `${(review.repEthnicDiversity / 3) * 100}%` }} />
+                </div>
+                <span className="w-8 text-right text-xs font-medium text-purple-700">{review.repEthnicDiversity}/3</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Propaganda flag */}
+      {review?.propagandaLevel != null && review.propagandaLevel > 0 && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-5">
+          <h3 className="text-sm font-semibold text-yellow-800 mb-1 flex items-center gap-1.5">
+            Ideological content
+            <Tooltip text="Presence of propaganda, nationalist framing, or strong ideological content. 0=neutral, 3=heavy. Display only — does not affect time recommendation." />
+            <span className={`ml-auto text-xs font-bold px-2 py-0.5 rounded-full ${
+              review.propagandaLevel === 1 ? 'bg-yellow-100 text-yellow-700' :
+              review.propagandaLevel === 2 ? 'bg-orange-100 text-orange-700' :
+              'bg-red-100 text-red-700'
+            }`}>
+              {['', 'MILD', 'NOTABLE', 'HEAVY'][review.propagandaLevel]}
+            </span>
+          </h3>
+          {review.propagandaNotes && (
+            <p className="text-xs text-yellow-800 leading-relaxed">{review.propagandaNotes}</p>
+          )}
+        </div>
+      )}
+
       {review?.risksNarrative && (
         <div className="bg-slate-50 rounded-2xl p-5">
           <h3 className="text-sm font-semibold text-slate-700 mb-1">What to watch for</h3>
@@ -400,6 +450,36 @@ function FullScoresTab({ scores, review }: { scores: SerializedScores; review: S
               <DetailRow label="No stopping points"   score={review.r6NoStoppingPoints}   max={3} />
               <DetailRow label="No fail / game-over"  score={review.r6NoGameOver}         max={3} />
               <DetailRow label="No chapter structure" score={review.r6NoChapterStructure} max={3} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {review && (review.repGenderBalance != null || review.repEthnicDiversity != null) && (
+        <div>
+          <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">
+            REP · Representation <span className="normal-case font-normal">(display only — higher = better)</span>
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
+            <div>
+              <DetailRow label="Gender balance"    score={review.repGenderBalance}   max={3} />
+              <DetailRow label="Ethnic diversity"  score={review.repEthnicDiversity} max={3} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {review && review.propagandaLevel != null && (
+        <div>
+          <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">
+            PROP · Ideology <span className="normal-case font-normal">(display only)</span>
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
+            <div>
+              <DetailRow label="Propaganda level" score={review.propagandaLevel} max={3} />
+              {review.propagandaNotes && (
+                <p className="text-xs text-slate-500 mt-1 italic">{review.propagandaNotes}</p>
+              )}
             </div>
           </div>
         </div>

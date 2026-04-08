@@ -3,15 +3,16 @@
 import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useCallback } from 'react'
-import { SlidersHorizontal, X } from 'lucide-react'
+import Link from 'next/link'
+import { SlidersHorizontal, X, LayoutGrid, List } from 'lucide-react'
 
 // ─── Filter definitions ───────────────────────────────────────────────────────
 
 export const AGE_OPTIONS = [
-  { value: 'E',   label: 'Under 6 (E)' },
-  { value: 'E10', label: '6–9 (E10+)' },
-  { value: 'T',   label: '10–12 (T)' },
-  { value: 'M',   label: '13+ (M)' },
+  { value: 'E',   label: 'Under 6 (E)'  },
+  { value: 'E10', label: '6–9 (E10+)'   },
+  { value: 'T',   label: '10–12 (T)'    },
+  { value: 'M',   label: '13+ (M)'      },
 ]
 
 export const GENRE_OPTIONS = [
@@ -20,12 +21,13 @@ export const GENRE_OPTIONS = [
 ]
 
 export const PLATFORM_OPTIONS = [
-  { value: 'PC',          label: 'PC'               },
-  { value: 'PlayStation', label: 'PlayStation'       },
-  { value: 'Xbox',        label: 'Xbox'              },
-  { value: 'Switch',      label: 'Nintendo Switch'   },
-  { value: 'iOS',         label: 'iOS'               },
-  { value: 'Android',     label: 'Android'           },
+  { value: 'PC',          label: 'PC'             },
+  { value: 'PlayStation', label: 'PlayStation'     },
+  { value: 'Xbox',        label: 'Xbox'            },
+  { value: 'Switch',      label: 'Nintendo Switch' },
+  { value: 'iOS',         label: 'iOS'             },
+  { value: 'Android',     label: 'Android'         },
+  { value: 'VR',          label: 'VR / AR'         },
 ]
 
 export const COMPLIANCE_OPTIONS = [
@@ -43,13 +45,13 @@ export const BENEFIT_OPTIONS = [
 ]
 
 export const SORT_OPTIONS = [
-  { value: 'curascore',  label: 'Curascore'         },
-  { value: 'benefit',    label: 'Best benefit score' },
-  { value: 'safest',     label: 'Lowest risk'        },
-  { value: 'riskiest',   label: 'Highest risk'       },
-  { value: 'metacritic', label: 'Metacritic score'   },
-  { value: 'newest',     label: 'Newest'             },
-  { value: 'alpha',      label: 'A–Z'                },
+  { value: 'curascore',   label: 'Curascore'          },
+  { value: 'benefit',     label: 'Best benefit score'  },
+  { value: 'safest',      label: 'Lowest risk'         },
+  { value: 'riskiest',    label: 'Highest risk'        },
+  { value: 'metacritic',  label: 'Metacritic score'    },
+  { value: 'newest',      label: 'Newest'              },
+  { value: 'alpha',       label: 'A–Z'                 },
 ]
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -63,8 +65,12 @@ export type ActiveFilters = {
   risk?: string
   time?: string
   price?: string
+  rep?: string       // 'good' = representationScore >= 0.5
+  noProp?: string    // 'true' = propagandaLevel = 0
   sort: string
   q?: string
+  page?: number
+  view?: 'list' | 'grid'
 }
 
 type Props = {
@@ -80,7 +86,7 @@ export default function BrowseFilters({ active, totalCount }: Props) {
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   const push = useCallback((updates: Partial<ActiveFilters>) => {
-    const merged = { ...active, ...updates }
+    const merged = { ...active, ...updates, page: undefined } // reset page on filter change
     const params = new URLSearchParams()
     if (merged.age)               params.set('age',        merged.age)
     if (merged.genres.length)     params.set('genres',     merged.genres.join(','))
@@ -90,8 +96,11 @@ export default function BrowseFilters({ active, totalCount }: Props) {
     if (merged.risk)              params.set('risk',       merged.risk)
     if (merged.time)              params.set('time',       merged.time)
     if (merged.price)             params.set('price',      merged.price)
+    if (merged.rep)               params.set('rep',        merged.rep)
+    if (merged.noProp)            params.set('noProp',     merged.noProp)
     if (merged.sort && merged.sort !== 'curascore') params.set('sort', merged.sort)
     if (merged.q)                 params.set('q',          merged.q)
+    if (merged.view && merged.view !== 'list') params.set('view', merged.view)
     router.push(`${pathname}?${params.toString()}`)
   }, [active, pathname, router])
 
@@ -104,7 +113,8 @@ export default function BrowseFilters({ active, totalCount }: Props) {
 
   const activeCount = [
     active.age, ...active.genres, ...active.platforms,
-    ...active.benefits, ...active.compliance, active.risk, active.time, active.price,
+    ...active.benefits, ...active.compliance,
+    active.risk, active.time, active.price, active.rep, active.noProp,
   ].filter(Boolean).length
 
   const panel = (
@@ -169,17 +179,10 @@ export default function BrowseFilters({ active, totalCount }: Props) {
         ))}
       </FilterSection>
 
-      <FilterSection title="Compliance" note="Estimated">
-        {COMPLIANCE_OPTIONS.map(o => (
-          <Chip key={o.value} label={o.label} active={active.compliance.includes(o.value)}
-            onClick={() => toggle('compliance', o.value)} />
-        ))}
-      </FilterSection>
-
       <FilterSection title="Max risk level" note="Requires a review">
         {[
-          { value: 'low',    label: 'Low only (RIS < 30)'  },
-          { value: 'medium', label: 'Low–Medium (< 60)'    },
+          { value: 'low',    label: 'Low only  (RIS ≤ 0.30)'    },
+          { value: 'medium', label: 'Low + Medium (RIS ≤ 0.60)'  },
         ].map(o => (
           <Chip key={o.value} label={o.label} active={active.risk === o.value}
             onClick={() => push({ risk: active.risk === o.value ? undefined : o.value })} />
@@ -205,6 +208,31 @@ export default function BrowseFilters({ active, totalCount }: Props) {
         ].map(o => (
           <Chip key={o.value} label={o.label} active={active.price === o.value}
             onClick={() => push({ price: active.price === o.value ? undefined : o.value })} />
+        ))}
+      </FilterSection>
+
+      <FilterSection title="Representation" note="Display only">
+        <Chip
+          label="Good representation"
+          active={active.rep === 'good'}
+          onClick={() => push({ rep: active.rep === 'good' ? undefined : 'good' })}
+        />
+        <p className="text-xs text-slate-400 mt-1">Gender balance + ethnic diversity both scored ≥ 2/3</p>
+      </FilterSection>
+
+      <FilterSection title="Ideological content" note="Display only">
+        <Chip
+          label="Exclude ideological content"
+          active={active.noProp === 'true'}
+          onClick={() => push({ noProp: active.noProp === 'true' ? undefined : 'true' })}
+        />
+        <p className="text-xs text-slate-400 mt-1">Hides games flagged with propaganda or strong ideological framing</p>
+      </FilterSection>
+
+      <FilterSection title="Compliance" note="Estimated">
+        {COMPLIANCE_OPTIONS.map(o => (
+          <Chip key={o.value} label={o.label} active={active.compliance.includes(o.value)}
+            onClick={() => toggle('compliance', o.value)} />
         ))}
       </FilterSection>
 
@@ -242,10 +270,7 @@ export default function BrowseFilters({ active, totalCount }: Props) {
       {/* ── Mobile drawer overlay ──────────────────────────────────────────── */}
       {drawerOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
-          {/* Backdrop */}
           <div className="absolute inset-0 bg-black/40" onClick={() => setDrawerOpen(false)} />
-
-          {/* Drawer panel */}
           <aside className="relative ml-auto w-80 max-w-full h-full bg-white shadow-xl overflow-y-auto">
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
               <h2 className="font-bold text-slate-800">Filters</h2>
@@ -256,10 +281,7 @@ export default function BrowseFilters({ active, totalCount }: Props) {
                 <X size={18} />
               </button>
             </div>
-            <div className="px-5 py-4">
-              {panel}
-            </div>
-            {/* Apply button */}
+            <div className="px-5 py-4">{panel}</div>
             <div className="sticky bottom-0 px-5 py-4 bg-white border-t border-slate-100">
               <button
                 onClick={() => setDrawerOpen(false)}
@@ -272,6 +294,29 @@ export default function BrowseFilters({ active, totalCount }: Props) {
         </div>
       )}
     </>
+  )
+}
+
+// ─── View toggle (exported for use in browse page) ────────────────────────────
+
+export function ViewToggle({ view, listHref, gridHref }: { view: 'list' | 'grid'; listHref: string; gridHref: string }) {
+  return (
+    <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
+      <Link
+        href={listHref}
+        className={`p-2 transition-colors ${view === 'list' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-700'}`}
+        aria-label="List view"
+      >
+        <List size={15} />
+      </Link>
+      <Link
+        href={gridHref}
+        className={`p-2 transition-colors ${view === 'grid' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-700'}`}
+        aria-label="Grid view"
+      >
+        <LayoutGrid size={15} />
+      </Link>
+    </div>
   )
 }
 

@@ -72,6 +72,19 @@ export async function rawgGetByGenre(
   })
 }
 
+export async function rawgGetByTag(
+  tagSlug: string,
+  page = 1,
+  pageSize = 40,
+): Promise<RawgListResponse> {
+  return rawgFetch<RawgListResponse>('/games', {
+    tags: tagSlug,
+    page,
+    page_size: pageSize,
+    ordering: '-metacritic',
+  })
+}
+
 export async function rawgGetDetail(id: number | string): Promise<RawgGameDetail> {
   return rawgFetch<RawgGameDetail>(`/games/${id}`)
 }

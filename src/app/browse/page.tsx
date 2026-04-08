@@ -2,19 +2,25 @@ export const dynamic = 'force-dynamic'
 
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { eq, desc, asc, sql, and, lte, gte, ilike, type SQL } from 'drizzle-orm'
+import { eq, desc, asc, sql, and, lte, gte, ilike, inArray, type SQL } from 'drizzle-orm'
 import { curascoreBg } from '@/lib/ui'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
-import BrowseFilters, { type ActiveFilters } from '@/components/BrowseFilters'
+import BrowseFilters, { ViewToggle, type ActiveFilters } from '@/components/BrowseFilters'
+import GameCompactCard from '@/components/GameCompactCard'
+import BrowseSearch from '@/components/BrowseSearch'
 
 export const metadata: Metadata = {
-  title: 'Browse Games — Good Game Parent',
-  description: 'Find the right game for your child. Filter by age, genre, platform, and risk level.',
+  title: 'Browse Games — PlaySmart',
+  description: 'Find the right game for your child. Filter by age, genre, platform, risk level, and more.',
 }
 
-// ─── Platform keyword mapping ─────────────────────────────────────────────────
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const PAGE_SIZE = 48
+
+// ─── Keyword maps ─────────────────────────────────────────────────────────────
 
 const PLATFORM_KEYWORDS: Record<string, string> = {
   PC:          'PC',
@@ -24,6 +30,8 @@ const PLATFORM_KEYWORDS: Record<string, string> = {
   iOS:         'iOS',
   Android:     'Android',
 }
+
+const VR_KEYWORDS = ['Oculus', 'Quest', 'Vive', 'Rift', 'Valve Index', 'PlayStation VR', 'PSVR', 'Mixed Reality', 'Gear VR']
 
 const ESRB_FOR_AGE: Record<string, string[]> = {
   E:   ['E'],
@@ -61,34 +69,39 @@ type Row = {
 
 async function queryGames(filters: ActiveFilters): Promise<{ rows: Row[]; total: number }> {
   const conditions: SQL[] = []
+  const page   = Math.max(1, filters.page ?? 1)
+  const offset = (page - 1) * PAGE_SIZE
 
-  // Search query
   if (filters.q) {
     conditions.push(ilike(games.title, `%${filters.q}%`))
   }
 
-  // Age / ESRB
   if (filters.age) {
     const ratings = ESRB_FOR_AGE[filters.age]
     if (ratings) {
-      conditions.push(
-        sql`${games.esrbRating} = ANY(ARRAY[${sql.join(ratings.map(r => sql`${r}`), sql`, `)}])`
-      )
+      conditions.push(inArray(games.esrbRating, ratings))
     }
   }
 
-  // Genre (case-insensitive text search within jsonb array)
   for (const genre of filters.genres) {
     conditions.push(sql`${games.genres}::text ILIKE ${'%' + genre + '%'}`)
   }
 
-  // Platform (text search within jsonb array)
-  for (const platform of filters.platforms) {
+  // Standard platform filters
+  const standardPlatforms = filters.platforms.filter(p => p !== 'VR')
+  for (const platform of standardPlatforms) {
     const keyword = PLATFORM_KEYWORDS[platform] ?? platform
     conditions.push(sql`${games.platforms}::text ILIKE ${'%' + keyword + '%'}`)
   }
 
-  // Price
+  // VR platform filter — match any known VR platform keyword
+  if (filters.platforms.includes('VR')) {
+    const vrConditions = VR_KEYWORDS.map(k =>
+      sql`${games.platforms}::text ILIKE ${'%' + k + '%'}`
+    )
+    conditions.push(sql`(${sql.join(vrConditions, sql` OR `)})`)
+  }
+
   if (filters.price === 'free') {
     conditions.push(eq(games.basePrice, 0))
   } else if (filters.price === '20') {
@@ -97,14 +110,13 @@ async function queryGames(filters: ActiveFilters): Promise<{ rows: Row[]; total:
     conditions.push(lte(games.basePrice, 40))
   }
 
-  // Risk level
+  // Fixed: both 'low' and 'medium' use lte only — they are max-risk filters
   if (filters.risk === 'low') {
-    conditions.push(lte(gameScores.ris, 0.3))
+    conditions.push(lte(gameScores.ris, 0.30))
   } else if (filters.risk === 'medium') {
-    conditions.push(gte(gameScores.ris, 0.31), lte(gameScores.ris, 0.6))
+    conditions.push(lte(gameScores.ris, 0.60))
   }
 
-  // Time recommendation
   if (filters.time) {
     const minMinutes = parseInt(filters.time)
     if (!isNaN(minMinutes)) {
@@ -112,7 +124,6 @@ async function queryGames(filters: ActiveFilters): Promise<{ rows: Row[]; total:
     }
   }
 
-  // Benefit focus — filter games where topBenefits contains the skill
   for (const benefit of filters.benefits) {
     const skillName = BENEFIT_SKILL_MAP[benefit]
     if (skillName) {
@@ -122,7 +133,6 @@ async function queryGames(filters: ActiveFilters): Promise<{ rows: Row[]; total:
     }
   }
 
-  // Compliance — game must have 'compliant' status for each selected regulation
   for (const regulation of filters.compliance) {
     conditions.push(
       sql`EXISTS (
@@ -134,16 +144,27 @@ async function queryGames(filters: ActiveFilters): Promise<{ rows: Row[]; total:
     )
   }
 
-  // Sort order
+  // Representation filter: both gender and ethnic diversity scored ≥ 2
+  if (filters.rep === 'good') {
+    conditions.push(gte(gameScores.representationScore, 4 / 6)) // avg(2,2)/3 = 4/6
+  }
+
+  // No propaganda filter: propagandaLevel is null (unscored) or 0
+  if (filters.noProp === 'true') {
+    conditions.push(
+      sql`(${gameScores.propagandaLevel} IS NULL OR ${gameScores.propagandaLevel} = 0)`
+    )
+  }
+
   let orderBy
   switch (filters.sort) {
-    case 'benefit':   orderBy = [desc(gameScores.bds), desc(gameScores.curascore)]; break
-    case 'safest':    orderBy = [asc(gameScores.ris), desc(gameScores.curascore)];  break
-    case 'riskiest':  orderBy = [desc(gameScores.ris), asc(gameScores.curascore)];  break
-    case 'newest':    orderBy = [desc(games.releaseDate)];                          break
-    case 'alpha':     orderBy = [asc(games.title)];                                break
-    case 'metacritic': orderBy = [desc(games.metacriticScore)];                    break
-    default:          orderBy = [desc(gameScores.curascore)];                       break
+    case 'benefit':    orderBy = [desc(gameScores.bds),           desc(gameScores.curascore)]; break
+    case 'safest':     orderBy = [asc(gameScores.ris),            desc(gameScores.curascore)]; break
+    case 'riskiest':   orderBy = [desc(gameScores.ris),           asc(gameScores.curascore)];  break
+    case 'newest':     orderBy = [desc(games.releaseDate)];                                    break
+    case 'alpha':      orderBy = [asc(games.title)];                                           break
+    case 'metacritic': orderBy = [desc(games.metacriticScore)];                                break
+    default:           orderBy = [desc(gameScores.curascore)];                                 break
   }
 
   const where = conditions.length ? and(...conditions) : undefined
@@ -170,7 +191,8 @@ async function queryGames(filters: ActiveFilters): Promise<{ rows: Row[]; total:
       .innerJoin(gameScores, eq(gameScores.gameId, games.id))
       .where(where)
       .orderBy(...orderBy)
-      .limit(48),
+      .limit(PAGE_SIZE)
+      .offset(offset),
 
     db
       .select({ count: sql<number>`COUNT(*)` })
@@ -198,11 +220,36 @@ function parseFilters(sp: Record<string, string | string[] | undefined>): Active
     benefits:   arr('benefits'),
     compliance: arr('compliance'),
     risk:       str('risk'),
-    time:      str('time'),
-    price:     str('price'),
-    sort:      str('sort') ?? 'curascore',
-    q:         str('q'),
+    time:       str('time'),
+    price:      str('price'),
+    rep:        str('rep'),
+    noProp:     str('noProp'),
+    sort:       str('sort') ?? 'curascore',
+    q:          str('q'),
+    page:       str('page') ? parseInt(str('page')!) : 1,
+    view:       (str('view') as 'list' | 'grid') ?? 'list',
   }
+}
+
+// ─── Pagination URL builder ───────────────────────────────────────────────────
+
+function pageUrl(filters: ActiveFilters, targetPage: number): string {
+  const params = new URLSearchParams()
+  if (filters.age)               params.set('age',        filters.age)
+  if (filters.genres.length)     params.set('genres',     filters.genres.join(','))
+  if (filters.platforms.length)  params.set('platforms',  filters.platforms.join(','))
+  if (filters.benefits.length)   params.set('benefits',   filters.benefits.join(','))
+  if (filters.compliance.length) params.set('compliance', filters.compliance.join(','))
+  if (filters.risk)              params.set('risk',       filters.risk)
+  if (filters.time)              params.set('time',       filters.time)
+  if (filters.price)             params.set('price',      filters.price)
+  if (filters.rep)               params.set('rep',        filters.rep)
+  if (filters.noProp)            params.set('noProp',     filters.noProp)
+  if (filters.sort && filters.sort !== 'curascore') params.set('sort', filters.sort)
+  if (filters.q)                 params.set('q',          filters.q)
+  if (filters.view && filters.view !== 'list') params.set('view', filters.view)
+  if (targetPage > 1)            params.set('page',       String(targetPage))
+  return `/browse?${params.toString()}`
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -213,31 +260,51 @@ export default async function BrowsePage({ searchParams }: Props) {
   const filters = parseFilters(searchParams)
   const { rows, total } = await queryGames(filters)
 
+  const totalPages = Math.ceil(total / PAGE_SIZE)
+  const currentPage = filters.page ?? 1
+
   const activeFilterCount = [
     filters.age, ...filters.genres, ...filters.platforms,
-    ...filters.benefits, ...filters.compliance, filters.risk, filters.time, filters.price,
+    ...filters.benefits, ...filters.compliance,
+    filters.risk, filters.time, filters.price, filters.rep, filters.noProp,
   ].filter(Boolean).length
 
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-6xl mx-auto px-4 py-6">
+
+        {/* ── Search bar ─────────────────────────────────────────────────── */}
+        <div className="mb-6">
+          <Suspense>
+            <BrowseSearch initialValue={filters.q ?? ''} />
+          </Suspense>
+        </div>
+
         <div className="lg:flex gap-8">
 
-          {/* Filters — sidebar on desktop, drawer on mobile */}
+          {/* Filters sidebar */}
           <Suspense>
             <BrowseFilters active={filters} totalCount={total} />
           </Suspense>
 
           {/* Main content */}
           <main className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-4">
+
+            {/* Header row */}
+            <div className="flex items-center justify-between mb-4 gap-3">
               <div>
                 <h1 className="text-xl font-bold text-slate-900">Browse games</h1>
                 <p className="text-sm text-slate-500 mt-0.5">
                   {total} game{total !== 1 ? 's' : ''}
                   {activeFilterCount > 0 && ` · ${activeFilterCount} filter${activeFilterCount !== 1 ? 's' : ''} active`}
+                  {totalPages > 1 && ` · page ${currentPage} of ${totalPages}`}
                 </p>
               </div>
+              <ViewToggle
+                view={filters.view ?? 'list'}
+                listHref={pageUrl({ ...filters, view: 'list' }, 1)}
+                gridHref={pageUrl({ ...filters, view: 'grid' }, 1)}
+              />
             </div>
 
             {rows.length === 0 ? (
@@ -254,25 +321,49 @@ export default async function BrowsePage({ searchParams }: Props) {
                   Clear all filters →
                 </Link>
               </div>
+            ) : filters.view === 'grid' ? (
+              /* ── Grid view ──────────────────────────────────────────────── */
+              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
+                {rows.map(row => (
+                  <GameCompactCard
+                    key={row.slug}
+                    game={{
+                      slug:                      row.slug,
+                      title:                     row.title,
+                      developer:                 row.developer,
+                      genres:                    (row.genres as string[]) ?? [],
+                      esrbRating:                row.esrbRating,
+                      backgroundImage:           row.backgroundImage,
+                      metacriticScore:           row.metacriticScore,
+                      timeRecommendationMinutes: row.timeRecommendationMinutes,
+                      timeRecommendationColor:   row.timeRecommendationColor as 'green' | 'amber' | 'red' | null,
+                      curascore:                 row.curascore,
+                      bds:                       row.bds,
+                      ris:                       row.ris,
+                      hasMicrotransactions:      row.hasMicrotransactions ?? false,
+                      hasLootBoxes:              row.hasLootBoxes ?? false,
+                    }}
+                  />
+                ))}
+              </div>
             ) : (
+              /* ── List view ──────────────────────────────────────────────── */
               <ol className="divide-y divide-slate-100">
                 {rows.map((row, i) => {
-                  const score = row.curascore
+                  const score    = row.curascore
                   const badgeCls = score == null
                     ? 'bg-slate-200 text-slate-500'
                     : `${curascoreBg(score)} text-white`
+                  const rank = (currentPage - 1) * PAGE_SIZE + i + 1
                   return (
                     <li key={row.slug}>
                       <Link
                         href={`/game/${row.slug}`}
                         className="flex items-center gap-4 py-3 px-2 rounded-lg hover:bg-indigo-50 hover:translate-x-0.5 transition-all group"
                       >
-                        {/* Rank */}
                         <span className="w-7 text-right text-sm font-semibold text-slate-400 shrink-0 group-hover:text-indigo-400 transition-colors">
-                          {i + 1}
+                          {rank}
                         </span>
-
-                        {/* Thumbnail */}
                         <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-indigo-100">
                           {row.backgroundImage ? (
                             // eslint-disable-next-line @next/next/no-img-element
@@ -287,8 +378,6 @@ export default async function BrowsePage({ searchParams }: Props) {
                             </div>
                           )}
                         </div>
-
-                        {/* Title + meta */}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-slate-800 truncate group-hover:text-indigo-700 transition-colors">
                             {row.title}
@@ -300,15 +389,11 @@ export default async function BrowsePage({ searchParams }: Props) {
                             )}
                           </p>
                         </div>
-
-                        {/* Time rec */}
                         {row.timeRecommendationMinutes != null && (
                           <span className="text-xs text-slate-400 shrink-0 hidden sm:block">
                             {row.timeRecommendationMinutes} min/day
                           </span>
                         )}
-
-                        {/* Curascore badge */}
                         <span className={`w-10 text-center text-xs font-black px-2 py-1 rounded-full shrink-0 ${badgeCls}`}>
                           {score ?? '—'}
                         </span>
@@ -319,11 +404,56 @@ export default async function BrowsePage({ searchParams }: Props) {
               </ol>
             )}
 
-            {total > 48 && (
-              <p className="text-center text-sm text-slate-400 mt-8">
-                Showing first 48 of {total}. Refine filters to narrow results.
-              </p>
+            {/* ── Pagination ───────────────────────────────────────────────── */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-8">
+                {currentPage > 1 && (
+                  <Link
+                    href={pageUrl(filters, currentPage - 1)}
+                    className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:border-indigo-300 hover:text-indigo-700 transition-colors"
+                  >
+                    ← Prev
+                  </Link>
+                )}
+
+                {/* Page number pills */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 2)
+                  .reduce<(number | '…')[]>((acc, p, idx, arr) => {
+                    if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push('…')
+                    acc.push(p)
+                    return acc
+                  }, [])
+                  .map((p, idx) =>
+                    p === '…' ? (
+                      <span key={`ellipsis-${idx}`} className="px-2 text-slate-400 text-sm">…</span>
+                    ) : (
+                      <Link
+                        key={p}
+                        href={pageUrl(filters, p as number)}
+                        className={`w-9 h-9 flex items-center justify-center text-sm font-semibold rounded-lg transition-colors ${
+                          p === currentPage
+                            ? 'bg-indigo-600 text-white'
+                            : 'bg-white border border-slate-200 text-slate-700 hover:border-indigo-300 hover:text-indigo-700'
+                        }`}
+                      >
+                        {p}
+                      </Link>
+                    )
+                  )
+                }
+
+                {currentPage < totalPages && (
+                  <Link
+                    href={pageUrl(filters, currentPage + 1)}
+                    className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:border-indigo-300 hover:text-indigo-700 transition-colors"
+                  >
+                    Next →
+                  </Link>
+                )}
+              </div>
             )}
+
           </main>
         </div>
       </div>

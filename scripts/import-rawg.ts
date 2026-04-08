@@ -20,7 +20,7 @@ import { resolve } from 'path'
 config({ path: resolve(process.cwd(), '.env') })
 config({ path: resolve(process.cwd(), '.env.local') })
 
-import { rawgGetByGenre, rawgGetDetail, RawgError } from '../src/lib/rawg/client'
+import { rawgGetByGenre, rawgGetByTag, rawgGetDetail, RawgError } from '../src/lib/rawg/client'
 import { mapDetailToInsert } from '../src/lib/rawg/mapper'
 import { db } from '../src/lib/db'
 import { games } from '../src/lib/db/schema'
@@ -38,10 +38,15 @@ const GENRES: Array<{ slug: string; label: string }> = [
   { slug: 'strategy',                  label: 'Strategy'   },
 ]
 
+const TAGS: Array<{ slug: string; label: string }> = [
+  { slug: 'virtual-reality',           label: 'VR'         },
+]
+
 const PAGES_PER_GENRE = 3      // 3 × 40 = 120 candidates per genre
+const PAGES_PER_TAG   = 5      // 5 × 40 = 200 VR candidates
 const PAGE_SIZE = 40           // RAWG max
 const REQUEST_DELAY_MS = 150   // ~6 req/s — well within RAWG limits
-const TARGET_GAME_COUNT = 500
+const TARGET_GAME_COUNT = 650  // 500 genre + ~150 VR tag
 
 // Include E, E10+, T, M, and unrated (null). Exclude Adults Only.
 const EXCLUDED_RATINGS = new Set(['AO'])
@@ -158,6 +163,38 @@ async function collectCandidates(): Promise<Map<number, RawgGameSummary>> {
     }
   }
 
+  for (const tag of TAGS) {
+    console.log(`\n  Tag: ${tag.label}`)
+
+    for (let page = 1; page <= PAGES_PER_TAG; page++) {
+      process.stdout.write(`    Page ${page}/${PAGES_PER_TAG}… `)
+
+      try {
+        const response = await rawgGetByTag(tag.slug, page, PAGE_SIZE)
+        let added = 0
+
+        for (const game of response.results) {
+          if (!candidates.has(game.id) && isQualifyingRating(game.esrb_rating?.slug)) {
+            candidates.set(game.id, game)
+            added++
+          }
+        }
+
+        console.log(`+${added} games (${candidates.size} unique so far)`)
+
+        if (!response.next) {
+          console.log(`    No more pages for ${tag.label}`)
+          break
+        }
+      } catch (err) {
+        const msg = err instanceof RawgError ? err.message : String(err)
+        console.error(`    ERROR: ${msg}`)
+      }
+
+      await sleep(REQUEST_DELAY_MS)
+    }
+  }
+
   return candidates
 }
 
@@ -220,7 +257,7 @@ async function main() {
   console.log('╔══════════════════════════════════════════════════╗')
   console.log('║       PlaySmart — RAWG Import Script             ║')
   console.log('╚══════════════════════════════════════════════════╝')
-  console.log(`  Target: ~${TARGET_GAME_COUNT} games across ${GENRES.length} genres`)
+  console.log(`  Target: ~${TARGET_GAME_COUNT} games across ${GENRES.length} genres + ${TAGS.length} tag(s) (incl. VR)`)
   console.log(`  ESRB filter: E, E10+, T, M (AO excluded; unrated included)`)
   console.log(`  Request delay: ${REQUEST_DELAY_MS}ms\n`)
 

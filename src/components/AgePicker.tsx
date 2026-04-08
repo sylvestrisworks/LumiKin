@@ -29,7 +29,7 @@ function AgePickerInner({ current }: { current?: string }) {
   const activeIndex = AGE_SEGMENTS.findIndex(s => s.value === current)
 
   return (
-    <div className="bg-slate-100 rounded-2xl p-1.5 flex gap-1">
+    <div className="bg-slate-100 rounded-2xl p-1.5 flex gap-1 justify-center">
       {AGE_SEGMENTS.map((seg, i) => {
         const isActive = current === seg.value
         const isPast   = activeIndex >= 0 && i < activeIndex

@@ -40,9 +40,10 @@ const modelFlag = args.indexOf('--model')
 const modelArg  = modelFlag !== -1 ? args[modelFlag + 1]
   : provider === 'google' ? 'flash' : 'haiku'
 
-const dryRun    = args.includes('--dry-run')
-const limitFlag = args.indexOf('--limit')
-const limit     = limitFlag !== -1 ? parseInt(args[limitFlag + 1], 10) : 20
+const dryRun     = args.includes('--dry-run')
+const rescoreAll = args.includes('--rescore-all')
+const limitFlag  = args.indexOf('--limit')
+const limit      = limitFlag !== -1 ? parseInt(args[limitFlag + 1], 10) : 20
 
 // Model name resolution
 const ANTHROPIC_MODELS: Record<string, string> = {
@@ -85,6 +86,7 @@ const R1_FIELDS = ['variableRewards','streakMechanics','lossAversion','fomoEvent
 const R2_FIELDS = ['spendingCeiling','payToWin','currencyObfuscation','spendingPrompts','childTargeting','adPressure','subscriptionPressure','socialSpending']
 const R3_FIELDS = ['socialObligation','competitiveToxicity','strangerRisk','socialComparison','identitySelfWorth','privacyRisk']
 const R4_FIELDS = ['violenceLevel','sexualContent','language','substanceRef','fearHorror']
+const REP_FIELDS = ['repGenderBalance','repEthnicDiversity']
 
 function scoreGroup(fields: string[], max: number, desc: string) {
   return {
@@ -103,7 +105,7 @@ const ANTHROPIC_TOOL: Anthropic.Tool = {
   description: 'Submit a completed PlaySmart rubric review for a game.',
   input_schema: {
     type: 'object',
-    required: ['b1_cognitive','b2_social','b3_motor','r1_dopamine','r2_monetization','r3_social','r4_content','practical','narratives'],
+    required: ['b1_cognitive','b2_social','b3_motor','r1_dopamine','r2_monetization','r3_social','r4_content','representation','propaganda','practical','narratives'],
     additionalProperties: false,
     properties: {
       b1_cognitive:    scoreGroup(B1_FIELDS, 5, 'B1 cognitive scores, each 0–5'),
@@ -113,6 +115,16 @@ const ANTHROPIC_TOOL: Anthropic.Tool = {
       r2_monetization: scoreGroup(R2_FIELDS, 3, 'R2 monetization pressure scores, each 0–3'),
       r3_social:       scoreGroup(R3_FIELDS, 3, 'R3 social/emotional risk scores, each 0–3'),
       r4_content:      scoreGroup(R4_FIELDS, 3, 'R4 content risk scores, each 0–3 (display only)'),
+      representation:  scoreGroup(REP_FIELDS, 3, 'REP representation scores, each 0–3 (higher = better, display only)'),
+      propaganda: {
+        type: 'object',
+        required: ['propagandaLevel', 'propagandaNotes'],
+        additionalProperties: false,
+        properties: {
+          propagandaLevel: { type: 'integer', minimum: 0, maximum: 3, description: '0=neutral, 1=mild cultural bias, 2=notable ideological framing, 3=heavy propaganda' },
+          propagandaNotes: { type: 'string', description: 'If level>=1: what type and where it appears. Otherwise empty string.' },
+        },
+      },
       practical: {
         type: 'object',
         required: ['estimatedMonthlyCostLow','estimatedMonthlyCostHigh','minSessionMinutes','hasNaturalStoppingPoints','penalizesBreaks','stoppingPointsDescription'],
@@ -212,6 +224,15 @@ R2 Monetization (max 24): spendingCeiling, payToWin, currencyObfuscation, spendi
 R3 Social risk (max 18): socialObligation, competitiveToxicity, strangerRisk, socialComparison, identitySelfWorth, privacyRisk
 R4 Content (max 15): violenceLevel, sexualContent, language, substanceRef, fearHorror — display only, NOT in time formula
 
+### Representation (REP) — display only, higher = better (0–3 each)
+repGenderBalance: 0=all one gender/stereotyped, 1=token, 2=some diversity, 3=authentic diverse representation
+repEthnicDiversity: 0=monoculture/stereotyped, 1=minimal, 2=moderate, 3=authentic diverse representation
+Score what ships by default. Historical games in homogeneous settings can score 1–2 without penalty.
+
+### Propaganda / Ideology (PROP) — display only
+propagandaLevel: 0=neutral, 1=mild cultural perspective (common in historical games), 2=notable ideological framing parents should know, 3=heavy propaganda
+propagandaNotes: brief description if level≥1, else empty string
+
 ## CALIBRATION EXAMPLES
 
 Minecraft (vanilla): B1=38, B2=16, B3=6 | R1=4, R2=2, R3=4 → BDS=0.60, RIS=0.14, Curascore=75, 120 min/day
@@ -249,6 +270,8 @@ type ReviewInput = {
   r2_monetization: Record<string, number>
   r3_social:       Record<string, number>
   r4_content:      Record<string, number>
+  representation:  Record<string, number>
+  propaganda:      { propagandaLevel: number; propagandaNotes: string }
   practical: {
     estimatedMonthlyCostLow: number; estimatedMonthlyCostHigh: number
     minSessionMinutes: number; hasNaturalStoppingPoints: boolean
@@ -383,6 +406,9 @@ async function reviewGame(slug: string) {
     gameId: game.id, reviewTier: 'automated' as const, status: 'approved' as const,
     ...r.b1_cognitive, ...r.b2_social, ...r.b3_motor,
     ...r.r1_dopamine,  ...r.r2_monetization, ...r.r3_social, ...r.r4_content,
+    ...r.representation,
+    propagandaLevel: r.propaganda.propagandaLevel,
+    propagandaNotes: r.propaganda.propagandaNotes || null,
     estimatedMonthlyCostLow:   r.practical.estimatedMonthlyCostLow,
     estimatedMonthlyCostHigh:  r.practical.estimatedMonthlyCostHigh,
     minSessionMinutes:         r.practical.minSessionMinutes,
@@ -427,6 +453,8 @@ async function reviewGame(slug: string) {
     timeRecommendationReasoning: computed.timeRecommendation.reasoning,
     timeRecommendationColor:     computed.timeRecommendation.color,
     topBenefits:                 computed.topBenefits,
+    representationScore:         (r.representation.repGenderBalance + r.representation.repEthnicDiversity) / 6,
+    propagandaLevel:             r.propaganda.propagandaLevel,
     calculatedAt:                new Date(),
   }
 
@@ -444,9 +472,16 @@ async function reviewGame(slug: string) {
   console.log(`  Done → /game/${game.slug}`)
 }
 
-// ─── Find unreviewed games ────────────────────────────────────────────────────
+// ─── Find games to review ─────────────────────────────────────────────────────
 
 async function getPendingGames(): Promise<{ slug: string; title: string }[]> {
+  if (rescoreAll) {
+    return db
+      .select({ slug: games.slug, title: games.title })
+      .from(games)
+      .orderBy(games.title)
+      .limit(limit)
+  }
   return db
     .select({ slug: games.slug, title: games.title })
     .from(games)
@@ -458,7 +493,7 @@ async function getPendingGames(): Promise<{ slug: string; title: string }[]> {
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log(`Provider: ${provider}  Model: ${MODEL}  Limit: ${limit}${dryRun ? '  [DRY RUN]' : ''}`)
+  console.log(`Provider: ${provider}  Model: ${MODEL}  Limit: ${limit}${rescoreAll ? '  [RESCORE ALL]' : ''}${dryRun ? '  [DRY RUN]' : ''}`)
 
   if (provider === 'google' && !process.env.GOOGLE_PROJECT_ID) {
     console.error('ERROR: GOOGLE_PROJECT_ID is not set in environment.')
@@ -472,11 +507,11 @@ async function main() {
   const pending = await getPendingGames()
 
   if (pending.length === 0) {
-    console.log('\nNo unreviewed games found. Database is fully scored!')
+    console.log(rescoreAll ? '\nNo games found in database.' : '\nNo unreviewed games found. Database is fully scored!')
     process.exit(0)
   }
 
-  console.log(`\nFound ${pending.length} game(s) to review:`)
+  console.log(`\nFound ${pending.length} game(s) to ${rescoreAll ? 'rescore' : 'review'}:`)
   pending.forEach((g, i) => console.log(`  ${i + 1}. ${g.title} (${g.slug})`))
 
   const errors: string[] = []

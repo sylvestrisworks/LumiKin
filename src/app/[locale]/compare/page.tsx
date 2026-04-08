@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import GameCard from '@/components/GameCard'
 import type { GameCardProps, GameSummary } from '@/types/game'
@@ -63,6 +64,8 @@ function GamePicker({
     }
   }
 
+  const t = useTranslations('compare')
+
   if (selected) {
     return (
       <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
@@ -77,7 +80,7 @@ function GamePicker({
           </div>
         </div>
         <button onClick={onClear} className="shrink-0 ml-3 text-xs text-slate-400 hover:text-red-500 transition-colors">
-          Change
+          {t('change')}
         </button>
       </div>
     )
@@ -91,7 +94,7 @@ function GamePicker({
           type="text"
           value={query}
           onChange={e => setQuery(e.target.value)}
-          placeholder="Search for a game…"
+          placeholder={t('searchPlaceholder')}
           className="w-full px-4 py-3 text-sm rounded-xl border border-slate-300 bg-white shadow-sm
             focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-slate-400"
         />
@@ -200,6 +203,7 @@ function DifferenceBar({ item }: { item: DiffItem }) {
 // ─── Suggestions strip ────────────────────────────────────────────────────────
 
 function SuggestionStrip({ highRiskGame }: { highRiskGame: GameCardProps }) {
+  const t = useTranslations('compare')
   const [suggestions, setSuggestions] = useState<GameSummary[]>([])
   const genre = highRiskGame.game.genres[0]
   const ris = highRiskGame.scores?.ris ?? 0
@@ -220,10 +224,9 @@ function SuggestionStrip({ highRiskGame }: { highRiskGame: GameCardProps }) {
 
   return (
     <div className="mt-6 bg-emerald-50 border border-emerald-200 rounded-2xl p-5">
-      <h3 className="font-semibold text-emerald-800 mb-1">Similar but safer</h3>
+      <h3 className="font-semibold text-emerald-800 mb-1">{t('similarSafer')}</h3>
       <p className="text-sm text-emerald-700 mb-4">
-        <strong>{highRiskGame.game.title}</strong> has a high risk score. These{' '}
-        {genre} games have lower risk profiles:
+        {t('similarSaferSub', { title: highRiskGame.game.title, genre: genre ?? '' })}
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {suggestions.map(s => (
@@ -275,6 +278,7 @@ async function loadGame(slug: string): Promise<GameCardProps | null> {
 }
 
 function ComparePageInner() {
+  const t = useTranslations('compare')
   const router = useRouter()
   const searchParams = useSearchParams()
   const [gameA, setGameA] = useState<GameCardProps | null>(null)
@@ -322,12 +326,12 @@ function ComparePageInner() {
   // Build diff items
   const diffs: DiffItem[] = both
     ? [
-        { label: 'Benefit Score',  aVal: gameA.scores?.bds             ?? null, bVal: gameB.scores?.bds             ?? null, aTitle: gameA.game.title, bTitle: gameB.game.title, higherIsBetter: true  },
-        { label: 'Risk Score',     aVal: gameA.scores?.ris             ?? null, bVal: gameB.scores?.ris             ?? null, aTitle: gameA.game.title, bTitle: gameB.game.title, higherIsBetter: false },
-        { label: 'Cognitive',      aVal: gameA.scores?.cognitiveScore  ?? null, bVal: gameB.scores?.cognitiveScore  ?? null, aTitle: gameA.game.title, bTitle: gameB.game.title, higherIsBetter: true  },
-        { label: 'Social',         aVal: gameA.scores?.socialEmotionalScore ?? null, bVal: gameB.scores?.socialEmotionalScore ?? null, aTitle: gameA.game.title, bTitle: gameB.game.title, higherIsBetter: true },
-        { label: 'Dopamine Risk',  aVal: gameA.scores?.dopamineRisk    ?? null, bVal: gameB.scores?.dopamineRisk    ?? null, aTitle: gameA.game.title, bTitle: gameB.game.title, higherIsBetter: false },
-        { label: 'Monetization',   aVal: gameA.scores?.monetizationRisk ?? null, bVal: gameB.scores?.monetizationRisk ?? null, aTitle: gameA.game.title, bTitle: gameB.game.title, higherIsBetter: false },
+        { label: t('benefitScore'),  aVal: gameA.scores?.bds             ?? null, bVal: gameB.scores?.bds             ?? null, aTitle: gameA.game.title, bTitle: gameB.game.title, higherIsBetter: true  },
+        { label: t('riskScore'),     aVal: gameA.scores?.ris             ?? null, bVal: gameB.scores?.ris             ?? null, aTitle: gameA.game.title, bTitle: gameB.game.title, higherIsBetter: false },
+        { label: t('cognitive'),     aVal: gameA.scores?.cognitiveScore  ?? null, bVal: gameB.scores?.cognitiveScore  ?? null, aTitle: gameA.game.title, bTitle: gameB.game.title, higherIsBetter: true  },
+        { label: t('social'),        aVal: gameA.scores?.socialEmotionalScore ?? null, bVal: gameB.scores?.socialEmotionalScore ?? null, aTitle: gameA.game.title, bTitle: gameB.game.title, higherIsBetter: true },
+        { label: t('dopamineRisk'),  aVal: gameA.scores?.dopamineRisk    ?? null, bVal: gameB.scores?.dopamineRisk    ?? null, aTitle: gameA.game.title, bTitle: gameB.game.title, higherIsBetter: false },
+        { label: t('monetization'),  aVal: gameA.scores?.monetizationRisk ?? null, bVal: gameB.scores?.monetizationRisk ?? null, aTitle: gameA.game.title, bTitle: gameB.game.title, higherIsBetter: false },
       ].filter(d => d.aVal != null || d.bVal != null)
     : []
 
@@ -339,8 +343,8 @@ function ComparePageInner() {
 
         {/* Pickers */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <GamePicker label="Game A" selected={gameA} onSelect={selectA} onClear={clearA} />
-          <GamePicker label="Game B" selected={gameB} onSelect={selectB} onClear={clearB} />
+          <GamePicker label={t('gameA')} selected={gameA} onSelect={selectA} onClear={clearA} />
+          <GamePicker label={t('gameB')} selected={gameB} onSelect={selectB} onClear={clearB} />
         </div>
 
         {/* Copy link */}
@@ -350,7 +354,7 @@ function ComparePageInner() {
               onClick={copyLink}
               className="text-xs font-semibold text-slate-500 hover:text-indigo-700 border border-slate-200 hover:border-indigo-300 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5"
             >
-              {copied ? '✓ Link copied!' : '🔗 Copy comparison link'}
+              {copied ? `✓ ${t('linkCopied')}` : `🔗 ${t('copyLink')}`}
             </button>
           </div>
         )}
@@ -359,17 +363,17 @@ function ComparePageInner() {
         {!gameA && !gameB && (
           <div className="text-center py-16 text-slate-400 bg-white rounded-2xl border border-slate-200">
             <p className="text-5xl mb-3">⚖️</p>
-            <p className="font-semibold text-slate-600">Select two games to compare</p>
-            <p className="text-sm mt-1">Search above to pick games side by side</p>
+            <p className="font-semibold text-slate-600">{t('emptyTitle')}</p>
+            <p className="text-sm mt-1">{t('emptySub')}</p>
           </div>
         )}
 
         {/* Difference highlights */}
         {both && significantDiffs.length > 0 && (
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-            <h2 className="font-bold text-slate-800 mb-1">Key differences</h2>
+            <h2 className="font-bold text-slate-800 mb-1">{t('keyDifferences')}</h2>
             <p className="text-sm text-slate-500 mb-4">
-              Showing dimensions where the games differ by 10+ points
+              {t('keyDifferencesSub')}
             </p>
             <div className="flex items-center justify-between mb-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">
               <span className="truncate max-w-[35%]">{gameA.game.title}</span>
@@ -403,7 +407,7 @@ function ComparePageInner() {
         {/* No meaningful differences */}
         {both && significantDiffs.length === 0 && gameA.scores && gameB.scores && (
           <div className="bg-blue-50 border border-blue-200 rounded-xl px-5 py-3 text-sm text-blue-800">
-            These two games have very similar scores across all dimensions.
+            {t('similarScores')}
           </div>
         )}
 
@@ -428,11 +432,11 @@ function ComparePageInner() {
             {/* Desktop: side by side / Mobile: one at a time */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className={mobileTab === 'A' ? '' : 'hidden sm:block'}>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Game A</p>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">{t('gameA')}</p>
                 <GameCard {...gameA} />
               </div>
               <div className={mobileTab === 'B' ? '' : 'hidden sm:block'}>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Game B</p>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">{t('gameB')}</p>
                 <GameCard {...gameB} />
               </div>
             </div>
@@ -442,13 +446,13 @@ function ComparePageInner() {
         {/* Single card shown */}
         {(gameA && !gameB) && (
           <div className="max-w-lg">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Game A</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">{t('gameA')}</p>
             <GameCard {...gameA} />
           </div>
         )}
         {(!gameA && gameB) && (
           <div className="max-w-lg">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Game B</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">{t('gameB')}</p>
             <GameCard {...gameB} />
           </div>
         )}

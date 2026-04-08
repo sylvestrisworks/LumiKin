@@ -223,3 +223,4 @@ export default async function DiscoverPage() {
   ])
   return <GameDiscoveryDashboard topGames={topGames} swap={swap ?? undefined} stats={stats} />
 }
+

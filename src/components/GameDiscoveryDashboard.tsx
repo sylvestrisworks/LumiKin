@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { ArrowRight, ChevronDown, ChevronUp, Sparkles, Ban, Users, Timer, Brain, Star, Leaf, BookOpen } from 'lucide-react'
 import GameCompactCard from './GameCompactCard'
 import { curascoreGradient, curascoreRing, curascoreBg } from '@/lib/ui'
@@ -10,10 +11,10 @@ import type { GameSummary, SwapPair, CatalogStats } from '@/types/game'
 // ─── Static data ──────────────────────────────────────────────────────────────
 
 const AGE_SEGMENTS = [
-  { label: 'Early Years',       value: 'E',   esrb: ['E']                  },
-  { label: 'Middle Childhood',  value: 'E10', esrb: ['E', 'E10+']          },
-  { label: 'Early Teens',       value: 'T',   esrb: ['E', 'E10+', 'T']     },
-  { label: 'Older Teens',       value: 'M',   esrb: ['T', 'M']             },
+  { labelKey: 'earlyYears',      value: 'E',   esrb: ['E']                  },
+  { labelKey: 'middleChildhood', value: 'E10', esrb: ['E', 'E10+']          },
+  { labelKey: 'earlyTeens',      value: 'T',   esrb: ['E', 'E10+', 'T']     },
+  { labelKey: 'olderTeens',      value: 'M',   esrb: ['T', 'M']             },
 ]
 
 const CATEGORY_PILLS = [
@@ -36,17 +37,19 @@ const DID_YOU_KNOW = [
 ]
 
 const SCORE_ZONES = [
-  { min: 0,  max: 40,  label: 'Caution',  color: 'bg-red-500',     textColor: 'text-red-600',    desc: 'Design risks outweigh benefits. Limit sessions carefully.' },
-  { min: 41, max: 65,  label: 'Moderate', color: 'bg-amber-400',   textColor: 'text-amber-600',  desc: 'Mixed profile. Worth a closer look before regular play.' },
-  { min: 66, max: 100, label: 'Great',    color: 'bg-emerald-500', textColor: 'text-emerald-600', desc: 'Strong benefits, manageable risks. More daily time approved.' },
+  { min: 0,  max: 40,  labelKey: 'zoneCautionLabel',  color: 'bg-red-500',     textColor: 'text-red-600',    descKey: 'zoneCautionDesc'  },
+  { min: 41, max: 65,  labelKey: 'zoneModerateLabel', color: 'bg-amber-400',   textColor: 'text-amber-600',  descKey: 'zoneModerateDesc' },
+  { min: 66, max: 100, labelKey: 'zoneGreatLabel',    color: 'bg-emerald-500', textColor: 'text-emerald-600', descKey: 'zoneGreatDesc'   },
 ]
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function CurascoreScale() {
+type T = ReturnType<typeof useTranslations<'discover'>>
+
+function CurascoreScale({ t }: { t: T }) {
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-      <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">What does a Curascore mean?</p>
+      <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">{t('whatMeansCurascore')}</p>
       <div className="flex h-3 rounded-full overflow-hidden gap-0.5 mb-4">
         <div className="bg-red-500 flex-[40]" />
         <div className="bg-amber-400 flex-[25]" />
@@ -54,13 +57,13 @@ function CurascoreScale() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {SCORE_ZONES.map(z => (
-          <div key={z.label}>
+          <div key={z.labelKey}>
             <div className="flex items-center gap-1.5 mb-1">
               <div className={`w-2.5 h-2.5 rounded-full ${z.color}`} />
-              <span className={`text-xs font-black ${z.textColor}`}>{z.label}</span>
+              <span className={`text-xs font-black ${z.textColor}`}>{t(z.labelKey as Parameters<T>[0])}</span>
               <span className="text-xs text-slate-400 font-medium">{z.min}–{z.max}</span>
             </div>
-            <p className="text-xs text-slate-500 leading-snug">{z.desc}</p>
+            <p className="text-xs text-slate-500 leading-snug">{t(z.descKey as Parameters<T>[0])}</p>
           </div>
         ))}
       </div>
@@ -68,12 +71,12 @@ function CurascoreScale() {
   )
 }
 
-function StatStrip({ stats }: { stats: CatalogStats }) {
+function StatStrip({ stats, t }: { stats: CatalogStats; t: T }) {
   const items = [
-    { value: `${stats.totalScored}`,        label: 'games reviewed',              color: 'text-indigo-600' },
-    { value: `${stats.lootBoxFreePct}%`,    label: 'have no loot boxes',          color: 'text-emerald-600' },
-    { value: `${stats.avgCurascoreE}`,      label: 'avg score for ages 6+',       color: 'text-amber-600' },
-    { value: `${stats.greenCount}`,         label: 'games rated Great',           color: 'text-emerald-600' },
+    { value: `${stats.totalScored}`,        label: t('statGamesReviewed'), color: 'text-indigo-600' },
+    { value: `${stats.lootBoxFreePct}%`,    label: t('statNoLootBoxes'),   color: 'text-emerald-600' },
+    { value: `${stats.avgCurascoreE}`,      label: t('statAvgScoreE'),     color: 'text-amber-600' },
+    { value: `${stats.greenCount}`,         label: t('statGamesGreat'),    color: 'text-emerald-600' },
   ]
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -210,6 +213,8 @@ type Props = {
 }
 
 export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: Props) {
+  const t = useTranslations('discover')
+  const tAge = useTranslations('age')
   const [activeAge,      setActiveAge]      = useState<string | null>(null)
   const [activeGenre,    setActiveGenre]    = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
@@ -230,8 +235,9 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
     activeGenre ? `genres=${activeGenre}`     : '',
   ].filter(Boolean).join('?').replace('?age', '?age').replace(/\?([^?]*)&?([^?]*)$/, (_, a, b) => b ? `?${a}&${b}` : `?${a}`)
 
-  const gridTitle = activeSeg
-    ? `${activeSeg.label}${activeGenre ? ` · ${activeGenre}` : ''}`
+  const activeSegLabel = activeSeg ? tAge(activeSeg.labelKey as Parameters<typeof tAge>[0]) : null
+  const gridTitle = activeSegLabel
+    ? `${activeSegLabel}${activeGenre ? ` · ${activeGenre}` : ''}`
     : activeGenre ? activeGenre : 'Top rated games'
 
   return (
@@ -242,10 +248,10 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
         <div className="space-y-5">
           <div>
             <p className="text-xs font-black uppercase tracking-widest text-indigo-400 mb-1">
-              Grounded in child development
+              {t('tagline')}
             </p>
             <h1 className="text-2xl sm:text-4xl font-black tracking-tighter text-slate-900 leading-none">
-              Discover Games
+              {t('heading')}
             </h1>
           </div>
           {/* Age filter */}
@@ -260,17 +266,17 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                {seg.label}
+                {tAge(seg.labelKey as Parameters<typeof tAge>[0])}
               </button>
             ))}
           </div>
         </div>
 
         {/* ── 2. CURASCORE SCALE ──────────────────────────────────────────────── */}
-        <CurascoreScale />
+        <CurascoreScale t={t} />
 
         {/* ── 3. STATS STRIP ──────────────────────────────────────────────────── */}
-        <StatStrip stats={stats} />
+        <StatStrip stats={stats} t={t} />
 
         {/* ── 4. CATEGORY PILLS ───────────────────────────────────────────────── */}
         <div className="flex gap-2.5 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -297,7 +303,7 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-xl font-black tracking-tight text-slate-900">{gridTitle}</h2>
             <Link href={browseHref} className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1">
-              See all <ArrowRight size={13} strokeWidth={2.5} />
+              {t('seeAll')} <ArrowRight size={13} strokeWidth={2.5} />
             </Link>
           </div>
 
@@ -312,7 +318,7 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
                     : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400'
                 }`}
               >
-                All
+                {t('allGenres')}
               </button>
               {allGenres.slice(0, 12).map(g => (
                 <button
@@ -341,12 +347,12 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
           ) : (
             <div className="text-center py-12 bg-white rounded-2xl border border-slate-100">
               <p className="text-3xl mb-2">🎮</p>
-              <p className="font-semibold text-slate-600">No games match these filters</p>
+              <p className="font-semibold text-slate-600">{t('noMatchFilters')}</p>
               <button
                 onClick={() => { setActiveAge(null); setActiveGenre(null) }}
                 className="mt-3 text-sm text-indigo-600 hover:underline"
               >
-                Clear filters
+                {t('clearFilters')}
               </button>
             </div>
           )}
@@ -361,14 +367,14 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
         {/* ── 8. FOOTER CTA ───────────────────────────────────────────────────── */}
         <div className="bg-indigo-600 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <div>
-            <p className="text-white font-black tracking-tight text-base sm:text-lg">{stats.totalScored}+ games rated</p>
-            <p className="text-indigo-200 text-sm mt-0.5">Grounded in child development research</p>
+            <p className="text-white font-black tracking-tight text-base sm:text-lg">{t('gamesRated', { count: stats.totalScored })}</p>
+            <p className="text-indigo-200 text-sm mt-0.5">{t('groundedResearch')}</p>
           </div>
           <Link
             href="/browse"
             className="shrink-0 bg-white text-indigo-700 font-black text-sm px-6 py-3 rounded-xl hover:bg-indigo-50 transition-colors flex items-center gap-2"
           >
-            Browse all games <ArrowRight size={15} strokeWidth={2.5} />
+            {t('browseAll')} <ArrowRight size={15} strokeWidth={2.5} />
           </Link>
         </div>
 

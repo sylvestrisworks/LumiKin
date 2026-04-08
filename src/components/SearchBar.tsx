@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import type { GameSummary } from '@/types/game'
 import { esrbToAge, ageBadgeColor } from '@/lib/ui'
 
@@ -28,7 +29,9 @@ function splitTitle(title: string): [string, string | null] {
   return [title, null]
 }
 
-export default function SearchBar({ placeholder = 'Search games…' }: { placeholder?: string }) {
+export default function SearchBar({ placeholder }: { placeholder?: string }) {
+  const t = useTranslations('search')
+  const defaultPlaceholder = placeholder ?? t('placeholder')
   const [query, setQuery]         = useState('')
   const [results, setResults]     = useState<GameSummary[]>([])
   const [loading, setLoading]     = useState(false)
@@ -152,7 +155,7 @@ export default function SearchBar({ placeholder = 'Search games…' }: { placeho
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => (results.length > 0 || showNoResults) && setOpen(true)}
             onKeyDown={handleKeyDown}
-            placeholder={placeholder}
+            placeholder={defaultPlaceholder}
             autoComplete="off"
             aria-autocomplete="list"
             aria-expanded={showDropdown}
@@ -161,7 +164,7 @@ export default function SearchBar({ placeholder = 'Search games…' }: { placeho
               placeholder:text-slate-400"
           />
           {loading && (
-            <div className="absolute right-4 top-1/2 -translate-y-1/2" aria-label="Loading results" role="status">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2" aria-label={t('loading')} role="status">
               <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
             </div>
           )}
@@ -227,12 +230,12 @@ export default function SearchBar({ placeholder = 'Search games…' }: { placeho
             })
           ) : showNoResults ? (
             <div className="px-5 py-4 text-center">
-              <p className="text-sm text-slate-500">No results for <span className="font-semibold">"{query}"</span></p>
+              <p className="text-sm text-slate-500">{t('noResults', { query })}</p>
               <a
                 href="/browse"
                 className="mt-2 inline-block text-xs text-indigo-600 hover:underline font-medium"
               >
-                Browse all games →
+                {t('browseAll')}
               </a>
             </div>
           ) : null}

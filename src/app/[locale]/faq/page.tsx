@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 
 export const metadata: Metadata = {
   title: 'How it works — PlaySmart',
@@ -10,12 +11,12 @@ export const metadata: Metadata = {
 
 type QA = { q: string; a: React.ReactNode }
 type ResearchLink = { label: string; authors: string; url: string }
-type Section = { id: string; heading: string; items: QA[]; research: ResearchLink[] }
+type Section = { id: string; headingKey: string; items: QA[]; research: ResearchLink[] }
 
 const SECTIONS: Section[] = [
   {
     id: 'curascore',
-    heading: 'The Curascore',
+    headingKey: 'sectionCurascore',
     items: [
       {
         q: 'What is the Curascore?',
@@ -85,7 +86,7 @@ const SECTIONS: Section[] = [
   },
   {
     id: 'bds',
-    heading: 'Benefit Density Score (BDS)',
+    headingKey: 'sectionBds',
     items: [
       {
         q: 'What does the BDS measure?',
@@ -155,7 +156,7 @@ const SECTIONS: Section[] = [
   },
   {
     id: 'ris',
-    heading: 'Risk Intensity Score (RIS)',
+    headingKey: 'sectionRis',
     items: [
       {
         q: 'What does the RIS measure?',
@@ -238,7 +239,7 @@ const SECTIONS: Section[] = [
   },
   {
     id: 'time',
-    heading: 'Daily time recommendation',
+    headingKey: 'sectionTime',
     items: [
       {
         q: 'How is the daily time recommendation calculated?',
@@ -329,7 +330,7 @@ const SECTIONS: Section[] = [
   },
   {
     id: 'reviews',
-    heading: 'How games are reviewed',
+    headingKey: 'sectionReviews',
     items: [
       {
         q: 'Who reviews the games?',
@@ -407,7 +408,7 @@ const SECTIONS: Section[] = [
   },
   {
     id: 'context',
-    heading: 'Additional context fields',
+    headingKey: 'sectionContext',
     items: [
       {
         q: 'What is the Representation score?',
@@ -483,32 +484,21 @@ const SECTIONS: Section[] = [
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function FaqPage() {
+export default async function FaqPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'faq' })
+
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Nav */}
-      <header className="bg-white border-b border-slate-200">
-        <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="text-lg font-bold text-indigo-700 tracking-tight">
-            PlaySmart
-          </Link>
-          <nav className="flex items-center gap-4 text-sm text-slate-600">
-            <Link href="/discover" className="hover:text-indigo-700 transition-colors">Discover</Link>
-            <Link href="/browse" className="hover:text-indigo-700 transition-colors">Browse</Link>
-          </nav>
-        </div>
-      </header>
-
       <main className="max-w-3xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="mb-10">
           <p className="text-xs font-semibold uppercase tracking-widest text-indigo-500 mb-2">
-            Methodology
+            {t('methodology')}
           </p>
-          <h1 className="text-3xl font-extrabold text-slate-900 mb-3">How it works</h1>
+          <h1 className="text-3xl font-extrabold text-slate-900 mb-3">{t('title')}</h1>
           <p className="text-slate-500 text-lg leading-relaxed">
-            PlaySmart rates games on what they actually do to a developing mind — not just what
-            they contain. Here&apos;s exactly how every score is calculated.
+            {t('subtitle')}
           </p>
 
           {/* Jump links */}
@@ -519,7 +509,7 @@ export default function FaqPage() {
                 href={`#${s.id}`}
                 className="text-sm px-3 py-1 bg-white border border-slate-200 rounded-full text-slate-600 hover:border-indigo-300 hover:text-indigo-700 transition-colors"
               >
-                {s.heading}
+                {t(s.headingKey as Parameters<typeof t>[0])}
               </a>
             ))}
           </div>
@@ -530,7 +520,7 @@ export default function FaqPage() {
           {SECTIONS.map(section => (
             <section key={section.id} id={section.id}>
               <h2 className="text-lg font-bold text-slate-900 mb-5 pb-2 border-b border-slate-200">
-                {section.heading}
+                {t(section.headingKey as Parameters<typeof t>[0])}
               </h2>
 
               {/* Q&A accordion */}
@@ -555,7 +545,7 @@ export default function FaqPage() {
               {/* Research links */}
               <div className="mt-5 pt-4 border-t border-dashed border-slate-200">
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
-                  Research
+                  {t('research')}
                 </p>
                 <ul className="space-y-2">
                   {section.research.map(r => (
@@ -583,31 +573,27 @@ export default function FaqPage() {
         {/* CTA */}
         <div className="mt-14 bg-indigo-50 border border-indigo-100 rounded-2xl p-8 text-center">
           <p className="text-sm font-semibold text-indigo-700 uppercase tracking-wide mb-2">
-            Ready to find games?
+            {t('readyToFind')}
           </p>
           <p className="text-slate-600 mb-5">
-            Browse the catalogue with filters for age, risk level, benefit focus, and more.
+            {t('readyToFindSub')}
           </p>
           <div className="flex justify-center gap-3">
             <Link
-              href="/browse"
+              href={`/${locale}/browse`}
               className="px-5 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
             >
-              Browse games
+              {t('browseGames')}
             </Link>
             <Link
-              href="/discover"
+              href={`/${locale}/discover`}
               className="px-5 py-2 bg-white text-slate-700 text-sm font-semibold rounded-lg border border-slate-200 hover:border-indigo-300 hover:text-indigo-700 transition-colors"
             >
-              Get recommendations
+              {t('getRecommendations')}
             </Link>
           </div>
         </div>
       </main>
-
-      <footer className="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-400">
-        PlaySmart — game ratings for parents
-      </footer>
     </div>
   )
 }

@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { Suspense } from 'react'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { eq, desc, asc, sql, and, lte, gte, ilike, inArray, type SQL } from 'drizzle-orm'
 import { curascoreBg } from '@/lib/ui'
 import type { Metadata } from 'next'
@@ -233,7 +234,7 @@ function parseFilters(sp: Record<string, string | string[] | undefined>): Active
 
 // ─── Pagination URL builder ───────────────────────────────────────────────────
 
-function pageUrl(filters: ActiveFilters, targetPage: number): string {
+function pageUrl(filters: ActiveFilters, targetPage: number, locale = 'en'): string {
   const params = new URLSearchParams()
   if (filters.age)               params.set('age',        filters.age)
   if (filters.genres.length)     params.set('genres',     filters.genres.join(','))
@@ -249,15 +250,21 @@ function pageUrl(filters: ActiveFilters, targetPage: number): string {
   if (filters.q)                 params.set('q',          filters.q)
   if (filters.view && filters.view !== 'list') params.set('view', filters.view)
   if (targetPage > 1)            params.set('page',       String(targetPage))
-  return `/browse?${params.toString()}`
+  return `/${locale}/browse?${params.toString()}`
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-type Props = { searchParams: Record<string, string | string[] | undefined> }
+type Props = {
+  params: Promise<{ locale: string }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
 
-export default async function BrowsePage({ searchParams }: Props) {
-  const filters = parseFilters(searchParams)
+export default async function BrowsePage({ params, searchParams }: Props) {
+  const { locale } = await params
+  const sp = await searchParams
+  const t = await getTranslations({ locale, namespace: 'browse' })
+  const filters = parseFilters(sp)
   const { rows, total } = await queryGames(filters)
 
   const totalPages = Math.ceil(total / PAGE_SIZE)
@@ -293,32 +300,32 @@ export default async function BrowsePage({ searchParams }: Props) {
             {/* Header row */}
             <div className="flex items-center justify-between mb-4 gap-3">
               <div>
-                <h1 className="text-xl font-bold text-slate-900">Browse games</h1>
+                <h1 className="text-xl font-bold text-slate-900">{t('title')}</h1>
                 <p className="text-sm text-slate-500 mt-0.5">
-                  {total} game{total !== 1 ? 's' : ''}
-                  {activeFilterCount > 0 && ` · ${activeFilterCount} filter${activeFilterCount !== 1 ? 's' : ''} active`}
-                  {totalPages > 1 && ` · page ${currentPage} of ${totalPages}`}
+                  {t('gamesCount', { count: total })}
+                  {activeFilterCount > 0 && ` · ${t('filtersActive', { count: activeFilterCount })}`}
+                  {totalPages > 1 && ` · ${t('pageOf', { current: currentPage, total: totalPages })}`}
                 </p>
               </div>
               <ViewToggle
                 view={filters.view ?? 'list'}
-                listHref={pageUrl({ ...filters, view: 'list' }, 1)}
-                gridHref={pageUrl({ ...filters, view: 'grid' }, 1)}
+                listHref={pageUrl({ ...filters, view: 'list' }, 1, locale)}
+                gridHref={pageUrl({ ...filters, view: 'grid' }, 1, locale)}
               />
             </div>
 
             {rows.length === 0 ? (
               <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
                 <p className="text-4xl mb-3">🔍</p>
-                <p className="font-semibold text-slate-700">No games match these filters</p>
+                <p className="font-semibold text-slate-700">{t('noGames')}</p>
                 <p className="text-sm text-slate-500 mt-1 max-w-xs mx-auto">
-                  Try removing a filter or two.
+                  {t('noGamesSub')}
                   {(filters.risk || filters.time || filters.benefits.length > 0) && (
-                    <> Risk and benefit filters only apply to reviewed games.</>
+                    <> {t('noGamesRisk')}</>
                   )}
                 </p>
-                <Link href="/browse" className="mt-4 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-800 hover:underline">
-                  Clear all filters →
+                <Link href={`/${locale}/browse`} className="mt-4 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-800 hover:underline">
+                  {t('clearAllFilters')}
                 </Link>
               </div>
             ) : filters.view === 'grid' ? (
@@ -358,7 +365,7 @@ export default async function BrowsePage({ searchParams }: Props) {
                   return (
                     <li key={row.slug}>
                       <Link
-                        href={`/game/${row.slug}`}
+                        href={`/${locale}/game/${row.slug}`}
                         className="flex items-center gap-4 py-3 px-2 rounded-lg hover:bg-indigo-50 hover:translate-x-0.5 transition-all group"
                       >
                         <span className="w-7 text-right text-sm font-semibold text-slate-400 shrink-0 group-hover:text-indigo-400 transition-colors">
@@ -409,10 +416,10 @@ export default async function BrowsePage({ searchParams }: Props) {
               <div className="flex items-center justify-center gap-2 mt-8">
                 {currentPage > 1 && (
                   <Link
-                    href={pageUrl(filters, currentPage - 1)}
+                    href={pageUrl(filters, currentPage - 1, locale)}
                     className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:border-indigo-300 hover:text-indigo-700 transition-colors"
                   >
-                    ← Prev
+                    ← {t('prevPage')}
                   </Link>
                 )}
 
@@ -430,7 +437,7 @@ export default async function BrowsePage({ searchParams }: Props) {
                     ) : (
                       <Link
                         key={p}
-                        href={pageUrl(filters, p as number)}
+                        href={pageUrl(filters, p as number, locale)}
                         className={`w-9 h-9 flex items-center justify-center text-sm font-semibold rounded-lg transition-colors ${
                           p === currentPage
                             ? 'bg-indigo-600 text-white'
@@ -445,10 +452,10 @@ export default async function BrowsePage({ searchParams }: Props) {
 
                 {currentPage < totalPages && (
                   <Link
-                    href={pageUrl(filters, currentPage + 1)}
+                    href={pageUrl(filters, currentPage + 1, locale)}
                     className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:border-indigo-300 hover:text-indigo-700 transition-colors"
                   >
-                    Next →
+                    {t('nextPage')} →
                   </Link>
                 )}
               </div>

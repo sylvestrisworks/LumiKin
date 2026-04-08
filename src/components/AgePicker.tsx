@@ -1,19 +1,21 @@
 'use client'
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Suspense } from 'react'
-
-const AGE_SEGMENTS = [
-  { value: 'E',   label: 'Early Years',     sub: 'Ages 5–7'   },
-  { value: 'E10', label: 'Middle Childhood', sub: 'Ages 8–12'  },
-  { value: 'T',   label: 'Early Teens',      sub: 'Ages 13–15' },
-  { value: 'M',   label: 'Older Teens',      sub: 'Ages 16+'   },
-]
 
 function AgePickerInner({ current }: { current?: string }) {
   const router       = useRouter()
   const pathname     = usePathname()
   const searchParams = useSearchParams()
+  const t            = useTranslations('age')
+
+  const AGE_SEGMENTS = [
+    { value: 'E',   label: t('earlyYears'),      sub: t('earlyYearsSub')      },
+    { value: 'E10', label: t('middleChildhood'),  sub: t('middleChildhoodSub') },
+    { value: 'T',   label: t('earlyTeens'),       sub: t('earlyTeensSub')      },
+    { value: 'M',   label: t('olderTeens'),       sub: t('olderTeensSub')      },
+  ]
 
   function select(value: string) {
     const params = new URLSearchParams(searchParams.toString())

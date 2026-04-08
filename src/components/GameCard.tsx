@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Lightbulb, Sparkles, Zap, Clock, CheckCircle2 } from 'lucide-react'
 import type { DarkPattern, GameCardProps, SerializedReview, SerializedScores } from '@/types/game'
 import { esrbToAge, ageBadgeColor } from '@/lib/ui'
@@ -152,12 +153,14 @@ function DetailRow({ label, score, max }: { label: string; score: number | null;
 
 // ─── Tab content ──────────────────────────────────────────────────────────────
 
-function BenefitsTab({ scores, review }: { scores: SerializedScores; review: SerializedReview | null }) {
+type T = ReturnType<typeof useTranslations<'gameCard'>>
+
+function BenefitsTab({ scores, review, t }: { scores: SerializedScores; review: SerializedReview | null; t: T }) {
   return (
     <div className="space-y-8">
       {scores.topBenefits && scores.topBenefits.length > 0 && (
         <div>
-          <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Top Skills Developed</h3>
+          <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">{t('topSkillsDeveloped')}</h3>
           <div className="space-y-2">
             {scores.topBenefits.map((b) => (
               <div key={b.skill} className="flex items-center gap-2">
@@ -170,20 +173,20 @@ function BenefitsTab({ scores, review }: { scores: SerializedScores; review: Ser
         </div>
       )}
       <div>
-        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Development Areas</h3>
+        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">{t('developmentAreas')}</h3>
         <div className="space-y-3">
-          <CategoryBar label="Cognitive"        value={scores.cognitiveScore} />
-          <CategoryBar label="Social & Emotional" value={scores.socialEmotionalScore} />
-          <CategoryBar label="Motor Skills"     value={scores.motorScore} />
+          <CategoryBar label={t('cognitive')}        value={scores.cognitiveScore} />
+          <CategoryBar label={t('socialEmotional')}  value={scores.socialEmotionalScore} />
+          <CategoryBar label={t('motorSkills')}      value={scores.motorScore} />
         </div>
         <div className="mt-3 flex items-center gap-2">
-          <span className="text-xs text-slate-500">Overall Benefit Score (BDS)</span>
+          <span className="text-xs text-slate-500">{t('overallBds')}</span>
           <span className="text-sm font-bold text-emerald-700">{Math.round((scores.bds ?? 0) * 100)}/100</span>
         </div>
       </div>
       {review?.benefitsNarrative && (
         <div className="bg-emerald-50 rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-emerald-800 mb-1">What your child develops</h3>
+          <h3 className="text-sm font-semibold text-emerald-800 mb-1">{t('whatChildDevelops')}</h3>
           <p className="text-sm text-emerald-900 leading-relaxed">{review.benefitsNarrative}</p>
         </div>
       )}
@@ -191,9 +194,9 @@ function BenefitsTab({ scores, review }: { scores: SerializedScores; review: Ser
   )
 }
 
-function RisksTab({ scores, game, review, darkPatterns }: {
+function RisksTab({ scores, game, review, darkPatterns, t }: {
   scores: SerializedScores; game: GameCardProps['game']
-  review: SerializedReview | null; darkPatterns: DarkPattern[]
+  review: SerializedReview | null; darkPatterns: DarkPattern[]; t: T
 }) {
   const flags = [
     game.hasMicrotransactions && 'In-app purchases',
@@ -206,18 +209,18 @@ function RisksTab({ scores, game, review, darkPatterns }: {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <RiskMeter label="Dopamine Manipulation"  value={scores.dopamineRisk}     note="Variable rewards, streaks, FOMO events, and other engagement mechanics" />
-        <RiskMeter label="Monetization Pressure"  value={scores.monetizationRisk} note="In-app purchases, pay-to-win elements, and spending prompts" />
-        <RiskMeter label="Social Risk"            value={scores.socialRisk}       note="Social obligation, competitive toxicity, stranger interaction" />
+        <RiskMeter label={t('dopamineManipulation')} value={scores.dopamineRisk}     note="Variable rewards, streaks, FOMO events, and other engagement mechanics" />
+        <RiskMeter label={t('monetizationPressure')} value={scores.monetizationRisk} note="In-app purchases, pay-to-win elements, and spending prompts" />
+        <RiskMeter label={t('socialRisk')}           value={scores.socialRisk}       note="Social obligation, competitive toxicity, stranger interaction" />
         <div>
-          <RiskMeter label="Content (not in risk score)" value={scores.contentRisk} note="Violence, language, and other content factors — context depends on age" />
-          <p className="text-xs text-slate-400 mt-1">Content risk is displayed separately and does not affect the time recommendation.</p>
+          <RiskMeter label={t('contentRisk')} value={scores.contentRisk} note="Violence, language, and other content factors — context depends on age" />
+          <p className="text-xs text-slate-400 mt-1">{t('contentRiskNote')}</p>
         </div>
       </div>
 
       {flags.length > 0 && (
         <div className="bg-amber-50 rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-amber-800 mb-2">Flags</h3>
+          <h3 className="text-sm font-semibold text-amber-800 mb-2">{t('flags')}</h3>
           <div className="flex flex-wrap gap-2">
             {flags.map((f) => (
               <span key={f} className="text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-full">{f}</span>
@@ -230,13 +233,13 @@ function RisksTab({ scores, game, review, darkPatterns }: {
       {(review?.repGenderBalance != null || review?.repEthnicDiversity != null) && (
         <div className="bg-purple-50 rounded-2xl p-5 space-y-2">
           <h3 className="text-sm font-semibold text-purple-800 flex items-center gap-1.5">
-            Representation
+            {t('representation')}
             <Tooltip text="How diverse the game's characters are in gender and ethnicity. Higher = more authentic representation. Display only — does not affect time recommendation." />
           </h3>
           <div className="space-y-1.5">
             {review.repGenderBalance != null && (
               <div className="flex items-center gap-3">
-                <span className="w-28 sm:w-36 text-xs text-purple-700 shrink-0">Gender balance</span>
+                <span className="w-28 sm:w-36 text-xs text-purple-700 shrink-0">{t('genderBalance')}</span>
                 <div className="flex-1 bg-purple-100 rounded-full h-2 overflow-hidden">
                   <div className="h-full rounded-full bg-purple-400 transition-all" style={{ width: `${(review.repGenderBalance / 3) * 100}%` }} />
                 </div>
@@ -245,7 +248,7 @@ function RisksTab({ scores, game, review, darkPatterns }: {
             )}
             {review.repEthnicDiversity != null && (
               <div className="flex items-center gap-3">
-                <span className="w-28 sm:w-36 text-xs text-purple-700 shrink-0">Ethnic diversity</span>
+                <span className="w-28 sm:w-36 text-xs text-purple-700 shrink-0">{t('ethnicDiversity')}</span>
                 <div className="flex-1 bg-purple-100 rounded-full h-2 overflow-hidden">
                   <div className="h-full rounded-full bg-purple-400 transition-all" style={{ width: `${(review.repEthnicDiversity / 3) * 100}%` }} />
                 </div>
@@ -260,7 +263,7 @@ function RisksTab({ scores, game, review, darkPatterns }: {
       {review?.propagandaLevel != null && review.propagandaLevel > 0 && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-5">
           <h3 className="text-sm font-semibold text-yellow-800 mb-1 flex items-center gap-1.5">
-            Ideological content
+            {t('ideologicalContent')}
             <Tooltip text="Presence of propaganda, nationalist framing, or strong ideological content. 0=neutral, 3=heavy. Display only — does not affect time recommendation." />
             <span className={`ml-auto text-xs font-bold px-2 py-0.5 rounded-full ${
               review.propagandaLevel === 1 ? 'bg-yellow-100 text-yellow-700' :
@@ -278,7 +281,7 @@ function RisksTab({ scores, game, review, darkPatterns }: {
 
       {review?.risksNarrative && (
         <div className="bg-slate-50 rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-slate-700 mb-1">What to watch for</h3>
+          <h3 className="text-sm font-semibold text-slate-700 mb-1">{t('whatToWatch')}</h3>
           <p className="text-sm text-slate-700 leading-relaxed">{review.risksNarrative}</p>
         </div>
       )}
@@ -293,7 +296,7 @@ function RisksTab({ scores, game, review, darkPatterns }: {
 
       {review?.parentTip && (
         <div className="bg-blue-50 rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-blue-800 mb-1">Parent tip</h3>
+          <h3 className="text-sm font-semibold text-blue-800 mb-1">{t('parentTip')}</h3>
           <p className="text-sm text-blue-900 leading-relaxed">{review.parentTip}</p>
         </div>
       )}
@@ -301,7 +304,7 @@ function RisksTab({ scores, game, review, darkPatterns }: {
   )
 }
 
-function FullScoresTab({ scores, review }: { scores: SerializedScores; review: SerializedReview | null }) {
+function FullScoresTab({ scores, review, t }: { scores: SerializedScores; review: SerializedReview | null; t: T }) {
   const [expanded, setExpanded] = useState(false)
 
   if (!review) return <p className="text-sm text-slate-400">No detailed review data yet.</p>
@@ -311,12 +314,12 @@ function FullScoresTab({ scores, review }: { scores: SerializedScores; review: S
       {/* Summary always visible */}
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-emerald-50 rounded-xl p-3 text-emerald-800">
-          <p className="text-xs font-semibold mb-0.5">BDS — Benefit Score</p>
+          <p className="text-xs font-semibold mb-0.5">{t('bdsLabel')}</p>
           <p className="text-[10px] text-emerald-600 leading-snug">Cognitive ×0.50<br/>Social ×0.30 + Motor ×0.20</p>
           <p className="text-lg font-black mt-1">{Math.round((scores.bds ?? 0) * 100)}<span className="text-xs font-semibold">/100</span></p>
         </div>
         <div className="bg-red-50 rounded-xl p-3 text-red-800">
-          <p className="text-xs font-semibold mb-0.5">RIS — Risk Score</p>
+          <p className="text-xs font-semibold mb-0.5">{t('risLabel')}</p>
           <p className="text-[10px] text-red-600 leading-snug">Dopamine ×0.45<br/>Monet. ×0.30 + Social ×0.25</p>
           <p className="text-lg font-black mt-1">{Math.round((scores.ris ?? 0) * 100)}<span className="text-xs font-semibold">/100</span></p>
         </div>
@@ -326,7 +329,7 @@ function FullScoresTab({ scores, review }: { scores: SerializedScores; review: S
         onClick={() => setExpanded(v => !v)}
         className="w-full text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors py-1 border border-dashed border-indigo-200 rounded-lg hover:border-indigo-400"
       >
-        {expanded ? '↑ Hide item scores' : '↓ Expand all item scores (30+ fields)'}
+        {expanded ? t('hideItemScores') : t('expandItemScores')}
       </button>
 
       {expanded && (
@@ -487,6 +490,7 @@ function FullScoresTab({ scores, review }: { scores: SerializedScores; review: S
 type Tab = 'benefits' | 'risks' | 'scores'
 
 export default function GameCard({ game, scores, review, darkPatterns, compliance }: GameCardProps) {
+  const t = useTranslations('gameCard')
   const [activeTab, setActiveTab] = useState<Tab>('benefits')
 
   const gradient = placeholderGradient(game.title)
@@ -567,12 +571,12 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
       {/* ── 2. MASTER SCORE BOX ────────────────────────────────────────────────── */}
       {hasReview && scores.curascore != null ? (
         <div className="bg-gradient-to-br from-slate-50 to-indigo-50 border border-indigo-100 rounded-3xl p-6 text-center">
-          <p className="text-xs font-black uppercase tracking-widest text-indigo-400 mb-2">Curascore</p>
+          <p className="text-xs font-black uppercase tracking-widest text-indigo-400 mb-2">{t('curascore')}</p>
           <div className={`bg-gradient-to-br ${curascoreGradient(scores.curascore)} bg-clip-text text-transparent`}>
             <div className="text-8xl font-black tracking-tighter leading-none">
               {scores.curascore}
             </div>
-            <div className="text-sm font-black opacity-50 -mt-1">out of 100</div>
+            <div className="text-sm font-black opacity-50 -mt-1">{t('outOf100')}</div>
           </div>
           {scores.executiveSummary && (
             <p className="text-sm text-slate-500 mt-3 max-w-sm mx-auto leading-snug">
@@ -588,8 +592,8 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
         </div>
       ) : (
         <div className="bg-white border border-slate-100 rounded-3xl p-6 text-center">
-          <p className="text-sm font-semibold text-slate-400">Rating pending review</p>
-          <p className="text-xs text-slate-400 mt-1">This game hasn&apos;t been reviewed yet.</p>
+          <p className="text-sm font-semibold text-slate-400">{t('ratingPending')}</p>
+          <p className="text-xs text-slate-400 mt-1">{t('ratingPendingSub')}</p>
         </div>
       )}
 
@@ -603,13 +607,13 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
               <div className="w-8 h-8 bg-green-200 rounded-xl flex items-center justify-center">
                 <Sparkles size={16} className="text-green-700" strokeWidth={2.5} />
               </div>
-              <p className="text-xs font-black uppercase tracking-widest text-green-700">Growth</p>
+              <p className="text-xs font-black uppercase tracking-widest text-green-700">{t('growth')}</p>
             </div>
             <p className="text-3xl font-black tracking-tighter text-green-900">
               {Math.round((scores.bds ?? 0) * 100)}
               <span className="text-base font-bold text-green-600">/100</span>
             </p>
-            <p className="text-xs font-semibold text-green-700 -mt-1">Growth Value</p>
+            <p className="text-xs font-semibold text-green-700 -mt-1">{t('growthValue')}</p>
             {scores.topBenefits && scores.topBenefits.length > 0 && (
               <ul className="space-y-1.5 pt-1">
                 {scores.topBenefits.slice(0, 3).map((b) => (
@@ -628,22 +632,22 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
               <div className="w-8 h-8 bg-orange-200 rounded-xl flex items-center justify-center">
                 <Zap size={16} className="text-orange-700" strokeWidth={2.5} />
               </div>
-              <p className="text-xs font-black uppercase tracking-widest text-orange-700">Risk</p>
+              <p className="text-xs font-black uppercase tracking-widest text-orange-700">{t('risk')}</p>
             </div>
             {risk && (
               <>
                 <p className={`text-3xl font-black tracking-tighter ${risk.color}`}>
                   {risk.label}
                 </p>
-                <p className="text-xs font-semibold text-orange-700 -mt-1">Engagement Patterns</p>
+                <p className="text-xs font-semibold text-orange-700 -mt-1">{t('engagementPatterns')}</p>
               </>
             )}
             <p className="text-xs text-orange-800 leading-snug pt-1">
               {(scores.ris ?? 0) < 0.3
-                ? 'Minimal pressure to spend or play excessively.'
+                ? t('risMinimal')
                 : (scores.ris ?? 0) < 0.6
-                ? 'Some engagement mechanics worth discussing.'
-                : 'Notable design patterns that encourage extended play.'}
+                ? t('risSome')
+                : t('risNotable')}
             </p>
           </div>
 
@@ -657,7 +661,7 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
             <div className="w-8 h-8 bg-blue-200 rounded-xl flex items-center justify-center">
               <Lightbulb size={16} className="text-blue-700" strokeWidth={2.5} />
             </div>
-            <p className="text-xs font-black uppercase tracking-widest text-blue-700">Parent Pro-Tip</p>
+            <p className="text-xs font-black uppercase tracking-widest text-blue-700">{t('parentProTip')}</p>
           </div>
           <p className="text-sm text-blue-900 leading-relaxed">{review.parentTip}</p>
         </div>
@@ -683,7 +687,11 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
         <div className="p-2 bg-gray-100 m-3 rounded-2xl flex gap-1">
           {(['benefits', 'risks', 'scores'] as Tab[]).map((tab) => (
             <button key={tab} className={`flex-1 ${tabClass(tab)}`} onClick={() => setActiveTab(tab)}>
-              {tab === 'benefits' ? 'Benefits' : tab === 'risks' ? 'Risks' : <><span className="hidden sm:inline">Full </span>Scores</>}
+              {tab === 'benefits'
+              ? t('tabBenefits')
+              : tab === 'risks'
+              ? t('tabRisks')
+              : <><span className="hidden sm:inline">{t('tabFullScores')}</span><span className="sm:hidden">{t('tabScores')}</span></>}
             </button>
           ))}
         </div>
@@ -691,28 +699,28 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
         <div className="px-5 pb-5 min-h-48">
           {!hasReview ? (
             <div className="text-center py-8">
-              <p className="text-slate-400 text-sm">Detailed scoring is available once a review is submitted.</p>
+              <p className="text-slate-400 text-sm">{t('scoringPending')}</p>
             </div>
           ) : activeTab === 'benefits' ? (
-            <BenefitsTab scores={scores} review={review} />
+            <BenefitsTab scores={scores} review={review} t={t} />
           ) : activeTab === 'risks' ? (
-            <RisksTab scores={scores} game={game} review={review} darkPatterns={darkPatterns} />
+            <RisksTab scores={scores} game={game} review={review} darkPatterns={darkPatterns} t={t} />
           ) : (
-            <FullScoresTab scores={scores} review={review} />
+            <FullScoresTab scores={scores} review={review} t={t} />
           )}
         </div>
 
         {/* Footer */}
         <div className="border-t border-gray-100 px-5 py-3 flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-400">
           <span>
-            <span className="font-semibold text-slate-600">Base: </span>
+            <span className="font-semibold text-slate-600">{t('base')}: </span>
             {game.basePrice != null ? `$${game.basePrice.toFixed(2)}` : 'Unknown'}
           </span>
           {review?.estimatedMonthlyCostLow != null && (
             <span>
-              <span className="font-semibold text-slate-600">Monthly: </span>
+              <span className="font-semibold text-slate-600">{t('monthly')}: </span>
               {review.estimatedMonthlyCostLow === 0 && review.estimatedMonthlyCostHigh === 0
-                ? 'Free'
+                ? t('free')
                 : review.estimatedMonthlyCostHigh != null
                 ? `$${review.estimatedMonthlyCostLow}–$${review.estimatedMonthlyCostHigh}/mo`
                 : `$${review.estimatedMonthlyCostLow}/mo`}
@@ -720,21 +728,21 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
           )}
           {game.avgPlaytimeHours != null && game.avgPlaytimeHours > 0 && (
             <span>
-              <span className="font-semibold text-slate-600">Playtime: </span>~{game.avgPlaytimeHours}h
+              <span className="font-semibold text-slate-600">{t('playtime')}: </span>~{game.avgPlaytimeHours}h
             </span>
           )}
           {game.platforms.length > 0 && (
             <span className="hidden sm:inline">
-              <span className="font-semibold text-slate-600">On: </span>
+              <span className="font-semibold text-slate-600">{t('on')}: </span>
               {game.platforms.slice(0, 3).join(', ')}
               {game.platforms.length > 3 && ` +${game.platforms.length - 3}`}
             </span>
           )}
           <span className="ml-auto">
             {scores?.calculatedAt
-              ? `Reviewed ${new Date(scores.calculatedAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`
+              ? `${t('reviewed')} ${new Date(scores.calculatedAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`
               : game.updatedAt
-              ? `Updated ${new Date(game.updatedAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`
+              ? `${t('updated')} ${new Date(game.updatedAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`
               : null}
           </span>
         </div>

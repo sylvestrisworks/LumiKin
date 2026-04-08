@@ -106,7 +106,7 @@ export default function SearchBar({ placeholder = 'Search games…' }: { placeho
 
       {/* Dropdown */}
       {open && results.length > 0 && (
-        <div className="absolute top-full mt-1.5 left-0 right-0 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden">
+        <div className="absolute top-full mt-1.5 left-0 right-0 bg-white border border-slate-200 rounded-xl shadow-lg z-[200] overflow-hidden">
           {results.map((game) => (
             <button
               key={game.slug}

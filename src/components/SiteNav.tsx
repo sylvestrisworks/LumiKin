@@ -15,7 +15,7 @@ export default function SiteNav() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
 
       {/* ── Main row ───────────────────────────────────────────────────────── */}
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-3">

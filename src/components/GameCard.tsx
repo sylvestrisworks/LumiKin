@@ -568,13 +568,11 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
       {hasReview && scores.curascore != null ? (
         <div className="bg-gradient-to-br from-slate-50 to-indigo-50 border border-indigo-100 rounded-3xl p-6 text-center">
           <p className="text-xs font-black uppercase tracking-widest text-indigo-400 mb-2">Curascore</p>
-          <div className="flex justify-center">
-            <div className={`inline-flex items-baseline gap-1 bg-gradient-to-br ${curascoreGradient(scores.curascore)} bg-clip-text text-transparent`}>
-              <span className="text-8xl font-black tracking-tighter leading-none">
-                {scores.curascore}
-              </span>
-              <span className="text-3xl font-black opacity-50">/100</span>
+          <div className={`bg-gradient-to-br ${curascoreGradient(scores.curascore)} bg-clip-text text-transparent`}>
+            <div className="text-8xl font-black tracking-tighter leading-none">
+              {scores.curascore}
             </div>
+            <div className="text-sm font-black opacity-50 -mt-1">out of 100</div>
           </div>
           {scores.executiveSummary && (
             <p className="text-sm text-slate-500 mt-3 max-w-sm mx-auto leading-snug">

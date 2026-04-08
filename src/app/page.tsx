@@ -174,13 +174,12 @@ export default async function HomePage({ searchParams }: Props) {
 
       {/* ── Hero ─────────────────────────────────────────────────────────────── */}
       <section className="hero-gradient relative overflow-hidden">
-        {/* Decorative blobs */}
-        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+        {/* Decorative blobs — hidden on mobile to avoid overflow/clutter */}
+        <div className="hidden sm:block absolute inset-0 pointer-events-none select-none overflow-hidden">
           <div className="float-1 absolute top-8 left-[8%]  text-4xl opacity-30">🎮</div>
           <div className="float-2 absolute top-12 right-[12%] text-3xl opacity-25">🧠</div>
           <div className="float-3 absolute bottom-10 left-[20%] text-3xl opacity-20">⭐</div>
           <div className="float-1 absolute bottom-8 right-[22%] text-2xl opacity-25">🛡️</div>
-          {/* Large blurred circles for depth */}
           <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-white/10 blur-3xl" />
           <div className="absolute -bottom-10 -right-10 w-64 h-64 rounded-full bg-violet-300/20 blur-3xl" />
         </div>
@@ -203,15 +202,15 @@ export default async function HomePage({ searchParams }: Props) {
           </div>
 
           {/* Stats row */}
-          <div className="flex flex-wrap justify-center gap-3 pt-4">
+          <div className="flex justify-center gap-2 sm:gap-3 pt-4">
             {[
               { value: stats.scoredGames,  label: 'games reviewed'  },
               { value: stats.lowRiskGames, label: 'low-risk picks'  },
               { value: '5',                label: 'scoring rubrics' },
             ].map(s => (
-              <div key={s.label} className="stat-shimmer flex flex-col items-center bg-white/10 border border-white/20 rounded-2xl px-5 py-3 backdrop-blur-sm">
-                <span className="text-2xl font-extrabold text-white">{s.value}</span>
-                <span className="text-xs text-white/70 font-medium mt-0.5">{s.label}</span>
+              <div key={s.label} className="stat-shimmer flex flex-col items-center bg-white/10 border border-white/20 rounded-2xl px-3 sm:px-5 py-3 backdrop-blur-sm">
+                <span className="text-xl sm:text-2xl font-extrabold text-white">{s.value}</span>
+                <span className="text-[11px] sm:text-xs text-white/70 font-medium mt-0.5">{s.label}</span>
               </div>
             ))}
           </div>
@@ -308,6 +307,7 @@ export default async function HomePage({ searchParams }: Props) {
 
           {/* CTA */}
           <div className="mt-10 text-center">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
             <Link
               href="/browse"
               className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl shadow-sm transition-colors"
@@ -317,10 +317,11 @@ export default async function HomePage({ searchParams }: Props) {
             </Link>
             <Link
               href="/faq"
-              className="ml-4 inline-flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-medium text-sm transition-colors"
+              className="inline-flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-medium text-sm transition-colors"
             >
               How does scoring work?
             </Link>
+          </div>
           </div>
         </section>
       </main>

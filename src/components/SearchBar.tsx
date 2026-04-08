@@ -172,7 +172,7 @@ export default function SearchBar({ placeholder = 'Search games…' }: { placeho
       {showDropdown && (
         <div
           role="listbox"
-          className="absolute top-full mt-1.5 left-0 right-0 bg-white border border-slate-200 rounded-xl shadow-lg z-[200] overflow-hidden"
+          className="absolute top-full mt-1.5 left-0 right-0 bg-white border border-slate-200 rounded-xl shadow-lg z-[200] overflow-hidden max-h-[70vh] overflow-y-auto"
         >
           {results.length > 0 ? (
             results.map((game, idx) => {

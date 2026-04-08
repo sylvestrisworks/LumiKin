@@ -595,7 +595,7 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
 
       {/* ── 3. TWO PILLARS ─────────────────────────────────────────────────────── */}
       {hasReview && (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
           {/* Growth Value */}
           <div className="bg-green-50 rounded-3xl p-5 space-y-3">

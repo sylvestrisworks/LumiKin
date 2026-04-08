@@ -45,7 +45,7 @@ export default function SiteNav() {
 
         {/* Mobile hamburger */}
         <button
-          className="sm:hidden ml-auto p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+          className="sm:hidden ml-auto p-2.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
           onClick={() => setMenuOpen(o => !o)}
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         >
@@ -66,7 +66,7 @@ export default function SiteNav() {
               key={l.href}
               href={l.href}
               onClick={() => setMenuOpen(false)}
-              className="flex items-center px-4 py-3.5 text-sm font-medium text-slate-700
+              className="flex items-center px-4 py-4 text-sm font-medium text-slate-700
                 hover:bg-indigo-50 hover:text-indigo-700 border-b border-slate-100 last:border-0 transition-colors"
             >
               {l.label}

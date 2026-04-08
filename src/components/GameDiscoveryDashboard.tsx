@@ -78,8 +78,8 @@ function StatStrip({ stats }: { stats: CatalogStats }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
       {items.map(s => (
-        <div key={s.label} className="bg-white rounded-2xl border border-slate-100 shadow-sm px-4 py-3 text-center">
-          <p className={`text-2xl font-black tracking-tight ${s.color}`}>{s.value}</p>
+        <div key={s.label} className="bg-white rounded-2xl border border-slate-100 shadow-sm px-3 sm:px-4 py-3 text-center">
+          <p className={`text-xl sm:text-2xl font-black tracking-tight ${s.color}`}>{s.value}</p>
           <p className="text-xs text-slate-400 font-medium mt-0.5 leading-tight">{s.label}</p>
         </div>
       ))}
@@ -244,17 +244,17 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
             <p className="text-xs font-black uppercase tracking-widest text-indigo-400 mb-1">
               Grounded in child development
             </p>
-            <h1 className="text-4xl font-black tracking-tighter text-slate-900 leading-none">
+            <h1 className="text-2xl sm:text-4xl font-black tracking-tighter text-slate-900 leading-none">
               Discover Games
             </h1>
           </div>
           {/* Age filter */}
-          <div className="bg-slate-100 rounded-2xl p-1.5 flex gap-1">
+          <div className="bg-slate-100 rounded-2xl p-1.5 grid grid-cols-2 sm:flex gap-1">
             {AGE_SEGMENTS.map((seg) => (
               <button
                 key={seg.value}
                 onClick={() => setActiveAge(activeAge === seg.value ? null : seg.value)}
-                className={`flex-1 py-2.5 text-sm font-black tracking-tight rounded-xl transition-all duration-200 ${
+                className={`flex-1 py-2.5 text-xs sm:text-sm font-black tracking-tight rounded-xl transition-all duration-200 ${
                   activeAge === seg.value
                     ? 'bg-white text-indigo-600 shadow-sm'
                     : 'text-slate-400 hover:text-slate-600'
@@ -331,7 +331,7 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
           )}
 
           {displayGames.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
               {displayGames.map((game) => (
                 <div key={game.slug} className="hover:-translate-y-1 hover:shadow-md transition-all duration-200">
                   <GameCompactCard game={game} />
@@ -359,9 +359,9 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
         <DidYouKnow />
 
         {/* ── 8. FOOTER CTA ───────────────────────────────────────────────────── */}
-        <div className="bg-indigo-600 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="bg-indigo-600 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <div>
-            <p className="text-white font-black tracking-tight text-lg">{stats.totalScored}+ games rated</p>
+            <p className="text-white font-black tracking-tight text-base sm:text-lg">{stats.totalScored}+ games rated</p>
             <p className="text-indigo-200 text-sm mt-0.5">Grounded in child development research</p>
           </div>
           <Link

@@ -29,7 +29,7 @@ function AgePickerInner({ current }: { current?: string }) {
   const activeIndex = AGE_SEGMENTS.findIndex(s => s.value === current)
 
   return (
-    <div className="bg-slate-100 rounded-2xl p-1.5 flex gap-1 justify-center">
+    <div className="bg-slate-100 rounded-2xl p-1.5 grid grid-cols-2 sm:flex gap-1">
       {AGE_SEGMENTS.map((seg, i) => {
         const isActive = current === seg.value
         const isPast   = activeIndex >= 0 && i < activeIndex
@@ -38,7 +38,7 @@ function AgePickerInner({ current }: { current?: string }) {
           <button
             key={seg.value}
             onClick={() => select(seg.value)}
-            className={`flex-1 flex flex-col items-center py-2 px-1 rounded-xl text-center transition-all duration-200 ${
+            className={`flex-1 flex flex-col items-center py-2.5 sm:py-2 px-1 rounded-xl text-center transition-all duration-200 ${
               isActive
                 ? 'bg-indigo-600 text-white shadow-sm'
                 : isPast
@@ -49,7 +49,7 @@ function AgePickerInner({ current }: { current?: string }) {
             <span className={`text-xs sm:text-sm font-black tracking-tight leading-none ${isActive ? 'text-white' : ''}`}>
               {seg.label}
             </span>
-            <span className={`hidden sm:block text-[10px] mt-0.5 font-medium leading-none ${
+            <span className={`text-[10px] mt-0.5 font-medium leading-none ${
               isActive ? 'text-indigo-200' : 'text-slate-400'
             }`}>
               {seg.sub}

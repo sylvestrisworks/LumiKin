@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { curascoreBg } from '@/lib/ui'
+import { curascoreBg, esrbToAge, ageBadgeColor } from '@/lib/ui'
 import type { GameSummary } from '@/types/game'
 
 type Props = {
@@ -36,10 +36,10 @@ export default function GameCompactCard({ game }: Props) {
           </div>
         )}
 
-        {/* ESRB — bottom left */}
+        {/* Min age badge — bottom left */}
         {game.esrbRating && (
-          <div className="absolute bottom-1.5 left-1.5 bg-black/60 text-white text-xs font-bold px-1.5 py-0.5 rounded">
-            {game.esrbRating}
+          <div className={`absolute bottom-1.5 left-1.5 ${ageBadgeColor(game.esrbRating)} text-white text-[10px] font-black px-1.5 py-0.5 rounded-full leading-none`}>
+            {esrbToAge(game.esrbRating)}
           </div>
         )}
       </div>
@@ -57,8 +57,8 @@ export default function GameCompactCard({ game }: Props) {
             </span>
           )}
           {game.esrbRating && (
-            <span className="text-xs text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
-              {game.esrbRating}
+            <span className={`text-xs text-white font-bold px-1.5 py-0.5 rounded-full ${ageBadgeColor(game.esrbRating)}`}>
+              {esrbToAge(game.esrbRating)}
             </span>
           )}
         </div>

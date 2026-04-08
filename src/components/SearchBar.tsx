@@ -3,18 +3,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import type { GameSummary } from '@/types/game'
+import { esrbToAge, ageBadgeColor } from '@/lib/ui'
 
 function esrbBadge(rating: string | null) {
   if (!rating) return null
-  const colors: Record<string, string> = {
-    E: 'bg-green-100 text-green-700',
-    'E10+': 'bg-lime-100 text-lime-700',
-    T: 'bg-blue-100 text-blue-700',
-    M: 'bg-red-100 text-red-700',
-  }
   return (
-    <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${colors[rating] ?? 'bg-slate-100 text-slate-600'}`}>
-      {rating}
+    <span className={`text-xs font-black px-1.5 py-0.5 rounded-full text-white ${ageBadgeColor(rating)}`}>
+      {esrbToAge(rating)}
     </span>
   )
 }

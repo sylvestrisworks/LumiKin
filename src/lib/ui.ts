@@ -1,5 +1,31 @@
 // Shared UI helpers — import these instead of duplicating color logic.
 
+// ─── Age / ESRB helpers ───────────────────────────────────────────────────────
+
+/** Convert an ESRB rating to a minimum-age label, e.g. "T" → "13+" */
+export function esrbToAge(rating: string | null | undefined): string {
+  switch (rating) {
+    case 'E':    return '6+'
+    case 'E10+': return '10+'
+    case 'T':    return '13+'
+    case 'M':    return '17+'
+    case 'AO':   return '18+'
+    default:     return '?'
+  }
+}
+
+/** Background + text color for an age badge */
+export function ageBadgeColor(rating: string | null | undefined): string {
+  switch (rating) {
+    case 'E':    return 'bg-emerald-500'
+    case 'E10+': return 'bg-lime-500'
+    case 'T':    return 'bg-amber-500'
+    case 'M':    return 'bg-red-500'
+    case 'AO':   return 'bg-rose-700'
+    default:     return 'bg-slate-400'
+  }
+}
+
 /** Solid background color for a curascore badge (white text). */
 export function curascoreBg(score: number | null | undefined): string {
   if (score == null) return 'bg-slate-400'

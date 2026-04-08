@@ -9,10 +9,10 @@ import { SlidersHorizontal, X, LayoutGrid, List } from 'lucide-react'
 // ─── Filter definitions ───────────────────────────────────────────────────────
 
 export const AGE_OPTIONS = [
-  { value: 'E',   label: 'Under 6 (E)'  },
-  { value: 'E10', label: '6–9 (E10+)'   },
-  { value: 'T',   label: '10–12 (T)'    },
-  { value: 'M',   label: '13+ (M)'      },
+  { value: 'E',   label: 'Early Years (5–7)'       },
+  { value: 'E10', label: 'Middle Childhood (8–12)'  },
+  { value: 'T',   label: 'Early Teens (13–15)'      },
+  { value: 'M',   label: 'Older Teens (16+)'        },
 ]
 
 export const GENRE_OPTIONS = [

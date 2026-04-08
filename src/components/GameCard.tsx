@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Lightbulb, Sparkles, Zap, Clock, CheckCircle2 } from 'lucide-react'
 import type { DarkPattern, GameCardProps, SerializedReview, SerializedScores } from '@/types/game'
+import { esrbToAge, ageBadgeColor } from '@/lib/ui'
 import DarkPatternPills from './DarkPatternPills'
 import ComplianceBadges from './ComplianceBadges'
 
@@ -27,15 +28,6 @@ function pct(value: number | null | undefined): string {
   return `${Math.round((value ?? 0) * 100)}%`
 }
 
-function esrbColors(rating: string | null): string {
-  switch (rating) {
-    case 'E':    return 'bg-green-100 text-green-800 border-green-200'
-    case 'E10+': return 'bg-lime-100 text-lime-800 border-lime-200'
-    case 'T':    return 'bg-blue-100 text-blue-800 border-blue-200'
-    case 'M':    return 'bg-red-100 text-red-800 border-red-200'
-    default:     return 'bg-gray-100 text-gray-600 border-gray-200'
-  }
-}
 
 function riskBarColor(value: number | null): string {
   const v = value ?? 0
@@ -521,8 +513,8 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
             <img src={game.backgroundImage} alt="" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
             {game.esrbRating && (
-              <span className={`absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-full border ${esrbColors(game.esrbRating)}`}>
-                {game.esrbRating}
+              <span className={`absolute top-3 right-3 text-xs font-black px-2.5 py-1 rounded-full text-white ${ageBadgeColor(game.esrbRating)}`}>
+                {esrbToAge(game.esrbRating)}
               </span>
             )}
           </div>
@@ -530,8 +522,8 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
           <div className={`h-28 bg-gradient-to-br ${gradient} flex items-center justify-center relative`}>
             <span className="text-5xl font-black text-white/20 select-none">{abbr}</span>
             {game.esrbRating && (
-              <span className={`absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-full border ${esrbColors(game.esrbRating)}`}>
-                {game.esrbRating}
+              <span className={`absolute top-3 right-3 text-xs font-black px-2.5 py-1 rounded-full text-white ${ageBadgeColor(game.esrbRating)}`}>
+                {esrbToAge(game.esrbRating)}
               </span>
             )}
           </div>

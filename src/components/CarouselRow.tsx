@@ -3,15 +3,7 @@
 import { useRef } from 'react'
 import Link from 'next/link'
 import type { GameSummary } from '@/types/game'
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function curascoreBg(score: number | null | undefined): string {
-  if (score == null) return 'bg-slate-500'
-  if (score >= 70)   return 'bg-emerald-500'
-  if (score >= 40)   return 'bg-amber-500'
-  return 'bg-red-500'
-}
+import { curascoreBg, esrbToAge, ageBadgeColor } from '@/lib/ui'
 
 // ─── Tile ─────────────────────────────────────────────────────────────────────
 
@@ -43,11 +35,13 @@ function CarouselTile({ game }: { game: GameSummary }) {
           </span>
         )}
 
-        {/* ESRB — always reserved so tiles are uniform height */}
-        <span className="absolute bottom-1.5 left-1.5 bg-black/60 text-white text-[9px] font-bold px-1 py-0.5 rounded leading-none min-w-[1.5ch]"
-          title="ESRB content rating">
-          {game.esrbRating ?? '—'}
-        </span>
+        {/* Min age badge — bottom left */}
+        {game.esrbRating && (
+          <span className={`absolute bottom-1.5 left-1.5 ${ageBadgeColor(game.esrbRating)} text-white text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none`}
+            title={`Minimum age: ${esrbToAge(game.esrbRating)}`}>
+            {esrbToAge(game.esrbRating)}
+          </span>
+        )}
 
         {/* Time rec — bottom right with clock icon */}
         {game.timeRecommendationMinutes != null && (

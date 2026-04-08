@@ -10,10 +10,10 @@ import type { GameSummary, SwapPair } from '@/types/game'
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 const AGE_SEGMENTS = [
-  { label: '5–7',   value: 'E',   esrb: ['E']                  },
-  { label: '8–10',  value: 'E10', esrb: ['E', 'E10+']          },
-  { label: '11–13', value: 'T',   esrb: ['E', 'E10+', 'T']     },
-  { label: '14+',   value: 'M',   esrb: ['T', 'M']             },
+  { label: 'Early Years',       value: 'E',   esrb: ['E']                  },
+  { label: 'Middle Childhood',  value: 'E10', esrb: ['E', 'E10+']          },
+  { label: 'Early Teens',       value: 'T',   esrb: ['E', 'E10+', 'T']     },
+  { label: 'Older Teens',       value: 'M',   esrb: ['T', 'M']             },
 ]
 
 const CATEGORY_PILLS = [

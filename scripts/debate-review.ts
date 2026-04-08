@@ -253,24 +253,41 @@ const GEMINI_FUNCTION = { name: 'submit_scores', description: 'Submit your score
 // ─── Model callers ────────────────────────────────────────────────────────────
 
 async function callGemini(model: string, prompt: string, isPro: boolean): Promise<{ scores: Scores; reasoning: string }> {
-  const res = await googleAI.models.generateContent({
-    model,
-    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    config: {
-      tools: [{ functionDeclarations: [GEMINI_FUNCTION] }],
-      toolConfig: { functionCallingConfig: { mode: FunctionCallingConfigMode.ANY, allowedFunctionNames: ['submit_scores'] } },
-    },
-  })
-  const meta = res.usageMetadata
-  if (meta) {
-    if (isPro) { totals.proIn += meta.promptTokenCount ?? 0; totals.proOut += meta.candidatesTokenCount ?? 0 }
-    else       { totals.flashIn += meta.promptTokenCount ?? 0; totals.flashOut += meta.candidatesTokenCount ?? 0 }
+  const MAX_RETRIES = 5
+  let attempt = 0
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    try {
+      const res = await googleAI.models.generateContent({
+        model,
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        config: {
+          tools: [{ functionDeclarations: [GEMINI_FUNCTION] }],
+          toolConfig: { functionCallingConfig: { mode: FunctionCallingConfigMode.ANY, allowedFunctionNames: ['submit_scores'] } },
+        },
+      })
+      const meta = res.usageMetadata
+      if (meta) {
+        if (isPro) { totals.proIn += meta.promptTokenCount ?? 0; totals.proOut += meta.candidatesTokenCount ?? 0 }
+        else       { totals.flashIn += meta.promptTokenCount ?? 0; totals.flashOut += meta.candidatesTokenCount ?? 0 }
+      }
+      const fc = res.candidates?.[0]?.content?.parts?.[0]?.functionCall
+      if (!fc?.args) throw new Error(`${model} did not return a function call`)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const a = fc.args as any
+      return { scores: { b1: a.b1, b2: a.b2, b3: a.b3, r1: a.r1, r2: a.r2, r3: a.r3 }, reasoning: a.reasoning }
+    } catch (err: unknown) {
+      const status = (err as { status?: number })?.status
+      if (status === 429 && attempt < MAX_RETRIES) {
+        const delay = Math.pow(2, attempt) * 10_000 // 10s, 20s, 40s, 80s, 160s
+        console.log(`    [429 rate limit — waiting ${delay / 1000}s before retry ${attempt + 1}/${MAX_RETRIES}]`)
+        await new Promise(r => setTimeout(r, delay))
+        attempt++
+        continue
+      }
+      throw err
+    }
   }
-  const fc = res.candidates?.[0]?.content?.parts?.[0]?.functionCall
-  if (!fc?.args) throw new Error(`${model} did not return a function call`)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const a = fc.args as any
-  return { scores: { b1: a.b1, b2: a.b2, b3: a.b3, r1: a.r1, r2: a.r2, r3: a.r3 }, reasoning: a.reasoning }
 }
 
 const callAdvocate = (prompt: string) => callGemini(ADVOCATE_MODEL, prompt, true)

@@ -21,9 +21,18 @@ import { eq, and, gte, lte, isNotNull, desc } from 'drizzle-orm'
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const args  = process.argv.slice(2)
-const LIMIT = parseInt(args[args.indexOf('--limit') + 1] ?? '3', 10)
-const SAVE  = args.includes('--save')
+const args           = process.argv.slice(2)
+const LIMIT          = parseInt(args[args.indexOf('--limit') + 1] ?? '3', 10)
+const SAVE           = args.includes('--save')
+const RESCORE_DEBATE = args.includes('--rescore-debate')  // re-run already debate-scored games
+const FORCE          = args.includes('--force')           // bypass swing cap (use when correcting)
+
+// Final score = CRITIC_WEIGHT * critic + (1 - CRITIC_WEIGHT) * advocate
+// 0.6 counteracts the LLM advocate inflation bias
+const CRITIC_WEIGHT = 0.60
+
+// Scores swinging more than this from current are flagged — not auto-saved
+const MAX_AUTO_SWING = 20
 
 const ADVOCATE_MODEL = 'gemini-2.5-flash'  // advocate (argues HIGH)
 const CRITIC_MODEL   = 'gemini-2.5-flash'  // critic (argues LOW) — same model, opposite persona
@@ -98,10 +107,17 @@ R1 Dopamine (0–3 each): ${R1.join(', ')}
 R2 Monetization (0–3 each): ${R2.join(', ')}
 R3 Social risk (0–3 each): ${R3.join(', ')}
 
-CALIBRATION:
-Minecraft: B1=38, B2=16, B3=6 | R1=4, R2=2, R3=4 → curascore 75
-Fortnite:  B1=19, B2=10, B3=13 | R1=18, R2=13, R3=11 → curascore 42
-Brawl Stars: B1=14, B2=9, B3=11 | R1=23, R2=18, R3=12 → curascore 30`
+CALIBRATION (anchors — match your scores to this distribution):
+Zelda: BotW:  B1=42, B2=18, B3=10 | R1=2,  R2=0,  R3=2  → curascore 82  ← what a genuinely great game looks like
+Minecraft:    B1=38, B2=16, B3=6  | R1=4,  R2=2,  R3=4  → curascore 75
+Half-Life:    B1=28, B2=4,  B3=14 | R1=4,  R2=0,  R3=0  → curascore 74  ← strong cognitive + motor, near-zero social-emotional (no multiplayer)
+Fortnite:     B1=19, B2=10, B3=13 | R1=18, R2=13, R3=11 → curascore 42
+Brawl Stars:  B1=14, B2=9,  B3=11 | R1=23, R2=18, R3=12 → curascore 30
+
+KEY RULES FOR B2 (social-emotional):
+- Single-player games with NO co-op/multiplayer: teamwork=0, communication=0, positiveSocial ≤ 1
+- B2 scores above 10 total require active social mechanics (co-op, voice chat, team play)
+- Narrative empathy alone does not justify high B2 — it must require social interaction`
 }
 
 function scoresBlock(s: Scores): string {
@@ -152,10 +168,13 @@ Call submit_scores with your revised scores and a rebuttal (3–5 sentences).`
 
 function criticPrompt(gameInfo: string, round: number, advocateScores?: Scores, advocateReasoning?: string): string {
   const role = `You are the CRITIC in a PlaySmart scoring debate. Your job is to argue for the LOWEST DEFENSIBLE scores.
-- Push benefit scores DOWN unless the evidence is strong
+- Push benefit scores DOWN unless the evidence is strong and specific
 - Push risk scores UP whenever a design pattern is present
 - Be rigorous: "could benefit" is not the same as "actively develops"
-- Base arguments on what the game actually does, not its potential`
+- Base arguments on what the game actually does, not its potential
+- CRITICAL: Single-player games with no multiplayer/co-op get teamwork=0, communication=0, positiveSocial≤1. "Narrative empathy" does NOT justify B2 scores — social mechanics must be interactive
+- High metacritic score does NOT mean high developmental scores — a masterpiece can still be low-benefit for children
+- Scores above 80 curascore should be rare and only for games with strong benefits across multiple domains`
 
   if (round === 1) {
     return `${role}
@@ -259,10 +278,18 @@ const callCritic   = (prompt: string) => callGemini(CRITIC_MODEL,   prompt, fals
 
 // ─── Score math ───────────────────────────────────────────────────────────────
 
-function avgScores(a: Scores, b: Scores): Scores {
-  const avg = (fa: Record<string, number>, fb: Record<string, number>) =>
-    Object.fromEntries(Object.keys(fa).map(k => [k, Math.round((fa[k] + fb[k]) / 2)]))
-  return { b1: avg(a.b1, b.b1), b2: avg(a.b2, b.b2), b3: avg(a.b3, b.b3), r1: avg(a.r1, b.r1), r2: avg(a.r2, b.r2), r3: avg(a.r3, b.r3) }
+// Weighted average: CRITIC_WEIGHT for critic, (1-CRITIC_WEIGHT) for advocate
+// to counteract advocate inflation bias
+function weightedScores(advocate: Scores, critic: Scores): Scores {
+  const w = (fa: Record<string, number>, fb: Record<string, number>) =>
+    Object.fromEntries(Object.keys(fa).map(k => [
+      k,
+      Math.round(fa[k] * (1 - CRITIC_WEIGHT) + fb[k] * CRITIC_WEIGHT),
+    ]))
+  return {
+    b1: w(advocate.b1, critic.b1), b2: w(advocate.b2, critic.b2), b3: w(advocate.b3, critic.b3),
+    r1: w(advocate.r1, critic.r1), r2: w(advocate.r2, critic.r2), r3: w(advocate.r3, critic.r3),
+  }
 }
 
 function sumGroup(s: Record<string, number>): number { return Object.values(s).reduce((a, b) => a + b, 0) }
@@ -272,7 +299,11 @@ function computeCurascore(s: Scores): { bds: number; ris: number; curascore: num
   const r1n = sumGroup(s.r1) / 30; const r2n = sumGroup(s.r2) / 24; const r3n = sumGroup(s.r3) / 18
   const bds = b1n * 0.50 + b2n * 0.30 + b3n * 0.20
   const ris = r1n * 0.45 + r2n * 0.30 + r3n * 0.25
-  const curascore = Math.round(Math.max(0, Math.min(100, (bds - ris + 0.5) * 100)))
+  // Harmonic mean of benefit and safety — matches the production scoring engine.
+  // Penalises imbalance: a low-benefit safe game ≠ a high-benefit safe game.
+  const safety = 1 - ris
+  const denom  = bds + safety
+  const curascore = denom > 0 ? Math.round((2 * bds * safety) / denom * 100) : 0
   return { bds, ris, curascore }
 }
 
@@ -310,29 +341,31 @@ async function debateGame(game: { id: number; slug: string; title: string; genre
 
   rounds.push({ advocateScores: r2adv.scores, advocateReasoning: r2adv.reasoning, criticScores: r2crit.scores, criticReasoning: r2crit.reasoning })
 
-  // ── Final: average of round 2 ────────────────────────────────────────────
-  const finalScores = avgScores(r2adv.scores, r2crit.scores)
+  // ── Final: weighted average of round 2 (60% critic, 40% advocate) ──────────
+  const finalScores = weightedScores(r2adv.scores, r2crit.scores)
   const { bds, ris, curascore } = computeCurascore(finalScores)
+  const swing = curascore - game.currentCurascore
+  const flagged = !FORCE && Math.abs(swing) > MAX_AUTO_SWING
 
   console.log(`\n  Result:  curascore ${game.currentCurascore} → ${curascore}  (BDS ${bds.toFixed(3)}, RIS ${ris.toFixed(3)})`)
   console.log(`  Advocate final curascore: ${computeCurascore(r2adv.scores).curascore}`)
   console.log(`  Critic final curascore:   ${computeCurascore(r2crit.scores).curascore}`)
+  if (flagged) console.log(`  ⚠️  Swing of ${swing > 0 ? '+' : ''}${swing} exceeds ±${MAX_AUTO_SWING} — flagged for human review, skipping save`)
 
   const transcript = rounds.map((r, i) => `
 === Round ${i + 1} ===
 
-ADVOCATE (Opus — arguing HIGH):
+ADVOCATE (arguing HIGH):
 ${scoresBlock(r.advocateScores)}
 Reasoning: ${r.advocateReasoning}
 
-CRITIC (Gemini Pro — arguing LOW):
+CRITIC (arguing LOW):
 ${scoresBlock(r.criticScores)}
 Reasoning: ${r.criticReasoning}
-`).join('\n') + `\n=== Final (averaged Round 2) ===\n${scoresBlock(finalScores)}\nCurascore: ${curascore}  BDS: ${bds.toFixed(3)}  RIS: ${ris.toFixed(3)}`
+`).join('\n') + `\n=== Final (weighted 40% advocate / 60% critic, Round 2) ===\n${scoresBlock(finalScores)}\nCurascore: ${curascore}  BDS: ${bds.toFixed(3)}  RIS: ${ris.toFixed(3)}${flagged ? '\n⚠️ FLAGGED — swing exceeds ±' + MAX_AUTO_SWING + ', not auto-saved' : ''}`
 
-  if (SAVE) {
+  if (SAVE && !flagged) {
     console.log('  Saving to DB…')
-    // Update game_scores with debate result + transcript
     await db.update(gameScores)
       .set({
         bds, ris, curascore,
@@ -343,37 +376,45 @@ Reasoning: ${r.criticReasoning}
     console.log('  Saved.')
   }
 
-  return { curascore, prev: game.currentCurascore, transcript }
+  return { curascore, prev: game.currentCurascore, transcript, flagged }
 }
 
 // ─── Fetch candidates ─────────────────────────────────────────────────────────
 
 async function getCandidates() {
-  const rows = await db
-    .select({
-      id:               games.id,
-      slug:             games.slug,
-      title:            games.title,
-      genres:           games.genres,
-      platforms:        games.platforms,
-      description:      games.description,
-      metacriticScore:  games.metacriticScore,
-      hasMicrotransactions: games.hasMicrotransactions,
-      hasLootBoxes:     games.hasLootBoxes,
-      hasBattlePass:    games.hasBattlePass,
-      hasStrangerChat:  games.hasStrangerChat,
-      currentCurascore: gameScores.curascore,
-    })
-    .from(games)
-    .innerJoin(gameScores, eq(gameScores.gameId, games.id))
-    .where(and(
-      isNotNull(gameScores.curascore),
-      gte(gameScores.curascore, 35),
-      lte(gameScores.curascore, 55),
-      gte(games.metacriticScore, 70),
-    ))
-    .orderBy(desc(games.metacriticScore))
-    .limit(LIMIT)
+  const baseSelect = {
+    id:               games.id,
+    slug:             games.slug,
+    title:            games.title,
+    genres:           games.genres,
+    platforms:        games.platforms,
+    description:      games.description,
+    metacriticScore:  games.metacriticScore,
+    hasMicrotransactions: games.hasMicrotransactions,
+    hasLootBoxes:     games.hasLootBoxes,
+    hasBattlePass:    games.hasBattlePass,
+    hasStrangerChat:  games.hasStrangerChat,
+    currentCurascore: gameScores.curascore,
+  }
+
+  const rows = RESCORE_DEBATE
+    // Re-run previously debate-scored games (regardless of current curascore)
+    ? await db.select(baseSelect).from(games)
+        .innerJoin(gameScores, eq(gameScores.gameId, games.id))
+        .where(and(isNotNull(gameScores.debateRounds), isNotNull(gameScores.curascore)))
+        .orderBy(desc(gameScores.curascore))
+        .limit(LIMIT)
+    // Normal mode: borderline popular games not yet debate-scored
+    : await db.select(baseSelect).from(games)
+        .innerJoin(gameScores, eq(gameScores.gameId, games.id))
+        .where(and(
+          isNotNull(gameScores.curascore),
+          gte(gameScores.curascore, 35),
+          lte(gameScores.curascore, 55),
+          gte(games.metacriticScore, 70),
+        ))
+        .orderBy(desc(games.metacriticScore))
+        .limit(LIMIT)
 
   return rows.map(r => ({
     ...r,
@@ -395,7 +436,7 @@ async function main() {
   console.log('╚══════════════════════════════════════════════════╝')
   console.log(`  Advocate: Gemini ${ADVOCATE_MODEL} (argues HIGH)`)
   console.log(`  Critic:   Gemini ${CRITIC_MODEL} (argues LOW)`)
-  console.log(`  Limit:    ${LIMIT} games  |  Save: ${SAVE ? 'YES' : 'no (dry run)'}`)
+  console.log(`  Limit:    ${LIMIT} games  |  Save: ${SAVE ? 'YES' : 'no (dry run)'}  |  Mode: ${RESCORE_DEBATE ? 'RESCORE DEBATE' : 'normal'}${FORCE ? '  |  FORCE (no swing cap)' : ''}`)
   if (!SAVE) console.log('\n  Tip: add --save to write results to the DB\n')
 
   if (!process.env.GOOGLE_PROJECT_ID) { console.error('ERROR: GOOGLE_PROJECT_ID not set'); process.exit(1) }
@@ -431,7 +472,8 @@ async function main() {
   results.forEach(r => {
     const delta = r.curascore - r.prev
     const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '='
-    console.log(`  ${r.title.padEnd(35)} ${r.prev} → ${r.curascore}  ${arrow}${Math.abs(delta)}`)
+    const flag  = r.flagged ? '  ⚠️  FLAGGED (not saved)' : ''
+    console.log(`  ${r.title.padEnd(35)} ${r.prev} → ${r.curascore}  ${arrow}${Math.abs(delta)}${flag}`)
   })
 
   process.exit(0)

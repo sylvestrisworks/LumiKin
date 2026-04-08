@@ -22,7 +22,7 @@
 
 import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenAI, FunctionCallingConfigMode, Type } from '@google/genai'
-import { eq, sql } from 'drizzle-orm'
+import { eq, sql, isNull, isNotNull, lte, or, and } from 'drizzle-orm'
 import { db } from '../src/lib/db'
 import { games, gameScores, reviews } from '../src/lib/db/schema'
 import { calculateGameScores } from '../src/lib/scoring/engine'
@@ -517,10 +517,13 @@ async function getPendingGames(): Promise<{ slug: string; title: string }[]> {
     .select({ slug: games.slug, title: games.title })
     .from(games)
     .leftJoin(gameScores, eq(gameScores.gameId, games.id))
-    .where(sql`${gameScores.id} IS NULL AND (
-      ${games.metacriticScore} IS NOT NULL
-      OR (${games.releaseDate} IS NOT NULL AND ${games.releaseDate} <= NOW())
-    )`)
+    .where(and(
+      isNull(gameScores.id),
+      or(
+        isNotNull(games.metacriticScore),
+        and(isNotNull(games.releaseDate), lte(games.releaseDate, new Date()))
+      )
+    ))
     .limit(limit)
 }
 

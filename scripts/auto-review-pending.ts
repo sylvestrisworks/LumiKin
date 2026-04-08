@@ -319,59 +319,74 @@ async function callAnthropic(prompt: string): Promise<ReviewInput> {
 
 // ─── Provider: Google Gemini via Vertex AI ────────────────────────────────────
 
-async function callGemini(prompt: string): Promise<ReviewInput> {
-  let attempt = 0
-  while (true) {
-    let result
-    try {
-      result = await googleAI!.models.generateContent({
-        model:    MODEL,
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        config: {
-          tools: [{ functionDeclarations: [GEMINI_FUNCTION] }],
-          toolConfig: {
-            functionCallingConfig: {
-              mode: FunctionCallingConfigMode.ANY,
-              allowedFunctionNames: ['submit_game_review'],
-            },
+// Stable fallback model — non-thinking, reliable function calling
+const GEMINI_FALLBACK_MODEL = 'gemini-1.5-flash-002'
+
+async function callGeminiModel(modelId: string, prompt: string, attempt = 0): Promise<ReviewInput> {
+  // gemini-2.5-flash is a thinking model; thinkingBudget is not universally supported
+  // on Vertex AI SDK v1.x — we skip it for the stable fallback model
+  const isThinkingModel = modelId.includes('2.5')
+
+  let result
+  try {
+    result = await googleAI!.models.generateContent({
+      model:    modelId,
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      config: {
+        tools: [{ functionDeclarations: [GEMINI_FUNCTION] }],
+        toolConfig: {
+          functionCallingConfig: {
+            mode: FunctionCallingConfigMode.ANY,
+            allowedFunctionNames: ['submit_game_review'],
           },
-          // Disable thinking for rubric fill-in — keeps response compact and avoids truncation
-          thinkingConfig: { thinkingBudget: 0 },
         },
-      })
-    } catch (err: unknown) {
-      const isTransient = String(err).includes('Unexpected end of JSON')
-        || String(err).includes('fetch failed')
-        || String(err).includes('ECONNRESET')
-        || (err as { status?: number })?.status === 429
-        || (err as { status?: number })?.status === 503
-      if (isTransient && attempt < 4) {
-        const delay = Math.pow(2, attempt) * 5_000
-        console.log(`  [transient error: ${String(err).slice(0, 80)} — retry in ${delay / 1000}s]`)
-        await new Promise(r => setTimeout(r, delay))
-        attempt++
-        continue
-      }
-      throw err
+        ...(isThinkingModel ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
+      },
+    })
+  } catch (err: unknown) {
+    const isTransient = String(err).includes('Unexpected end of JSON')
+      || String(err).includes('fetch failed')
+      || String(err).includes('ECONNRESET')
+      || (err as { status?: number })?.status === 429
+      || (err as { status?: number })?.status === 503
+    if (isTransient && attempt < 3) {
+      const delay = Math.pow(2, attempt) * 5_000
+      console.log(`  [transient error on ${modelId}: ${String(err).slice(0, 80)} — retry in ${delay / 1000}s]`)
+      await new Promise(r => setTimeout(r, delay))
+      return callGeminiModel(modelId, prompt, attempt + 1)
     }
+    // All retries failed — escalate to caller for fallback
+    throw err
+  }
 
-    const candidate = result.candidates?.[0]
-    const finishReason = candidate?.finishReason
-    // Find function call in any part (thinking models may have multiple parts)
-    const fc = candidate?.content?.parts?.find(p => p.functionCall)?.functionCall
-    if (!fc?.args) {
-      if (finishReason === 'MAX_TOKENS' && attempt < 4) {
-        const delay = Math.pow(2, attempt) * 5_000
-        console.log(`  [MAX_TOKENS hit — retry ${attempt + 1}/4 in ${delay / 1000}s]`)
-        await new Promise(r => setTimeout(r, delay))
-        attempt++
-        continue
-      }
-      const textFallback = candidate?.content?.parts?.find(p => p.text)?.text?.slice(0, 200)
-      throw new Error(`Gemini did not return a function call (finishReason=${finishReason})${textFallback ? ` — model said: "${textFallback}"` : ''}`)
+  const candidate   = result.candidates?.[0]
+  const finishReason = candidate?.finishReason
+  // Find function call across all parts (thinking models emit multiple parts)
+  const fc = candidate?.content?.parts?.find(p => p.functionCall)?.functionCall
+  if (!fc?.args) {
+    if (finishReason === 'MAX_TOKENS' && attempt < 3) {
+      const delay = Math.pow(2, attempt) * 5_000
+      console.log(`  [MAX_TOKENS on ${modelId} — retry ${attempt + 1}/3 in ${delay / 1000}s]`)
+      await new Promise(r => setTimeout(r, delay))
+      return callGeminiModel(modelId, prompt, attempt + 1)
     }
+    const textFallback = candidate?.content?.parts?.find(p => p.text)?.text?.slice(0, 200)
+    throw new Error(`Gemini did not return a function call (model=${modelId} finishReason=${finishReason})${textFallback ? ` — model said: "${textFallback}"` : ''}`)
+  }
 
-    return fc.args as ReviewInput
+  return fc.args as ReviewInput
+}
+
+async function callGemini(prompt: string): Promise<ReviewInput> {
+  try {
+    return await callGeminiModel(MODEL, prompt)
+  } catch (primaryErr) {
+    // If primary model fails for any reason, try the stable fallback before giving up
+    if (MODEL !== GEMINI_FALLBACK_MODEL) {
+      console.log(`  [primary model (${MODEL}) failed — falling back to ${GEMINI_FALLBACK_MODEL}]`)
+      return callGeminiModel(GEMINI_FALLBACK_MODEL, prompt)
+    }
+    throw primaryErr
   }
 }
 

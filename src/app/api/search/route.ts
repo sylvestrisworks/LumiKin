@@ -40,11 +40,11 @@ export async function GET(req: NextRequest) {
         sql`unaccent(${games.title}) ilike ${`%${q}%`}`,
         // Developer name match
         sql`unaccent(${games.developer}) ilike ${`%${q}%`}`,
-        // Genre match (jsonb array)
-        sql`exists (
+        // Genre match (jsonb array) — guard against null/scalar genres
+        sql`(jsonb_typeof(${games.genres}) = 'array' AND exists (
           select 1 from jsonb_array_elements_text(${games.genres}) g
           where unaccent(g) ilike ${`%${q}%`}
-        )`,
+        ))`,
       )
     )
     .orderBy(

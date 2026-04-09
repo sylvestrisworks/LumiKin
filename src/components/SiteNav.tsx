@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import SearchBar from './SearchBar'
 import LanguageSwitcher from './LanguageSwitcher'
 
-export default function SiteNav() {
+export default function SiteNav({ authSlot }: { authSlot?: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [atTop, setAtTop]       = useState(true)
   const t      = useTranslations('nav')
@@ -79,6 +79,7 @@ export default function SiteNav() {
             </a>
           ))}
           <LanguageSwitcher />
+          {authSlot}
         </nav>
 
         {/* Mobile hamburger */}
@@ -110,8 +111,9 @@ export default function SiteNav() {
               {l.label}
             </a>
           ))}
-          <div className="px-4 py-3 border-t border-slate-100">
+          <div className="px-4 py-3 border-t border-slate-100 flex items-center justify-between gap-4">
             <LanguageSwitcher />
+            {authSlot}
           </div>
         </nav>
       )}

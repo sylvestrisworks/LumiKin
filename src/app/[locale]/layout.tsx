@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server'
 import { routing } from '@/i18n/routing'
 import SiteNav from '@/components/SiteNav'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
+import NavAuthButton from '@/components/NavAuthButton'
 
 export default async function LocaleLayout({
   children,
@@ -21,7 +22,7 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider>
       <div className="flex flex-col min-h-screen">
-        <SiteNav />
+        <SiteNav authSlot={<NavAuthButton />} />
         <div className="flex-1">{children}</div>
         <footer className="border-t border-slate-200 bg-white">
           <div className="max-w-6xl mx-auto px-4 py-8">

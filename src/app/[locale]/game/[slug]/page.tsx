@@ -284,17 +284,20 @@ export default async function GamePage({ params }: Props) {
             </div>
           )}
 
-          {/* Description */}
-          {game.description && (
-            <div className="mt-6 bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
-              <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">
-                About this game
-              </h2>
-              <p className="text-sm text-slate-700 leading-relaxed">
-                {game.description}
-              </p>
-            </div>
-          )}
+          {/* Description — first 2 sentences only, strips HTML tags */}
+          {game.description && (() => {
+            const plain = game.description!.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+            const sentences = plain.match(/[^.!?]+[.!?]+/g) ?? []
+            const excerpt = sentences.slice(0, 2).join(' ').trim() || plain.slice(0, 220)
+            return (
+              <div className="mt-4 bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
+                <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">
+                  About this game
+                </h2>
+                <p className="text-sm text-slate-600 leading-relaxed">{excerpt}</p>
+              </div>
+            )
+          })()}
         </main>
       </div>
     </>

@@ -10,6 +10,8 @@ import { getRawDb } from '@/lib/db'
 import { users, accounts, sessions, verificationTokens } from '@/lib/db/schema'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  // Support both v4 (NEXTAUTH_SECRET) and v5 (AUTH_SECRET) env var names
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   adapter: DrizzleAdapter(getRawDb(), {
     usersTable:              users,
     accountsTable:           accounts,
@@ -17,7 +19,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     verificationTokensTable: verificationTokens,
   }),
   providers: [
-    Google,
+    // Explicitly pass env vars so both old (GOOGLE_CLIENT_ID) and new (AUTH_GOOGLE_ID) names work
+    Google({
+      clientId:     process.env.AUTH_GOOGLE_ID     ?? process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET ?? process.env.GOOGLE_CLIENT_SECRET,
+    }),
     Credentials({
       name: 'PlaySmart Reviewer',
       credentials: {

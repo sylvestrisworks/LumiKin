@@ -59,6 +59,47 @@ function curascoreGradient(score: number | null): string {
   return 'from-red-400 to-rose-500'
 }
 
+type StatusVerdict = { label: string; color: string; bg: string; ring: string }
+function getVerdict(score: number | null): StatusVerdict {
+  const s = score ?? 0
+  if (s >= 70) return { label: 'GREAT',   color: 'text-emerald-600', bg: 'bg-emerald-50',  ring: '#10b981' }
+  if (s >= 50) return { label: 'GOOD',    color: 'text-teal-600',    bg: 'bg-teal-50',     ring: '#14b8a6' }
+  if (s >= 35) return { label: 'CAUTION', color: 'text-amber-600',   bg: 'bg-amber-50',    ring: '#f59e0b' }
+  return              { label: 'AVOID',   color: 'text-red-600',     bg: 'bg-red-50',      ring: '#ef4444' }
+}
+
+// ─── Progress ring ────────────────────────────────────────────────────────────
+
+function ProgressRing({ score }: { score: number | null }) {
+  const s       = score ?? 0
+  const verdict = getVerdict(s)
+  const radius  = 54
+  const stroke  = 8
+  const norm    = radius - stroke / 2
+  const circ    = 2 * Math.PI * norm
+  const offset  = circ - (s / 100) * circ
+
+  return (
+    <div className="relative inline-flex items-center justify-center w-36 h-36">
+      <svg width="144" height="144" className="-rotate-90" aria-hidden="true">
+        <circle cx="72" cy="72" r={norm} fill="none" stroke="#e2e8f0" strokeWidth={stroke} />
+        <circle
+          cx="72" cy="72" r={norm} fill="none"
+          stroke={verdict.ring} strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={circ}
+          strokeDashoffset={offset}
+          style={{ transition: 'stroke-dashoffset 0.6s ease' }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-4xl font-black tracking-tighter text-slate-900 leading-none">{s}</span>
+        <span className="text-[10px] font-bold text-slate-400 mt-0.5">/ 100</span>
+      </div>
+    </div>
+  )
+}
+
 // ─── Tooltip ─────────────────────────────────────────────────────────────────
 
 function Tooltip({ text }: { text: string }) {
@@ -551,16 +592,10 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
 
         <div className="p-5">
           {/* Title row */}
-          <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
+          <div className="mb-3">
             <h1 className="text-xl sm:text-2xl font-black tracking-tighter text-slate-900 leading-tight">
               {game.title}
             </h1>
-            {scores?.timeRecommendationMinutes != null && (
-              <div className="shrink-0 flex items-center gap-1.5 bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-bold px-2.5 sm:px-3 py-1.5 rounded-full">
-                <Clock size={13} strokeWidth={2.5} />
-                {scores.timeRecommendationMinutes >= 120 ? '120+' : scores.timeRecommendationMinutes} min/day
-              </div>
-            )}
           </div>
 
           {/* Developer + year */}
@@ -603,28 +638,43 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
       </div>
 
       {/* ── 2. MASTER SCORE BOX ────────────────────────────────────────────────── */}
-      {hasReview && scores.curascore != null ? (
-        <div className="bg-gradient-to-br from-slate-50 to-indigo-50 border border-indigo-100 rounded-3xl p-6 text-center">
-          <p className="text-xs font-black uppercase tracking-widest text-indigo-400 mb-2">{t('curascore')}</p>
-          <div className={`bg-gradient-to-br ${curascoreGradient(scores.curascore)} bg-clip-text text-transparent`}>
-            <div className="text-8xl font-black tracking-tighter leading-none">
-              {scores.curascore}
+      {hasReview && scores.curascore != null ? (() => {
+        const verdict = getVerdict(scores.curascore)
+        return (
+          <div className="bg-white border border-slate-100 rounded-3xl p-6">
+            <div className="flex items-center gap-6">
+              {/* Ring */}
+              <div className="shrink-0">
+                <ProgressRing score={scores.curascore} />
+              </div>
+              {/* Right column */}
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{t('curascore')}</p>
+                {/* Verdict badge */}
+                <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-black uppercase tracking-wide mb-3 ${verdict.bg} ${verdict.color}`}>
+                  {verdict.label}
+                </div>
+                {/* min/day */}
+                {scores.timeRecommendationMinutes != null && (
+                  <div className="flex items-center gap-1.5 text-sm font-bold text-slate-700 mb-2">
+                    <Clock size={14} strokeWidth={2.5} className="text-emerald-500 shrink-0" />
+                    {scores.timeRecommendationMinutes >= 120 ? '120+' : scores.timeRecommendationMinutes} min/day recommended
+                  </div>
+                )}
+                {scores.executiveSummary && (
+                  <p className="text-xs text-slate-500 leading-snug">{scores.executiveSummary}</p>
+                )}
+                {scores.debateRounds != null && (
+                  <div className="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-violet-50 border border-violet-200 text-xs font-semibold text-violet-700">
+                    <span>⚖️</span>
+                    {t('adversarialDebate', { rounds: scores.debateRounds ?? 0 })}
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="text-sm font-black opacity-50 -mt-1">{t('outOf100')}</div>
           </div>
-          {scores.executiveSummary && (
-            <p className="text-sm text-slate-500 mt-3 max-w-sm mx-auto leading-snug">
-              {scores.executiveSummary}
-            </p>
-          )}
-          {scores.debateRounds != null && (
-            <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-50 border border-violet-200 text-xs font-semibold text-violet-700">
-              <span>⚖️</span>
-              {t('adversarialDebate', { rounds: scores.debateRounds ?? 0 })}
-            </div>
-          )}
-        </div>
-      ) : (
+        )
+      })() : (
         <div className="bg-white border border-slate-100 rounded-3xl p-6 text-center">
           <p className="text-sm font-semibold text-slate-400">{t('ratingPending')}</p>
           <p className="text-xs text-slate-400 mt-1">{t('ratingPendingSub')}</p>
@@ -688,7 +738,44 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
         </div>
       )}
 
-      {/* ── 4. PARENT TIP ──────────────────────────────────────────────────────── */}
+      {/* ── 4. VITALS STRIP ────────────────────────────────────────────────────── */}
+      {hasReview && (() => {
+        const highFlags = darkPatterns.filter(p => p.severity === 'high')
+        const hasCost   = review?.estimatedMonthlyCostLow != null
+        const hasChat   = game.hasStrangerChat
+        if (!highFlags.length && !hasCost && !hasChat) return null
+        return (
+          <div className="bg-amber-50 border border-amber-200 rounded-3xl px-5 py-4 space-y-3">
+            <p className="text-[10px] font-black uppercase tracking-widest text-amber-700">Heads up</p>
+            {highFlags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {highFlags.map(p => (
+                  <span key={p.patternId} className="text-xs font-semibold bg-red-100 text-red-700 border border-red-200 px-2.5 py-1 rounded-full">
+                    {t(`dp${p.patternId.slice(2)}Label` as Parameters<typeof t>[0])}
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-xs font-semibold text-amber-900">
+              {hasCost && (
+                <span>
+                  💸 Monthly cost:{' '}
+                  {review!.estimatedMonthlyCostLow === 0 && review!.estimatedMonthlyCostHigh === 0
+                    ? 'Free'
+                    : review!.estimatedMonthlyCostHigh != null
+                    ? `$${review!.estimatedMonthlyCostLow}–$${review!.estimatedMonthlyCostHigh}/mo`
+                    : `$${review!.estimatedMonthlyCostLow}/mo`}
+                </span>
+              )}
+              {hasChat && (
+                <span>💬 Stranger chat enabled</span>
+              )}
+            </div>
+          </div>
+        )
+      })()}
+
+      {/* ── 5. PARENT TIP ──────────────────────────────────────────────────────── */}
       {review?.parentTip && (
         <div className="bg-blue-50 rounded-3xl p-5">
           <div className="flex items-center gap-2 mb-2">

@@ -20,7 +20,7 @@ async function main() {
     process.stdout.write(`  ${game.title} (${game.slug})… `)
     try {
       const detail = await rawgGetDetail(game.slug)
-      const img = detail.background_image ?? detail.background_image_additional ?? null
+      const img = detail.background_image ?? null
       if (img) {
         await db.update(games).set({ backgroundImage: img }).where(eq(games.id, game.id))
         console.log('✓')

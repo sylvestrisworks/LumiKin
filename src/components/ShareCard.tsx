@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, type RefObject } from 'react'
 import { createPortal } from 'react-dom'
 import { Share2, X, Check, Download, Link } from 'lucide-react'
 import type { GameCardProps } from '@/types/game'
@@ -34,7 +34,7 @@ function DotRow({ filled }: { filled: number }) {
 
 // ─── Nutrition Label ──────────────────────────────────────────────────────────
 
-function NutritionLabel({ data, labelRef }: { data: GameCardProps; labelRef: React.RefObject<HTMLDivElement | null> }) {
+function NutritionLabel({ data, labelRef }: { data: GameCardProps; labelRef: RefObject<HTMLDivElement | null> }) {
   const { game, scores, review } = data
   const curascore   = scores?.curascore ?? null
   const topBenefits = scores?.topBenefits ?? []
@@ -53,7 +53,7 @@ function NutritionLabel({ data, labelRef }: { data: GameCardProps; labelRef: Rea
 
   return (
     <div
-      ref={labelRef}
+      ref={labelRef as RefObject<HTMLDivElement>}
       className="bg-white max-w-sm w-full p-4 md:p-5"
       style={{
         border: '2px solid black',
@@ -141,7 +141,7 @@ export default function ShareButton({ data }: { data: GameCardProps }) {
   const [copied,    setCopied]    = useState(false)
   const [saving,    setSaving]    = useState(false)
   const [mounted,   setMounted]   = useState(false)
-  const labelRef = useRef<HTMLDivElement>(null)
+  const labelRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => { setMounted(true) }, [])
 

@@ -115,7 +115,7 @@ function buildToReason(t: DiscoverT, bds: number | null, ris: number | null): st
   return t('swapToSafer')
 }
 
-async function getSwapPair(t: DiscoverT): Promise<SwapPair | null> {
+async function getSwapPair(t: DiscoverT, locale: string): Promise<SwapPair | null> {
   const risky = await db
     .select({
       id:               games.id,
@@ -193,7 +193,7 @@ async function getSwapPair(t: DiscoverT): Promise<SwapPair | null> {
         genre:     gGenres[0] ?? fromGenres[0] ?? 'Game',
         curascore: g.curascore!,
         reason:    buildToReason(t, g.bds, g.ris),
-        href:      `/game/${g.slug}`,
+        href:      `/${locale}/game/${g.slug}`,
       })
     }
   }
@@ -208,7 +208,7 @@ async function getSwapPair(t: DiscoverT): Promise<SwapPair | null> {
       genre:           fromGenres[0] ?? 'Game',
       curascore:       fromGame.curascore ?? 0,
       reason:          buildFromReason(t, fromGame.monetizationRisk, fromGame.socialRisk, fromGame.dopamineRisk),
-      href:            `/game/${fromGame.slug}`,
+      href:            `/${locale}/game/${fromGame.slug}`,
       riskType,
       riskExplanation: t(RISK_EXPLANATION_KEYS[riskType]),
     },
@@ -224,7 +224,7 @@ export default async function DiscoverPage({ params }: { params: Promise<{ local
 
   const [topGames, swap, stats] = await Promise.all([
     getTopGames(),
-    getSwapPair(t),
+    getSwapPair(t, locale),
     getCatalogStats(),
   ])
   return <GameDiscoveryDashboard topGames={topGames} swap={swap ?? undefined} stats={stats} />

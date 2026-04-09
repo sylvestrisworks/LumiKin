@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import Link from 'next/link'
 import type { GameCardProps, GameSummary } from '@/types/game'
 import { esrbToAge, ageBadgeColor } from '@/lib/ui'
@@ -393,6 +393,7 @@ function TagsSection({ a, b }: { a: GameCardProps; b: GameCardProps }) {
 
 function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
   const t = useTranslations('compare')
+  const locale = useLocale()
 
   const aScore = a.scores
   const bScore = b.scores
@@ -618,10 +619,10 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
 
       {/* ── Full review links ── */}
       <div className="border-t border-slate-100 px-6 py-3 flex justify-between rounded-b-2xl">
-        <Link href={`/game/${a.game.slug}`} className="text-xs text-indigo-600 hover:text-indigo-800 hover:underline font-medium">
+        <Link href={`/${locale}/game/${a.game.slug}`} className="text-xs text-indigo-600 hover:text-indigo-800 hover:underline font-medium">
           {t('scFullReview', { title: a.game.title.split(' ').slice(0, 3).join(' ') })} →
         </Link>
-        <Link href={`/game/${b.game.slug}`} className="text-xs text-indigo-600 hover:text-indigo-800 hover:underline font-medium">
+        <Link href={`/${locale}/game/${b.game.slug}`} className="text-xs text-indigo-600 hover:text-indigo-800 hover:underline font-medium">
           {t('scFullReview', { title: b.game.title.split(' ').slice(0, 3).join(' ') })} →
         </Link>
       </div>
@@ -633,6 +634,7 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
 
 function SuggestionStrip({ highRiskGame }: { highRiskGame: GameCardProps }) {
   const t = useTranslations('compare')
+  const locale = useLocale()
   const [suggestions, setSuggestions] = useState<GameSummary[]>([])
   const genre = highRiskGame.game.genres[0]
   const ris   = highRiskGame.scores?.ris ?? 0
@@ -659,7 +661,7 @@ function SuggestionStrip({ highRiskGame }: { highRiskGame: GameCardProps }) {
         {suggestions.map(s => (
           <Link
             key={s.slug}
-            href={`/game/${s.slug}`}
+            href={`/${locale}/game/${s.slug}`}
             className="flex items-center gap-3 bg-white rounded-xl border border-emerald-200 px-3 py-2.5 hover:border-indigo-300 hover:shadow-sm transition-all"
           >
             <div className="w-10 h-10 rounded-lg overflow-hidden bg-emerald-100 shrink-0">
@@ -702,6 +704,7 @@ async function loadGame(slug: string): Promise<GameCardProps | null> {
 
 function ComparePageInner() {
   const t            = useTranslations('compare')
+  const locale       = useLocale()
   const router       = useRouter()
   const searchParams = useSearchParams()
   const [gameA, setGameA] = useState<GameCardProps | null>(null)
@@ -723,7 +726,7 @@ function ComparePageInner() {
     if (a) params.set('a', a.game.slug)
     if (b) params.set('b', b.game.slug)
     const qs = params.toString()
-    router.replace(qs ? `/compare?${qs}` : '/compare', { scroll: false })
+    router.replace(qs ? `/${locale}/compare?${qs}` : `/${locale}/compare`, { scroll: false })
   }, [router])
 
   function selectA(data: GameCardProps) { setGameA(data); syncUrl(data, gameB) }

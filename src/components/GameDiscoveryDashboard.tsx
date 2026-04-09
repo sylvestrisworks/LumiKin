@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { ArrowRight, ChevronDown, ChevronUp, Sparkles, Ban, Users, Timer, Brain, Star, Leaf, BookOpen } from 'lucide-react'
 import GameCompactCard from './GameCompactCard'
 import { curascoreGradient, curascoreRing, curascoreBg } from '@/lib/ui'
@@ -215,6 +215,7 @@ type Props = {
 export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: Props) {
   const t = useTranslations('discover')
   const tAge = useTranslations('age')
+  const locale = useLocale()
   const [activeAge,      setActiveAge]      = useState<string | null>(null)
   const [activeGenre,    setActiveGenre]    = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
@@ -229,16 +230,16 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
     .filter(g => !activeGenre || (g.genres ?? []).includes(activeGenre))
     .slice(0, 12)
 
-  const browseHref = [
-    '/browse',
-    activeSeg   ? `age=${activeSeg.value}`    : '',
-    activeGenre ? `genres=${activeGenre}`     : '',
-  ].filter(Boolean).join('?').replace('?age', '?age').replace(/\?([^?]*)&?([^?]*)$/, (_, a, b) => b ? `?${a}&${b}` : `?${a}`)
+  const browseParams = new URLSearchParams()
+  if (activeSeg)   browseParams.set('age',    activeSeg.value)
+  if (activeGenre) browseParams.set('genres', activeGenre)
+  const browseSearch = browseParams.toString()
+  const browseHref = `/${locale}/browse${browseSearch ? `?${browseSearch}` : ''}`
 
   const activeSegLabel = activeSeg ? tAge(activeSeg.labelKey as Parameters<typeof tAge>[0]) : null
   const gridTitle = activeSegLabel
     ? `${activeSegLabel}${activeGenre ? ` · ${activeGenre}` : ''}`
-    : activeGenre ? activeGenre : 'Top rated games'
+    : activeGenre ? activeGenre : t('topRatedGames')
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -283,7 +284,7 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
           {CATEGORY_PILLS.map((pill) => (
             <Link
               key={pill.label}
-              href={pill.href}
+              href={'/' + locale + pill.href}
               onClick={() => setActiveCategory(activeCategory === pill.label ? null : pill.label)}
               className={`shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold
                 border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm
@@ -371,7 +372,7 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
             <p className="text-indigo-200 text-sm mt-0.5">{t('groundedResearch')}</p>
           </div>
           <Link
-            href="/browse"
+            href={`/${locale}/browse`}
             className="shrink-0 bg-white text-indigo-700 font-black text-sm px-6 py-3 rounded-xl hover:bg-indigo-50 transition-colors flex items-center gap-2"
           >
             {t('browseAll')} <ArrowRight size={15} strokeWidth={2.5} />

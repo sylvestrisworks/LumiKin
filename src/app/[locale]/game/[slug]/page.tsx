@@ -6,7 +6,6 @@ import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { games, gameScores, reviews, darkPatterns, complianceStatus } from '@/lib/db/schema'
 import GameCard from '@/components/GameCard'
-import ShareButton from '@/components/ShareCard'
 import type { ComplianceBadge, DarkPattern, GameCardProps, SerializedGame, SerializedScores, SerializedReview } from '@/types/game'
 
 type Props = { params: { slug: string } }
@@ -253,11 +252,6 @@ export default async function GamePage({ params }: Props) {
       <div className="min-h-screen bg-slate-50">
         <main className="max-w-2xl mx-auto px-4 py-6">
           <GameCard {...data} />
-
-          {/* Share button row */}
-          <div className="mt-3 flex justify-end">
-            <ShareButton data={data} />
-          </div>
 
           {/* Description */}
           {game.description && (

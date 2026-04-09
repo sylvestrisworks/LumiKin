@@ -8,6 +8,7 @@ import type { DarkPattern, GameCardProps, SerializedReview, SerializedScores } f
 import { esrbToAge, ageBadgeColor } from '@/lib/ui'
 import DarkPatternPills from './DarkPatternPills'
 import ComplianceBadges from './ComplianceBadges'
+import ShareButton from './ShareCard'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -68,33 +69,38 @@ function getVerdict(score: number | null): StatusVerdict {
   return              { label: 'AVOID',   color: 'text-red-600',     bg: 'bg-red-50',      ring: '#ef4444' }
 }
 
-// ─── Progress ring ────────────────────────────────────────────────────────────
+// ─── Horseshoe ring ───────────────────────────────────────────────────────────
 
-function ProgressRing({ score }: { score: number | null }) {
+function HorseshoeRing({ score }: { score: number | null }) {
   const s       = score ?? 0
   const verdict = getVerdict(s)
-  const radius  = 54
-  const stroke  = 8
-  const norm    = radius - stroke / 2
-  const circ    = 2 * Math.PI * norm
-  const offset  = circ - (s / 100) * circ
+  const size    = 160
+  const cx      = size / 2
+  const cy      = size / 2
+  const r       = 62
+  const stroke  = 12
+  const circ    = 2 * Math.PI * r
+  // 270° arc — gap at bottom
+  const totalArc = (270 / 360) * circ
+  const gap      = circ - totalArc
+  const filled   = (s / 100) * totalArc
 
   return (
-    <div className="relative inline-flex items-center justify-center w-36 h-36">
-      <svg width="144" height="144" className="-rotate-90" aria-hidden="true">
-        <circle cx="72" cy="72" r={norm} fill="none" stroke="#e2e8f0" strokeWidth={stroke} />
-        <circle
-          cx="72" cy="72" r={norm} fill="none"
-          stroke={verdict.ring} strokeWidth={stroke}
-          strokeLinecap="round"
-          strokeDasharray={circ}
-          strokeDashoffset={offset}
-          style={{ transition: 'stroke-dashoffset 0.6s ease' }}
-        />
+    <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} style={{ transform: 'rotate(135deg)' }} aria-hidden="true">
+        {/* Track */}
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#e2e8f0"
+          strokeWidth={stroke} strokeLinecap="round"
+          strokeDasharray={`${totalArc} ${gap}`} />
+        {/* Fill */}
+        <circle cx={cx} cy={cy} r={r} fill="none"
+          stroke={verdict.ring} strokeWidth={stroke} strokeLinecap="round"
+          strokeDasharray={`${filled} ${circ - filled}`}
+          style={{ transition: 'stroke-dasharray 0.6s ease' }} />
       </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-4xl font-black tracking-tighter text-slate-900 leading-none">{s}</span>
-        <span className="text-[10px] font-bold text-slate-400 mt-0.5">/ 100</span>
+      <div className="absolute inset-0 flex flex-col items-center justify-center pb-4">
+        <span className="text-5xl font-black tracking-tighter leading-none" style={{ color: verdict.ring }}>{s}</span>
+        <span className="text-xs font-bold text-slate-400 mt-1">/ 100</span>
       </div>
     </div>
   )
@@ -563,115 +569,102 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
   return (
     <div className="bg-gray-50 rounded-3xl p-5 space-y-4">
 
-      {/* ── 1. HEADER BOX ──────────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
-        {/* Hero image */}
+      {/* ── 1. HERO IMAGE — title + meta overlaid ──────────────────────────────── */}
+      <div className="rounded-3xl overflow-hidden relative">
         {game.backgroundImage ? (
-          <div className="relative h-44 overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={game.backgroundImage} alt="" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-            {game.esrbRating && (
-              <span className={`absolute top-3 right-3 text-xs font-black px-2 py-1 rounded-full text-white flex items-center gap-1 ${ageBadgeColor(game.esrbRating)}`}>
-                <User size={10} strokeWidth={2.5} />
-                {esrbToAge(game.esrbRating)}
-              </span>
-            )}
-          </div>
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={game.backgroundImage} alt="" className="w-full h-52 object-cover" />
         ) : (
-          <div className={`h-28 bg-gradient-to-br ${gradient} flex items-center justify-center relative`}>
-            <span className="text-5xl font-black text-white/20 select-none">{abbr}</span>
-            {game.esrbRating && (
-              <span className={`absolute top-3 right-3 text-xs font-black px-2 py-1 rounded-full text-white flex items-center gap-1 ${ageBadgeColor(game.esrbRating)}`}>
-                <User size={10} strokeWidth={2.5} />
-                {esrbToAge(game.esrbRating)}
-              </span>
-            )}
+          <div className={`h-52 bg-gradient-to-br ${gradient} flex items-center justify-center`}>
+            <span className="text-7xl font-black text-white/20 select-none">{abbr}</span>
           </div>
         )}
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-        <div className="p-5">
-          {/* Title row */}
-          <div className="mb-3">
-            <h1 className="text-xl sm:text-2xl font-black tracking-tighter text-slate-900 leading-tight">
-              {game.title}
-            </h1>
-          </div>
-
-          {/* Developer + year */}
-          {(game.developer || game.releaseDate) && (
-            <p className="text-sm text-slate-400 font-medium mb-2">
-              {game.developer}
-              {game.developer && game.releaseDate && <span className="mx-1.5 opacity-40">·</span>}
-              {game.releaseDate && new Date(game.releaseDate).getFullYear()}
-            </p>
+        {/* Top-right badges */}
+        <div className="absolute top-3 right-3 flex items-center gap-2">
+          {game.metacriticScore != null && (
+            <span className="text-xs font-bold bg-black/40 backdrop-blur-sm text-white px-2.5 py-1 rounded-full border border-white/20">
+              Metacritic {game.metacriticScore}
+            </span>
           )}
-
-          {/* Platforms */}
-          {game.platforms.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mb-3">
-              {game.platforms.slice(0, 5).map((p) => (
-                <span key={p} className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">
-                  {p}
-                </span>
-              ))}
-              {game.platforms.length > 5 && (
-                <span className="text-xs text-slate-400 self-center">+{game.platforms.length - 5}</span>
-              )}
-            </div>
+          {game.esrbRating && (
+            <span className={`text-xs font-black px-2 py-1 rounded-full text-white flex items-center gap-1 ${ageBadgeColor(game.esrbRating)}`}>
+              <User size={10} strokeWidth={2.5} />
+              {esrbToAge(game.esrbRating)}
+            </span>
           )}
+        </div>
 
-          {/* Genre tags */}
-          <div className="flex flex-wrap gap-2">
-            {game.genres.slice(0, 5).map((g) => (
-              <span key={g} className="text-xs font-semibold bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full tracking-tight">
+        {/* Bottom overlay — title + dev/year + genre tags */}
+        <div className="absolute bottom-0 left-0 right-0 px-4 pb-4">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tighter text-white leading-tight drop-shadow mb-1">
+            {game.title}
+          </h1>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            {game.developer && (
+              <span className="text-xs font-semibold text-white/80">{game.developer}</span>
+            )}
+            {game.developer && (game.releaseDate || game.genres.length > 0) && (
+              <span className="text-white/40 text-xs">|</span>
+            )}
+            {game.releaseDate && (
+              <span className="text-xs font-semibold text-white/70">{new Date(game.releaseDate).getFullYear()}</span>
+            )}
+            {game.genres.slice(0, 3).map((g) => (
+              <span key={g} className="text-xs font-semibold text-white/70 bg-white/10 px-2 py-0.5 rounded-full backdrop-blur-sm">
                 {g}
               </span>
             ))}
-            {game.metacriticScore != null && (
-              <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-3 py-1.5 rounded-full ml-auto">
-                Metacritic {game.metacriticScore}
-              </span>
-            )}
           </div>
         </div>
       </div>
 
-      {/* ── 2. MASTER SCORE BOX ────────────────────────────────────────────────── */}
+      {/* ── 2. SCORE CARD — ring + verdict + share ──────────────────────────────── */}
       {hasReview && scores.curascore != null ? (() => {
         const verdict = getVerdict(scores.curascore)
         return (
-          <div className="bg-white border border-slate-100 rounded-3xl p-6">
-            <div className="flex items-center gap-6">
-              {/* Ring */}
-              <div className="shrink-0">
-                <ProgressRing score={scores.curascore} />
-              </div>
-              {/* Right column */}
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{t('curascore')}</p>
-                {/* Verdict badge */}
-                <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-black uppercase tracking-wide mb-3 ${verdict.bg} ${verdict.color}`}>
-                  {verdict.label}
-                </div>
-                {/* min/day */}
-                {scores.timeRecommendationMinutes != null && (
-                  <div className="flex items-center gap-1.5 text-sm font-bold text-slate-700 mb-2">
-                    <Clock size={14} strokeWidth={2.5} className="text-emerald-500 shrink-0" />
-                    {scores.timeRecommendationMinutes >= 120 ? '120+' : scores.timeRecommendationMinutes} min/day recommended
-                  </div>
-                )}
-                {scores.executiveSummary && (
-                  <p className="text-xs text-slate-500 leading-snug">{scores.executiveSummary}</p>
-                )}
-                {scores.debateRounds != null && (
-                  <div className="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-violet-50 border border-violet-200 text-xs font-semibold text-violet-700">
-                    <span>⚖️</span>
-                    {t('adversarialDebate', { rounds: scores.debateRounds ?? 0 })}
-                  </div>
-                )}
-              </div>
+          <div className="bg-white rounded-3xl shadow-sm px-6 pt-5 pb-6 text-center">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">{t('curascore')}</p>
+
+            {/* Horseshoe ring */}
+            <div className="flex justify-center mb-3">
+              <HorseshoeRing score={scores.curascore} />
             </div>
+
+            {/* Verdict badge */}
+            <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-black uppercase tracking-wide mb-3 ${verdict.bg} ${verdict.color}`}>
+              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: verdict.ring }} />
+              {verdict.label}
+            </div>
+
+            {/* Executive summary */}
+            {scores.executiveSummary && (
+              <p className="text-sm text-slate-600 leading-snug mb-4 max-w-xs mx-auto">
+                {scores.executiveSummary}
+              </p>
+            )}
+
+            {/* min/day */}
+            {scores.timeRecommendationMinutes != null && (
+              <div className="inline-flex items-center gap-1.5 text-sm font-bold text-slate-700 bg-slate-50 px-4 py-2 rounded-full mb-4">
+                <Clock size={14} strokeWidth={2.5} className="text-emerald-500" />
+                {scores.timeRecommendationMinutes >= 120 ? '120+' : scores.timeRecommendationMinutes} min/day recommended
+              </div>
+            )}
+
+            {/* Share button */}
+            <div className="flex justify-center mt-1">
+              <ShareButton data={{ game, scores, review, darkPatterns, compliance }} />
+            </div>
+
+            {scores.debateRounds != null && (
+              <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-violet-50 border border-violet-200 text-xs font-semibold text-violet-700">
+                <span>⚖️</span>
+                {t('adversarialDebate', { rounds: scores.debateRounds ?? 0 })}
+              </div>
+            )}
           </div>
         )
       })() : (

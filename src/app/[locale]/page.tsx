@@ -102,6 +102,7 @@ async function getCarouselRows(platforms: string[], age?: string, locale = 'en')
   const browseBase = `/${locale}/browse`
 
   const rows: CarouselRowData[] = [
+    { id: 'newgood',  title: 'New & Worth Playing',     emoji: '✨', browseHref: `${browseBase}?sort=newest`,               games: newAndGood.map(toSummary)    },
     { id: 'top',      title: 'The Highest Curascores', emoji: '⭐', browseHref: `${browseBase}?sort=curascore`,           games: topRated.map(toSummary)    },
     { id: 'coop',     title: 'Family Co-Op',           emoji: '👨‍👩‍👧', browseHref: `${browseBase}?benefits=teamwork`,           games: coopPlay.map(toSummary)    },
     { id: 'safe',     title: 'Safe & Stress-Free',     emoji: '✅', browseHref: `${browseBase}?risk=low`,                 games: lowRisk.map(toSummary)     },
@@ -110,7 +111,6 @@ async function getCarouselRows(platforms: string[], age?: string, locale = 'en')
     { id: 'vr',       title: 'VR & AR',                emoji: '🥽', browseHref: `${browseBase}?platforms=VR`,             games: vrGames.map(toSummary)     },
     { id: 'beginner', title: 'New to gaming',          emoji: '🎯', browseHref: `${browseBase}?age=E&risk=low`,           games: beginnerGames.map(toSummary) },
     { id: 'dopamine', title: 'Dopamine Traps',          emoji: '🎰', browseHref: `${browseBase}?sort=riskiest`,             games: dopamineTraps.map(toSummary) },
-    { id: 'newgood',  title: 'New & Worth Playing',     emoji: '✨', browseHref: `${browseBase}?sort=newest`,               games: newAndGood.map(toSummary)    },
   ]
 
   return rows.filter(r => r.games.length > 0)

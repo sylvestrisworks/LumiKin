@@ -51,7 +51,7 @@ function toSummary(r: any): GameSummary {
     slug:            r.slug,
     title:           r.title,
     developer:       r.developer ?? null,
-    genres:          (r.genres as string[]) ?? [],
+    genres:          Array.isArray(r.genres) ? (r.genres as string[]) : [],
     esrbRating:      r.esrbRating ?? null,
     backgroundImage: r.backgroundImage ?? null,
     metacriticScore: r.metacriticScore ?? null,
@@ -70,9 +70,14 @@ async function getStats() {
   return { totalGames, scoredGames, lowRiskGames }
 }
 
+// Escape ILIKE special chars to prevent pattern injection / expensive regex backtracking
+function escapeIlike(s: string): string {
+  return s.replace(/[\\%_]/g, ch => '\\' + ch)
+}
+
 async function getCarouselRows(platforms: string[], age?: string, locale = 'en'): Promise<CarouselRowData[]> {
   const platformFilter: SQL | undefined = platforms.length > 0
-    ? or(...platforms.map(p => sql`${games.platforms}::text ILIKE ${'%' + p + '%'}`))
+    ? or(...platforms.map(p => sql`${games.platforms}::text ILIKE ${'%' + escapeIlike(p) + '%'}`))
     : undefined
 
   const ratings = ESRB_FOR_AGE[age ?? ''] ?? ['E', 'E10+', 'T']
@@ -119,9 +124,11 @@ export default async function HomePage({ params, searchParams }: Props) {
   const sp = await searchParams
   const t = await getTranslations({ locale, namespace: 'home' })
 
-  const platformParam = typeof sp.platform === 'string' ? sp.platform : ''
-  const platforms = platformParam ? platformParam.split(',').filter(Boolean) : []
-  const age       = typeof sp.age === 'string' ? sp.age : undefined
+  const platformParam = typeof sp.platform === 'string' ? sp.platform.slice(0, 200) : ''
+  const platforms = platformParam
+    ? platformParam.split(',').filter(Boolean).slice(0, 8).map(p => p.slice(0, 50))
+    : []
+  const age = typeof sp.age === 'string' && sp.age in ESRB_FOR_AGE ? sp.age : undefined
 
   const [carousels, stats] = await Promise.all([
     getCarouselRows(platforms, age, locale),
@@ -179,7 +186,7 @@ export default async function HomePage({ params, searchParams }: Props) {
             {[
               { value: stats.scoredGames,  label: t('statsGamesReviewed') },
               { value: stats.lowRiskGames, label: t('statsLowRisk')       },
-              { value: '5',                label: t('statsScoringRubrics') },
+              { value: '49',               label: t('statsDataPoints') },
             ].map(s => (
               <div key={s.label} className="stat-shimmer flex flex-col items-center bg-white/10 border border-white/20 rounded-2xl px-3 sm:px-5 py-3 backdrop-blur-sm">
                 <span className="text-xl sm:text-2xl font-extrabold text-white">{s.value}</span>

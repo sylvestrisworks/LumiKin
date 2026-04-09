@@ -8,7 +8,9 @@ import { Suspense } from 'react'
 function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/review'
+  // Guard against open redirect — only allow relative paths on this origin
+  const rawCallback = searchParams.get('callbackUrl') ?? '/review'
+  const callbackUrl = rawCallback.startsWith('/') && !rawCallback.startsWith('//') ? rawCallback : '/review'
 
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')

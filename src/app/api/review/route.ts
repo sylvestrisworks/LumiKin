@@ -44,8 +44,8 @@ const ReviewSchema = z.object({
   violenceLevel: risk(), sexualContent: risk(), language: risk(),
   substanceRef: risk(), fearHorror: risk(),
   // Practical
-  estimatedMonthlyCostLow:   z.number().min(0).nullable().optional(),
-  estimatedMonthlyCostHigh:  z.number().min(0).nullable().optional(),
+  estimatedMonthlyCostLow:   z.number().min(0).max(10000).nullable().optional(),
+  estimatedMonthlyCostHigh:  z.number().min(0).max(10000).nullable().optional(),
   minSessionMinutes:         z.number().int().min(0).max(480).nullable().optional(),
   hasNaturalStoppingPoints:  z.boolean().nullable().optional(),
   penalizesBreaks:           z.boolean().nullable().optional(),
@@ -54,7 +54,11 @@ const ReviewSchema = z.object({
   benefitsNarrative: z.string().max(5000).nullable().optional(),
   risksNarrative:    z.string().max(5000).nullable().optional(),
   parentTip:         z.string().max(2000).nullable().optional(),
-})
+}).refine(
+  d => d.estimatedMonthlyCostLow == null || d.estimatedMonthlyCostHigh == null
+    || d.estimatedMonthlyCostLow <= d.estimatedMonthlyCostHigh,
+  { message: 'estimatedMonthlyCostLow must be ≤ estimatedMonthlyCostHigh', path: ['estimatedMonthlyCostLow'] },
+)
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -183,6 +187,7 @@ export async function POST(req: NextRequest) {
     reviewId = existing.id
   } else {
     const [inserted] = await db.insert(reviews).values(reviewData).returning({ id: reviews.id })
+    if (!inserted) return NextResponse.json({ error: 'Review insert failed' }, { status: 500 })
     reviewId = inserted.id
   }
 

@@ -12,7 +12,13 @@ export default function ExpandableText({ text, lines = 4 }: { text: string; line
   return (
     <div>
       <p
-        className={`text-sm text-slate-700 leading-relaxed ${!expanded && needsToggle ? `line-clamp-${lines}` : ''}`}
+        className={`text-sm text-slate-700 leading-relaxed ${!expanded && needsToggle ? (
+          lines === 2 ? 'line-clamp-2' :
+          lines === 3 ? 'line-clamp-3' :
+          lines === 5 ? 'line-clamp-5' :
+          lines === 6 ? 'line-clamp-6' :
+          'line-clamp-4'
+        ) : ''}`}
       >
         {text}
       </p>

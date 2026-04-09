@@ -80,7 +80,7 @@ function toSummary(r: {
     slug:            r.slug,
     title:           r.title,
     developer:       r.developer,
-    genres:          (r.genres as string[]) ?? [],
+    genres:          Array.isArray(r.genres) ? (r.genres as string[]) : [],
     esrbRating:      r.esrbRating,
     backgroundImage: r.backgroundImage,
     metacriticScore: r.metacriticScore,

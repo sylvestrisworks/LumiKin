@@ -22,7 +22,7 @@
     "searchPlaceholder": "Recherchez parmi plus de {count} jeux évalués…",
     "statsGamesReviewed": "{count, plural, one {# jeu évalué} other {# jeux évalués}}",
     "statsLowRisk": "{count, plural, one {# sélection à faible risque} other {# sélections à faible risque}}",
-    "statsScoringRubrics": "{count, plural, one {# grille d'évaluation} other {# grilles d'évaluation}}",
+    "statsDataPoints": "métriques d'évaluation par jeu",
     "yourChildsAge": "Âge de votre enfant",
     "yourPlatforms": "Vos plateformes",
     "clearFilters": "Effacer les filtres",

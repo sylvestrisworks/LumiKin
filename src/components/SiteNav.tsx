@@ -33,6 +33,7 @@ export default function SiteNav({ authSlot }: { authSlot?: React.ReactNode }) {
     { href: `/${locale}/discover`, label: t('discover') },
     { href: `/${locale}/browse`,   label: t('browse')   },
     { href: `/${locale}/compare`,  label: t('compare')  },
+    { href: `/${locale}/library`,  label: t('library')  },
   ]
 
   function focusHeroSearch() {

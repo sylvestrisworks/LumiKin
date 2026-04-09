@@ -2,10 +2,12 @@ export const dynamic = 'force-dynamic'
 
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { eq } from 'drizzle-orm'
+import { eq, and } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { games, gameScores, reviews, darkPatterns, complianceStatus } from '@/lib/db/schema'
+import { games, gameScores, reviews, darkPatterns, complianceStatus, userGames } from '@/lib/db/schema'
 import GameCard from '@/components/GameCard'
+import LibraryButton from '@/components/LibraryButton'
+import { auth } from '@/auth'
 import type { ComplianceBadge, DarkPattern, GameCardProps, SerializedGame, SerializedScores, SerializedReview } from '@/types/game'
 
 type Props = { params: { slug: string } }
@@ -219,10 +221,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default async function GamePage({ params }: Props) {
-  const data = await fetchGameData(params.slug)
+  const [data, session] = await Promise.all([
+    fetchGameData(params.slug),
+    auth(),
+  ])
   if (!data) notFound()
 
   const { game, scores } = data
+
+  // Fetch user's library/wishlist state for this game (if logged in)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const uid = (session?.user as any)?.id ?? session?.user?.email ?? null
+  let initialOwned = false
+  let initialWishlisted = false
+
+  if (uid && game.id) {
+    const entries = await db
+      .select({ listType: userGames.listType })
+      .from(userGames)
+      .where(and(eq(userGames.userId, uid), eq(userGames.gameId, game.id)))
+    initialOwned     = entries.some(e => e.listType === 'owned')
+    initialWishlisted = entries.some(e => e.listType === 'wishlist')
+  }
 
   // JSON-LD structured data
   const jsonLd = {
@@ -252,6 +272,17 @@ export default async function GamePage({ params }: Props) {
       <div className="min-h-screen bg-slate-50">
         <main className="max-w-2xl mx-auto px-4 py-6">
           <GameCard {...data} />
+
+          {/* Library / Wishlist buttons — shown only when logged in */}
+          {uid && game.id && (
+            <div className="mt-4 flex justify-center">
+              <LibraryButton
+                gameId={game.id}
+                initialOwned={initialOwned}
+                initialWishlisted={initialWishlisted}
+              />
+            </div>
+          )}
 
           {/* Description */}
           {game.description && (

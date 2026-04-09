@@ -348,6 +348,21 @@ export const verificationTokens = pgTable('verificationToken', {
 }))
 
 // ============================================
+// USER GAME LISTS (library + wishlist)
+// ============================================
+
+export const userGames = pgTable('user_games', {
+  id:             serial('id').primaryKey(),
+  userId:         text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  gameId:         integer('game_id').notNull().references(() => games.id, { onDelete: 'cascade' }),
+  listType:       varchar('list_type', { length: 20 }).notNull().default('owned'), // 'owned' | 'wishlist'
+  addedAt:        timestamp('added_at').defaultNow(),
+}, (table) => ({
+  uniqueEntry:    uniqueIndex('user_game_list_unique').on(table.userId, table.gameId, table.listType),
+  userIdx:        index('user_games_user_idx').on(table.userId),
+}))
+
+// ============================================
 // CHILD PROFILES
 // ============================================
 

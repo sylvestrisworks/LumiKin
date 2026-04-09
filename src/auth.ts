@@ -47,4 +47,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: {
     strategy: 'jwt',
   },
+  callbacks: {
+    // Ensure user.id is available in the JWT token
+    jwt({ token, user }) {
+      if (user?.id) token.sub = user.id
+      return token
+    },
+    // Expose token.sub as session.user.id
+    session({ session, token }) {
+      if (token.sub) session.user.id = token.sub
+      return session
+    },
+  },
 })

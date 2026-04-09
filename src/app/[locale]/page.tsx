@@ -87,7 +87,7 @@ async function getCarouselRows(platforms: string[], age?: string, locale = 'en')
 
   const base = (extra?: SQL) => and(isNotNull(gameScores.curascore), platformFilter, ageFilter, extra)
 
-  const [topRated, coopPlay, lowRisk, highBenefit, teamwork, vrGames, beginnerGames] = await Promise.all([
+  const [topRated, coopPlay, lowRisk, highBenefit, teamwork, vrGames, beginnerGames, dopamineTraps] = await Promise.all([
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base()).orderBy(desc(gameScores.curascore)).limit(12),
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base(gte(gameScores.socialEmotionalScore, 0.5))).orderBy(desc(gameScores.socialEmotionalScore)).limit(12),
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base(lte(gameScores.ris, 0.3))).orderBy(desc(gameScores.curascore)).limit(12),
@@ -95,6 +95,7 @@ async function getCarouselRows(platforms: string[], age?: string, locale = 'en')
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base(sql`${gameScores.topBenefits}::jsonb @> ${JSON.stringify([{ skill: 'Teamwork' }])}::jsonb`)).orderBy(desc(gameScores.curascore)).limit(12),
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(isNotNull(gameScores.curascore), eq(games.isVr, true), ageFilter)).orderBy(desc(gameScores.curascore)).limit(12),
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(isNotNull(gameScores.curascore), ageFilter, platformFilter, inArray(games.esrbRating, ['E', 'E10+']), lte(gameScores.ris, 0.25), gte(gameScores.curascore, 55))).orderBy(desc(gameScores.curascore)).limit(12),
+    db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(isNotNull(gameScores.curascore), platformFilter, ageFilter, gte(gameScores.ris, 0.60))).orderBy(desc(gameScores.ris)).limit(12),
   ])
 
   const browseBase = `/${locale}/browse`
@@ -107,6 +108,7 @@ async function getCarouselRows(platforms: string[], age?: string, locale = 'en')
     { id: 'teamwork', title: 'Team up',                emoji: '🤝', browseHref: `${browseBase}?benefits=teamwork`,        games: teamwork.map(toSummary)    },
     { id: 'vr',       title: 'VR & AR',                emoji: '🥽', browseHref: `${browseBase}?platforms=VR`,             games: vrGames.map(toSummary)     },
     { id: 'beginner', title: 'New to gaming',          emoji: '🎯', browseHref: `${browseBase}?age=E&risk=low`,           games: beginnerGames.map(toSummary) },
+    { id: 'dopamine', title: 'Dopamine Traps',          emoji: '🎰', browseHref: `${browseBase}?sort=riskiest`,             games: dopamineTraps.map(toSummary) },
   ]
 
   return rows.filter(r => r.games.length > 0)
@@ -143,6 +145,7 @@ export default async function HomePage({ params, searchParams }: Props) {
     teamwork: t('carouselTeamwork'),
     vr:       t('carouselVr'),
     beginner: t('carouselBeginner'),
+    dopamine: t('carouselDopamine'),
   }
 
   const HOW_IT_WORKS = [

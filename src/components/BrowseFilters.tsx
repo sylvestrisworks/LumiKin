@@ -58,6 +58,7 @@ export type ActiveFilters = {
   price?: string
   rep?: string
   noProp?: string
+  bechdel?: string
   sort: string
   q?: string
   page?: number
@@ -92,6 +93,7 @@ export default function BrowseFilters({ active, totalCount }: Props) {
     if (merged.price)             params.set('price',      merged.price)
     if (merged.rep)               params.set('rep',        merged.rep)
     if (merged.noProp)            params.set('noProp',     merged.noProp)
+    if (merged.bechdel)           params.set('bechdel',    merged.bechdel)
     if (merged.sort && merged.sort !== 'curascore') params.set('sort', merged.sort)
     if (merged.q)                 params.set('q',          merged.q)
     if (merged.view && merged.view !== 'list') params.set('view', merged.view)
@@ -108,7 +110,7 @@ export default function BrowseFilters({ active, totalCount }: Props) {
   const activeCount = [
     active.age, ...active.genres, ...active.platforms,
     ...active.benefits, ...active.compliance,
-    active.risk, active.time, active.price, active.rep, active.noProp,
+    active.risk, active.time, active.price, active.rep, active.noProp, active.bechdel,
   ].filter(Boolean).length
 
   const sortOptions = [
@@ -323,6 +325,15 @@ function FilterPanel({
           onClick={() => push({ noProp: active.noProp === 'true' ? undefined : 'true' })}
         />
         <p className="text-xs text-slate-400 mt-1">{t('ideologyNote')}</p>
+      </FilterSection>
+
+      <FilterSection title={t('sectionBechdel')} note={t('displayOnly')}>
+        <Chip
+          label={t('bechdelPass')}
+          active={active.bechdel === 'pass'}
+          onClick={() => push({ bechdel: active.bechdel === 'pass' ? undefined : 'pass' })}
+        />
+        <p className="text-xs text-slate-400 mt-1">{t('bechdelNote')}</p>
       </FilterSection>
 
       <FilterSection title={t('sectionCompliance')} note={t('estimated')}>

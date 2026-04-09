@@ -41,6 +41,7 @@
     "carouselTeamwork": "Esprit d'équipe",
     "carouselVr": "VR & AR",
     "carouselBeginner": "Pour les débutants",
+    "carouselDopamine": "Pièges à dopamine",
     "featureScience": "Une évaluation fondée sur la science",
     "featureScienceBody": "Nous traduisons des concepts complexes de science cognitive, de psychologie comportementale et d'apprentissage socio-émotionnel en un score clair et fiable.",
     "featureAgenda": "Transparence totale",
@@ -119,6 +120,9 @@
     "sectionIdeology": "Contenu idéologique",
     "ideologyExclude": "Exclure le contenu idéologique",
     "ideologyNote": "Masque les jeux signalés pour leur propagande ou un fort cadre idéologique",
+    "sectionBechdel": "Test de Bechdel",
+    "bechdelPass": "Passe le test de Bechdel",
+    "bechdelNote": "Des personnages féminins se parlent d'autre chose qu'un homme",
     "sectionCompliance": "Conformité"
   },
   "discover": {

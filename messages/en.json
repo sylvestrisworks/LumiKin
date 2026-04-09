@@ -41,6 +41,7 @@
     "carouselTeamwork": "Team up",
     "carouselVr": "VR & AR",
     "carouselBeginner": "New to gaming",
+    "carouselDopamine": "Dopamine Traps",
     "featureScience": "Science-Backed Scoring",
     "featureScienceBody": "We translate complex cognitive science, behavioral psychology, and social-emotional learning into one clear, reliable score.",
     "featureAgenda": "No Hidden Agendas",
@@ -119,6 +120,9 @@
     "sectionIdeology": "Ideological content",
     "ideologyExclude": "Exclude ideological content",
     "ideologyNote": "Hides games flagged with propaganda or strong ideological framing",
+    "sectionBechdel": "Bechdel Test",
+    "bechdelPass": "Passes Bechdel Test",
+    "bechdelNote": "Female characters talk to each other about something other than a man",
     "sectionCompliance": "Compliance"
   },
   "discover": {

@@ -157,6 +157,11 @@ async function queryGames(filters: ActiveFilters): Promise<{ rows: Row[]; total:
     )
   }
 
+  // Bechdel test filter
+  if (filters.bechdel === 'pass') {
+    conditions.push(eq(gameScores.bechdelResult, 'pass'))
+  }
+
   let orderBy
   switch (filters.sort) {
     case 'benefit':    orderBy = [desc(gameScores.bds),           desc(gameScores.curascore)]; break
@@ -225,6 +230,7 @@ function parseFilters(sp: Record<string, string | string[] | undefined>): Active
     price:      str('price'),
     rep:        str('rep'),
     noProp:     str('noProp'),
+    bechdel:    str('bechdel'),
     sort:       str('sort') ?? 'curascore',
     q:          str('q'),
     page:       str('page') ? parseInt(str('page')!) : 1,
@@ -246,6 +252,7 @@ function pageUrl(filters: ActiveFilters, targetPage: number, locale = 'en'): str
   if (filters.price)             params.set('price',      filters.price)
   if (filters.rep)               params.set('rep',        filters.rep)
   if (filters.noProp)            params.set('noProp',     filters.noProp)
+  if (filters.bechdel)           params.set('bechdel',    filters.bechdel)
   if (filters.sort && filters.sort !== 'curascore') params.set('sort', filters.sort)
   if (filters.q)                 params.set('q',          filters.q)
   if (filters.view && filters.view !== 'list') params.set('view', filters.view)
@@ -273,7 +280,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
   const activeFilterCount = [
     filters.age, ...filters.genres, ...filters.platforms,
     ...filters.benefits, ...filters.compliance,
-    filters.risk, filters.time, filters.price, filters.rep, filters.noProp,
+    filters.risk, filters.time, filters.price, filters.rep, filters.noProp, filters.bechdel,
   ].filter(Boolean).length
 
   return (

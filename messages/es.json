@@ -41,6 +41,7 @@
     "carouselTeamwork": "Juega en equipo",
     "carouselVr": "RV y RA",
     "carouselBeginner": "Para quienes empiezan a jugar",
+    "carouselDopamine": "Trampas de dopamina",
     "featureScience": "Puntuación con base científica",
     "featureScienceBody": "Traducimos la compleja ciencia cognitiva, la psicología conductual y el aprendizaje socioemocional en una puntuación clara y confiable.",
     "featureAgenda": "Sin intereses ocultos",
@@ -119,6 +120,9 @@
     "sectionIdeology": "Contenido ideológico",
     "ideologyExclude": "Excluir contenido ideológico",
     "ideologyNote": "Oculta juegos marcados con propaganda o con un fuerte enfoque ideológico",
+    "sectionBechdel": "Test de Bechdel",
+    "bechdelPass": "Pasa el test de Bechdel",
+    "bechdelNote": "Personajes femeninas hablan entre sí sobre algo que no sea un hombre",
     "sectionCompliance": "Cumplimiento"
   },
   "discover": {

@@ -41,6 +41,7 @@
     "carouselTeamwork": "Spielt im Team",
     "carouselVr": "VR & AR",
     "carouselBeginner": "Für Gaming-Einsteiger",
+    "carouselDopamine": "Dopamin-Fallen",
     "featureScience": "Wissenschaftlich fundierte Bewertungen",
     "featureScienceBody": "Wir übersetzen komplexe kognitive Wissenschaft, Verhaltenspsychologie und soziales und emotionales Lernen in eine klare, verlässliche Bewertung.",
     "featureAgenda": "Ohne versteckte Absichten",
@@ -119,6 +120,9 @@
     "sectionIdeology": "Ideologische Inhalte",
     "ideologyExclude": "Ideologische Inhalte ausschließen",
     "ideologyNote": "Blende Spiele aus, die Propaganda oder eine starke ideologische Botschaft enthalten",
+    "sectionBechdel": "Bechdel-Test",
+    "bechdelPass": "Besteht den Bechdel-Test",
+    "bechdelNote": "Weibliche Charaktere unterhalten sich über etwas anderes als einen Mann",
     "sectionCompliance": "Konformität"
   },
   "discover": {

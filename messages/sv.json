@@ -41,6 +41,7 @@
     "carouselTeamwork": "Samarbete",
     "carouselVr": "VR & AR",
     "carouselBeginner": "Ny på spel",
+    "carouselDopamine": "Dopaminfällor",
     "featureScience": "Vetenskapligt grundad betygsättning",
     "featureScienceBody": "Vi omvandlar komplex kognitiv vetenskap, beteendepsykologi och socioemotionell inlärning till ett tydligt, pålitligt betyg.",
     "featureAgenda": "Inga dolda agendor",
@@ -119,6 +120,9 @@
     "sectionIdeology": "Ideologiskt innehåll",
     "ideologyExclude": "Exkludera ideologiskt innehåll",
     "ideologyNote": "Döljer spel som markerats med propaganda eller stark ideologisk vinkling",
+    "sectionBechdel": "Bechdel-testet",
+    "bechdelPass": "Klarar Bechdel-testet",
+    "bechdelNote": "Kvinnliga karaktärer pratar med varandra om något annat än en man",
     "sectionCompliance": "Efterlevnad"
   },
   "discover": {

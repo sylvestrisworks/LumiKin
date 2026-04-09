@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { auth } from '@/auth'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { games, reviews, gameScores } from '@/lib/db/schema'
-import { authOptions } from '@/lib/auth'
 import { calculateGameScores } from '@/lib/scoring/engine'
 import type { ReviewInput } from '@/lib/scoring/types'
 
@@ -61,7 +60,7 @@ const ReviewSchema = z.object({
 )
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
   }

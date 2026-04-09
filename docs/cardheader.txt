@@ -1,0 +1,94 @@
+// GameCardHeroView.jsx
+// Scope: Top section only (First Impression / Hero). Bottom tabs remain as-is.
+
+import { TrafficLightScale, Typography, Cards } from './ui-system';
+
+export default function GameCardHeroView({ gameData }) {
+  // Map Curascore to the Red/Yellow/Green scale for instant visual read
+  const statusColor = TrafficLightScale.getColor(gameData.curascore); 
+  const statusLabel = TrafficLightScale.getLabel(gameData.curascore); // e.g., "GREAT" or "CAUTION"
+
+  return (
+    <div className="hero-section flex-col gap-4">
+      
+      {/* 1. HEADER: Muted Metadata */}
+      {/* Goal: Don't compete with the Curascore */}
+      <header className="flex justify-between items-center opacity-80">
+        <h1 className="text-2xl font-bold">{gameData.title}</h1>
+        <div className="metadata-group flex gap-2 text-sm bg-gray-100">
+          <PlatformTags platforms={gameData.platforms} />
+          <GenreTags genres={gameData.genres} />
+        </div>
+        <MetacriticBadge score={gameData.metacritic} style="ghost-outline" />
+      </header>
+
+      {/* 2. THE HERO CARD: Curascore */}
+      {/* Goal: Maximum punch, instant comprehension */}
+      <section className="curascore-hero-card shadow-md elevated rounded-xl">
+        <div className="flex-col items-center justify-center p-6">
+          <h3 className="text-xs font-bold tracking-wide">CURASCORE</h3>
+          
+          {/* Visual Anchor: Wrap number in a colored ring or sit on a progress bar */}
+          <ProgressRing value={gameData.curascore} color={statusColor} thickness="heavy">
+            <span className="text-6xl font-black" style={{ color: statusColor }}>
+              {gameData.curascore}
+            </span>
+          </ProgressRing>
+          
+          {/* Translation Label */}
+          <Badge className="mt-2 font-bold" color={statusColor}>
+            {statusLabel}
+          </Badge>
+        </div>
+      </section>
+
+      {/* 3. SUB-SCORES: Growth & Risk */}
+      {/* Goal: Provide context without fighting the Hero Card for attention */}
+      <section className="grid grid-cols-2 gap-4">
+        {/* White background, colored icons/text only */}
+        <Card variant="white-bg" className="growth-card">
+          <Header icon="sparkle" color="green">GROWTH</Header>
+          <Score value={gameData.growth.score} max={100} color="green" />
+          <QuickList items={gameData.growth.topSkills} /> {/* e.g., Problem Solving */}
+        </Card>
+
+        <Card variant="white-bg" className="risk-card">
+          <Header icon="lightning" color="orange">RISK</Header>
+          <Text size="large" weight="bold" color={gameData.risk.color}>
+            {gameData.risk.level} {/* e.g., HIGH */}
+          </Text>
+          <Text size="small" color="muted">
+            {gameData.risk.parentTranslation} {/* e.g., "High Addiction Risk" instead of "Engagement Patterns" */}
+          </Text>
+        </Card>
+      </section>
+
+      {/* 4. THE VITALS: Nutrition Label & Real Costs */}
+      {/* Goal: Surface dealbreakers immediately */}
+      <section className="vitals-warning-strip bg-yellow-50 p-4 rounded-lg flex-col gap-2">
+        <div className="critical-flags flex gap-2">
+          {/* Pulled from the tabs: the worst offenders */}
+          {gameData.criticalTactics.map(tactic => (
+            <Pill color="red-outline">{tactic.name}</Pill> 
+          ))} {/* e.g., <Pill>Loot Boxes</Pill>, <Pill>Stranger Chat</Pill> */}
+        </div>
+        
+        <div className="financial-reality flex items-center gap-2 font-bold">
+          <Icon name="wallet" />
+          <span>Typical Monthly Cost: {gameData.estimatedMonthlySpend}</span>
+        </div>
+      </section>
+
+      {/* 5. PARENT PRO-TIP: Skimmable Action Items */}
+      <section className="parent-pro-tip bg-blue-50 p-4 rounded-lg">
+        <h4 className="font-bold text-blue-800">Parent Pro-Tip</h4>
+        <ul className="list-disc pl-4 text-sm">
+          {/* Converted from dense paragraph to bullets */}
+          {gameData.proTips.map(tip => (
+            <li>{tip}</li>
+          ))}
+        </ul>
+      </section>
+
+      {/* --- END OF HERO SECTION --- */}
+      {/* Component hands off to the untouched deep-dive tabs below */}

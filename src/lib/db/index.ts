@@ -39,6 +39,9 @@ function getDb(): PostgresJsDatabase<typeof schema> {
 // Lazy proxy — defers client creation until the first actual DB call.
 // This prevents Next.js build workers from throwing when they evaluate
 // route modules before DATABASE_URL is injected into the worker process.
+// For use where a real (non-proxy) drizzle instance is required, e.g. DrizzleAdapter
+export { getDb as getRawDb }
+
 export const db: PostgresJsDatabase<typeof schema> = new Proxy(
   {} as PostgresJsDatabase<typeof schema>,
   {

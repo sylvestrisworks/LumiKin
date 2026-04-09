@@ -1,0 +1,91 @@
+Act as an expert frontend developer and UI/UX designer. I need you to build a React interface for an app called CuraScore. I need a main "Share Dashboard" component that includes a selector, and TWO distinct "Shareable Card" components representing the two different audiences (Parents vs. Kids).
+
+Please generate self-contained, responsive React components using Tailwind CSS and Lucide React icons. Include Framer Motion for smooth transitions.
+
+### Component 1: `ShareWrapper` (The Main UI & Selector)
+This is the parent component that the user sees when they click "Share."
+* **The Selector:** At the top, include a sleek segmented control or toggle button group asking: "Who are you sharing with?" with two options: "For Parents" and "For Kids".
+* **State Management:** Use React state to toggle which card is currently displayed based on the user's selection.
+* **The Action:** Below the active card, include a prominent "Share Image" or "Download" button with a share icon.
+
+---
+
+### Component 2: `KidToParentLabel` (The "Nutrition Label" Vibe - For Parents)
+This card is for kids sharing their stats with their parents. It should look official, structured, and informative. 
+I have the exact static HTML/Tailwind mockup for this design. **Please convert the HTML below into a dynamic React component**, replacing the hardcoded text (like "Tears of the Kingdom", "53/100", the dot indicators, etc.) with component props so we can pass CuraScore data into it.
+
+Here is the reference HTML to convert:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Nutrition Label</title>
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f3f4f6; display: flex; justify-content: center; padding: 2rem 1rem; }
+        .label-container { background-color: white; border: 2px solid black; box-shadow: 8px 8px 0px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="label-container max-w-lg w-full p-4 md:p-6">
+        <header class="mb-4">
+            <h1 class="text-4xl font-black uppercase leading-none tracking-tighter mb-1">Tears of the Kingdom</h1>
+            <h2 class="text-lg font-bold text-gray-600 mb-3">NINTENDO</h2>
+            <div class="flex flex-wrap gap-2">
+                <span class="border-2 border-black rounded-full px-3 py-1 text-xs font-bold uppercase">Action-Adventure</span>
+                <span class="border-2 border-black rounded-full px-3 py-1 text-xs font-bold uppercase">Open World</span>
+            </div>
+        </header>
+
+        <div class="border-t-[12px] border-black pt-2 pb-2 flex justify-between items-end">
+            <h3 class="text-xl font-black uppercase">Recommended Serving</h3>
+            <span class="text-xl font-black text-green-600 uppercase">Max 2 Hrs / Day</span>
+        </div>
+
+        <div class="border-t-4 border-black border-b-[8px] py-4 grid grid-cols-2 gap-4">
+            <div class="flex flex-col items-center justify-center text-center border-r-2 border-black px-2">
+                <span class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-1">Growth Value</span>
+                <div class="text-5xl font-black text-blue-600 tracking-tighter">53<span class="text-2xl text-black">/100</span></div>
+                <span class="text-xs font-semibold uppercase mt-1 text-gray-700">High Cognitive Enrichment</span>
+            </div>
+            <div class="flex flex-col items-center justify-center text-center px-2">
+                <span class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-1">Addictive Hooks</span>
+                <div class="text-5xl font-black text-green-500 tracking-tighter uppercase">Low</div>
+                <span class="text-xs font-semibold uppercase mt-1 text-gray-700">Minimal Pressure to Spend</span>
+            </div>
+        </div>
+
+        <div class="py-2">
+            <h3 class="text-sm font-black uppercase text-right mb-2 border-b-2 border-black pb-1">% Daily Dev Value *</h3>
+            <div class="flex justify-between items-center py-1 border-b border-gray-300">
+                <span class="font-bold text-gray-800">Problem Solving</span>
+                <div class="flex gap-1">
+                    <div class="w-4 h-4 bg-black rounded-full"></div>
+                    <div class="w-4 h-4 bg-black rounded-full"></div>
+                    <div class="w-4 h-4 bg-black rounded-full"></div>
+                    <div class="w-4 h-4 bg-black rounded-full"></div>
+                    <div class="w-4 h-4 border-2 border-black rounded-full"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t-[8px] border-black pt-3 mt-1">
+            <h3 class="text-sm font-black uppercase mb-2">Active Ingredients</h3>
+            <p class="text-sm text-gray-800 leading-snug mb-2">
+                <span class="font-bold">Contains:</span> Physics-based puzzles, open-ended building mechanics, spatial navigation.<br>
+            </p>
+        </div>
+
+        <div class="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-md">
+            <div class="flex items-center gap-2 mb-1">
+                <h4 class="font-bold text-yellow-800 text-sm uppercase tracking-wide">Parent Pro-Tip</h4>
+            </div>
+            <p class="text-sm text-yellow-900 leading-snug">
+                This game relies heavily on creative problem-solving. Try sitting down and asking your child *why* they built a specific vehicle.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

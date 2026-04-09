@@ -1,11 +1,10 @@
 export const dynamic = 'force-dynamic'
 
+import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
-import { getServerSession } from 'next-auth'
 import { desc, eq, isNotNull, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { games, reviews, gameScores } from '@/lib/db/schema'
-import { authOptions } from '@/lib/auth'
 
 export const metadata = {
   title: 'Reviewer Dashboard — Good Game Parent',
@@ -80,7 +79,7 @@ function ScorePill({ value, label, good }: { value: number | null; label: string
 }
 
 export default async function ReviewDashboard() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session) redirect('/login?callbackUrl=/review')
 
   const rows = await getDashboardGames()

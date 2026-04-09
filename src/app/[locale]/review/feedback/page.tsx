@@ -1,9 +1,8 @@
 export const dynamic = 'force-dynamic'
 
-import { getServerSession } from 'next-auth'
+import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { desc, eq } from 'drizzle-orm'
-import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { gameFeedback, games } from '@/lib/db/schema'
 
@@ -24,7 +23,7 @@ const TYPE_COLORS: Record<string, string> = {
 }
 
 export default async function FeedbackInboxPage() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session) redirect('/login?callbackUrl=/review/feedback')
 
   const rows = await db

@@ -1,11 +1,10 @@
 export const dynamic = 'force-dynamic'
 
+import { auth } from '@/auth'
 import { redirect, notFound } from 'next/navigation'
-import { getServerSession } from 'next-auth'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { games, reviews } from '@/lib/db/schema'
-import { authOptions } from '@/lib/auth'
 import ReviewForm from '@/components/ReviewForm'
 import type { SerializedGame, SerializedReview } from '@/types/game'
 
@@ -22,7 +21,7 @@ export async function generateMetadata({ params }: { params: { gameSlug: string 
 }
 
 export default async function ReviewPage({ params }: { params: { gameSlug: string } }) {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session) {
     redirect(`/login?callbackUrl=/review/${params.gameSlug}`)
   }

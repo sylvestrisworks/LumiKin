@@ -1,0 +1,40 @@
+# Feature Specification: Enhanced "/compare" Page UI/UX
+
+**Context:** We are updating the `/compare` feature for Curascore, a site that helps parents evaluate video games based on child development metrics, screen time recommendations, and risks. The comparison tool allows parents to look at games side-by-side. 
+
+Please update the comparison page component(s) to implement the following UI/UX improvements. Assume a React/Next.js and Tailwind CSS environment.
+
+## 1. Sticky Headers (Scroll Persistence)
+* **Requirement:** As the user scrolls down the long data tables, the core game identifiers must remain visible at the top of the viewport.
+* **Elements to stick:** Game Cover Image (shrunk down if necessary), Game Title, Curascore (Main Score), and the Recommended Time Limit (e.g., "120m").
+* **Styling:** Apply a glassmorphism effect (backdrop-blur) or a solid background with a bottom shadow to the sticky header so the table data scrolls cleanly underneath it.
+
+## 2. Dynamic "At-a-Glance" Verdict
+* **Requirement:** Add a section directly below the game headers but above the data table that provides a synthesized text summary of the comparison.
+* **Layout:** A full-width or spanned column row containing a 1-2 sentence AI-style summary.
+* **Example format:** *"**Minecraft** offers significantly more creative freedom and allows for 60m more safe playtime, while **Roblox** carries a much higher risk of predatory monetization and social toxicity."*
+
+## 3. Visual "Winner" Highlighting
+* **Requirement:** When comparing numeric values or standardized metrics in a row, visually highlight the "better" or "safer" choice for the parent.
+* **Styling:** Use a subtle background tint (e.g., `bg-green-50` in Tailwind) and/or a small checkmark icon in the winning cell. 
+* **Logic:** For Benefits (e.g., Cognitive Score), higher is better. For Risks (e.g., Dopamine Manipulation) and Monthly Costs, lower is better. For Time Limit, higher is better.
+
+## 4. Shared vs. Unique Tags Comparison
+* **Requirement:** Refactor how we display "Detected Tactics" and "Skills" tags. Instead of two independent lists, merge them into a comparative view.
+* **Layout Structure:**
+    * **Both Games Feature:** [Tag] [Tag] [Tag] (Centered or spanned across columns)
+    * **Unique to [Game A]:** [Tag] [Tag]
+    * **Unique to [Game B]:** [Tag] [Tag]
+
+## 5. "True Cost of Ownership" Financial Row
+* **Requirement:** Create a dedicated, highly visible section for costs to combat the "Free-to-Play" trap.
+* **Data Points to Display Side-by-Side:**
+    * **Base Cost:** (e.g., $29.99 vs. $0.00)
+    * **Estimated Monthly Risk:** (e.g., $0/mo vs. $5–$50/mo)
+    * **Monetization Tags:** (e.g., `Cosmetics Only`, `Pay-to-Win`, `Loot Boxes`, `Battle Pass`)
+    * **Hidden Hardware/Sub Costs:** A warning flag if the game requires a subscription to play online (e.g., *"⚠️ Requires PlayStation Plus / Xbox Core for multiplayer"*).
+
+## 6. Frictionless "Add to Compare" State
+* **Requirement:** The comparison view should support up to 3 or 4 columns. If there is an empty column, it should act as an immediate call-to-action to add another game.
+* **Styling:** A ghosted/dashed-border column.
+* **Interaction:** Contains an `+ Add Game` button that opens a localized autocomplete search input (not a redirect to the homepage) to quickly drop another game into the comparison matrix.

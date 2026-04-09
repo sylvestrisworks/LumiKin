@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useTranslations } from 'next-intl'
-import { Lightbulb, Sparkles, Zap, Clock, CheckCircle2, User } from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
+import Link from 'next/link'
+import { Lightbulb, Sparkles, Zap, Clock, CheckCircle2, User, GitCompareArrows } from 'lucide-react'
 import type { DarkPattern, GameCardProps, SerializedReview, SerializedScores } from '@/types/game'
 import { esrbToAge, ageBadgeColor } from '@/lib/ui'
 import DarkPatternPills from './DarkPatternPills'
@@ -502,7 +503,8 @@ function FullScoresTab({ scores, review, t }: { scores: SerializedScores; review
 type Tab = 'benefits' | 'risks' | 'scores'
 
 export default function GameCard({ game, scores, review, darkPatterns, compliance }: GameCardProps) {
-  const t = useTranslations('gameCard')
+  const t      = useTranslations('gameCard')
+  const locale = useLocale()
   const [activeTab, setActiveTab] = useState<Tab>('benefits')
 
   const gradient = placeholderGradient(game.title)
@@ -799,6 +801,15 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
 
       {/* ── 8. COMPLIANCE ──────────────────────────────────────────────────────── */}
       <ComplianceBadges compliance={compliance} />
+
+      {/* ── 9. COMPARE CTA ─────────────────────────────────────────────────────── */}
+      <Link
+        href={`/${locale}/compare?a=${game.slug}`}
+        className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl border-2 border-dashed border-slate-200 text-slate-400 text-sm font-semibold hover:border-indigo-300 hover:text-indigo-500 hover:bg-indigo-50 transition-colors"
+      >
+        <GitCompareArrows size={15} strokeWidth={2.5} />
+        {t('compareThis')}
+      </Link>
 
     </div>
   )

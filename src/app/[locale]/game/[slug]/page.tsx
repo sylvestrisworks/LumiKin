@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { eq, and } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { games, gameScores, reviews, darkPatterns, complianceStatus, userGames } from '@/lib/db/schema'
+import { games, gameScores, reviews, darkPatterns, complianceStatus, userGames, childProfiles } from '@/lib/db/schema'
 import GameCard from '@/components/GameCard'
 import LibraryButton from '@/components/LibraryButton'
 import { auth } from '@/auth'
@@ -234,14 +234,26 @@ export default async function GamePage({ params }: Props) {
   const uid = (session?.user as any)?.id ?? session?.user?.email ?? null
   let initialOwned = false
   let initialWishlisted = false
+  let recommendedMinAge: number | null = null
+  let userProfiles: { id: number; name: string; birthYear: number }[] = []
 
   if (uid && game.id) {
-    const entries = await db
-      .select({ listType: userGames.listType })
-      .from(userGames)
-      .where(and(eq(userGames.userId, uid), eq(userGames.gameId, game.id)))
-    initialOwned     = entries.some(e => e.listType === 'owned')
+    const [entries, scoreRow, profileRows] = await Promise.all([
+      db.select({ listType: userGames.listType })
+        .from(userGames)
+        .where(and(eq(userGames.userId, uid), eq(userGames.gameId, game.id))),
+      db.select({ recommendedMinAge: gameScores.recommendedMinAge })
+        .from(gameScores)
+        .where(eq(gameScores.gameId, game.id))
+        .limit(1),
+      db.select({ id: childProfiles.id, name: childProfiles.name, birthYear: childProfiles.birthYear })
+        .from(childProfiles)
+        .where(eq(childProfiles.userId, uid)),
+    ])
+    initialOwned      = entries.some(e => e.listType === 'owned')
     initialWishlisted = entries.some(e => e.listType === 'wishlist')
+    recommendedMinAge = scoreRow[0]?.recommendedMinAge ?? null
+    userProfiles      = profileRows
   }
 
   // JSON-LD structured data
@@ -283,6 +295,36 @@ export default async function GamePage({ params }: Props) {
               />
             </div>
           )}
+
+          {/* Per-child appropriateness banner */}
+          {userProfiles.length > 0 && (() => {
+            const minAge = recommendedMinAge ?? (game.esrbRating === 'M' ? 17 : game.esrbRating === 'T' ? 13 : game.esrbRating === 'E10+' ? 10 : 0)
+            const checks = userProfiles.map(p => ({
+              name: p.name,
+              age: new Date().getFullYear() - p.birthYear,
+              ok: minAge === 0 || (new Date().getFullYear() - p.birthYear) >= minAge,
+            }))
+            const allOk = checks.every(c => c.ok)
+            const noneOk = checks.every(c => !c.ok)
+            return (
+              <div className={`mt-3 rounded-xl border px-4 py-3 text-sm ${
+                allOk  ? 'bg-emerald-50 border-emerald-200 text-emerald-800' :
+                noneOk ? 'bg-red-50 border-red-200 text-red-800' :
+                         'bg-amber-50 border-amber-200 text-amber-800'
+              }`}>
+                <div className="flex flex-wrap gap-x-4 gap-y-1">
+                  {checks.map(c => (
+                    <span key={c.name} className="flex items-center gap-1.5">
+                      <span>{c.ok ? '✓' : '✗'}</span>
+                      <span className="font-medium">{c.name}</span>
+                      <span className="opacity-60 text-xs">({c.age})</span>
+                    </span>
+                  ))}
+                  {minAge > 0 && <span className="opacity-60 text-xs ml-auto">Recommended age {minAge}+</span>}
+                </div>
+              </div>
+            )
+          })()}
 
           {/* Description — first 2 sentences only, strips HTML tags */}
           {game.description && (() => {

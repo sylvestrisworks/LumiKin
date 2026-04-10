@@ -3,10 +3,11 @@ export const dynamic = 'force-dynamic'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
-import { userGames, games, gameScores } from '@/lib/db/schema'
+import { userGames, games, gameScores, childProfiles } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import GameCompactCard from '@/components/GameCompactCard'
 import type { GameSummary } from '@/types/game'
+import { getLocale } from 'next-intl/server'
 
 export const metadata = { title: 'My Library — PlaySmart' }
 
@@ -16,42 +17,67 @@ const SKILL_LABELS: Record<string, string> = {
   motor:          'Motor Skills',
 }
 
-export default async function LibraryPage() {
+export default async function LibraryPage({ searchParams }: { searchParams: Promise<{ child?: string }> }) {
   const session = await auth()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const uid = (session?.user as any)?.id ?? session?.user?.email ?? null
   if (!uid) redirect('/')
 
-  const rows = await db
-    .select({
-      entryId:                   userGames.id,
-      listType:                  userGames.listType,
-      addedAt:                   userGames.addedAt,
-      gameId:                    games.id,
-      slug:                      games.slug,
-      title:                     games.title,
-      backgroundImage:           games.backgroundImage,
-      esrbRating:                games.esrbRating,
-      genres:                    games.genres,
-      platforms:                 games.platforms,
-      hasMicrotransactions:      games.hasMicrotransactions,
-      hasLootBoxes:              games.hasLootBoxes,
-      curascore:                 gameScores.curascore,
-      bds:                       gameScores.bds,
-      ris:                       gameScores.ris,
-      cognitiveScore:            gameScores.cognitiveScore,
-      socialEmotionalScore:      gameScores.socialEmotionalScore,
-      motorScore:                gameScores.motorScore,
-      timeRecommendationMinutes: gameScores.timeRecommendationMinutes,
-      timeRecommendationColor:   gameScores.timeRecommendationColor,
-    })
-    .from(userGames)
-    .innerJoin(games, eq(games.id, userGames.gameId))
-    .leftJoin(gameScores, eq(gameScores.gameId, userGames.gameId))
-    .where(eq(userGames.userId, uid))
+  const locale = await getLocale()
+  const params = await searchParams
+  const selectedChildId = params.child ? parseInt(params.child) : null
 
-  const owned    = rows.filter(r => r.listType === 'owned')
-  const wishlist = rows.filter(r => r.listType === 'wishlist')
+  const [rows, profiles] = await Promise.all([
+    db
+      .select({
+        entryId:                   userGames.id,
+        listType:                  userGames.listType,
+        addedAt:                   userGames.addedAt,
+        gameId:                    games.id,
+        slug:                      games.slug,
+        title:                     games.title,
+        backgroundImage:           games.backgroundImage,
+        esrbRating:                games.esrbRating,
+        genres:                    games.genres,
+        platforms:                 games.platforms,
+        hasMicrotransactions:      games.hasMicrotransactions,
+        hasLootBoxes:              games.hasLootBoxes,
+        curascore:                 gameScores.curascore,
+        bds:                       gameScores.bds,
+        ris:                       gameScores.ris,
+        cognitiveScore:            gameScores.cognitiveScore,
+        socialEmotionalScore:      gameScores.socialEmotionalScore,
+        motorScore:                gameScores.motorScore,
+        timeRecommendationMinutes: gameScores.timeRecommendationMinutes,
+        timeRecommendationColor:   gameScores.timeRecommendationColor,
+        recommendedMinAge:         gameScores.recommendedMinAge,
+      })
+      .from(userGames)
+      .innerJoin(games, eq(games.id, userGames.gameId))
+      .leftJoin(gameScores, eq(gameScores.gameId, userGames.gameId))
+      .where(eq(userGames.userId, uid)),
+
+    db.select().from(childProfiles).where(eq(childProfiles.userId, uid)),
+  ])
+
+  const allOwned    = rows.filter(r => r.listType === 'owned')
+  const allWishlist = rows.filter(r => r.listType === 'wishlist')
+
+  // Child filter
+  const selectedChild = profiles.find(p => p.id === selectedChildId) ?? null
+
+  function isAppropriate(row: typeof rows[0], child: typeof profiles[0]): boolean {
+    const age = new Date().getFullYear() - child.birthYear
+    const ageOk = row.recommendedMinAge == null || row.recommendedMinAge <= age
+    const childPlats = (child.platforms as string[]) ?? []
+    const platOk = childPlats.length === 0 || (row.platforms as string[]).some(gp =>
+      childPlats.some(cp => gp.toLowerCase().includes(cp.toLowerCase()))
+    )
+    return ageOk && platOk
+  }
+
+  const owned    = selectedChild ? allOwned.filter(r => isAppropriate(r, selectedChild))    : allOwned
+  const wishlist = selectedChild ? allWishlist.filter(r => isAppropriate(r, selectedChild)) : allWishlist
 
   // ── Library stats ──
   const scoredOwned = owned.filter(r => r.curascore != null)
@@ -102,10 +128,58 @@ export default async function LibraryPage() {
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-10">
 
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800">My Library</h1>
-          <p className="text-slate-500 text-sm mt-0.5">{owned.length} games owned · {wishlist.length} wishlisted</p>
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800">My Library</h1>
+            <p className="text-slate-500 text-sm mt-0.5">
+              {selectedChild
+                ? `${owned.length} games for ${selectedChild.name} · ${wishlist.length} wishlisted`
+                : `${allOwned.length} games owned · ${allWishlist.length} wishlisted`}
+            </p>
+          </div>
+
+          {/* Child filter pills */}
+          {profiles.length > 0 && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-slate-400 font-medium">View for:</span>
+              <a
+                href={`/${locale}/library`}
+                className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                  !selectedChild
+                    ? 'bg-slate-800 text-white'
+                    : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-400'
+                }`}
+              >
+                All
+              </a>
+              {profiles.map(p => {
+                const age = new Date().getFullYear() - p.birthYear
+                return (
+                  <a
+                    key={p.id}
+                    href={`/${locale}/library?child=${p.id}`}
+                    className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                      selectedChild?.id === p.id
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-700'
+                    }`}
+                  >
+                    {p.name} <span className="opacity-70">({age})</span>
+                  </a>
+                )
+              })}
+            </div>
+          )}
         </div>
+
+        {/* Filtered notice */}
+        {selectedChild && (allOwned.length !== owned.length || allWishlist.length !== wishlist.length) && (
+          <div className="text-sm text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-2.5">
+            Showing {owned.length} of {allOwned.length} owned games appropriate for {selectedChild.name} (age {new Date().getFullYear() - selectedChild.birthYear}
+            {(selectedChild.platforms as string[]).length > 0 && `, ${(selectedChild.platforms as string[]).join('/')}`}).
+            {' '}<a href={`/${locale}/library`} className="underline hover:text-indigo-900">View all</a>
+          </div>
+        )}
 
         {/* Stats summary */}
         {owned.length > 0 && (
@@ -150,7 +224,9 @@ export default async function LibraryPage() {
         {/* Owned games */}
         {owned.length > 0 ? (
           <section>
-            <h2 className="text-base font-semibold text-slate-700 mb-4">Owned ({owned.length})</h2>
+            <h2 className="text-base font-semibold text-slate-700 mb-4">
+              {selectedChild ? `For ${selectedChild.name}` : 'Owned'} ({owned.length})
+            </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
               {owned.map(r => <GameCompactCard key={r.entryId} game={toSummary(r)} />)}
             </div>

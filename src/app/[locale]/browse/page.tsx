@@ -3,14 +3,15 @@ export const dynamic = 'force-dynamic'
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import { eq, desc, asc, sql, and, lte, gte, ilike, inArray, type SQL } from 'drizzle-orm'
+import { eq, desc, asc, sql, and, lte, gte, ilike, inArray, isNull, or, type SQL } from 'drizzle-orm'
 import { curascoreBg } from '@/lib/ui'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
-import { games, gameScores } from '@/lib/db/schema'
+import { games, gameScores, childProfiles } from '@/lib/db/schema'
 import BrowseFilters, { ViewToggle, type ActiveFilters } from '@/components/BrowseFilters'
 import GameCompactCard from '@/components/GameCompactCard'
 import BrowseSearch from '@/components/BrowseSearch'
+import { auth } from '@/auth'
 
 export const metadata: Metadata = {
   title: 'Browse Games — PlaySmart',
@@ -68,7 +69,9 @@ type Row = {
   hasLootBoxes: boolean | null
 }
 
-async function queryGames(filters: ActiveFilters): Promise<{ rows: Row[]; total: number }> {
+type ChildFilter = { age: number; platforms: string[] }
+
+async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<{ rows: Row[]; total: number }> {
   const conditions: SQL[] = []
   const page   = Math.max(1, filters.page ?? 1)
   const offset = (page - 1) * PAGE_SIZE
@@ -162,6 +165,22 @@ async function queryGames(filters: ActiveFilters): Promise<{ rows: Row[]; total:
     conditions.push(eq(gameScores.bechdelResult, 'pass'))
   }
 
+  // Child profile filter: age-appropriate + platform match
+  if (child) {
+    conditions.push(
+      or(
+        isNull(gameScores.recommendedMinAge),
+        lte(gameScores.recommendedMinAge, child.age),
+      )!
+    )
+    if (child.platforms.length > 0) {
+      const platConditions = child.platforms.map(p =>
+        sql`${games.platforms}::text ILIKE ${'%' + p + '%'}`
+      )
+      conditions.push(sql`(${sql.join(platConditions, sql` OR `)})`)
+    }
+  }
+
   let orderBy
   switch (filters.sort) {
     case 'benefit':    orderBy = [desc(gameScores.bds),           desc(gameScores.curascore)]; break
@@ -240,7 +259,7 @@ function parseFilters(sp: Record<string, string | string[] | undefined>): Active
 
 // ─── Pagination URL builder ───────────────────────────────────────────────────
 
-function pageUrl(filters: ActiveFilters, targetPage: number, locale = 'en'): string {
+function pageUrl(filters: ActiveFilters, targetPage: number, locale = 'en', childId?: number): string {
   const params = new URLSearchParams()
   if (filters.age)               params.set('age',        filters.age)
   if (filters.genres.length)     params.set('genres',     filters.genres.join(','))
@@ -256,6 +275,7 @@ function pageUrl(filters: ActiveFilters, targetPage: number, locale = 'en'): str
   if (filters.sort && filters.sort !== 'curascore') params.set('sort', filters.sort)
   if (filters.q)                 params.set('q',          filters.q)
   if (filters.view && filters.view !== 'list') params.set('view', filters.view)
+  if (childId)                   params.set('child',      String(childId))
   if (targetPage > 1)            params.set('page',       String(targetPage))
   return `/${locale}/browse?${params.toString()}`
 }
@@ -272,7 +292,35 @@ export default async function BrowsePage({ params, searchParams }: Props) {
   const sp = await searchParams
   const t = await getTranslations({ locale, namespace: 'browse' })
   const filters = parseFilters(sp)
-  const { rows, total } = await queryGames(filters)
+
+  // Child profile filter
+  const childIdParam = typeof sp.child === 'string' ? parseInt(sp.child) : null
+  let profiles: { id: number; name: string; birthYear: number; platforms: unknown }[] = []
+  let selectedChild: { id: number; name: string; age: number; platforms: string[] } | null = null
+
+  const session = await auth()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const uid = (session?.user as any)?.id ?? session?.user?.email ?? null
+  if (uid) {
+    profiles = await db.select({ id: childProfiles.id, name: childProfiles.name, birthYear: childProfiles.birthYear, platforms: childProfiles.platforms })
+      .from(childProfiles)
+      .where(eq(childProfiles.userId, uid))
+
+    if (childIdParam) {
+      const found = profiles.find(p => p.id === childIdParam)
+      if (found) {
+        selectedChild = {
+          id: found.id,
+          name: found.name,
+          age: new Date().getFullYear() - found.birthYear,
+          platforms: (found.platforms as string[]) ?? [],
+        }
+      }
+    }
+  }
+
+  const childFilter = selectedChild ? { age: selectedChild.age, platforms: selectedChild.platforms } : undefined
+  const { rows, total } = await queryGames(filters, childFilter)
 
   const totalPages = Math.ceil(total / PAGE_SIZE)
   const currentPage = filters.page ?? 1
@@ -304,6 +352,41 @@ export default async function BrowsePage({ params, searchParams }: Props) {
           {/* Main content */}
           <main className="flex-1 min-w-0">
 
+            {/* Child selector pills */}
+            {profiles.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap mb-4">
+                <span className="text-xs text-slate-400 font-medium">For:</span>
+                <a
+                  href={`/${locale}/browse?${new URLSearchParams(Object.entries(sp as Record<string, string>).filter(([k]) => k !== 'child' && k !== 'page')).toString()}`}
+                  className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                    !selectedChild
+                      ? 'bg-slate-800 text-white'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-400'
+                  }`}
+                >
+                  Everyone
+                </a>
+                {profiles.map(p => {
+                  const age = new Date().getFullYear() - p.birthYear
+                  const childParams = new URLSearchParams(Object.entries(sp as Record<string, string>).filter(([k]) => k !== 'child' && k !== 'page'))
+                  childParams.set('child', String(p.id))
+                  return (
+                    <a
+                      key={p.id}
+                      href={`/${locale}/browse?${childParams.toString()}`}
+                      className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                        selectedChild?.id === p.id
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-700'
+                      }`}
+                    >
+                      {p.name} <span className="opacity-70">({age})</span>
+                    </a>
+                  )
+                })}
+              </div>
+            )}
+
             {/* Header row */}
             <div className="flex items-center justify-between mb-4 gap-3">
               <div>
@@ -316,8 +399,8 @@ export default async function BrowsePage({ params, searchParams }: Props) {
               </div>
               <ViewToggle
                 view={filters.view ?? 'list'}
-                listHref={pageUrl({ ...filters, view: 'list' }, 1, locale)}
-                gridHref={pageUrl({ ...filters, view: 'grid' }, 1, locale)}
+                listHref={pageUrl({ ...filters, view: 'list' }, 1, locale, childIdParam ?? undefined)}
+                gridHref={pageUrl({ ...filters, view: 'grid' }, 1, locale, childIdParam ?? undefined)}
               />
             </div>
 
@@ -423,7 +506,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
               <div className="flex items-center justify-center gap-2 mt-8">
                 {currentPage > 1 && (
                   <Link
-                    href={pageUrl(filters, currentPage - 1, locale)}
+                    href={pageUrl(filters, currentPage - 1, locale, childIdParam ?? undefined)}
                     className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:border-indigo-300 hover:text-indigo-700 transition-colors"
                   >
                     ← {t('prevPage')}
@@ -444,7 +527,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                     ) : (
                       <Link
                         key={p}
-                        href={pageUrl(filters, p as number, locale)}
+                        href={pageUrl(filters, p as number, locale, childIdParam ?? undefined)}
                         className={`w-9 h-9 flex items-center justify-center text-sm font-semibold rounded-lg transition-colors ${
                           p === currentPage
                             ? 'bg-indigo-600 text-white'
@@ -459,7 +542,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
 
                 {currentPage < totalPages && (
                   <Link
-                    href={pageUrl(filters, currentPage + 1, locale)}
+                    href={pageUrl(filters, currentPage + 1, locale, childIdParam ?? undefined)}
                     className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:border-indigo-300 hover:text-indigo-700 transition-colors"
                   >
                     {t('nextPage')} →

@@ -17,6 +17,7 @@
     "@anthropic-ai/sdk": "^0.82.0",
     "@auth/drizzle-adapter": "^1.11.1",
     "@google/genai": "^1.48.0",
+    "@vercel/blob": "^2.3.3",
     "drizzle-orm": "^0.30.0",
     "html2canvas": "^1.4.1",
     "lucide-react": "^1.7.0",

@@ -43,9 +43,9 @@ export default async function ParentTips({ gameId, uid }: Props) {
   }
 
   return (
-    <div className="mt-4 bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4 space-y-4">
-      <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-widest">
-        Parent Tips {tips.length > 0 && <span className="text-slate-400 normal-case font-normal">· {tips.length}</span>}
+    <div className="mt-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4 space-y-4">
+      <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+        Parent Tips {tips.length > 0 && <span className="text-slate-400 dark:text-slate-500 normal-case font-normal">· {tips.length}</span>}
       </h2>
 
       {/* Existing tips */}
@@ -64,7 +64,7 @@ export default async function ParentTips({ gameId, uid }: Props) {
                       initialVoted={userVotedIds.has(tip.id)}
                     />
                   ) : (
-                    <div className="flex items-center gap-1 text-xs text-slate-400 px-2.5 py-1">
+                    <div className="flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500 px-2.5 py-1">
                       ▲ {Number(tip.voteCount) > 0 && Number(tip.voteCount)}
                     </div>
                   )}
@@ -76,28 +76,28 @@ export default async function ParentTips({ gameId, uid }: Props) {
                     <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${cfg.className}`}>
                       {cfg.icon} {cfg.label}
                     </span>
-                    <span className="text-[11px] text-slate-400">{tip.authorName}</span>
+                    <span className="text-[11px] text-slate-400 dark:text-slate-500">{tip.authorName}</span>
                   </div>
-                  <p className="text-sm text-slate-700 leading-snug">{tip.content}</p>
+                  <p className="text-sm text-slate-700 dark:text-slate-300 leading-snug">{tip.content}</p>
                 </div>
               </li>
             )
           })}
         </ul>
       ) : (
-        <p className="text-sm text-slate-400">No tips yet — be the first to help other parents.</p>
+        <p className="text-sm text-slate-400 dark:text-slate-500">No tips yet — be the first to help other parents.</p>
       )}
 
       {/* Submit form — only shown when logged in */}
       {uid && (
-        <div className="pt-2 border-t border-slate-100">
-          <p className="text-xs text-slate-500 mb-3">Share a tip with other parents</p>
+        <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Share a tip with other parents</p>
           <TipForm gameId={gameId} />
         </div>
       )}
 
       {!uid && (
-        <p className="text-xs text-slate-400 pt-1 border-t border-slate-100">
+        <p className="text-xs text-slate-400 dark:text-slate-500 pt-1 border-t border-slate-100 dark:border-slate-700">
           <a href="/login" className="text-indigo-600 hover:underline">Sign in</a> to leave a tip or vote.
         </p>
       )}

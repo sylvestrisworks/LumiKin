@@ -83,20 +83,20 @@ export default function ProfileManager({ initialProfiles }: Props) {
         {initialProfiles.map(p => (
           <div
             key={p.id}
-            className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-2.5 shadow-sm"
+            className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 shadow-sm"
           >
             <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-600 shrink-0">
               {p.name[0].toUpperCase()}
             </div>
             <div className="text-sm">
-              <span className="font-semibold text-slate-800">{p.name}</span>
-              <span className="text-slate-400 ml-1.5 text-xs">
+              <span className="font-semibold text-slate-800 dark:text-slate-100">{p.name}</span>
+              <span className="text-slate-400 dark:text-slate-500 ml-1.5 text-xs">
                 {new Date().getFullYear() - p.birthYear}y
               </span>
             </div>
             <button
               onClick={() => openEdit(p)}
-              className="text-xs text-slate-400 hover:text-indigo-600 transition-colors ml-1"
+              className="text-xs text-slate-400 dark:text-slate-500 hover:text-indigo-600 transition-colors ml-1"
             >
               Edit
             </button>
@@ -111,8 +111,8 @@ export default function ProfileManager({ initialProfiles }: Props) {
 
         <button
           onClick={openAdd}
-          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-dashed border-slate-300
-            text-sm text-slate-500 hover:border-indigo-400 hover:text-indigo-600 transition-colors"
+          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600
+            text-sm text-slate-500 dark:text-slate-400 hover:border-indigo-400 hover:text-indigo-600 transition-colors"
         >
           + Add child
         </button>
@@ -121,42 +121,42 @@ export default function ProfileManager({ initialProfiles }: Props) {
       {/* Modal / inline form */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-5">
-            <h2 className="text-lg font-bold text-slate-800">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md p-6 space-y-5">
+            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">
               {editing ? `Edit ${editing.name}` : 'Add child profile'}
             </h2>
 
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Name</label>
               <input
                 type="text"
                 value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g. Emma"
-                className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-400 dark:placeholder:text-slate-500"
               />
             </div>
 
             {/* Birth year */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Birth year</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Birth year</label>
               <input
                 type="number"
                 value={form.birthYear}
                 min={2000}
                 max={new Date().getFullYear()}
                 onChange={e => setForm(f => ({ ...f, birthYear: parseInt(e.target.value) || f.birthYear }))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Age: {new Date().getFullYear() - form.birthYear}
               </p>
             </div>
 
             {/* Platforms */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Platforms</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Platforms</label>
               <div className="flex flex-wrap gap-2">
                 {PLATFORM_OPTIONS.map(p => (
                   <button
@@ -166,7 +166,7 @@ export default function ProfileManager({ initialProfiles }: Props) {
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                       form.platforms.includes(p)
                         ? 'bg-indigo-600 text-white border-indigo-600'
-                        : 'bg-white text-slate-600 border-slate-300 hover:border-indigo-400'
+                        : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-500 hover:border-indigo-400'
                     }`}
                   >
                     {p}
@@ -177,8 +177,8 @@ export default function ProfileManager({ initialProfiles }: Props) {
 
             {/* Focus skills */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Focus skills <span className="text-slate-400 font-normal">(optional)</span>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Focus skills <span className="text-slate-400 dark:text-slate-500 font-normal">(optional)</span>
               </label>
               <div className="flex flex-wrap gap-2">
                 {SKILL_OPTIONS.map(s => (
@@ -189,7 +189,7 @@ export default function ProfileManager({ initialProfiles }: Props) {
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                       form.focusSkills.includes(s.value)
                         ? 'bg-emerald-600 text-white border-emerald-600'
-                        : 'bg-white text-slate-600 border-slate-300 hover:border-emerald-400'
+                        : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-500 hover:border-emerald-400'
                     }`}
                   >
                     {s.label}
@@ -203,7 +203,7 @@ export default function ProfileManager({ initialProfiles }: Props) {
             <div className="flex justify-end gap-3 pt-1">
               <button
                 onClick={() => setShowForm(false)}
-                className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 transition-colors"
+                className="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 transition-colors"
               >
                 Cancel
               </button>

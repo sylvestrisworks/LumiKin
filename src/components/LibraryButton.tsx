@@ -40,7 +40,7 @@ export default function LibraryButton({ gameId, initialOwned, initialWishlisted 
         className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold border transition-colors disabled:opacity-60 ${
           owned
             ? 'bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700'
-            : 'bg-white text-slate-700 border-slate-300 hover:border-indigo-400 hover:text-indigo-700'
+            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-indigo-400 hover:text-indigo-700'
         }`}
       >
         {loading === 'owned' ? (
@@ -57,7 +57,7 @@ export default function LibraryButton({ gameId, initialOwned, initialWishlisted 
         className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold border transition-colors disabled:opacity-60 ${
           wishlisted
             ? 'bg-amber-500 text-white border-amber-500 hover:bg-amber-600'
-            : 'bg-white text-slate-700 border-slate-300 hover:border-amber-400 hover:text-amber-600'
+            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-amber-400 hover:text-amber-600'
         }`}
       >
         {loading === 'wishlist' ? (

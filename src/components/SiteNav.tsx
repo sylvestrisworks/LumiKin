@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import SearchBar from './SearchBar'
 import LanguageSwitcher from './LanguageSwitcher'
+import ThemeToggle from './ThemeToggle'
 
 export default function SiteNav({ authSlot }: { authSlot?: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -43,7 +44,7 @@ export default function SiteNav({ authSlot }: { authSlot?: React.ReactNode }) {
   }
 
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
+    <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-50">
 
       {/* ── Main row ───────────────────────────────────────────────────────── */}
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-3">
@@ -73,13 +74,14 @@ export default function SiteNav({ authSlot }: { authSlot?: React.ReactNode }) {
         </div>
 
         {/* Desktop nav links */}
-        <nav className="hidden sm:flex items-center gap-5 text-sm font-medium text-slate-600 ml-auto shrink-0">
+        <nav className="hidden sm:flex items-center gap-5 text-sm font-medium text-slate-600 dark:text-slate-300 ml-auto shrink-0">
           {NAV_LINKS.map(l => (
-            <a key={l.href} href={l.href} className="hover:text-indigo-700 transition-colors">
+            <a key={l.href} href={l.href} className="hover:text-indigo-700 dark:hover:text-indigo-400 transition-colors">
               {l.label}
             </a>
           ))}
           <LanguageSwitcher />
+          <ThemeToggle />
           {authSlot}
         </nav>
 
@@ -100,20 +102,21 @@ export default function SiteNav({ authSlot }: { authSlot?: React.ReactNode }) {
 
       {/* ── Mobile nav dropdown ────────────────────────────────────────────── */}
       {menuOpen && (
-        <nav className="sm:hidden border-t border-slate-100 bg-white">
+        <nav className="sm:hidden border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900">
           {NAV_LINKS.map(l => (
             <a
               key={l.href}
               href={l.href}
               onClick={() => setMenuOpen(false)}
-              className="flex items-center px-4 py-4 text-sm font-medium text-slate-700
-                hover:bg-indigo-50 hover:text-indigo-700 border-b border-slate-100 last:border-0 transition-colors"
+              className="flex items-center px-4 py-4 text-sm font-medium text-slate-700 dark:text-slate-300
+                hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-700 dark:hover:text-indigo-400 border-b border-slate-100 dark:border-slate-700 last:border-0 transition-colors"
             >
               {l.label}
             </a>
           ))}
-          <div className="px-4 py-3 border-t border-slate-100 flex items-center justify-between gap-4">
+          <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between gap-4">
             <LanguageSwitcher />
+            <ThemeToggle />
             {authSlot}
           </div>
         </nav>

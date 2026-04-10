@@ -75,22 +75,22 @@ export default async function FamilyDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
 
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Family Dashboard</h1>
-            <p className="text-slate-500 text-sm mt-0.5">Signed in as {session.user.email}</p>
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Family Dashboard</h1>
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">Signed in as {session.user.email}</p>
           </div>
           {/* Library quick stats */}
           <div className="flex items-center gap-3 text-sm">
-            <a href={`/${locale}/library`} className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-slate-600 hover:border-indigo-300 hover:text-indigo-700 transition-colors text-xs font-medium">
+            <a href={`/${locale}/library`} className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-300 hover:border-indigo-300 hover:text-indigo-700 transition-colors text-xs font-medium">
               🎮 {owned.length} owned
             </a>
             {wlCount > 0 && (
-              <a href={`/${locale}/library`} className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-slate-600 hover:border-amber-300 hover:text-amber-600 transition-colors text-xs font-medium">
+              <a href={`/${locale}/library`} className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-300 hover:border-amber-300 hover:text-amber-600 transition-colors text-xs font-medium">
                 ★ {wlCount} wishlisted
               </a>
             )}
@@ -115,17 +115,17 @@ export default async function FamilyDashboard() {
           const age         = new Date().getFullYear() - profile.birthYear
 
           return (
-            <section key={profile.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <section key={profile.id} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
 
               {/* Child header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-base font-bold text-indigo-600 shrink-0">
                     {profile.name[0].toUpperCase()}
                   </div>
                   <div>
-                    <h2 className="text-base font-bold text-slate-800">{profile.name}</h2>
-                    <p className="text-xs text-slate-400">
+                    <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">{profile.name}</h2>
+                    <p className="text-xs text-slate-400 dark:text-slate-500">
                       Age {age}
                       {(profile.platforms as string[]).length > 0 && ` · ${(profile.platforms as string[]).join(', ')}`}
                     </p>
@@ -139,11 +139,11 @@ export default async function FamilyDashboard() {
                       healthScore >= 70 ? 'text-emerald-600' :
                       healthScore >= 50 ? 'text-amber-500' : 'text-red-500'
                     }`}>{healthScore}</div>
-                    <div className="text-[10px] text-slate-400 uppercase tracking-wide mt-0.5">Library score</div>
+                    <div className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wide mt-0.5">Library score</div>
                   </div>
                 ) : owned.length > 0 ? (
                   <div className="text-right">
-                    <div className="text-xs text-slate-400">No owned games<br/>match this child yet</div>
+                    <div className="text-xs text-slate-400 dark:text-slate-500">No owned games<br/>match this child yet</div>
                   </div>
                 ) : null}
               </div>
@@ -162,7 +162,7 @@ export default async function FamilyDashboard() {
                 {childGames.length > 0 && (
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">From your library</h3>
+                      <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">From your library</h3>
                       <a href={`/${locale}/library`} className="text-xs text-indigo-600 hover:underline">{childGames.length} games →</a>
                     </div>
                     <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
@@ -185,7 +185,7 @@ export default async function FamilyDashboard() {
 
                 {/* Discover */}
                 <div>
-                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Discover</h3>
+                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">Discover</h3>
                   <Suspense fallback={
                     <div className="flex gap-3">
                       {Array.from({ length: 5 }).map((_, i) => (
@@ -210,10 +210,10 @@ export default async function FamilyDashboard() {
         })}
 
         {profiles.length === 0 && (
-          <div className="text-center py-20 text-slate-400 bg-white rounded-2xl border border-slate-200">
+          <div className="text-center py-20 text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
             <p className="text-4xl mb-3">👨‍👩‍👧</p>
-            <p className="font-medium text-slate-600 text-lg">Add a child profile to get started</p>
-            <p className="text-sm mt-2 max-w-sm mx-auto">
+            <p className="font-medium text-slate-600 dark:text-slate-400 text-lg">Add a child profile to get started</p>
+            <p className="text-sm mt-2 max-w-sm mx-auto text-slate-400 dark:text-slate-500">
               We&apos;ll show personalised picks and score your existing library for each child in your family.
             </p>
           </div>

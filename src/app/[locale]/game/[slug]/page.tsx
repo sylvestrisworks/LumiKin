@@ -286,7 +286,7 @@ export default async function GamePage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
         <main className="max-w-2xl mx-auto px-4 py-6">
           <GameCard {...data} />
 
@@ -335,11 +335,11 @@ export default async function GamePage({ params }: Props) {
           {/* Parent Tips */}
           {game.id && (
             <Suspense fallback={
-              <div className="mt-4 bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
-                <div className="h-4 w-24 bg-slate-100 rounded animate-pulse mb-3" />
+              <div className="mt-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
+                <div className="h-4 w-24 bg-slate-100 dark:bg-slate-700 rounded animate-pulse mb-3" />
                 <div className="space-y-2">
-                  <div className="h-3 bg-slate-100 rounded animate-pulse" />
-                  <div className="h-3 w-3/4 bg-slate-100 rounded animate-pulse" />
+                  <div className="h-3 bg-slate-100 dark:bg-slate-700 rounded animate-pulse" />
+                  <div className="h-3 w-3/4 bg-slate-100 dark:bg-slate-700 rounded animate-pulse" />
                 </div>
               </div>
             }>
@@ -353,11 +353,11 @@ export default async function GamePage({ params }: Props) {
             const sentences = plain.match(/[^.!?]+[.!?]+/g) ?? []
             const excerpt = sentences.slice(0, 2).join(' ').trim() || plain.slice(0, 220)
             return (
-              <div className="mt-4 bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
-                <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">
+              <div className="mt-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
+                <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">
                   About this game
                 </h2>
-                <p className="text-sm text-slate-600 leading-relaxed">{excerpt}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{excerpt}</p>
               </div>
             )
           })()}

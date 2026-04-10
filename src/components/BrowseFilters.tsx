@@ -165,8 +165,8 @@ export default function BrowseFilters({ active, totalCount }: Props) {
       <div className="lg:hidden mb-4">
         <button
           onClick={() => setDrawerOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white
-            text-sm font-semibold text-slate-700 hover:border-indigo-300 hover:text-indigo-700
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800
+            text-sm font-semibold text-slate-700 dark:text-slate-200 hover:border-indigo-300 hover:text-indigo-700
             shadow-sm transition-colors"
         >
           <SlidersHorizontal size={15} />
@@ -183,18 +183,18 @@ export default function BrowseFilters({ active, totalCount }: Props) {
       {drawerOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/40" onClick={() => setDrawerOpen(false)} />
-          <aside className="relative ml-auto w-80 max-w-full h-full bg-white shadow-xl overflow-y-auto">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
-              <h2 className="font-bold text-slate-800">{t('heading')}</h2>
+          <aside className="relative ml-auto w-80 max-w-full h-full bg-white dark:bg-slate-800 shadow-xl overflow-y-auto">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-700 sticky top-0 bg-white dark:bg-slate-800 z-10">
+              <h2 className="font-bold text-slate-800 dark:text-slate-100">{t('heading')}</h2>
               <button onClick={() => setDrawerOpen(false)}
-                className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+                className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                 aria-label="Close filters"
               >
                 <X size={18} />
               </button>
             </div>
             <div className="px-5 py-4">{panel}</div>
-            <div className="sticky bottom-0 px-5 py-4 bg-white border-t border-slate-100">
+            <div className="sticky bottom-0 px-5 py-4 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700">
               <button
                 onClick={() => setDrawerOpen(false)}
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors"
@@ -230,7 +230,7 @@ function FilterPanel({
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="font-bold text-slate-800">{t('heading')}</h2>
+        <h2 className="font-bold text-slate-800 dark:text-slate-100">{t('heading')}</h2>
         {activeCount > 0 && (
           <button onClick={clearAll} className="text-xs text-indigo-600 hover:text-indigo-800 font-medium">
             {t('clearAll')}
@@ -240,11 +240,11 @@ function FilterPanel({
 
       {/* Sort */}
       <div>
-        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">{t('sortBy')}</p>
+        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">{t('sortBy')}</p>
         <select
           value={active.sort}
           onChange={e => push({ sort: e.target.value })}
-          className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-700
+          className="w-full text-sm border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200
             focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
         >
           {sortOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -283,7 +283,7 @@ function FilterPanel({
               onChange={() => toggle('benefits', o.value)}
               className="rounded border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             />
-            <span className="text-sm text-slate-700 group-hover:text-slate-900">{t(o.labelKey as Parameters<T>[0])}</span>
+            <span className="text-sm text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100">{t(o.labelKey as Parameters<T>[0])}</span>
           </label>
         ))}
       </FilterSection>
@@ -343,7 +343,7 @@ function FilterPanel({
         ))}
       </FilterSection>
 
-      <p className="text-xs text-slate-400 pt-2 border-t border-slate-100">
+      <p className="text-xs text-slate-400 dark:text-slate-500 pt-2 border-t border-slate-100 dark:border-slate-700">
         {t('gamesFound', { count: totalCount })}
       </p>
     </div>
@@ -354,7 +354,7 @@ function FilterPanel({
 
 export function ViewToggle({ view, listHref, gridHref }: { view: 'list' | 'grid'; listHref: string; gridHref: string }) {
   return (
-    <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
+    <div className="flex items-center border border-slate-200 dark:border-slate-600 rounded-lg overflow-hidden bg-white dark:bg-slate-800">
       <Link href={listHref}
         className={`p-2 transition-colors ${view === 'list' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-700'}`}
         aria-label="List view"
@@ -376,9 +376,9 @@ export function ViewToggle({ view, listHref, gridHref }: { view: 'list' | 'grid'
 function FilterSection({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">
         {title}
-        {note && <span className="ml-1 font-normal normal-case text-slate-400">({note})</span>}
+        {note && <span className="ml-1 font-normal normal-case text-slate-400 dark:text-slate-500">({note})</span>}
       </p>
       <div className="space-y-1.5">{children}</div>
     </div>
@@ -392,7 +392,7 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
       className={`w-full text-left text-sm px-3 py-1.5 rounded-lg border transition-colors ${
         active
           ? 'bg-indigo-600 text-white border-indigo-600'
-          : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-300 hover:text-indigo-700'
+          : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400'
       }`}
     >
       {label}

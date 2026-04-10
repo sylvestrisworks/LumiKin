@@ -125,17 +125,17 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-10">
 
         {/* Header */}
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-slate-800">My Library</h1>
+              <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">My Library</h1>
               <ImportLibraryButton />
             </div>
-            <p className="text-slate-500 text-sm mt-0.5">
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
               {selectedChild
                 ? `${owned.length} games for ${selectedChild.name} · ${wishlist.length} wishlisted`
                 : `${allOwned.length} games owned · ${allWishlist.length} wishlisted`}
@@ -145,13 +145,13 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
           {/* Child filter pills */}
           {profiles.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-slate-400 font-medium">View for:</span>
+              <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">View for:</span>
               <a
                 href={`/${locale}/library`}
                 className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
                   !selectedChild
                     ? 'bg-slate-800 text-white'
-                    : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-400'
+                    : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-500'
                 }`}
               >
                 All
@@ -165,7 +165,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
                     className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
                       selectedChild?.id === p.id
                         ? 'bg-indigo-600 text-white'
-                        : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-700'
+                        : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400'
                     }`}
                   >
                     {p.name} <span className="opacity-70">({age})</span>
@@ -187,8 +187,8 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
 
         {/* Stats summary */}
         {owned.length > 0 && (
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-            <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-4">Library Summary</h2>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+            <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">Library Summary</h2>
             <div className="flex flex-wrap gap-8">
 
               {/* Avg Curascore */}
@@ -200,21 +200,21 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
                   }`}>
                     {avgCurascore}
                   </div>
-                  <div className="text-xs text-slate-500 mt-1">Avg Curascore</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Avg Curascore</div>
                 </div>
               )}
 
               {/* Top skills */}
               {topSkills.length > 0 && (
                 <div>
-                  <div className="text-xs text-slate-500 mb-2">Top Focus Skills</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-2">Top Focus Skills</div>
                   <div className="flex flex-col gap-1.5">
                     {topSkills.map((s, i) => (
                       <div key={s.key} className="flex items-center gap-2">
                         <span className="text-xs font-bold text-slate-400 w-4">{i + 1}.</span>
                         <div className="h-2 rounded-full bg-indigo-500" style={{ width: `${Math.round(s.avg * 120)}px`, minWidth: '20px' }} />
-                        <span className="text-sm font-medium text-slate-700">{SKILL_LABELS[s.key]}</span>
-                        <span className="text-xs text-slate-400">{Math.round(s.avg * 100)}%</span>
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{SKILL_LABELS[s.key]}</span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500">{Math.round(s.avg * 100)}%</span>
                       </div>
                     ))}
                   </div>
@@ -228,7 +228,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
         {/* Owned games */}
         {owned.length > 0 ? (
           <section>
-            <h2 className="text-base font-semibold text-slate-700 mb-4">
+            <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-4">
               {selectedChild ? `For ${selectedChild.name}` : 'Owned'} ({owned.length})
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
@@ -238,7 +238,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
         ) : (
           <div className="text-center py-16 text-slate-400">
             <p className="text-4xl mb-3">🎮</p>
-            <p className="font-medium text-slate-600">Your library is empty</p>
+            <p className="font-medium text-slate-600 dark:text-slate-400">Your library is empty</p>
             <p className="text-sm mt-1">Visit any game page and click &ldquo;Add to Library&rdquo;.</p>
           </div>
         )}
@@ -246,7 +246,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
         {/* Wishlist */}
         {wishlist.length > 0 && (
           <section>
-            <h2 className="text-base font-semibold text-slate-700 mb-4">Wishlist ({wishlist.length})</h2>
+            <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-4">Wishlist ({wishlist.length})</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
               {wishlist.map(r => <GameCompactCard key={r.entryId} game={toSummary(r)} />)}
             </div>

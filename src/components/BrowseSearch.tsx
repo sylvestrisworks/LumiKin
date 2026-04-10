@@ -21,15 +21,15 @@ export default function BrowseSearch({ initialValue }: { initialValue: string })
 
   return (
     <form onSubmit={submit} className="relative w-full">
-      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
       <input
         ref={inputRef}
         type="search"
         defaultValue={initialValue}
         placeholder="Search games…"
-        className="w-full pl-11 pr-20 py-3 text-sm rounded-xl border border-slate-200 bg-white shadow-sm
+        className="w-full pl-11 pr-20 py-3 text-sm rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm
           focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
-          placeholder:text-slate-400"
+          placeholder:text-slate-400 dark:placeholder:text-slate-500"
       />
       <button
         type="submit"

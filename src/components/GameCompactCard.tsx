@@ -14,7 +14,7 @@ export default function GameCompactCard({ game }: Props) {
   return (
     <Link
       href={`/game/${game.slug}`}
-      className="group flex flex-col bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md hover:border-indigo-300 transition-all"
+      className="group flex flex-col bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-500 transition-all"
     >
       {/* Thumbnail */}
       <div className="relative h-28 bg-indigo-50 overflow-hidden shrink-0">
@@ -50,7 +50,7 @@ export default function GameCompactCard({ game }: Props) {
 
       {/* Body */}
       <div className="px-3 py-2.5 flex flex-col gap-1 flex-1">
-        <p className="text-sm font-semibold text-slate-800 leading-tight line-clamp-2 group-hover:text-indigo-700 transition-colors">
+        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-tight line-clamp-2 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">
           {game.title}
         </p>
 
@@ -70,7 +70,7 @@ export default function GameCompactCard({ game }: Props) {
         {/* Time recommendation */}
         {game.timeRecommendationMinutes != null && (
           <div className="mt-auto pt-1">
-            <span className="text-xs text-slate-400">{game.timeRecommendationMinutes} {t('minDay')}</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500">{game.timeRecommendationMinutes} {t('minDay')}</span>
           </div>
         )}
 

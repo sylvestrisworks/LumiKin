@@ -62,7 +62,7 @@ export default function TipForm({ gameId }: { gameId: number }) {
             type="button"
             onClick={() => setTipType(key)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-              tipType === key ? cfg.color : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
+              tipType === key ? cfg.color : 'bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-500'
             }`}
           >
             <span>{cfg.icon}</span> {cfg.label}
@@ -81,7 +81,7 @@ export default function TipForm({ gameId }: { gameId: number }) {
             'Share a helpful tip for other parents…'
           }
           rows={3}
-          className="w-full text-sm border border-slate-200 rounded-xl px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent placeholder:text-slate-400"
+          className="w-full text-sm border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 rounded-xl px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent placeholder:text-slate-400 dark:placeholder:text-slate-500"
         />
         <span className={`absolute bottom-3 right-3 text-[11px] font-medium ${remaining < 20 ? 'text-red-500' : 'text-slate-400'}`}>
           {remaining}

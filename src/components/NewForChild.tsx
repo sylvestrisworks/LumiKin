@@ -53,8 +53,8 @@ export default async function NewForChild({ birthYear, platforms }: Props) {
   return (
     <div>
       <div className="flex items-center gap-2 mb-3">
-        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">New this week</h3>
-        <span className="text-[10px] bg-indigo-100 text-indigo-600 font-bold px-1.5 py-0.5 rounded-full">
+        <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">New this week</h3>
+        <span className="text-[10px] bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 font-bold px-1.5 py-0.5 rounded-full">
           {filtered.length} new
         </span>
       </div>
@@ -63,7 +63,7 @@ export default async function NewForChild({ birthYear, platforms }: Props) {
           <a
             key={g.slug}
             href={`/${locale}/game/${g.slug}`}
-            className="relative shrink-0 w-20 h-20 rounded-xl overflow-hidden bg-slate-100 hover:ring-2 hover:ring-indigo-400 transition-all"
+            className="relative shrink-0 w-20 h-20 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-700 hover:ring-2 hover:ring-indigo-400 transition-all"
           >
             {g.backgroundImage
               ? <img src={g.backgroundImage} alt={g.title} className="w-full h-full object-cover" />

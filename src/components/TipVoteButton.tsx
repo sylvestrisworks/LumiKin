@@ -35,7 +35,7 @@ export default function TipVoteButton({ tipId, initialCount, initialVoted }: Pro
       className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition-all ${
         voted
           ? 'bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700'
-          : 'bg-white border-slate-200 text-slate-500 hover:border-indigo-300 hover:text-indigo-600'
+          : 'bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-indigo-300 hover:text-indigo-600'
       }`}
       title={voted ? 'Remove vote' : 'Helpful'}
     >

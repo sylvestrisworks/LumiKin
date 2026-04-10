@@ -332,7 +332,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
   ].filter(Boolean).length
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <div className="max-w-6xl mx-auto px-4 py-6">
 
         {/* ── Search bar ─────────────────────────────────────────────────── */}
@@ -361,7 +361,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                   className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
                     !selectedChild
                       ? 'bg-slate-800 text-white'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-400'
+                      : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-500'
                   }`}
                 >
                   Everyone
@@ -377,7 +377,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                       className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
                         selectedChild?.id === p.id
                           ? 'bg-indigo-600 text-white'
-                          : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-700'
+                          : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400'
                       }`}
                     >
                       {p.name} <span className="opacity-70">({age})</span>
@@ -390,8 +390,8 @@ export default async function BrowsePage({ params, searchParams }: Props) {
             {/* Header row */}
             <div className="flex items-center justify-between mb-4 gap-3">
               <div>
-                <h1 className="text-xl font-bold text-slate-900">{t('title')}</h1>
-                <p className="text-sm text-slate-500 mt-0.5">
+                <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">{t('title')}</h1>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
                   {t('gamesCount', { count: total })}
                   {activeFilterCount > 0 && ` · ${t('filtersActive', { count: activeFilterCount })}`}
                   {totalPages > 1 && ` · ${t('pageOf', { current: currentPage, total: totalPages })}`}
@@ -405,10 +405,10 @@ export default async function BrowsePage({ params, searchParams }: Props) {
             </div>
 
             {rows.length === 0 ? (
-              <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
+              <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
                 <p className="text-4xl mb-3">🔍</p>
-                <p className="font-semibold text-slate-700">{t('noGames')}</p>
-                <p className="text-sm text-slate-500 mt-1 max-w-xs mx-auto">
+                <p className="font-semibold text-slate-700 dark:text-slate-200">{t('noGames')}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto">
                   {t('noGamesSub')}
                   {(filters.risk || filters.time || filters.benefits.length > 0) && (
                     <> {t('noGamesRisk')}</>
@@ -445,7 +445,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
               </div>
             ) : (
               /* ── List view ──────────────────────────────────────────────── */
-              <ol className="divide-y divide-slate-100">
+              <ol className="divide-y divide-slate-100 dark:divide-slate-700">
                 {rows.map((row, i) => {
                   const score    = row.curascore
                   const badgeCls = score == null
@@ -456,9 +456,9 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                     <li key={row.slug}>
                       <Link
                         href={`/${locale}/game/${row.slug}`}
-                        className="flex items-center gap-4 py-3 px-2 rounded-lg hover:bg-indigo-50 hover:translate-x-0.5 transition-all group"
+                        className="flex items-center gap-4 py-3 px-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-slate-700 hover:translate-x-0.5 transition-all group"
                       >
-                        <span className="w-7 text-right text-sm font-semibold text-slate-400 shrink-0 group-hover:text-indigo-400 transition-colors">
+                        <span className="w-7 text-right text-sm font-semibold text-slate-400 dark:text-slate-500 shrink-0 group-hover:text-indigo-400 transition-colors">
                           {rank}
                         </span>
                         <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-indigo-100">
@@ -476,18 +476,18 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-slate-800 truncate group-hover:text-indigo-700 transition-colors">
+                          <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">
                             {row.title}
                           </p>
-                          <p className="text-xs text-slate-500 truncate mt-0.5">
+                          <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
                             {(row.genres as string[])[0] ?? row.developer ?? ''}
                             {row.esrbRating && (
-                              <span className="ml-2 text-slate-400">{row.esrbRating}</span>
+                              <span className="ml-2 text-slate-400 dark:text-slate-500">{row.esrbRating}</span>
                             )}
                           </p>
                         </div>
                         {row.timeRecommendationMinutes != null && (
-                          <span className="text-xs text-slate-400 shrink-0 hidden sm:block">
+                          <span className="text-xs text-slate-400 dark:text-slate-500 shrink-0 hidden sm:block">
                             {row.timeRecommendationMinutes} min/day
                           </span>
                         )}
@@ -507,7 +507,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                 {currentPage > 1 && (
                   <Link
                     href={pageUrl(filters, currentPage - 1, locale, childIdParam ?? undefined)}
-                    className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:border-indigo-300 hover:text-indigo-700 transition-colors"
+                    className="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400 transition-colors"
                   >
                     ← {t('prevPage')}
                   </Link>
@@ -523,7 +523,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                   }, [])
                   .map((p, idx) =>
                     p === '…' ? (
-                      <span key={`ellipsis-${idx}`} className="px-2 text-slate-400 text-sm">…</span>
+                      <span key={`ellipsis-${idx}`} className="px-2 text-slate-400 dark:text-slate-500 text-sm">…</span>
                     ) : (
                       <Link
                         key={p}
@@ -531,7 +531,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                         className={`w-9 h-9 flex items-center justify-center text-sm font-semibold rounded-lg transition-colors ${
                           p === currentPage
                             ? 'bg-indigo-600 text-white'
-                            : 'bg-white border border-slate-200 text-slate-700 hover:border-indigo-300 hover:text-indigo-700'
+                            : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400'
                         }`}
                       >
                         {p}
@@ -543,7 +543,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                 {currentPage < totalPages && (
                   <Link
                     href={pageUrl(filters, currentPage + 1, locale, childIdParam ?? undefined)}
-                    className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:border-indigo-300 hover:text-indigo-700 transition-colors"
+                    className="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400 transition-colors"
                   >
                     {t('nextPage')} →
                   </Link>

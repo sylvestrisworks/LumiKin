@@ -378,3 +378,31 @@ export const childProfiles = pgTable('child_profiles', {
 }, (table) => ({
   userIdx: index('child_profile_user_idx').on(table.userId),
 }))
+
+
+// ============================================
+// PARENT TIPS (community UGC)
+// ============================================
+
+export const gameTips = pgTable('game_tips', {
+  id:         serial('id').primaryKey(),
+  gameId:     integer('game_id').notNull().references(() => games.id, { onDelete: 'cascade' }),
+  userId:     text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  authorName: varchar('author_name', { length: 100 }).notNull().default('A parent'),
+  content:    varchar('content', { length: 280 }).notNull(),
+  tipType:    varchar('tip_type', { length: 20 }).notNull().default('tip'), // 'tip' | 'warning' | 'praise'
+  status:     varchar('status', { length: 20 }).notNull().default('approved'), // 'approved' | 'flagged'
+  createdAt:  timestamp('created_at').defaultNow(),
+}, (table) => ({
+  gameIdx: index('game_tips_game_idx').on(table.gameId),
+  userIdx: index('game_tips_user_idx').on(table.userId),
+}))
+
+export const gameTipVotes = pgTable('game_tip_votes', {
+  id:        serial('id').primaryKey(),
+  tipId:     integer('tip_id').notNull().references(() => gameTips.id, { onDelete: 'cascade' }),
+  userId:    text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  uniq: uniqueIndex('game_tip_votes_tip_user_idx').on(table.tipId, table.userId),
+}))

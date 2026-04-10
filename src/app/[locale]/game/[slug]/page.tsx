@@ -7,7 +7,9 @@ import { db } from '@/lib/db'
 import { games, gameScores, reviews, darkPatterns, complianceStatus, userGames, childProfiles } from '@/lib/db/schema'
 import GameCard from '@/components/GameCard'
 import LibraryButton from '@/components/LibraryButton'
+import ParentTips from '@/components/ParentTips'
 import { auth } from '@/auth'
+import { Suspense } from 'react'
 import type { ComplianceBadge, DarkPattern, GameCardProps, SerializedGame, SerializedScores, SerializedReview } from '@/types/game'
 
 type Props = { params: { slug: string } }
@@ -325,6 +327,21 @@ export default async function GamePage({ params }: Props) {
               </div>
             )
           })()}
+
+          {/* Parent Tips */}
+          {game.id && (
+            <Suspense fallback={
+              <div className="mt-4 bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
+                <div className="h-4 w-24 bg-slate-100 rounded animate-pulse mb-3" />
+                <div className="space-y-2">
+                  <div className="h-3 bg-slate-100 rounded animate-pulse" />
+                  <div className="h-3 w-3/4 bg-slate-100 rounded animate-pulse" />
+                </div>
+              </div>
+            }>
+              <ParentTips gameId={game.id} uid={uid} />
+            </Suspense>
+          )}
 
           {/* Description — first 2 sentences only, strips HTML tags */}
           {game.description && (() => {

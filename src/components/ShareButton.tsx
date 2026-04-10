@@ -1,14 +1,20 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 type Props = {
   title: string
-  url?: string // defaults to window.location.href
+  url?: string
 }
 
 export default function ShareButton({ title, url }: Props) {
   const [copied, setCopied] = useState(false)
+  const [hasNativeShare, setHasNativeShare] = useState(false)
+
+  // Detect native share support after mount to avoid hydration mismatch
+  useEffect(() => {
+    setHasNativeShare(typeof navigator !== 'undefined' && !!navigator.share)
+  }, [])
 
   function getUrl() {
     return url ?? (typeof window !== 'undefined' ? window.location.href : '')
@@ -20,7 +26,6 @@ export default function ShareButton({ title, url }: Props) {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      // Fallback for browsers without clipboard API
       const input = document.createElement('input')
       input.value = getUrl()
       document.body.appendChild(input)
@@ -38,8 +43,6 @@ export default function ShareButton({ title, url }: Props) {
     }
   }
 
-  const hasNativeShare = typeof navigator !== 'undefined' && !!navigator.share
-
   return (
     <div className="flex items-center gap-1.5">
       {/* Copy link */}
@@ -55,7 +58,7 @@ export default function ShareButton({ title, url }: Props) {
         {copied ? '✓ Copied' : '🔗 Copy link'}
       </button>
 
-      {/* Native share — only shown on devices that support it (mobile) */}
+      {/* Native share — only shown after mount on devices that support it */}
       {hasNativeShare && (
         <button
           onClick={nativeShare}

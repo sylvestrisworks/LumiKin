@@ -27,25 +27,26 @@ function pct(value: number | null | undefined): string {
   return `${Math.round((value ?? 0) * 100)}%`
 }
 
+// ─── Risk bar colors — gul/orange/röd skala ───────────────────────────────────
 function riskBarColor(value: number | null): string {
   const v = value ?? 0
-  if (v < 0.3) return 'bg-emerald-400'
-  if (v < 0.6) return 'bg-amber-400'
-  return 'bg-red-400'
+  if (v < 0.3) return 'bg-yellow-400'
+  if (v < 0.6) return 'bg-orange-500'
+  return 'bg-red-600'
 }
 
-// ─── Risk level — tydliga varningsfärger ──────────────────────────────────────
+// ─── Risk level pills — gul/orange/röd skala ─────────────────────────────────
 function riskLevel(value: number | null): { labelKey: 'riskLow' | 'riskModerate' | 'riskHigh'; color: string; bg: string } {
   const v = value ?? 0
   if (v < 0.3) return {
     labelKey: 'riskLow',
-    color: 'text-emerald-700 dark:text-emerald-300',
-    bg:    'bg-emerald-100 dark:bg-emerald-900/50 border border-emerald-300 dark:border-emerald-700',
+    color: 'text-yellow-800 dark:text-yellow-200',
+    bg:    'bg-yellow-100 dark:bg-yellow-900/50 border border-yellow-300 dark:border-yellow-700',
   }
   if (v < 0.6) return {
     labelKey: 'riskModerate',
-    color: 'text-amber-800 dark:text-amber-200',
-    bg:    'bg-amber-100 dark:bg-amber-900/50 border border-amber-300 dark:border-amber-600',
+    color: 'text-orange-800 dark:text-orange-200',
+    bg:    'bg-orange-100 dark:bg-orange-900/50 border border-orange-300 dark:border-orange-600',
   }
   return {
     labelKey: 'riskHigh',
@@ -64,12 +65,12 @@ function benefitBarColor(value: number | null): string {
   return 'bg-slate-300 dark:bg-slate-600'
 }
 
-// Risk bars — röd/amber/grön, högre = sämre
+// Risk detail bars — gul/orange/röd, högre = sämre
 function riskDetailBarColor(value: number, max: number): string {
   const fraction = value / max
-  if (fraction >= 0.67) return 'bg-red-400'
-  if (fraction >= 0.34) return 'bg-amber-400'
-  return 'bg-emerald-400'
+  if (fraction >= 0.67) return 'bg-red-600'
+  if (fraction >= 0.34) return 'bg-orange-500'
+  return 'bg-yellow-400'
 }
 
 type StatusVerdict = { label: string; color: string; bg: string; ring: string }
@@ -88,11 +89,11 @@ const RISK_FLAG_COLORS: Record<string, string> = {
   'flagBattlePass':      'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-700',
   'flagInAppPurchases':  'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border border-orange-200 dark:border-orange-700',
   'flagSubscription':    'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border border-orange-200 dark:border-orange-700',
-  'flagStrangerChat':    'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-700',
+  'flagStrangerChat':    'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-700',
 }
 
 function riskFlagClass(flagKey: string): string {
-  return RISK_FLAG_COLORS[flagKey] ?? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-700'
+  return RISK_FLAG_COLORS[flagKey] ?? 'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border border-orange-200 dark:border-orange-700'
 }
 
 // ─── Horseshoe ring ───────────────────────────────────────────────────────────
@@ -482,7 +483,7 @@ function FullScoresTab({ scores, review, t }: { scores: SerializedScores; review
         </div>
       </div>
 
-      {/* ── RISK SCORES — använder RiskDetailRow med varningsfärger ── */}
+      {/* ── RISK SCORES — gul/orange/röd ── */}
       <div>
         <h3 className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">{t('riskScoresHeader')}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 sm:gap-x-8">

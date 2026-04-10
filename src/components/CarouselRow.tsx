@@ -12,7 +12,7 @@ function CarouselTile({ game }: { game: GameSummary }) {
   return (
     <Link href={`/game/${game.slug}`} className="group/tile shrink-0 w-36 sm:w-44 snap-start">
       {/* Image */}
-      <div className="relative w-full h-24 sm:h-28 rounded-xl overflow-hidden bg-indigo-100">
+      <div className="relative w-full h-24 sm:h-28 rounded-xl overflow-hidden bg-indigo-100 dark:bg-indigo-900/40">
         {game.backgroundImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -21,8 +21,8 @@ function CarouselTile({ game }: { game: GameSummary }) {
             className="w-full h-full object-cover group-hover/tile:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-violet-200">
-            <span className="text-2xl font-black text-indigo-300 select-none">
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-violet-200 dark:from-indigo-900/40 dark:to-violet-900/40">
+            <span className="text-2xl font-black text-indigo-300 dark:text-indigo-500 select-none">
               {game.title.slice(0, 2).toUpperCase()}
             </span>
           </div>
@@ -58,10 +58,10 @@ function CarouselTile({ game }: { game: GameSummary }) {
       </div>
 
       {/* Title */}
-      <p className="mt-2 text-xs font-semibold text-slate-800 truncate group-hover/tile:text-indigo-700 transition-colors leading-tight">
+      <p className="mt-2 text-xs font-semibold text-slate-800 dark:text-slate-100 truncate group-hover/tile:text-indigo-700 dark:group-hover/tile:text-indigo-400 transition-colors leading-tight">
         {game.title}
       </p>
-      <p className="text-[10px] text-slate-400 truncate mt-0.5">
+      <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
         {game.genres[0] ?? game.developer ?? ''}
       </p>
     </Link>
@@ -79,7 +79,7 @@ function Arrow({ dir, onClick, label }: { dir: 'left' | 'right'; onClick: () => 
         ${dir === 'left' ? 'left-0 justify-start pl-1' : 'right-0 justify-end pr-1'}
         opacity-0 group-hover:opacity-100 transition-opacity`}
     >
-      <span className="w-8 h-8 rounded-full bg-white/95 shadow-md border border-slate-200 flex items-center justify-center text-lg text-slate-600 hover:text-indigo-700 hover:border-indigo-300 transition-colors select-none leading-none">
+      <span className="w-8 h-8 rounded-full bg-white/95 dark:bg-slate-800/95 shadow-md border border-slate-200 dark:border-slate-600 flex items-center justify-center text-lg text-slate-600 dark:text-slate-300 hover:text-indigo-700 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-500 transition-colors select-none leading-none">
         {dir === 'left' ? '‹' : '›'}
       </span>
     </button>
@@ -105,15 +105,15 @@ export default function CarouselRow({ emoji, title, browseHref, games, index }: 
   }
 
   return (
-    <section className={index > 0 ? 'pt-10 border-t border-slate-100' : ''}>
+    <section className={index > 0 ? 'pt-10 border-t border-slate-100 dark:border-slate-700/50' : ''}>
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+        <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
           <span>{emoji}</span>
           <span>{title}</span>
         </h2>
         <Link
           href={browseHref}
-          className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors shrink-0"
+          className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors shrink-0"
         >
           {t('seeAll')}
         </Link>

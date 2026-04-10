@@ -17,7 +17,7 @@ export default function GameCompactCard({ game }: Props) {
       className="group flex flex-col bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-500 transition-all"
     >
       {/* Thumbnail */}
-      <div className="relative h-28 bg-indigo-50 overflow-hidden shrink-0">
+      <div className="relative h-28 bg-indigo-50 dark:bg-indigo-900/40 overflow-hidden shrink-0">
         {game.backgroundImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -26,8 +26,8 @@ export default function GameCompactCard({ game }: Props) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-violet-100">
-            <span className="text-2xl font-black text-indigo-300 select-none">
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/40 dark:to-violet-900/40">
+            <span className="text-2xl font-black text-indigo-300 dark:text-indigo-500 select-none">
               {game.title.slice(0, 2).toUpperCase()}
             </span>
           </div>
@@ -56,7 +56,7 @@ export default function GameCompactCard({ game }: Props) {
 
         <div className="flex items-center gap-1 flex-wrap">
           {game.genres[0] && (
-            <span className="text-xs text-indigo-600 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded-full">
+            <span className="text-xs text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-700 px-1.5 py-0.5 rounded-full">
               {game.genres[0]}
             </span>
           )}
@@ -76,7 +76,7 @@ export default function GameCompactCard({ game }: Props) {
 
         {/* Monetization flag */}
         {(game.hasLootBoxes || game.hasMicrotransactions) && (
-          <span className="text-xs text-amber-600 mt-auto" title={t('hasMonetization')}>💰 {t('monetization')}</span>
+          <span className="text-xs text-amber-600 dark:text-amber-400 mt-auto" title={t('hasMonetization')}>💰 {t('monetization')}</span>
         )}
       </div>
     </Link>

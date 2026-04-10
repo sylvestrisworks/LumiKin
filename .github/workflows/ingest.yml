@@ -1,0 +1,27 @@
+name: Ingest Games
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Varje timme
+  workflow_dispatch:       # Kan köras manuellt
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run ingest
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron/ingest-games")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+
+          echo "Status: $HTTP_CODE"
+          echo "Response: $BODY"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::Ingest failed with status $HTTP_CODE"
+            exit 1
+          fi

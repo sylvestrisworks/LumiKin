@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import Link from 'next/link'
-import { Lightbulb, Sparkles, Zap, Clock, CheckCircle2, User, GitCompareArrows } from 'lucide-react'
+import { Lightbulb, Sparkles, Zap, Clock, CheckCircle2, User, GitCompareArrows, AlertTriangle } from 'lucide-react'
 import type { DarkPattern, GameCardProps, SerializedReview, SerializedScores } from '@/types/game'
 import { esrbToAge, ageBadgeColor } from '@/lib/ui'
 import DarkPatternPills from './DarkPatternPills'
@@ -66,6 +66,23 @@ function getVerdict(score: number | null): StatusVerdict {
   if (s >= 50) return { label: 'GOOD',    color: 'text-teal-600 dark:text-teal-400',       bg: 'bg-teal-50 dark:bg-teal-900/30',        ring: '#14b8a6' }
   if (s >= 35) return { label: 'CAUTION', color: 'text-amber-600 dark:text-amber-400',     bg: 'bg-amber-50 dark:bg-amber-900/30',      ring: '#f59e0b' }
   return              { label: 'AVOID',   color: 'text-red-600 dark:text-red-400',         bg: 'bg-red-50 dark:bg-red-900/30',          ring: '#ef4444' }
+}
+
+// ─── Risk flag pill colors ────────────────────────────────────────────────────
+
+// Maps known risk flags to appropriate warning colors
+const RISK_FLAG_COLORS: Record<string, string> = {
+  // Monetization — red (highest concern)
+  'flagLootBoxes':       'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-700',
+  'flagBattlePass':      'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-700',
+  'flagInAppPurchases':  'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border border-orange-200 dark:border-orange-700',
+  'flagSubscription':    'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border border-orange-200 dark:border-orange-700',
+  // Social — amber
+  'flagStrangerChat':    'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-700',
+}
+
+function riskFlagClass(flagKey: string): string {
+  return RISK_FLAG_COLORS[flagKey] ?? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-700'
 }
 
 // ─── Horseshoe ring ───────────────────────────────────────────────────────────
@@ -253,13 +270,19 @@ function BenefitsTab({ scores, review, t }: { scores: SerializedScores; review: 
             }`}>
               <span className="text-base leading-none mt-0.5">♀</span>
               <div>
-                <p className={`text-xs font-semibold ${review.bechdelResult === 'pass' ? 'text-violet-800 dark:text-violet-300' : 'text-purple-600 dark:text-purple-400'}`}>
-                  {t('bechdelPasses')}
-                  {review.bechdelResult !== 'pass' && (
-                    <span className="font-normal ml-1">
-                      {review.bechdelResult === 'na' ? `— ${t('bechdelNa')}` : '— does not pass'}
+                <p className={`text-xs font-semibold flex items-center gap-1 ${review.bechdelResult === 'pass' ? 'text-violet-800 dark:text-violet-300' : 'text-purple-600 dark:text-purple-400'}`}>
+                  Bechdeltestet
+                  <span className="relative group/btip inline-flex items-center cursor-help">
+                    <span className="w-3.5 h-3.5 rounded-full bg-purple-200 dark:bg-purple-800 text-purple-600 dark:text-purple-300 text-[9px] font-black flex items-center justify-center leading-none">
+                      ?
                     </span>
-                  )}
+                    <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-60 rounded-xl bg-slate-800 dark:bg-slate-700 px-3 py-2 text-xs text-white leading-snug opacity-0 group-hover/btip:opacity-100 transition-opacity z-50 text-left shadow-lg font-normal">
+                      Bechdeltestet mäter om ett spel har minst två namngivna kvinnliga karaktärer som pratar med varandra om något annat än en man. Används som ett enkelt mått på representation.
+                    </span>
+                  </span>
+                  <span className={`ml-1 font-normal ${review.bechdelResult === 'pass' ? 'text-violet-700 dark:text-violet-400' : 'text-purple-500 dark:text-purple-500'}`}>
+                    — {review.bechdelResult === 'pass' ? 'Klarar testet' : review.bechdelResult === 'na' ? t('bechdelNa') : 'Klarar inte testet'}
+                  </span>
                 </p>
                 {review.bechdelNotes && (
                   <p className="text-xs text-purple-700 dark:text-purple-400 mt-0.5 leading-relaxed">{review.bechdelNotes}</p>
@@ -294,13 +317,14 @@ function RisksTab({ scores, game, review, darkPatterns, t }: {
   scores: SerializedScores; game: GameCardProps['game']
   review: SerializedReview | null; darkPatterns: DarkPattern[]; t: T
 }) {
-  const flags = [
-    game.hasMicrotransactions && t('flagInAppPurchases'),
-    game.hasLootBoxes         && t('flagLootBoxes'),
-    game.hasBattlePass        && t('flagBattlePass'),
-    game.hasSubscription      && t('flagSubscription'),
-    game.hasStrangerChat      && t('flagStrangerChat'),
-  ].filter(Boolean) as string[]
+  // Map flag translation keys to their display labels and color classes
+  const flagDefs: { key: string; label: string; colorClass: string }[] = [
+    game.hasLootBoxes         ? { key: 'flagLootBoxes',      label: t('flagLootBoxes'),      colorClass: riskFlagClass('flagLootBoxes')      } : null,
+    game.hasBattlePass        ? { key: 'flagBattlePass',     label: t('flagBattlePass'),     colorClass: riskFlagClass('flagBattlePass')     } : null,
+    game.hasMicrotransactions ? { key: 'flagInAppPurchases', label: t('flagInAppPurchases'), colorClass: riskFlagClass('flagInAppPurchases') } : null,
+    game.hasSubscription      ? { key: 'flagSubscription',   label: t('flagSubscription'),   colorClass: riskFlagClass('flagSubscription')   } : null,
+    game.hasStrangerChat      ? { key: 'flagStrangerChat',   label: t('flagStrangerChat'),   colorClass: riskFlagClass('flagStrangerChat')   } : null,
+  ].filter(Boolean) as { key: string; label: string; colorClass: string }[]
 
   return (
     <div className="space-y-6">
@@ -314,12 +338,18 @@ function RisksTab({ scores, game, review, darkPatterns, t }: {
         </div>
       </div>
 
-      {flags.length > 0 && (
-        <div className="bg-amber-50 dark:bg-amber-900/20 rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-300 mb-2">{t('flags')}</h3>
+      {/* Risk flags — färgkodade efter allvarlighetsgrad */}
+      {flagDefs.length > 0 && (
+        <div className="bg-red-50 dark:bg-red-900/20 rounded-2xl p-5 border border-red-100 dark:border-red-800">
+          <h3 className="text-sm font-semibold text-red-800 dark:text-red-300 mb-3 flex items-center gap-1.5">
+            <AlertTriangle size={14} className="shrink-0" strokeWidth={2.5} />
+            {t('flags')}
+          </h3>
           <div className="flex flex-wrap gap-2">
-            {flags.map((f) => (
-              <span key={f} className="text-xs font-medium bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-700 px-2.5 py-1 rounded-full">{f}</span>
+            {flagDefs.map((f) => (
+              <span key={f.key} className={`text-xs font-semibold px-2.5 py-1 rounded-full ${f.colorClass}`}>
+                {f.label}
+              </span>
             ))}
           </div>
         </div>

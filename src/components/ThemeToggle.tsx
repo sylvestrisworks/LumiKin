@@ -70,8 +70,14 @@ export default function ThemeToggle() {
         pointer-events-none
         transition-opacity duration-200
         whitespace-nowrap
+        shadow-lg
+        z-50
       ">
         {LABELS[current]}
+        <span className="
+          absolute top-full left-1/2 -translate-x-1/2 -mt-1
+          border-4 border-transparent border-t-slate-900 dark:border-t-slate-100
+        " />
       </span>
     </button>
   )

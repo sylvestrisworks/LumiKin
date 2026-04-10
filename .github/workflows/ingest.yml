@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check and run ingest
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
-          APP_URL="${{ secrets.APP_URL }}"
-          CRON_SECRET="${{ secrets.CRON_SECRET }}"
-
           echo "APP_URL length: ${#APP_URL}"
           echo "CRON_SECRET length: ${#CRON_SECRET}"
 

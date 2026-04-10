@@ -8,6 +8,7 @@ import { games, gameScores, reviews, darkPatterns, complianceStatus, userGames, 
 import GameCard from '@/components/GameCard'
 import LibraryButton from '@/components/LibraryButton'
 import ParentTips from '@/components/ParentTips'
+import ShareButton from '@/components/ShareButton'
 import { auth } from '@/auth'
 import { Suspense } from 'react'
 import type { ComplianceBadge, DarkPattern, GameCardProps, SerializedGame, SerializedScores, SerializedReview } from '@/types/game'
@@ -202,20 +203,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? game.description.slice(0, 160)
     : `See the Good Game Parent rating for ${game.title} — benefits, risks, and time recommendations for parents.`
 
+  const ogImage = `${process.env.NEXTAUTH_URL ?? 'https://curascore.vercel.app'}/api/og/game/${params.slug}`
+
   return {
-    title: `${game.title} — Good Game Parent`,
+    title: `${game.title} — PlaySmart`,
     description: desc,
     openGraph: {
-      title: `${game.title} — Good Game Parent`,
+      title: `${game.title} — PlaySmart`,
       description: desc,
-      images: game.backgroundImage ? [{ url: game.backgroundImage }] : [],
+      images: [{ url: ogImage, width: 1200, height: 630 }],
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${game.title} — Good Game Parent`,
+      title: `${game.title} — PlaySmart`,
       description: desc,
-      images: game.backgroundImage ? [game.backgroundImage] : [],
+      images: [ogImage],
     },
   }
 }
@@ -287,16 +290,17 @@ export default async function GamePage({ params }: Props) {
         <main className="max-w-2xl mx-auto px-4 py-6">
           <GameCard {...data} />
 
-          {/* Library / Wishlist buttons — shown only when logged in */}
-          {uid && game.id && (
-            <div className="mt-4 flex justify-center">
+          {/* Library / Wishlist + Share */}
+          <div className="mt-4 flex items-center justify-between gap-3 flex-wrap">
+            {uid && game.id ? (
               <LibraryButton
                 gameId={game.id}
                 initialOwned={initialOwned}
                 initialWishlisted={initialWishlisted}
               />
-            </div>
-          )}
+            ) : <div />}
+            <ShareButton title={game.title} />
+          </div>
 
           {/* Per-child appropriateness banner */}
           {userProfiles.length > 0 && (() => {

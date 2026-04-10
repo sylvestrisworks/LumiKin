@@ -5,6 +5,7 @@ import { childProfiles, userGames, games, gameScores } from '@/lib/db/schema'
 import { eq, isNotNull } from 'drizzle-orm'
 import { Suspense } from 'react'
 import TailoredFeed from '@/components/TailoredFeed'
+import NewForChild from '@/components/NewForChild'
 import ProfileManager from '@/components/ProfileManager'
 import { getLocale } from 'next-intl/server'
 import { curascoreBg } from '@/lib/ui'
@@ -148,6 +149,14 @@ export default async function FamilyDashboard() {
               </div>
 
               <div className="px-6 py-5 space-y-6">
+
+                {/* New this week */}
+                <Suspense fallback={null}>
+                  <NewForChild
+                    birthYear={profile.birthYear}
+                    platforms={(profile.platforms as string[]) ?? []}
+                  />
+                </Suspense>
 
                 {/* From your library */}
                 {childGames.length > 0 && (

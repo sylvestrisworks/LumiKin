@@ -2,11 +2,11 @@
  * GET /api/cron/fetch-games
  *
  * Steg 1 i ingest-pipeline:
- *   - Hämtar upp till 200 nya spel från RAWG (genre-cursor)
+ *   - Hämtar upp till 25 nya spel från RAWG (genre-cursor)
  *   - Laddar upp cover-bild till Vercel Blob
  *   - Sparar spel till DB (utan AI-scores)
  *
- * Körs varannan timme via GitHub Actions.
+ * Körs var 30:e minut via GitHub Actions.
  * Protection: Authorization: Bearer <CRON_SECRET>
  * Max duration: 300s (Vercel Pro)
  */
@@ -35,10 +35,10 @@ const SWEEP_ORDERINGS: Record<number, string> = {
   3: '-released',
 }
 
-const MAX_GAMES_PER_RUN   = 200
+const MAX_GAMES_PER_RUN   = 25   // Reducerat från 200 för att hålla sig inom 300s timeout
 const PAGE_SIZE           = 40
 const MAX_PAGES_PER_GENRE = 25
-const DELAY_MS            = 300
+const DELAY_MS            = 400  // Lite längre delay för att undvika RAWG rate limits
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 
@@ -119,13 +119,13 @@ export async function GET(req: NextRequest) {
             .onConflictDoUpdate({
               target: games.slug,
               set: {
-                rawgId:          data.rawgId,
-                title:           data.title,
-                description:     data.description,
-                developer:       data.developer,
-                publisher:       data.publisher,
-                backgroundImage: data.backgroundImage,
-                updatedAt:       new Date(),
+                rawgId:             data.rawgId,
+                title:              data.title,
+                description:        data.description,
+                developer:          data.developer,
+                publisher:          data.publisher,
+                backgroundImage:    data.backgroundImage,
+                updatedAt:          new Date(),
                 metadataLastSynced: new Date(),
               },
             })

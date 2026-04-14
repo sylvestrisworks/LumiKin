@@ -448,6 +448,9 @@ export const platformExperiences = pgTable('platform_experiences', {
   // Re-fetch cadence
   lastFetchedAt: timestamp('last_fetched_at'),
 
+  // Rescore flag — set when content changes are detected during stat refresh
+  needsRescore: boolean('needs_rescore').notNull().default(false),
+
   // Timestamps
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),

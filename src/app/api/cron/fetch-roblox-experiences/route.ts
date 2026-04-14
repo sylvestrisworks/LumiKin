@@ -14,8 +14,11 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { platformExperiences, games } from '@/lib/db/schema'
-import { eq, inArray } from 'drizzle-orm'
+import { platformExperiences, experienceScores, games } from '@/lib/db/schema'
+import { eq, inArray, lt, sql } from 'drizzle-orm'
+
+// Re-score if content hasn't been re-evaluated in this many days
+const STALE_SCORE_DAYS = 90
 
 export const maxDuration = 60
 
@@ -107,7 +110,15 @@ export async function GET(req: NextRequest) {
 
   // ── 1. Get all existing experiences ─────────────────────────────────────────
   const existing = await db
-    .select({ id: platformExperiences.id, universeId: platformExperiences.universeId, slug: platformExperiences.slug })
+    .select({
+      id:          platformExperiences.id,
+      universeId:  platformExperiences.universeId,
+      slug:        platformExperiences.slug,
+      title:       platformExperiences.title,
+      description: platformExperiences.description,
+      genre:       platformExperiences.genre,
+      maxPlayers:  platformExperiences.maxPlayers,
+    })
     .from(platformExperiences)
 
   const existingUniverseIds = new Set(existing.map(e => e.universeId).filter(Boolean) as string[])
@@ -143,12 +154,27 @@ export async function GET(req: NextRequest) {
 
     try {
       if (existingRow) {
-        // Refresh stats only
+        // Detect content changes that warrant a rescore
+        const contentChanged =
+          (existingRow.title       !== game.name) ||
+          (existingRow.description !== (game.description ?? null)) ||
+          (existingRow.genre       !== (game.genre ?? null)) ||
+          (existingRow.maxPlayers  !== game.maxPlayers)
+
         await db.update(platformExperiences).set({
           activePlayers: game.playing,
           visitCount:    game.visits,
+          title:         game.name,
+          description:   game.description ?? null,
+          genre:         game.genre ?? null,
+          maxPlayers:    game.maxPlayers,
+          ...(contentChanged ? { needsRescore: true } : {}),
           updatedAt:     new Date(),
         }).where(eq(platformExperiences.id, existingRow.id))
+
+        if (contentChanged) {
+          console.log(`[fetch-roblox] Content change detected: ${game.name} → flagged for rescore`)
+        }
         refreshed.push(existingRow.slug)
       } else {
         // New experience — fetch thumbnail and insert
@@ -189,10 +215,31 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // ── Age-based rescore sweep ──────────────────────────────────────────────────
+  // Roblox games update frequently — re-evaluate any score older than STALE_SCORE_DAYS
+  const staleCutoff = new Date()
+  staleCutoff.setDate(staleCutoff.getDate() - STALE_SCORE_DAYS)
+
+  const staleResult = await db.execute(sql`
+    UPDATE platform_experiences
+    SET needs_rescore = true
+    WHERE id IN (
+      SELECT pe.id FROM platform_experiences pe
+      JOIN experience_scores es ON es.experience_id = pe.id
+      WHERE es.calculated_at < ${staleCutoff}
+        AND pe.needs_rescore = false
+    )
+  `)
+  const ageMarked = (staleResult as { rowCount?: number }).rowCount ?? 0
+  if (ageMarked > 0) {
+    console.log(`[fetch-roblox] Age sweep: marked ${ageMarked} experiences stale (>${STALE_SCORE_DAYS} days)`)
+  }
+
   return NextResponse.json({
-    refreshed: refreshed.length,
-    inserted:  inserted.length,
-    errors:    errors.length,
-    newGames:  inserted,
+    refreshed:  refreshed.length,
+    inserted:   inserted.length,
+    errors:     errors.length,
+    newGames:   inserted,
+    ageMarked,
   })
 }

@@ -13,7 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { platformExperiences, experienceScores } from '@/lib/db/schema'
-import { eq, isNull } from 'drizzle-orm'
+import { eq, isNull, or } from 'drizzle-orm'
 
 export const maxDuration = 300
 
@@ -265,7 +265,7 @@ export async function GET(req: NextRequest) {
       .select({ exp: platformExperiences })
       .from(platformExperiences)
       .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
-      .where(isNull(experienceScores.id))
+      .where(or(isNull(experienceScores.id), eq(platformExperiences.needsRescore, true)))
       .limit(MAX_PER_RUN)
 
     if (pending.length === 0) {
@@ -287,10 +287,16 @@ export async function GET(req: NextRequest) {
 
       try {
         console.log(`[review-experiences] Evaluating: ${exp.title}`)
-        const result   = await callBedrock(buildPrompt(exp))
+        const result    = await callBedrock(buildPrompt(exp))
         const curascore = await saveScore(exp, result)
+
+        // Clear rescore flag if it was set
+        if (exp.needsRescore) {
+          await db.update(platformExperiences).set({ needsRescore: false }).where(eq(platformExperiences.id, exp.id))
+        }
+
         evaluated.push(exp.slug)
-        console.log(`[review-experiences] ${exp.title} → curascore ${curascore}`)
+        console.log(`[review-experiences] ${exp.title} → curascore ${curascore}${exp.needsRescore ? ' (rescore)' : ''}`)
       } catch (err) {
         console.error(`[review-experiences] Failed ${exp.slug}:`, err)
         errors.push(exp.slug)

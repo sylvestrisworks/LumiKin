@@ -2,7 +2,7 @@ name: Review Games
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '5 * * * *'  # :05 every hour — Bedrock slot 1
   workflow_dispatch:
 
 jobs:

@@ -2,7 +2,7 @@ name: Review Experiences
 
 on:
   schedule:
-    - cron: '30 * * * *'  # every hour at :30, offset from review-games at :00
+    - cron: '25 * * * *'  # :25 every hour — Bedrock slot 2 (20 min after review-games at :05)
   workflow_dispatch:
 
 jobs:

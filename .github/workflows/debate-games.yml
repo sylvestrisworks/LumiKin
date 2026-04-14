@@ -2,7 +2,7 @@ name: Debate Games
 
 on:
   schedule:
-    - cron: '0 */2 * * *'
+    - cron: '45 */2 * * *'  # :45 every 2h — Bedrock slot 3 (20 min after review-experiences at :25)
   workflow_dispatch:
 
 jobs:

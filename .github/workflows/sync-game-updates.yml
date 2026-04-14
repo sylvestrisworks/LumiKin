@@ -2,7 +2,7 @@ name: Sync Game Updates
 
 on:
   schedule:
-    - cron: '0 4 * * *'  # daily at 04:00 UTC — marks stale/updated games for rescore
+    - cron: '0 3 * * *'  # daily at 03:00 UTC — quiet hour, no Bedrock jobs running
   workflow_dispatch:
 
 jobs:

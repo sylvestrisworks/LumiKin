@@ -2,7 +2,7 @@ name: Fetch Roblox Experiences
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # every 6 hours — refreshes stats + ingests curated new games
+    - cron: '55 */6 * * *'  # :55 every 6h — after all Bedrock jobs have settled
   workflow_dispatch:
 
 jobs:

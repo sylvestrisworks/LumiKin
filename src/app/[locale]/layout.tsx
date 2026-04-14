@@ -5,6 +5,7 @@ import { routing } from '@/i18n/routing'
 import SiteNav from '@/components/SiteNav'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import NavAuthButton from '@/components/NavAuthButton'
+import CookieNotice from '@/components/CookieNotice'
 
 export default async function LocaleLayout({
   children,
@@ -24,6 +25,7 @@ export default async function LocaleLayout({
       <div className="flex flex-col min-h-screen">
         <SiteNav authSlot={<NavAuthButton />} />
         <div className="flex-1">{children}</div>
+        <CookieNotice />
         <footer className="border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
           <div className="max-w-6xl mx-auto px-4 py-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

@@ -21,7 +21,7 @@ export const maxDuration = 300
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const MAX_REVIEWS_PER_RUN = 10
+const MAX_REVIEWS_PER_RUN = 20
 const DELAY_MS            = 500
 const BEDROCK_MODEL       = 'us.anthropic.claude-sonnet-4-5-20250929-v1:0'
 const BEDROCK_URL         = `https://bedrock-runtime.us-east-1.amazonaws.com/model/${BEDROCK_MODEL}/invoke`

@@ -29,6 +29,7 @@ const CURATED_UNIVERSE_IDS: string[] = [
   '2619619496',  // BedWars
   '2440500124',  // Doors
   '1008451066',  // Da Hood
+  '5569032992',  // Dandy's World
   // Add more by using ?add=PLACE_ID on this endpoint to resolve universe IDs
 ]
 

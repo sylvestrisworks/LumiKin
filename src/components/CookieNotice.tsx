@@ -60,11 +60,11 @@ export default function CookieNotice() {
           <div className="flex gap-3 text-[10px] font-semibold text-slate-400 dark:text-slate-500">
             <span className="flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
-              Strictly necessary: 1
+              Session: 1
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600 inline-block" />
-              Tracking: 0
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 inline-block" />
+              Analytics: cookie-free
             </span>
             <span className="flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600 inline-block" />

@@ -19,7 +19,6 @@ import { games, gameScores, reviews, ingestCursor } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { rawgGetByGenre, rawgGetDetail, RawgError } from '@/lib/rawg/client'
 import { mapDetailToInsert } from '@/lib/rawg/mapper'
-import { uploadImageFromUrl } from '@/lib/blob'
 import { calculateGameScores } from '@/lib/scoring/engine'
 import { GoogleGenAI, FunctionCallingConfigMode, Type } from '@google/genai'
 
@@ -594,12 +593,6 @@ export async function GET(req: NextRequest) {
           await sleep(DELAY_MS)
           const detail = await rawgGetDetail(candidate.id)
           const data   = mapDetailToInsert(detail)
-
-          // Ladda upp cover-bild
-          if (data.backgroundImage) {
-            const blobUrl = await uploadImageFromUrl(data.backgroundImage, `games/${data.slug}`)
-            if (blobUrl) data.backgroundImage = blobUrl
-          }
 
           const [inserted] = await db.insert(games)
             .values(data)

@@ -453,6 +453,53 @@ export const platformExperiences = pgTable('platform_experiences', {
 }));
 
 // ============================================
+// EXPERIENCE SCORES (AI evaluation of UGC experiences)
+// ============================================
+
+export const experienceScores = pgTable('experience_scores', {
+  id:           serial('id').primaryKey(),
+  experienceId: integer('experience_id').notNull().references(() => platformExperiences.id).unique(),
+
+  // Curascore (0–100) — same scale as game_scores for UI consistency
+  curascore: integer('curascore'),
+
+  // UGC-specific risk scores (0–3 each)
+  dopamineTrapScore:  integer('dopamine_trap_score'),  // variable rewards, streaks, near-miss
+  toxicityScore:      integer('toxicity_score'),       // chat toxicity, bullying, competitive pressure
+  ugcContentRisk:     integer('ugc_content_risk'),     // inappropriate UGC (builds, avatars, chat)
+  strangerRisk:       integer('stranger_risk'),        // stranger interaction, grooming vectors
+  monetizationScore:  integer('monetization_score'),  // Robux pressure, pay-to-win, social spending
+  privacyRisk:        integer('privacy_risk'),         // data collection, location, identity exposure
+
+  // Benefit scores (0–3 each)
+  creativityScore:    integer('creativity_score'),     // building, designing, scripting
+  socialScore:        integer('social_score'),         // cooperative play, friendship, community
+  learningScore:      integer('learning_score'),       // skill development, problem solving
+
+  // Normalized composite scores (0–1)
+  riskScore:    real('risk_score'),    // weighted average of risk dimensions
+  benefitScore: real('benefit_score'), // weighted average of benefit dimensions
+
+  // Time recommendation
+  timeRecommendationMinutes: integer('time_rec_minutes'),
+  timeRecommendationLabel:   varchar('time_rec_label', { length: 100 }),
+  timeRecommendationColor:   varchar('time_rec_color', { length: 10 }),
+
+  // Narrative output
+  summary:           text('summary'),
+  benefitsNarrative: text('benefits_narrative'),
+  risksNarrative:    text('risks_narrative'),
+  parentTip:         text('parent_tip'),
+
+  // Recommended minimum age
+  recommendedMinAge: integer('recommended_min_age'),
+
+  // Timestamps
+  calculatedAt: timestamp('calculated_at').defaultNow(),
+  updatedAt:    timestamp('updated_at').defaultNow(),
+});
+
+// ============================================
 // INGEST STATE (background game crawler cursor)
 // ============================================
 

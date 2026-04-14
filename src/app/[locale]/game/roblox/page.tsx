@@ -1,35 +1,31 @@
 export const dynamic = 'force-dynamic'
 
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { platformExperiences, experienceScores, games, gameScores } from '@/lib/db/schema'
-import { eq, desc } from 'drizzle-orm'
+import { eq, desc, and, lte, ilike, isNotNull, type SQL } from 'drizzle-orm'
 import ExperienceCard, { type ExperienceSummary } from '@/components/ExperienceCard'
-import { curascoreBg, curascoreText } from '@/lib/ui'
+import { curascoreText } from '@/lib/ui'
+import RobloxFilters, { type RobloxFilterState } from '@/components/RobloxFilters'
 
 export const metadata: Metadata = {
   title: 'Roblox Experience Guide — PlaySmart',
   description: 'PlaySmart ratings for popular Roblox experiences. Find out which games are safe for your child, with scores for stranger risk, monetization pressure, and more.',
 }
 
-function RiskBar({ label, value, max = 3, danger }: { label: string; value: number | null; max?: number; danger?: boolean }) {
-  const v = value ?? 0
-  const pct = Math.round((v / max) * 100)
-  const color = danger
-    ? v === 0 ? 'bg-emerald-400' : v === 1 ? 'bg-amber-400' : 'bg-red-500'
-    : v >= 2 ? 'bg-emerald-500' : v === 1 ? 'bg-amber-400' : 'bg-slate-300'
-  return (
-    <div className="flex items-center gap-2 text-xs">
-      <span className="w-28 text-slate-500 dark:text-slate-400 shrink-0">{label}</span>
-      <div className="flex-1 h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-        <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${pct}%` }} />
-      </div>
-      <span className="w-4 text-right text-slate-400">{v}</span>
-    </div>
-  )
-}
+type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> }
 
-export default async function RobloxHubPage() {
+export default async function RobloxHubPage({ searchParams }: Props) {
+  const sp = await searchParams
+  const filters: RobloxFilterState = {
+    q:    typeof sp.q    === 'string' ? sp.q    : '',
+    sort: typeof sp.sort === 'string' ? sp.sort : 'active',
+    risk: typeof sp.risk === 'string' ? sp.risk : '',
+    time: typeof sp.time === 'string' ? sp.time : '',
+  }
+  const hasFilters = !!(filters.q || filters.risk || filters.time || (filters.sort && filters.sort !== 'active'))
+
   // Fetch Roblox platform game row + its curascore
   const [roblox] = await db
     .select({ id: games.id, title: games.title, backgroundImage: games.backgroundImage, description: games.description })
@@ -45,15 +41,25 @@ export default async function RobloxHubPage() {
         .limit(1)
     : [null]
 
-  // Fetch all experiences with their scores, sorted by active players
+  // Build filter conditions
+  const conditions: SQL[] = []
+  if (filters.q)             conditions.push(ilike(platformExperiences.title, `%${filters.q}%`))
+  if (filters.risk === 'low')    { conditions.push(isNotNull(experienceScores.id)); conditions.push(lte(experienceScores.riskScore, 0.33)) }
+  if (filters.risk === 'medium') { conditions.push(isNotNull(experienceScores.id)); conditions.push(lte(experienceScores.riskScore, 0.66)) }
+  if (filters.time === '30') { conditions.push(isNotNull(experienceScores.id)); conditions.push(lte(experienceScores.timeRecommendationMinutes, 30)) }
+  if (filters.time === '60') { conditions.push(isNotNull(experienceScores.id)); conditions.push(lte(experienceScores.timeRecommendationMinutes, 60)) }
+
+  const orderBy =
+    filters.sort === 'curascore' ? desc(experienceScores.curascore) :
+    filters.sort === 'visits'    ? desc(platformExperiences.visitCount) :
+                                   desc(platformExperiences.activePlayers)
+
   const rows = await db
-    .select({
-      exp: platformExperiences,
-      score: experienceScores,
-    })
+    .select({ exp: platformExperiences, score: experienceScores })
     .from(platformExperiences)
     .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
-    .orderBy(desc(platformExperiences.activePlayers))
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(orderBy)
 
   const experiences: ExperienceSummary[] = rows.map(({ exp, score }) => ({
     slug:          exp.slug,
@@ -106,7 +112,7 @@ export default async function RobloxHubPage() {
                 Roblox is a platform of millions of user-generated experiences. Safety varies greatly by experience — browse our ratings below.
               </p>
               <div className="flex items-center gap-4 mt-2 text-xs text-slate-400 dark:text-slate-500">
-                <span>{experiences.length} experiences rated</span>
+                <span>{scored.length} experience{scored.length !== 1 ? 's' : ''} rated</span>
                 {platformScore?.timeRecommendationLabel && (
                   <span>Platform: {platformScore.timeRecommendationLabel}</span>
                 )}
@@ -115,38 +121,61 @@ export default async function RobloxHubPage() {
           </div>
         </div>
 
-        {/* Rated experiences grid */}
-        {scored.length > 0 && (
-          <section>
-            <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
-              Rated experiences
-            </h2>
+        {/* Search + filters */}
+        <Suspense>
+          <RobloxFilters active={filters} total={experiences.length} />
+        </Suspense>
+
+        {/* Results */}
+        {hasFilters ? (
+          /* When filtering: single flat grid */
+          experiences.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {scored.map(exp => (
+              {experiences.map(exp => (
                 <ExperienceCard key={exp.slug} exp={exp} />
               ))}
             </div>
-          </section>
-        )}
-
-        {/* Unscored experiences (awaiting AI review) */}
-        {unscored.length > 0 && (
-          <section>
-            <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
-              Awaiting review
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {unscored.map(exp => (
-                <ExperienceCard key={exp.slug} exp={exp} />
-              ))}
+          ) : (
+            <div className="text-center py-16 text-slate-400">
+              No experiences match your filters.
             </div>
-          </section>
-        )}
+          )
+        ) : (
+          <>
+            {/* Rated experiences grid */}
+            {scored.length > 0 && (
+              <section>
+                <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+                  Rated experiences
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {scored.map(exp => (
+                    <ExperienceCard key={exp.slug} exp={exp} />
+                  ))}
+                </div>
+              </section>
+            )}
 
-        {experiences.length === 0 && (
-          <div className="text-center py-16 text-slate-400">
-            No experiences indexed yet. Check back soon.
-          </div>
+            {/* Unscored experiences (awaiting AI review) */}
+            {unscored.length > 0 && (
+              <section>
+                <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+                  Awaiting review
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {unscored.map(exp => (
+                    <ExperienceCard key={exp.slug} exp={exp} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {experiences.length === 0 && (
+              <div className="text-center py-16 text-slate-400">
+                No experiences indexed yet. Check back soon.
+              </div>
+            )}
+          </>
         )}
 
         {/* Parent guidance footer */}

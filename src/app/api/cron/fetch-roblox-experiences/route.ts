@@ -119,7 +119,7 @@ export async function GET(req: NextRequest) {
   const newUniverseIds = CURATED_UNIVERSE_IDS.filter(id => !existingUniverseIds.has(id))
 
   // ── 3. Batch-fetch metadata for all (existing + new) ─────────────────────────
-  const allUniverseIds = [...existingUniverseIds, ...newUniverseIds]
+  const allUniverseIds = [...Array.from(existingUniverseIds), ...newUniverseIds]
   const games_data = await fetchUniversesBatch(allUniverseIds)
 
   const refreshed: string[] = []

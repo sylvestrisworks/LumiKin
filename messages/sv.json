@@ -69,6 +69,10 @@
   },
   "browse": {
     "title": "Utforska spel",
+    "searchPlaceholder": "Sök spel…",
+    "searchButton": "Sök",
+    "forChild": "För:",
+    "forEveryone": "Alla",
     "gamesCount": "{count, plural, one {# spel} other {# spel}}",
     "filtersActive": "{count, plural, one {# filter aktivt} other {# filter aktiva}}",
     "pageOf": "sida {current} av {total}",
@@ -112,6 +116,9 @@
     "riskLow": "Endast låg risk (RIS ≤ 0.30)",
     "riskMedium": "Låg + medel risk (RIS ≤ 0.60)",
     "sectionTime": "Minsta dagliga speltid",
+    "timeUpTo30": "Upp till 30 min/dag",
+    "timeUpTo60": "Upp till 60 min/dag",
+    "timeUpTo90": "Upp till 90 min/dag",
     "sectionPrice": "Pris",
     "priceFree": "Gratis att spela",
     "priceUnder20": "Under 20 $",
@@ -125,7 +132,10 @@
     "sectionBechdel": "Bechdel-testet",
     "bechdelPass": "Klarar Bechdel-testet",
     "bechdelNote": "Kvinnliga karaktärer pratar med varandra om något annat än en man",
-    "sectionCompliance": "Efterlevnad"
+    "sectionCompliance": "Efterlevnad",
+    "complianceDsa": "DSA-kompatibel",
+    "complianceGdprk": "GDPR-K-kompatibel",
+    "complianceOdds": "ODDS-kompatibel"
   },
   "discover": {
     "tagline": "Med grund i barns utveckling",

@@ -69,6 +69,10 @@
   },
   "browse": {
     "title": "Browse games",
+    "searchPlaceholder": "Search games…",
+    "searchButton": "Search",
+    "forChild": "For:",
+    "forEveryone": "Everyone",
     "gamesCount": "{count, plural, one {# game} other {# games}}",
     "filtersActive": "{count, plural, one {# filter active} other {# filters active}}",
     "pageOf": "page {current} of {total}",
@@ -112,6 +116,9 @@
     "riskLow": "Low only (RIS ≤ 0.30)",
     "riskMedium": "Low + Medium (RIS ≤ 0.60)",
     "sectionTime": "Min. daily time",
+    "timeUpTo30": "Up to 30 min/day",
+    "timeUpTo60": "Up to 60 min/day",
+    "timeUpTo90": "Up to 90 min/day",
     "sectionPrice": "Price",
     "priceFree": "Free to play",
     "priceUnder20": "Under $20",
@@ -125,7 +132,10 @@
     "sectionBechdel": "Bechdel Test",
     "bechdelPass": "Passes Bechdel Test",
     "bechdelNote": "Female characters talk to each other about something other than a man",
-    "sectionCompliance": "Compliance"
+    "sectionCompliance": "Compliance",
+    "complianceDsa": "DSA compliant",
+    "complianceGdprk": "GDPR-K compliant",
+    "complianceOdds": "ODDS compliant"
   },
   "discover": {
     "tagline": "Grounded in child development",

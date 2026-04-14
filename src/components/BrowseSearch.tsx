@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import { Search } from 'lucide-react'
 
 export default function BrowseSearch({ initialValue }: { initialValue: string }) {
@@ -9,6 +10,7 @@ export default function BrowseSearch({ initialValue }: { initialValue: string })
   const pathname     = usePathname()
   const searchParams = useSearchParams()
   const inputRef     = useRef<HTMLInputElement>(null)
+  const t            = useTranslations('browse')
 
   function submit(e: React.FormEvent) {
     e.preventDefault()
@@ -26,7 +28,7 @@ export default function BrowseSearch({ initialValue }: { initialValue: string })
         ref={inputRef}
         type="search"
         defaultValue={initialValue}
-        placeholder="Search games…"
+        placeholder={t('searchPlaceholder')}
         className="w-full pl-11 pr-20 py-3 text-sm rounded-xl
           border border-slate-200 dark:border-slate-600
           bg-white dark:bg-slate-800
@@ -40,7 +42,7 @@ export default function BrowseSearch({ initialValue }: { initialValue: string })
         className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700
           text-white text-xs font-semibold rounded-lg transition-colors"
       >
-        Search
+        {t('searchButton')}
       </button>
     </form>
   )

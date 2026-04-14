@@ -23,9 +23,8 @@ export const metadata: Metadata = {
 const PAGE_SIZE = 48
 
 // ─── Platform keyword map ─────────────────────────────────────────────────────
-// Varje plattform kan matcha flera RAWG-varianter
 const PLATFORM_KEYWORDS: Record<string, string[]> = {
-  PC:          ['PC'],           // RAWG lagrar "PC" — inte "PC Windows"
+  PC:          ['PC'],
   PlayStation: ['PlayStation'],
   Xbox:        ['Xbox'],
   Switch:      ['Nintendo Switch'],
@@ -39,7 +38,6 @@ const VR_KEYWORDS = [
 ]
 
 // ─── Genre keyword map ────────────────────────────────────────────────────────
-// UI-värde → RAWG-kompatibla söktermer (ILIKE på JSON-texten)
 const GENRE_KEYWORDS: Record<string, string[]> = {
   Action:      ['Action'],
   Adventure:   ['Adventure'],
@@ -111,13 +109,10 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     )!
   )
 
-  // ── Sökfråga ────────────────────────────────────────────────────────────────
   if (filters.q) {
     conditions.push(ilike(games.title, `%${filters.q}%`))
   }
 
-  // ── Åldersfilter ────────────────────────────────────────────────────────────
-  // Exkludera spel utan ESRB-betyg när åldersfilter är aktivt
   if (filters.age) {
     const ratings = ESRB_FOR_AGE[filters.age]
     if (ratings) {
@@ -125,7 +120,6 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     }
   }
 
-  // ── Genre-filter ────────────────────────────────────────────────────────────
   for (const genre of filters.genres) {
     const keywords = GENRE_KEYWORDS[genre]
     if (keywords && keywords.length > 0) {
@@ -138,7 +132,6 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     }
   }
 
-  // ── Platform-filter ─────────────────────────────────────────────────────────
   const standardPlatforms = filters.platforms.filter(p => p !== 'VR')
   for (const platform of standardPlatforms) {
     const keywords = PLATFORM_KEYWORDS[platform]
@@ -159,8 +152,6 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     conditions.push(sql`(${sql.join(vrConditions, sql` OR `)})`)
   }
 
-  // ── Pris-filter ─────────────────────────────────────────────────────────────
-  // F2P-spel har ofta basePrice = null — inkludera dem i gratis-filtret
   if (filters.price === 'free') {
     conditions.push(
       or(
@@ -184,14 +175,12 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     )
   }
 
-  // ── Risk-filter ─────────────────────────────────────────────────────────────
   if (filters.risk === 'low') {
     conditions.push(lte(gameScores.ris, 0.30))
   } else if (filters.risk === 'medium') {
     conditions.push(lte(gameScores.ris, 0.60))
   }
 
-  // ── Tid-filter ──────────────────────────────────────────────────────────────
   if (filters.time) {
     const maxMinutes = parseInt(filters.time)
     if (!isNaN(maxMinutes)) {
@@ -199,7 +188,6 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     }
   }
 
-  // ── Benefit-filter ──────────────────────────────────────────────────────────
   for (const benefit of filters.benefits) {
     const skillName = BENEFIT_SKILL_MAP[benefit]
     if (skillName) {
@@ -209,7 +197,6 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     }
   }
 
-  // ── Compliance-filter ───────────────────────────────────────────────────────
   for (const regulation of filters.compliance) {
     conditions.push(
       sql`EXISTS (
@@ -221,12 +208,10 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     )
   }
 
-  // ── Representation-filter ───────────────────────────────────────────────────
   if (filters.rep === 'good') {
     conditions.push(gte(gameScores.representationScore, 4 / 6))
   }
 
-  // ── Propaganda-filter ───────────────────────────────────────────────────────
   if (filters.noProp === 'true') {
     conditions.push(
       or(
@@ -236,12 +221,10 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     )
   }
 
-  // ── Bechdel-filter ──────────────────────────────────────────────────────────
   if (filters.bechdel === 'pass') {
     conditions.push(eq(gameScores.bechdelResult, 'pass'))
   }
 
-  // ── Barn-profil-filter ──────────────────────────────────────────────────────
   if (child) {
     conditions.push(
       or(
@@ -257,7 +240,6 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     }
   }
 
-  // ── Sortering ───────────────────────────────────────────────────────────────
   let orderBy
   switch (filters.sort) {
     case 'benefit':    orderBy = [desc(gameScores.bds),    desc(gameScores.curascore)]; break
@@ -315,7 +297,6 @@ const VALID_PRICE  = new Set(['free', '20', '40'])
 const VALID_TIME   = new Set(['30', '60', '90'])
 const VALID_VIEW   = new Set(['list', 'grid'])
 
-// Alla genres som BrowseFilters kan skicka
 const VALID_GENRES = new Set([
   'Action', 'Adventure', 'Puzzle', 'RPG', 'Strategy', 'Simulation',
   'Sports', 'Platformer', 'Shooter', 'Racing', 'Family', 'Casual',
@@ -393,7 +374,8 @@ type Props = {
 export default async function BrowsePage({ params, searchParams }: Props) {
   const { locale } = await params
   const sp = await searchParams
-  const t = await getTranslations({ locale, namespace: 'browse' })
+  const t  = await getTranslations({ locale, namespace: 'browse' })
+  const tg = await getTranslations({ locale, namespace: 'gameCompact' })
   const filters = parseFilters(sp)
 
   const childIdParam = typeof sp.child === 'string' ? parseInt(sp.child) : null
@@ -473,7 +455,9 @@ export default async function BrowsePage({ params, searchParams }: Props) {
             {/* Child selector pills */}
             {profiles.length > 0 && (
               <div className="flex items-center gap-2 flex-wrap mb-4">
-                <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">For:</span>
+                {/* FIX: "For:" översatt */}
+                <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">{t('forChild')}</span>
+                {/* FIX: "Everyone" översatt */}
                 <a
                   href={`/${locale}/browse?${new URLSearchParams(
                     Object.entries(sp as Record<string, string>)
@@ -485,7 +469,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                       : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-500'
                   }`}
                 >
-                  Everyone
+                  {t('forEveryone')}
                 </a>
                 {profiles.map(p => {
                   const age = new Date().getFullYear() - p.birthYear
@@ -619,9 +603,10 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                             )}
                           </p>
                         </div>
+                        {/* FIX: "min/day" hämtas nu från i18n */}
                         {row.timeRecommendationMinutes != null && (
                           <span className="text-xs text-slate-400 dark:text-slate-500 shrink-0 hidden sm:block">
-                            {row.timeRecommendationMinutes} min/day
+                            {row.timeRecommendationMinutes} {tg('minDay')}
                           </span>
                         )}
                         <span className={`w-9 sm:w-10 text-center text-xs font-black px-1.5 sm:px-2 py-1 rounded-full shrink-0 ${badgeCls}`}>

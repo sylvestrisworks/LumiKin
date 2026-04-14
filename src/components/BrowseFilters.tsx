@@ -16,7 +16,6 @@ export const AGE_OPTIONS = [
   { value: 'M',   labelKey: 'ageOlderTeens'       },
 ]
 
-// FIX: Utökad till alla genres som stöds av page.tsx / RAWG
 export const GENRE_OPTIONS = [
   'Action', 'Adventure', 'Puzzle', 'RPG', 'Strategy',
   'Simulation', 'Sports', 'Platformer', 'Shooter', 'Racing',
@@ -33,10 +32,11 @@ export const PLATFORM_OPTIONS = [
   { value: 'VR',          label: 'VR / AR'         },
 ]
 
+// FIX: Compliance-labels hämtas nu från i18n via labelKey
 export const COMPLIANCE_OPTIONS = [
-  { value: 'DSA',    label: 'DSA compliant'    },
-  { value: 'GDPR-K', label: 'GDPR-K compliant' },
-  { value: 'ODDS',   label: 'ODDS compliant'   },
+  { value: 'DSA',    labelKey: 'complianceDsa'   },
+  { value: 'GDPR-K', labelKey: 'complianceGdprk' },
+  { value: 'ODDS',   labelKey: 'complianceOdds'  },
 ]
 
 export const BENEFIT_OPTIONS = [
@@ -131,9 +131,9 @@ export default function BrowseFilters({ active, totalCount }: Props) {
   ]
 
   const timeOptions = [
-    { value: '30', label: t('timeUpTo30')  },
-    { value: '60', label: t('timeUpTo60')  },
-    { value: '90', label: t('timeUpTo90')  },
+    { value: '30', label: t('timeUpTo30') },
+    { value: '60', label: t('timeUpTo60') },
+    { value: '90', label: t('timeUpTo90') },
   ]
 
   const priceOptions = [
@@ -170,7 +170,7 @@ export default function BrowseFilters({ active, totalCount }: Props) {
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800
             text-sm font-semibold text-slate-700 dark:text-slate-200 hover:border-indigo-300 hover:text-indigo-700 dark:hover:text-indigo-400
             shadow-sm transition-colors"
-          aria-label="Open filters"
+          aria-label={t('heading')}
           aria-expanded={drawerOpen}
         >
           <SlidersHorizontal size={15} />
@@ -185,7 +185,7 @@ export default function BrowseFilters({ active, totalCount }: Props) {
 
       {/* ── Mobile drawer overlay ──────────────────────────────────────────── */}
       {drawerOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex" role="dialog" aria-modal="true" aria-label="Filters">
+        <div className="lg:hidden fixed inset-0 z-50 flex" role="dialog" aria-modal="true" aria-label={t('heading')}>
           <div className="absolute inset-0 bg-black/40" onClick={() => setDrawerOpen(false)} />
           <aside className="relative ml-auto w-[min(320px,100vw)] h-full bg-white dark:bg-slate-800 shadow-xl overflow-y-auto">
             <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-slate-100 dark:border-slate-700 sticky top-0 bg-white dark:bg-slate-800 z-10">
@@ -193,7 +193,7 @@ export default function BrowseFilters({ active, totalCount }: Props) {
               <button
                 onClick={() => setDrawerOpen(false)}
                 className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                aria-label="Close filters"
+                aria-label={t('clearAll')}
               >
                 <X size={18} />
               </button>
@@ -274,7 +274,7 @@ function FilterPanel({
         </div>
       </FilterSection>
 
-      {/* Platform */}
+      {/* Platform — namn är egennamn, behöver ej översättas */}
       <FilterSection title={t('sectionPlatform')}>
         <div className="flex flex-wrap gap-1.5">
           {PLATFORM_OPTIONS.map(o => (
@@ -355,10 +355,10 @@ function FilterPanel({
         <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{t('bechdelNote')}</p>
       </FilterSection>
 
-      {/* Compliance */}
+      {/* Compliance — FIX: använder nu t() via labelKey */}
       <FilterSection title={t('sectionCompliance')} note={t('estimated')}>
         {COMPLIANCE_OPTIONS.map(o => (
-          <Chip key={o.value} label={o.label} active={active.compliance.includes(o.value)}
+          <Chip key={o.value} label={t(o.labelKey as Parameters<T>[0])} active={active.compliance.includes(o.value)}
             onClick={() => toggle('compliance', o.value)} />
         ))}
       </FilterSection>

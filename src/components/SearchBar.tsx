@@ -160,9 +160,9 @@ export default function SearchBar({ placeholder }: { placeholder?: string }) {
             autoComplete="off"
             aria-autocomplete="list"
             aria-expanded={showDropdown}
-            className="w-full pl-12 pr-4 py-3.5 text-base rounded-xl border border-slate-300 bg-white shadow-sm
+            className="w-full pl-12 pr-4 py-3.5 text-base rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm
               focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
-              placeholder:text-slate-400"
+              placeholder:text-slate-400 dark:placeholder:text-slate-500"
           />
           {loading && (
             <div className="absolute right-4 top-1/2 -translate-y-1/2" aria-label={t('loading')} role="status">
@@ -176,7 +176,7 @@ export default function SearchBar({ placeholder }: { placeholder?: string }) {
       {showDropdown && (
         <div
           role="listbox"
-          className="absolute top-full mt-1.5 left-0 right-0 bg-white border border-slate-200 rounded-xl shadow-lg z-[200] overflow-hidden max-h-[70vh] overflow-y-auto"
+          className="absolute top-full mt-1.5 left-0 right-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg z-[200] overflow-hidden max-h-[70vh] overflow-y-auto"
         >
           {results.length > 0 ? (
             results.map((game, idx) => {
@@ -188,8 +188,8 @@ export default function SearchBar({ placeholder }: { placeholder?: string }) {
                   ref={el => { itemRefs.current[idx] = el }}
                   role="option"
                   aria-selected={isFocused}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-left border-b border-slate-100 last:border-0 transition-colors
-                    ${isFocused ? 'bg-indigo-50' : 'hover:bg-slate-50'}`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-left border-b border-slate-100 dark:border-slate-700 last:border-0 transition-colors
+                    ${isFocused ? 'bg-indigo-50 dark:bg-indigo-900/30' : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'}`}
                   onClick={() => navigate(game.slug)}
                   onMouseEnter={() => setFocusedIdx(idx)}
                 >
@@ -206,18 +206,18 @@ export default function SearchBar({ placeholder }: { placeholder?: string }) {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-800 truncate">
+                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
                       {mainTitle}
                       {subtitle && (
-                        <span className="font-normal text-slate-400"> · {subtitle}</span>
+                        <span className="font-normal text-slate-400 dark:text-slate-500"> · {subtitle}</span>
                       )}
                     </p>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       {game.developer && (
-                        <span className="text-xs text-slate-500 truncate">{game.developer}</span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400 truncate">{game.developer}</span>
                       )}
                       {game.genres[0] && (
-                        <span className="text-xs text-slate-400">· {game.genres[0]}</span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500">· {game.genres[0]}</span>
                       )}
                     </div>
                   </div>
@@ -231,7 +231,7 @@ export default function SearchBar({ placeholder }: { placeholder?: string }) {
             })
           ) : showNoResults ? (
             <div className="px-5 py-4 text-center">
-              <p className="text-sm text-slate-500">{t('noResults', { query })}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{t('noResults', { query })}</p>
               <a
                 href={`/${locale}/browse`}
                 className="mt-2 inline-block text-xs text-indigo-600 hover:underline font-medium"

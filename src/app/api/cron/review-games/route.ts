@@ -14,7 +14,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { games, gameScores, reviews } from '@/lib/db/schema'
-import { eq, isNull } from 'drizzle-orm'
+import { eq, isNull, or } from 'drizzle-orm'
 import { calculateGameScores } from '@/lib/scoring/engine'
 
 export const maxDuration = 300
@@ -340,12 +340,12 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Hämta spel utan scores
+    // Fetch unreviewed games OR games flagged for rescore (RAWG update / age sweep)
     const pending = await db
       .select()
       .from(games)
       .leftJoin(gameScores, eq(gameScores.gameId, games.id))
-      .where(isNull(gameScores.id))
+      .where(or(isNull(gameScores.id), eq(games.needsRescore, true)))
       .limit(MAX_REVIEWS_PER_RUN)
 
     if (pending.length === 0) {
@@ -373,8 +373,13 @@ export async function GET(req: NextRequest) {
         const reviewInput = await callBedrockReview(prompt)
         const { curascore } = await saveReview(game, reviewInput)
 
+        // Clear rescore flag if it was set
+        if (game.needsRescore) {
+          await db.update(games).set({ needsRescore: false }).where(eq(games.id, game.id))
+        }
+
         reviewed.push(game.slug)
-        console.log(`[review-games] ${game.title} → curascore ${curascore}`)
+        console.log(`[review-games] ${game.title} → curascore ${curascore}${game.needsRescore ? ' (rescore)' : ''}`)
       } catch (err) {
         console.error(`[review-games] Failed for ${game.slug}:`, err)
         errors.push(game.slug)

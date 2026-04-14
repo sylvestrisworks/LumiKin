@@ -48,6 +48,10 @@ export const games = pgTable('games', {
   // Platform flag — true for apps like Roblox that host UGC experiences
   isPlatform: boolean('is_platform').default(false),
 
+  // Rescore flag — set by sync-game-updates when RAWG detects a change
+  needsRescore: boolean('needs_rescore').notNull().default(false),
+  rawgUpdatedAt: timestamp('rawg_updated_at'),
+
   // Timestamps
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),

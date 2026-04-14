@@ -1,0 +1,33 @@
+name: Sync Game Updates
+
+on:
+  schedule:
+    - cron: '0 4 * * *'  # daily at 04:00 UTC — marks stale/updated games for rescore
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run sync-game-updates
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$APP_URL" ]; then echo "::error::APP_URL missing"; exit 1; fi
+          if [ -z "$CRON_SECRET" ]; then echo "::error::CRON_SECRET missing"; exit 1; fi
+
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X GET \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "${APP_URL}/api/cron/sync-game-updates")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+
+          echo "Status: $HTTP_CODE"
+          echo "Response: $BODY"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::sync-game-updates failed with status $HTTP_CODE"
+            exit 1
+          fi

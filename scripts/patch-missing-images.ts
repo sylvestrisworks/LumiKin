@@ -8,7 +8,6 @@ import { isNull, eq } from 'drizzle-orm'
 import { db } from '../src/lib/db'
 import { games } from '../src/lib/db/schema'
 import { rawgGetDetail, rawgSearch } from '../src/lib/rawg/client'
-import { uploadImageFromUrl } from '../src/lib/blob'
 
 async function main() {
   const missing = await db
@@ -41,9 +40,8 @@ async function main() {
       }
 
       const rawUrl = detail.background_image
-      const blobUrl = await uploadImageFromUrl(rawUrl, `games/${game.slug}`)
       await db.update(games)
-        .set({ backgroundImage: blobUrl ?? rawUrl })
+        .set({ backgroundImage: rawUrl })
         .where(eq(games.id, game.id))
 
       console.log(`  ✓ ${game.title}`)

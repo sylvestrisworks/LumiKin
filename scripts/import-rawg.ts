@@ -26,7 +26,6 @@ import { db } from '../src/lib/db'
 import { games } from '../src/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import type { RawgGameSummary } from '../src/lib/rawg/types'
-import { uploadImageFromUrl } from '../src/lib/blob'
 
 // ─── Configuration ────────────────────────────────────────────────────────────
 
@@ -228,11 +227,6 @@ async function importGames(candidates: Map<number, RawgGameSummary>): Promise<{
     try {
       const detail = await rawgGetDetail(summary.id)
       const data = mapDetailToInsert(detail)
-      // Upload image to Vercel Blob (no-op if BLOB_READ_WRITE_TOKEN not set)
-      if (data.backgroundImage) {
-        const blobUrl = await uploadImageFromUrl(data.backgroundImage, `games/${data.slug}`)
-        if (blobUrl) data.backgroundImage = blobUrl
-      }
       await upsertGame(data)
       imported++
       console.log(`✓  (${formatElapsed(startMs)} elapsed)`)

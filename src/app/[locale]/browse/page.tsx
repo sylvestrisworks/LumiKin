@@ -22,18 +22,43 @@ export const metadata: Metadata = {
 
 const PAGE_SIZE = 48
 
-// ─── Keyword maps ─────────────────────────────────────────────────────────────
-
-const PLATFORM_KEYWORDS: Record<string, string> = {
-  PC:          'PC',
-  PlayStation: 'PlayStation',
-  Xbox:        'Xbox',
-  Switch:      'Switch',
-  iOS:         'iOS',
-  Android:     'Android',
+// ─── Platform keyword map ─────────────────────────────────────────────────────
+// Varje plattform kan matcha flera RAWG-varianter
+const PLATFORM_KEYWORDS: Record<string, string[]> = {
+  PC:          ['PC'],           // RAWG lagrar "PC" — inte "PC Windows"
+  PlayStation: ['PlayStation'],
+  Xbox:        ['Xbox'],
+  Switch:      ['Nintendo Switch'],
+  iOS:         ['iOS'],
+  Android:     ['Android'],
 }
 
-const VR_KEYWORDS = ['Oculus', 'Quest', 'Vive', 'Rift', 'Valve Index', 'PlayStation VR', 'PSVR', 'Mixed Reality', 'Gear VR']
+const VR_KEYWORDS = [
+  'Oculus', 'Quest', 'Vive', 'Rift', 'Valve Index',
+  'PlayStation VR', 'PSVR', 'Mixed Reality', 'Gear VR',
+]
+
+// ─── Genre keyword map ────────────────────────────────────────────────────────
+// UI-värde → RAWG-kompatibla söktermer (ILIKE på JSON-texten)
+const GENRE_KEYWORDS: Record<string, string[]> = {
+  Action:      ['Action'],
+  Adventure:   ['Adventure'],
+  Puzzle:      ['Puzzle'],
+  RPG:         ['RPG', 'Role-playing'],
+  Strategy:    ['Strategy'],
+  Simulation:  ['Simulation'],
+  Sports:      ['Sports'],
+  Platformer:  ['Platformer'],
+  Shooter:     ['Shooter'],
+  Racing:      ['Racing'],
+  Family:      ['Family'],
+  Casual:      ['Casual'],
+  Indie:       ['Indie'],
+  Fighting:    ['Fighting'],
+  Educational: ['Educational'],
+  Arcade:      ['Arcade'],
+  Card:        ['Card'],
+}
 
 // ─── Age → ESRB mapping ───────────────────────────────────────────────────────
 
@@ -78,8 +103,7 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
   const page   = Math.max(1, filters.page ?? 1)
   const offset = (page - 1) * PAGE_SIZE
 
-  // FIX: Visa bara spel som faktiskt är släppta (releaseDate <= nu, eller null)
-  // Spel utan releaseDate inkluderas men spel med framtida datum exkluderas
+  // Visa bara spel som faktiskt är släppta (releaseDate <= nu, eller null)
   conditions.push(
     or(
       isNull(games.releaseDate),
@@ -87,30 +111,45 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     )!
   )
 
+  // ── Sökfråga ────────────────────────────────────────────────────────────────
   if (filters.q) {
     conditions.push(ilike(games.title, `%${filters.q}%`))
   }
 
+  // ── Åldersfilter ────────────────────────────────────────────────────────────
+  // Exkludera spel utan ESRB-betyg när åldersfilter är aktivt
   if (filters.age) {
     const ratings = ESRB_FOR_AGE[filters.age]
     if (ratings) {
-      conditions.push(
-        or(
-          isNull(games.esrbRating),
-          inArray(games.esrbRating, ratings),
-        )!
-      )
+      conditions.push(inArray(games.esrbRating, ratings))
     }
   }
 
+  // ── Genre-filter ────────────────────────────────────────────────────────────
   for (const genre of filters.genres) {
-    conditions.push(sql`${games.genres}::text ILIKE ${'%' + genre + '%'}`)
+    const keywords = GENRE_KEYWORDS[genre]
+    if (keywords && keywords.length > 0) {
+      if (keywords.length === 1) {
+        conditions.push(sql`${games.genres}::text ILIKE ${'%' + keywords[0] + '%'}`)
+      } else {
+        const orClauses = keywords.map(k => sql`${games.genres}::text ILIKE ${'%' + k + '%'}`)
+        conditions.push(sql`(${sql.join(orClauses, sql` OR `)})`)
+      }
+    }
   }
 
+  // ── Platform-filter ─────────────────────────────────────────────────────────
   const standardPlatforms = filters.platforms.filter(p => p !== 'VR')
   for (const platform of standardPlatforms) {
-    const keyword = PLATFORM_KEYWORDS[platform] ?? platform
-    conditions.push(sql`${games.platforms}::text ILIKE ${'%' + keyword + '%'}`)
+    const keywords = PLATFORM_KEYWORDS[platform]
+    if (keywords && keywords.length > 0) {
+      if (keywords.length === 1) {
+        conditions.push(sql`${games.platforms}::text ILIKE ${'%' + keywords[0] + '%'}`)
+      } else {
+        const orClauses = keywords.map(k => sql`${games.platforms}::text ILIKE ${'%' + k + '%'}`)
+        conditions.push(sql`(${sql.join(orClauses, sql` OR `)})`)
+      }
+    }
   }
 
   if (filters.platforms.includes('VR')) {
@@ -120,20 +159,39 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     conditions.push(sql`(${sql.join(vrConditions, sql` OR `)})`)
   }
 
+  // ── Pris-filter ─────────────────────────────────────────────────────────────
+  // F2P-spel har ofta basePrice = null — inkludera dem i gratis-filtret
   if (filters.price === 'free') {
-    conditions.push(eq(games.basePrice, 0))
+    conditions.push(
+      or(
+        eq(games.basePrice, 0),
+        isNull(games.basePrice),
+      )!
+    )
   } else if (filters.price === '20') {
-    conditions.push(lte(games.basePrice, 20))
+    conditions.push(
+      and(
+        isNotNull(games.basePrice),
+        lte(games.basePrice, 20),
+      )!
+    )
   } else if (filters.price === '40') {
-    conditions.push(lte(games.basePrice, 40))
+    conditions.push(
+      and(
+        isNotNull(games.basePrice),
+        lte(games.basePrice, 40),
+      )!
+    )
   }
 
+  // ── Risk-filter ─────────────────────────────────────────────────────────────
   if (filters.risk === 'low') {
     conditions.push(lte(gameScores.ris, 0.30))
   } else if (filters.risk === 'medium') {
     conditions.push(lte(gameScores.ris, 0.60))
   }
 
+  // ── Tid-filter ──────────────────────────────────────────────────────────────
   if (filters.time) {
     const maxMinutes = parseInt(filters.time)
     if (!isNaN(maxMinutes)) {
@@ -141,6 +199,7 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     }
   }
 
+  // ── Benefit-filter ──────────────────────────────────────────────────────────
   for (const benefit of filters.benefits) {
     const skillName = BENEFIT_SKILL_MAP[benefit]
     if (skillName) {
@@ -150,6 +209,7 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     }
   }
 
+  // ── Compliance-filter ───────────────────────────────────────────────────────
   for (const regulation of filters.compliance) {
     conditions.push(
       sql`EXISTS (
@@ -161,20 +221,27 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     )
   }
 
+  // ── Representation-filter ───────────────────────────────────────────────────
   if (filters.rep === 'good') {
     conditions.push(gte(gameScores.representationScore, 4 / 6))
   }
 
+  // ── Propaganda-filter ───────────────────────────────────────────────────────
   if (filters.noProp === 'true') {
     conditions.push(
-      sql`(${gameScores.propagandaLevel} IS NULL OR ${gameScores.propagandaLevel} = 0)`
+      or(
+        isNull(gameScores.propagandaLevel),
+        eq(gameScores.propagandaLevel, 0),
+      )!
     )
   }
 
+  // ── Bechdel-filter ──────────────────────────────────────────────────────────
   if (filters.bechdel === 'pass') {
     conditions.push(eq(gameScores.bechdelResult, 'pass'))
   }
 
+  // ── Barn-profil-filter ──────────────────────────────────────────────────────
   if (child) {
     conditions.push(
       or(
@@ -190,16 +257,16 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     }
   }
 
+  // ── Sortering ───────────────────────────────────────────────────────────────
   let orderBy
   switch (filters.sort) {
-    case 'benefit':    orderBy = [desc(gameScores.bds),           desc(gameScores.curascore)]; break
-    case 'safest':     orderBy = [asc(gameScores.ris),            desc(gameScores.curascore)]; break
-    case 'riskiest':   orderBy = [desc(gameScores.ris),           asc(gameScores.curascore)];  break
-    // FIX: Sortera null-datum sist vid "newest" — NULLS LAST är explicit för tydlighet
-    case 'newest':     orderBy = [sql`${games.releaseDate} DESC NULLS LAST`];                  break
-    case 'alpha':      orderBy = [asc(games.title)];                                           break
-    case 'metacritic': orderBy = [sql`${games.metacriticScore} DESC NULLS LAST`];              break
-    default:           orderBy = [desc(gameScores.curascore)];                                 break
+    case 'benefit':    orderBy = [desc(gameScores.bds),    desc(gameScores.curascore)]; break
+    case 'safest':     orderBy = [asc(gameScores.ris),     desc(gameScores.curascore)]; break
+    case 'riskiest':   orderBy = [desc(gameScores.ris),    asc(gameScores.curascore)];  break
+    case 'newest':     orderBy = [sql`${games.releaseDate} DESC NULLS LAST`];           break
+    case 'alpha':      orderBy = [asc(games.title)];                                    break
+    case 'metacritic': orderBy = [sql`${games.metacriticScore} DESC NULLS LAST`];       break
+    default:           orderBy = [desc(gameScores.curascore)];                          break
   }
 
   const where = conditions.length ? and(...conditions) : undefined
@@ -247,9 +314,16 @@ const VALID_SORT   = new Set(['curascore', 'benefit', 'safest', 'riskiest', 'new
 const VALID_PRICE  = new Set(['free', '20', '40'])
 const VALID_TIME   = new Set(['30', '60', '90'])
 const VALID_VIEW   = new Set(['list', 'grid'])
-const VALID_GENRES = new Set(['Action', 'Adventure', 'Puzzle', 'RPG', 'Strategy', 'Simulation', 'Sports', 'Platformer', 'Shooter', 'Racing'])
-const VALID_PLATFORMS = new Set(['PC', 'PlayStation', 'Xbox', 'Switch', 'iOS', 'Android', 'VR'])
-const VALID_BENEFITS  = new Set(['problem-solving', 'spatial', 'teamwork', 'creativity', 'communication'])
+
+// Alla genres som BrowseFilters kan skicka
+const VALID_GENRES = new Set([
+  'Action', 'Adventure', 'Puzzle', 'RPG', 'Strategy', 'Simulation',
+  'Sports', 'Platformer', 'Shooter', 'Racing', 'Family', 'Casual',
+  'Indie', 'Fighting', 'Educational', 'Arcade', 'Card',
+])
+
+const VALID_PLATFORMS  = new Set(['PC', 'PlayStation', 'Xbox', 'Switch', 'iOS', 'Android', 'VR'])
+const VALID_BENEFITS   = new Set(['problem-solving', 'spatial', 'teamwork', 'creativity', 'communication'])
 const VALID_COMPLIANCE = new Set(['DSA', 'GDPR-K', 'ODDS'])
 
 function parseFilters(sp: Record<string, string | string[] | undefined>): ActiveFilters {
@@ -260,9 +334,9 @@ function parseFilters(sp: Record<string, string | string[] | undefined>): Active
     return typeof v === 'string' ? v.split(',').filter(Boolean) : v
   }
 
-  const rawAge  = str('age')
-  const rawRisk = str('risk')
-  const rawSort = str('sort')
+  const rawAge   = str('age')
+  const rawRisk  = str('risk')
+  const rawSort  = str('sort')
   const rawPrice = str('price')
   const rawTime  = str('time')
   const rawView  = str('view')
@@ -280,7 +354,7 @@ function parseFilters(sp: Record<string, string | string[] | undefined>): Active
     noProp:     str('noProp') === 'true' ? 'true' : undefined,
     bechdel:    str('bechdel') === 'pass' ? 'pass' : undefined,
     sort:       rawSort && VALID_SORT.has(rawSort) ? rawSort : 'curascore',
-    q:          str('q')?.slice(0, 200).replace(/[<>]/g, '') ?? undefined,
+    q:          str('q')?.slice(0, 200).replace(/[<>"'%;()&+]/g, '').trim() ?? undefined,
     page:       str('page') ? Math.max(1, parseInt(str('page')!)) : 1,
     view:       rawView && VALID_VIEW.has(rawView) ? rawView as 'list' | 'grid' : 'list',
   }
@@ -330,7 +404,12 @@ export default async function BrowsePage({ params, searchParams }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const uid = (session?.user as any)?.id ?? session?.user?.email ?? null
   if (uid) {
-    profiles = await db.select({ id: childProfiles.id, name: childProfiles.name, birthYear: childProfiles.birthYear, platforms: childProfiles.platforms })
+    profiles = await db.select({
+      id:        childProfiles.id,
+      name:      childProfiles.name,
+      birthYear: childProfiles.birthYear,
+      platforms: childProfiles.platforms,
+    })
       .from(childProfiles)
       .where(eq(childProfiles.userId, uid))
 
@@ -338,25 +417,36 @@ export default async function BrowsePage({ params, searchParams }: Props) {
       const found = profiles.find(p => p.id === childIdParam)
       if (found) {
         selectedChild = {
-          id: found.id,
-          name: found.name,
-          age: new Date().getFullYear() - found.birthYear,
+          id:        found.id,
+          name:      found.name,
+          age:       new Date().getFullYear() - found.birthYear,
           platforms: (found.platforms as string[]) ?? [],
         }
       }
     }
   }
 
-  const childFilter = selectedChild ? { age: selectedChild.age, platforms: selectedChild.platforms } : undefined
+  const childFilter = selectedChild
+    ? { age: selectedChild.age, platforms: selectedChild.platforms }
+    : undefined
+
   const { rows, total } = await queryGames(filters, childFilter)
 
-  const totalPages = Math.ceil(total / PAGE_SIZE)
+  const totalPages  = Math.ceil(total / PAGE_SIZE)
   const currentPage = filters.page ?? 1
 
   const activeFilterCount = [
-    filters.age, ...filters.genres, ...filters.platforms,
-    ...filters.benefits, ...filters.compliance,
-    filters.risk, filters.time, filters.price, filters.rep, filters.noProp, filters.bechdel,
+    filters.age,
+    ...filters.genres,
+    ...filters.platforms,
+    ...filters.benefits,
+    ...filters.compliance,
+    filters.risk,
+    filters.time,
+    filters.price,
+    filters.rep,
+    filters.noProp,
+    filters.bechdel,
   ].filter(Boolean).length
 
   return (
@@ -385,7 +475,10 @@ export default async function BrowsePage({ params, searchParams }: Props) {
               <div className="flex items-center gap-2 flex-wrap mb-4">
                 <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">For:</span>
                 <a
-                  href={`/${locale}/browse?${new URLSearchParams(Object.entries(sp as Record<string, string>).filter(([k]) => k !== 'child' && k !== 'page')).toString()}`}
+                  href={`/${locale}/browse?${new URLSearchParams(
+                    Object.entries(sp as Record<string, string>)
+                      .filter(([k]) => k !== 'child' && k !== 'page')
+                  ).toString()}`}
                   className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
                     !selectedChild
                       ? 'bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900'
@@ -396,7 +489,10 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                 </a>
                 {profiles.map(p => {
                   const age = new Date().getFullYear() - p.birthYear
-                  const childParams = new URLSearchParams(Object.entries(sp as Record<string, string>).filter(([k]) => k !== 'child' && k !== 'page'))
+                  const childParams = new URLSearchParams(
+                    Object.entries(sp as Record<string, string>)
+                      .filter(([k]) => k !== 'child' && k !== 'page')
+                  )
                   childParams.set('child', String(p.id))
                   return (
                     <a
@@ -418,7 +514,9 @@ export default async function BrowsePage({ params, searchParams }: Props) {
             {/* Header row */}
             <div className="flex items-center justify-between mb-4 gap-3">
               <div>
-                <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">{t('title')}</h1>
+                <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">
+                  {t('title')}
+                </h1>
                 <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
                   {t('gamesCount', { count: total })}
                   {activeFilterCount > 0 && ` · ${t('filtersActive', { count: activeFilterCount })}`}
@@ -442,7 +540,10 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                     <> {t('noGamesRisk')}</>
                   )}
                 </p>
-                <Link href={`/${locale}/browse`} className="mt-4 inline-block text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 hover:underline">
+                <Link
+                  href={`/${locale}/browse`}
+                  className="mt-4 inline-block text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 hover:underline"
+                >
                   {t('clearAllFilters')}
                 </Link>
               </div>
@@ -492,7 +593,9 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                         <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden shrink-0 bg-indigo-100 dark:bg-indigo-900/40">
                           {row.backgroundImage ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={row.backgroundImage} alt={row.title}
+                            <img
+                              src={row.backgroundImage}
+                              alt={row.title}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                           ) : (
@@ -510,7 +613,9 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                           <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
                             {(row.genres as string[])[0] ?? row.developer ?? ''}
                             {row.esrbRating && (
-                              <span className="ml-2 text-slate-400 dark:text-slate-500">{row.esrbRating}</span>
+                              <span className="ml-2 text-slate-400 dark:text-slate-500">
+                                {row.esrbRating}
+                              </span>
                             )}
                           </p>
                         </div>

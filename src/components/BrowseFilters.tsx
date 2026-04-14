@@ -16,9 +16,11 @@ export const AGE_OPTIONS = [
   { value: 'M',   labelKey: 'ageOlderTeens'       },
 ]
 
+// FIX: Utökad till alla genres som stöds av page.tsx / RAWG
 export const GENRE_OPTIONS = [
   'Action', 'Adventure', 'Puzzle', 'RPG', 'Strategy',
   'Simulation', 'Sports', 'Platformer', 'Shooter', 'Racing',
+  'Family', 'Casual', 'Indie', 'Fighting', 'Educational', 'Arcade', 'Card',
 ]
 
 export const PLATFORM_OPTIONS = [
@@ -254,6 +256,7 @@ function FilterPanel({
         </select>
       </div>
 
+      {/* Age */}
       <FilterSection title={t('sectionAge')}>
         {AGE_OPTIONS.map(o => (
           <Chip key={o.value} label={t(o.labelKey as Parameters<T>[0])} active={active.age === o.value}
@@ -261,8 +264,9 @@ function FilterPanel({
         ))}
       </FilterSection>
 
+      {/* Genre — scrollbar om listan är lång */}
       <FilterSection title={t('sectionGenre')}>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto pr-1">
           {GENRE_OPTIONS.map(g => (
             <Chip key={g} label={g} active={active.genres.includes(g)}
               onClick={() => toggle('genres', g)} />
@@ -270,6 +274,7 @@ function FilterPanel({
         </div>
       </FilterSection>
 
+      {/* Platform */}
       <FilterSection title={t('sectionPlatform')}>
         <div className="flex flex-wrap gap-1.5">
           {PLATFORM_OPTIONS.map(o => (
@@ -279,18 +284,24 @@ function FilterPanel({
         </div>
       </FilterSection>
 
+      {/* Benefits */}
       <FilterSection title={t('sectionBenefit')} note={t('requiresReview')}>
         {BENEFIT_OPTIONS.map(o => (
           <label key={o.value} className="flex items-center gap-2 cursor-pointer group">
-            <input type="checkbox" checked={active.benefits.includes(o.value)}
+            <input
+              type="checkbox"
+              checked={active.benefits.includes(o.value)}
               onChange={() => toggle('benefits', o.value)}
               className="rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 bg-white dark:bg-slate-700"
             />
-            <span className="text-sm text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100">{t(o.labelKey as Parameters<T>[0])}</span>
+            <span className="text-sm text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100">
+              {t(o.labelKey as Parameters<T>[0])}
+            </span>
           </label>
         ))}
       </FilterSection>
 
+      {/* Risk */}
       <FilterSection title={t('sectionRisk')} note={t('requiresReview')}>
         {riskOptions.map(o => (
           <Chip key={o.value} label={o.label} active={active.risk === o.value}
@@ -298,6 +309,7 @@ function FilterPanel({
         ))}
       </FilterSection>
 
+      {/* Time */}
       <FilterSection title={t('sectionTime')} note={t('requiresReview')}>
         {timeOptions.map(o => (
           <Chip key={o.value} label={o.label} active={active.time === o.value}
@@ -305,6 +317,7 @@ function FilterPanel({
         ))}
       </FilterSection>
 
+      {/* Price */}
       <FilterSection title={t('sectionPrice')}>
         {priceOptions.map(o => (
           <Chip key={o.value} label={o.label} active={active.price === o.value}
@@ -312,6 +325,7 @@ function FilterPanel({
         ))}
       </FilterSection>
 
+      {/* Representation */}
       <FilterSection title={t('sectionRepresentation')} note={t('displayOnly')}>
         <Chip
           label={t('repGood')}
@@ -321,6 +335,7 @@ function FilterPanel({
         <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{t('repGoodNote')}</p>
       </FilterSection>
 
+      {/* Ideology */}
       <FilterSection title={t('sectionIdeology')} note={t('displayOnly')}>
         <Chip
           label={t('ideologyExclude')}
@@ -330,6 +345,7 @@ function FilterPanel({
         <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{t('ideologyNote')}</p>
       </FilterSection>
 
+      {/* Bechdel */}
       <FilterSection title={t('sectionBechdel')} note={t('displayOnly')}>
         <Chip
           label={t('bechdelPass')}
@@ -339,6 +355,7 @@ function FilterPanel({
         <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{t('bechdelNote')}</p>
       </FilterSection>
 
+      {/* Compliance */}
       <FilterSection title={t('sectionCompliance')} note={t('estimated')}>
         {COMPLIANCE_OPTIONS.map(o => (
           <Chip key={o.value} label={o.label} active={active.compliance.includes(o.value)}
@@ -358,14 +375,16 @@ function FilterPanel({
 export function ViewToggle({ view, listHref, gridHref }: { view: 'list' | 'grid'; listHref: string; gridHref: string }) {
   return (
     <div className="flex items-center border border-slate-200 dark:border-slate-600 rounded-lg overflow-hidden bg-white dark:bg-slate-800">
-      <Link href={listHref}
+      <Link
+        href={listHref}
         className={`p-2 transition-colors ${view === 'list' ? 'bg-indigo-600 text-white' : 'text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200'}`}
         aria-label="List view"
         aria-current={view === 'list' ? 'true' : undefined}
       >
         <List size={15} />
       </Link>
-      <Link href={gridHref}
+      <Link
+        href={gridHref}
         className={`p-2 transition-colors ${view === 'grid' ? 'bg-indigo-600 text-white' : 'text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200'}`}
         aria-label="Grid view"
         aria-current={view === 'grid' ? 'true' : undefined}

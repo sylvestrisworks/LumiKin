@@ -1,0 +1,33 @@
+name: Fetch Roblox Experiences
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # every 6 hours — refreshes stats + ingests curated new games
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run fetch-roblox-experiences
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$APP_URL" ]; then echo "::error::APP_URL missing"; exit 1; fi
+          if [ -z "$CRON_SECRET" ]; then echo "::error::CRON_SECRET missing"; exit 1; fi
+
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X GET \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "${APP_URL}/api/cron/fetch-roblox-experiences")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+
+          echo "Status: $HTTP_CODE"
+          echo "Response: $BODY"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::fetch-roblox-experiences failed with status $HTTP_CODE"
+            exit 1
+          fi

@@ -1,0 +1,228 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.cards{display:flex;flex-direction:column;gap:20px;padding:0.5rem 0;font-family:var(--font-sans)}
+.card{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);overflow:hidden}
+.card-head{padding:1.25rem 1.25rem 0.5rem;display:flex;gap:14px;align-items:flex-start}
+.icon{width:68px;height:68px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:24px;font-weight:500;color:#fff}
+.card-head h2{font-size:16px;font-weight:500;color:var(--color-text-primary)}
+.card-head p{font-size:12px;color:var(--color-text-secondary);margin-top:3px}
+.time-box{margin:0.5rem 1.25rem;border-radius:var(--border-radius-md);padding:12px 16px;display:flex;gap:14px;align-items:center}
+.time-box .left{flex-shrink:0}
+.time-box .left .lab{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px}
+.time-box .left .num{font-size:21px;font-weight:500;margin-top:2px}
+.time-box .right{flex:1;text-align:right;font-size:11.5px;line-height:1.5}
+.sec{padding:0.4rem 1.25rem}
+.sec-title{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px}
+.pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.pill{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:3px 9px;border-radius:100px;font-weight:500;white-space:nowrap}
+.risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.risk-item{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:7px 11px}
+.risk-item .rl{font-size:10px;color:var(--color-text-secondary)}
+.risk-bar{display:flex;align-items:center;gap:5px;margin-top:3px}
+.risk-track{flex:1;height:3.5px;border-radius:2px;background:var(--color-border-tertiary)}
+.risk-fill{height:100%;border-radius:2px}
+.risk-label{font-size:11px;font-weight:500}
+.card-foot{border-top:0.5px solid var(--color-border-tertiary);padding:10px 1.25rem;display:flex;justify-content:space-between;align-items:center}
+.card-foot .fl{font-size:10px;color:var(--color-text-secondary)}
+.card-foot .fv{font-size:13px;font-weight:500;margin-top:1px}
+.card-foot .fvs{font-size:12px;color:var(--color-text-secondary);margin-top:1px}
+.score-section{padding:0 1.25rem 0.5rem}
+.score-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.score-row .sl{font-size:11px;color:var(--color-text-secondary);width:90px;flex-shrink:0}
+.score-track{flex:1;height:6px;border-radius:3px;background:var(--color-border-tertiary);position:relative}
+.score-fill{height:100%;border-radius:3px;transition:width 0.3s}
+.score-val{font-size:11px;font-weight:500;width:32px;text-align:right;flex-shrink:0}
+.content-warn{margin:0 1.25rem 0.75rem;padding:8px 12px;border-radius:var(--border-radius-md);font-size:11.5px;line-height:1.5;display:flex;gap:8px;align-items:flex-start}
+.tabs{display:flex;gap:0;margin:0 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.tab{padding:8px 16px;font-size:12px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s}
+.tab.active{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+</style>
+
+<div class="cards">
+
+<!-- SPLIT FICTION -->
+<div class="card">
+<div class="card-head">
+<div class="icon" style="background:linear-gradient(135deg,#AFA9EC,#534AB7)">SF</div>
+<div style="flex:1;min-width:0">
+<h2>Split Fiction</h2>
+<p>Hazelight Studios / EA Originals · Co-op Action Adventure · PEGI 16 / ESRB Teen</p>
+</div>
+</div>
+
+<div class="time-box" style="background:#E1F5EE">
+<div class="left">
+<div class="lab" style="color:#0F6E56">Recommended session</div>
+<div class="num" style="color:#085041">Up to 2 hours</div>
+</div>
+<div class="right" style="color:#0F6E56">Zero manipulation design. Natural chapter breaks. Designed to strengthen a real-world friendship, not replace one.</div>
+</div>
+
+<div class="tabs" id="sf-tabs">
+<div class="tab active" onclick="switchTab('sf','benefits')">Benefits</div>
+<div class="tab" onclick="switchTab('sf','risks')">Risks</div>
+<div class="tab" onclick="switchTab('sf','scores')">Full scores</div>
+</div>
+
+<div id="sf-benefits" class="tab-content active">
+<div class="sec" style="padding-top:12px">
+<div class="sec-title">What your child develops</div>
+<div class="pills">
+<span class="pill" style="background:#EEEDFE;color:#3C3489">Teamwork 10/10</span>
+<span class="pill" style="background:#E6F1FB;color:#0C447C">Communication 9/10</span>
+<span class="pill" style="background:#E1F5EE;color:#085041">Problem solving 7/10</span>
+<span class="pill" style="background:#FAEEDA;color:#633806">Spatial awareness 6/10</span>
+<span class="pill" style="background:#FBEAF0;color:#72243E">Empathy 7/10</span>
+<span class="pill" style="background:#F1EFE8;color:#444441">Hand-eye coord. 7/10</span>
+<span class="pill" style="background:#E6F1FB;color:#0C447C">Creativity 5/10</span>
+<span class="pill" style="background:#E1F5EE;color:#085041">Emotional regulation 6/10</span>
+</div>
+</div>
+<div class="content-warn" style="background:#E1F5EE;color:#085041">
+<span style="flex-shrink:0">★</span>
+<span>A standout game for developing real cooperative skills. Both players get different abilities and MUST communicate and coordinate to progress — no carrying. The Friend's Pass lets a friend play the full game for free, removing spending friction. One of the best co-op designs available.</span>
+</div>
+</div>
+
+<div id="sf-risks" class="tab-content">
+<div class="sec" style="padding-top:12px">
+<div class="sec-title">Risk factors</div>
+<div class="risk-grid">
+<div class="risk-item"><div class="rl">Addictive design</div><div class="risk-bar"><div class="risk-track"><div class="risk-fill" style="width:7%;background:#1D9E75"></div></div><span class="risk-label" style="color:#0F6E56">Minimal</span></div></div>
+<div class="risk-item"><div class="rl">Spending pressure</div><div class="risk-bar"><div class="risk-track"><div class="risk-fill" style="width:3%;background:#1D9E75"></div></div><span class="risk-label" style="color:#0F6E56">None</span></div></div>
+<div class="risk-item"><div class="rl">FOMO mechanics</div><div class="risk-bar"><div class="risk-track"><div class="risk-fill" style="width:3%;background:#1D9E75"></div></div><span class="risk-label" style="color:#0F6E56">None</span></div></div>
+<div class="risk-item"><div class="rl">Social pressure</div><div class="risk-bar"><div class="risk-track"><div class="risk-fill" style="width:3%;background:#1D9E75"></div></div><span class="risk-label" style="color:#0F6E56">None</span></div></div>
+</div>
+</div>
+<div class="content-warn" style="background:#FAEEDA;color:#633806">
+<span style="flex-shrink:0">⚠</span>
+<span>Content note: Rated PEGI 16 / ESRB Teen for fantasy violence and mild language. Some intense action sequences. No gore. The themes of friendship, creativity, and corporate exploitation of artists are mature but age-appropriate for teens.</span>
+</div>
+</div>
+
+<div id="sf-scores" class="tab-content">
+<div class="score-section" style="padding-top:12px">
+<div class="sec-title">Benefit scores</div>
+<div class="score-row"><span class="sl">Cognitive</span><div class="score-track"><div class="score-fill" style="width:56%;background:#534AB7"></div></div><span class="score-val" style="color:#534AB7">56%</span></div>
+<div class="score-row"><span class="sl">Social-emotional</span><div class="score-track"><div class="score-fill" style="width:80%;background:#1D9E75"></div></div><span class="score-val" style="color:#0F6E56">80%</span></div>
+<div class="score-row"><span class="sl">Motor skills</span><div class="score-track"><div class="score-fill" style="width:55%;background:#378ADD"></div></div><span class="score-val" style="color:#185FA5">55%</span></div>
+<div style="margin-top:12px"></div>
+<div class="sec-title">Risk scores</div>
+<div class="score-row"><span class="sl">Dopamine design</span><div class="score-track"><div class="score-fill" style="width:7%;background:#1D9E75"></div></div><span class="score-val" style="color:#0F6E56">2/30</span></div>
+<div class="score-row"><span class="sl">Monetization</span><div class="score-track"><div class="score-fill" style="width:4%;background:#1D9E75"></div></div><span class="score-val" style="color:#0F6E56">1/24</span></div>
+<div class="score-row"><span class="sl">Social risk</span><div class="score-track"><div class="score-fill" style="width:6%;background:#1D9E75"></div></div><span class="score-val" style="color:#0F6E56">1/18</span></div>
+<div class="score-row"><span class="sl">Content risk</span><div class="score-track"><div class="score-fill" style="width:33%;background:#EF9F27"></div></div><span class="score-val" style="color:#854F0B">5/15</span></div>
+<div style="margin:10px 0;padding:8px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);font-size:11px;color:var(--color-text-secondary);line-height:1.6">
+<strong style="color:var(--color-text-primary)">BDS: 0.61</strong> — Substantial developmental value, especially social-emotional<br>
+<strong style="color:var(--color-text-primary)">RIS: 0.04</strong> — Near-zero manipulation design<br>
+<strong style="color:var(--color-text-primary)">Time formula:</strong> RIS 0.04 → base 120 min. BDS ≥ 0.60 → eligible for extension (already max). Result: up to 2 hours.
+</div>
+</div>
+</div>
+
+<div class="card-foot">
+<div><div class="fl">Total cost to play</div><div class="fv">$49.99 · Friend plays free via Friend's Pass</div></div>
+<div style="text-align:right"><div class="fl">Play time to complete</div><div class="fvs">~20 hours main story</div></div>
+</div>
+</div>
+
+<!-- GTA V / GTA ONLINE -->
+<div class="card">
+<div class="card-head">
+<div class="icon" style="background:linear-gradient(135deg,#F09595,#A32D2D)">V</div>
+<div style="flex:1;min-width:0">
+<h2>Grand Theft Auto V / GTA Online</h2>
+<p>Rockstar Games · Open World Action · PEGI 18 / ESRB Mature 17+</p>
+</div>
+</div>
+
+<div class="time-box" style="background:#FCEBEB">
+<div class="left">
+<div class="lab" style="color:#A32D2D">Recommended session</div>
+<div class="num" style="color:#791F1F">Not recommended under 17</div>
+</div>
+<div class="right" style="color:#A32D2D">Rated 18+ for strong reasons. GTA Online adds aggressive monetization, grinding loops, and unmoderated stranger interaction to already mature content.</div>
+</div>
+
+<div class="tabs" id="gta-tabs">
+<div class="tab active" onclick="switchTab('gta','benefits')">Benefits</div>
+<div class="tab" onclick="switchTab('gta','risks')">Risks</div>
+<div class="tab" onclick="switchTab('gta','scores')">Full scores</div>
+</div>
+
+<div id="gta-benefits" class="tab-content active">
+<div class="sec" style="padding-top:12px">
+<div class="sec-title">What this game develops (when age-appropriate)</div>
+<div class="pills">
+<span class="pill" style="background:#EEEDFE;color:#3C3489">Spatial awareness 7/10</span>
+<span class="pill" style="background:#E6F1FB;color:#0C447C">Strategic thinking 5/10</span>
+<span class="pill" style="background:#F1EFE8;color:#444441">Hand-eye coord. 7/10</span>
+<span class="pill" style="background:#FAEEDA;color:#633806">Reaction time 6/10</span>
+<span class="pill" style="background:#FBEAF0;color:#72243E">Narrative literacy 6/10</span>
+</div>
+</div>
+<div class="content-warn" style="background:#E6F1FB;color:#0C447C">
+<span style="flex-shrink:0">ℹ</span>
+<span>The single-player story mode is a well-crafted narrative with satirical commentary on American culture. For mature players (17+), it develops spatial reasoning through open-world navigation and narrative comprehension through complex storytelling. The open world rewards exploration. However, GTA Online is a fundamentally different product with aggressive monetization.</span>
+</div>
+</div>
+
+<div id="gta-risks" class="tab-content">
+<div class="sec" style="padding-top:12px">
+<div class="sec-title">Risk factors — GTA Online (primary mode played by younger audiences)</div>
+<div class="risk-grid">
+<div class="risk-item"><div class="rl">Addictive design</div><div class="risk-bar"><div class="risk-track"><div class="risk-fill" style="width:73%;background:#D85A30"></div></div><span class="risk-label" style="color:#993C1D">High</span></div></div>
+<div class="risk-item"><div class="rl">Spending pressure</div><div class="risk-bar"><div class="risk-track"><div class="risk-fill" style="width:80%;background:#E24B4A"></div></div><span class="risk-label" style="color:#A32D2D">Very high</span></div></div>
+<div class="risk-item"><div class="rl">FOMO mechanics</div><div class="risk-bar"><div class="risk-track"><div class="risk-fill" style="width:60%;background:#D85A30"></div></div><span class="risk-label" style="color:#993C1D">High</span></div></div>
+<div class="risk-item"><div class="rl">Social pressure</div><div class="risk-bar"><div class="risk-track"><div class="risk-fill" style="width:70%;background:#D85A30"></div></div><span class="risk-label" style="color:#993C1D">High</span></div></div>
+</div>
+</div>
+<div class="content-warn" style="background:#FCEBEB;color:#791F1F">
+<span style="flex-shrink:0">⛔</span>
+<span>Mature content: Graphic violence, torture scene, strong sexual content, drug use, explicit language throughout. GTA Online adds: Shark Card microtransactions with no spending cap, grinding designed to push purchases, unmoderated voice chat with strangers, toxic competitive environment, and weekly time-limited content. The in-game economy is deliberately inflated to make earning currency painfully slow without spending real money.</span>
+</div>
+<div class="content-warn" style="background:#FAEEDA;color:#633806">
+<span style="flex-shrink:0">💰</span>
+<span>Monetization deep dive: GTA Online uses "Shark Cards" — virtual currency purchased with real money. Prices range from $2.99 (250K GTA$) to $49.99 (8M GTA$). High-end vehicles and properties cost 2–10M GTA$, requiring either 20+ hours of grinding or $12–50 in real money per item. New weekly content and vehicles create continuous spending pressure. No spending cap exists.</span>
+</div>
+</div>
+
+<div id="gta-scores" class="tab-content">
+<div class="score-section" style="padding-top:12px">
+<div class="sec-title">Benefit scores</div>
+<div class="score-row"><span class="sl">Cognitive</span><div class="score-track"><div class="score-fill" style="width:42%;background:#534AB7"></div></div><span class="score-val" style="color:#534AB7">42%</span></div>
+<div class="score-row"><span class="sl">Social-emotional</span><div class="score-track"><div class="score-fill" style="width:20%;background:#EF9F27"></div></div><span class="score-val" style="color:#854F0B">20%</span></div>
+<div class="score-row"><span class="sl">Motor skills</span><div class="score-track"><div class="score-fill" style="width:55%;background:#378ADD"></div></div><span class="score-val" style="color:#185FA5">55%</span></div>
+<div style="margin-top:12px"></div>
+<div class="sec-title">Risk scores — GTA Online</div>
+<div class="score-row"><span class="sl">Dopamine design</span><div class="score-track"><div class="score-fill" style="width:70%;background:#D85A30"></div></div><span class="score-val" style="color:#993C1D">21/30</span></div>
+<div class="score-row"><span class="sl">Monetization</span><div class="score-track"><div class="score-fill" style="width:71%;background:#D85A30"></div></div><span class="score-val" style="color:#993C1D">17/24</span></div>
+<div class="score-row"><span class="sl">Social risk</span><div class="score-track"><div class="score-fill" style="width:72%;background:#D85A30"></div></div><span class="score-val" style="color:#993C1D">13/18</span></div>
+<div class="score-row"><span class="sl">Content risk</span><div class="score-track"><div class="score-fill" style="width:93%;background:#E24B4A"></div></div><span class="score-val" style="color:#A32D2D">14/15</span></div>
+<div style="margin:10px 0;padding:8px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);font-size:11px;color:var(--color-text-secondary);line-height:1.6">
+<strong style="color:var(--color-text-primary)">BDS: 0.37</strong> — Moderate developmental value (spatial, narrative)<br>
+<strong style="color:var(--color-text-primary)">RIS: 0.71</strong> — Very high manipulation design (GTA Online)<br>
+<strong style="color:var(--color-text-primary)">Time formula:</strong> RIS 0.71 → base "15 min or not recommended." Content risk 14/15 triggers age gate (18+). Combined: not recommended for children. For age-appropriate players (17+): GTA Online 30 min max, Story Mode up to 90 min.
+</div>
+</div>
+</div>
+
+<div class="card-foot">
+<div><div class="fl">Total cost to play</div><div class="fv">$19.99 base · GTA Online avg. $20–60/mo if engaging with Shark Cards</div></div>
+<div style="text-align:right"><div class="fl">Story mode</div><div class="fvs">~30 hours · GTA Online is endless</div></div>
+</div>
+</div>
+
+</div>
+
+<script>
+function switchTab(card,tab){
+document.querySelectorAll('#'+card+'-tabs .tab').forEach(t=>t.classList.remove('active'));
+document.querySelectorAll('[id^="'+card+'-"]').forEach(c=>{if(c.classList.contains('tab-content'))c.classList.remove('active')});
+event.target.classList.add('active');
+document.getElementById(card+'-'+tab).classList.add('active');
+}
+</script>

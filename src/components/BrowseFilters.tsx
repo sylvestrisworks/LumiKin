@@ -69,13 +69,15 @@ export type ActiveFilters = {
 type Props = {
   active: ActiveFilters
   totalCount: number
+  childId?: number
+  childName?: string
 }
 
 type T = ReturnType<typeof useTranslations<'filters'>>
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function BrowseFilters({ active, totalCount }: Props) {
+export default function BrowseFilters({ active, totalCount, childId, childName }: Props) {
   const router   = useRouter()
   const pathname = usePathname()
   const t        = useTranslations('filters')
@@ -98,20 +100,45 @@ export default function BrowseFilters({ active, totalCount }: Props) {
     if (merged.sort && merged.sort !== 'curascore') params.set('sort', merged.sort)
     if (merged.q)                 params.set('q',          merged.q)
     if (merged.view && merged.view !== 'list') params.set('view', merged.view)
+    if (childId)                  params.set('child',      String(childId))
     router.push(`${pathname}?${params.toString()}`)
-  }, [active, pathname, router])
+  }, [active, pathname, router, childId])
 
   const toggle = (key: 'genres' | 'platforms' | 'benefits' | 'compliance', value: string) => {
     const arr = active[key]
     push({ [key]: arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value] })
   }
 
-  const clearAll = () => { router.push(pathname); setDrawerOpen(false) }
+  // Build the URL from active filters but without the child param
+  const removeChild = useCallback(() => {
+    const params = new URLSearchParams()
+    if (active.age)               params.set('age',        active.age)
+    if (active.genres.length)     params.set('genres',     active.genres.join(','))
+    if (active.platforms.length)  params.set('platforms',  active.platforms.join(','))
+    if (active.benefits.length)   params.set('benefits',   active.benefits.join(','))
+    if (active.compliance.length) params.set('compliance', active.compliance.join(','))
+    if (active.risk)              params.set('risk',       active.risk)
+    if (active.time)              params.set('time',       active.time)
+    if (active.price)             params.set('price',      active.price)
+    if (active.rep)               params.set('rep',        active.rep)
+    if (active.noProp)            params.set('noProp',     active.noProp)
+    if (active.bechdel)           params.set('bechdel',    active.bechdel)
+    if (active.sort && active.sort !== 'curascore') params.set('sort', active.sort)
+    if (active.q)                 params.set('q',          active.q)
+    if (active.view && active.view !== 'list') params.set('view', active.view)
+    router.push(`${pathname}?${params.toString()}`)
+  }, [active, pathname, router])
+
+  const clearAll = () => {
+    router.push(pathname)
+    setDrawerOpen(false)
+  }
 
   const activeCount = [
     active.age, ...active.genres, ...active.platforms,
     ...active.benefits, ...active.compliance,
     active.risk, active.time, active.price, active.rep, active.noProp, active.bechdel,
+    childId ? 'child' : undefined,
   ].filter(Boolean).length
 
   const sortOptions = [
@@ -154,6 +181,9 @@ export default function BrowseFilters({ active, totalCount }: Props) {
       push={push}
       toggle={toggle}
       clearAll={clearAll}
+      childId={childId}
+      childName={childName}
+      removeChild={removeChild}
     />
   )
 
@@ -187,6 +217,9 @@ export default function BrowseFilters({ active, totalCount }: Props) {
           </button>
 
           {/* Aktiva filter-pills på mobil — snabb borttagning */}
+          {childName && childId && (
+            <ActivePill label={`👤 ${childName}`} onRemove={removeChild} />
+          )}
           {active.age && (
             <ActivePill label={active.age} onRemove={() => push({ age: undefined })} />
           )}
@@ -258,7 +291,7 @@ export default function BrowseFilters({ active, totalCount }: Props) {
 // ─── Filter panel (shared between desktop + mobile) ───────────────────────────
 
 function FilterPanel({
-  t, active, totalCount, activeCount, sortOptions, riskOptions, timeOptions, priceOptions, push, toggle, clearAll,
+  t, active, totalCount, activeCount, sortOptions, riskOptions, timeOptions, priceOptions, push, toggle, clearAll, childId, childName, removeChild,
 }: {
   t: T
   active: ActiveFilters
@@ -271,6 +304,9 @@ function FilterPanel({
   push: (u: Partial<ActiveFilters>) => void
   toggle: (key: 'genres' | 'platforms' | 'benefits' | 'compliance', value: string) => void
   clearAll: () => void
+  childId?: number
+  childName?: string
+  removeChild: () => void
 }) {
   return (
     <div className="space-y-5">
@@ -295,6 +331,25 @@ function FilterPanel({
             className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium"
           >
             {t('clearAll')}
+          </button>
+        </div>
+      )}
+
+      {/* Active child indicator */}
+      {childName && childId && (
+        <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-base shrink-0" aria-hidden="true">👤</span>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-indigo-700 dark:text-indigo-300 truncate">{childName}</p>
+              <p className="text-[10px] text-indigo-500 dark:text-indigo-400">Age-filtered</p>
+            </div>
+          </div>
+          <button
+            onClick={removeChild}
+            className="text-[10px] text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-200 shrink-0 ml-2"
+          >
+            ✕
           </button>
         </div>
       )}

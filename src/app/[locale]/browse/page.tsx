@@ -446,7 +446,12 @@ export default async function BrowsePage({ params, searchParams }: Props) {
 
           {/* Filters sidebar */}
           <Suspense>
-            <BrowseFilters active={filters} totalCount={total} />
+            <BrowseFilters
+              active={filters}
+              totalCount={total}
+              childId={selectedChild?.id}
+              childName={selectedChild?.name}
+            />
           </Suspense>
 
           {/* Main content */}

@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
         for (const summary of summaries) {
           const byApp = aggregatePlayTime(summary)
 
-          for (const [appId, { playTimeMinutes, title, imageUrl }] of byApp) {
+          for (const [appId, { playTimeMinutes, title, imageUrl }] of Array.from(byApp)) {
             if (playTimeMinutes <= 0) continue
 
             await db.insert(nintendoPlaytime).values({

@@ -13,7 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { platformExperiences, experienceScores } from '@/lib/db/schema'
-import { eq, isNull } from 'drizzle-orm'
+import { eq, isNull, or } from 'drizzle-orm'
 
 export const maxDuration = 300
 
@@ -284,12 +284,12 @@ export async function GET(req: NextRequest) {
   if (!process.env.AWS_BEARER_TOKEN_BEDROCK)
     return NextResponse.json({ error: 'AWS_BEARER_TOKEN_BEDROCK not set' }, { status: 500 })
 
-  // Pick unscored experiences
+  // Pick unscored experiences OR those flagged for rescore (content change / stale)
   const pending = await db
     .select({ exp: platformExperiences })
     .from(platformExperiences)
     .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
-    .where(isNull(experienceScores.id))
+    .where(or(isNull(experienceScores.id), eq(platformExperiences.needsRescore, true)))
     .limit(MAX_PER_RUN)
 
   if (pending.length === 0)
@@ -311,8 +311,11 @@ export async function GET(req: NextRequest) {
       const prompt    = buildPrompt(exp)
       const input     = await callBedrock(prompt)
       const curascore = await saveScore(exp, input)
+      if (exp.needsRescore) {
+        await db.update(platformExperiences).set({ needsRescore: false }).where(eq(platformExperiences.id, exp.id))
+      }
       reviewed.push(exp.slug)
-      console.log(`[review-roblox] ${exp.title} → curascore ${curascore}`)
+      console.log(`[review-roblox] ${exp.title} → curascore ${curascore}${exp.needsRescore ? ' (rescore)' : ''}`)
     } catch (err) {
       console.error(`[review-roblox] Failed for ${exp.slug}:`, err)
       errors.push(exp.slug)

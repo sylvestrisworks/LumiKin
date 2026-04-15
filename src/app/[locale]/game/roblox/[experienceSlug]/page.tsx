@@ -7,7 +7,7 @@ import { platformExperiences, experienceScores } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import Link from 'next/link'
 
-type Props = { params: { experienceSlug: string } }
+type Props = { params: Promise<{ experienceSlug: string }> }
 
 // ─── Helpers (mirrors GameCard palette) ──────────────────────────────────────
 
@@ -113,10 +113,11 @@ function RiskMeter({ label, value, max = 3 }: { label: string; value: number | n
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { experienceSlug } = await params
   const [exp] = await db
     .select({ title: platformExperiences.title, description: platformExperiences.description, thumbnailUrl: platformExperiences.thumbnailUrl })
     .from(platformExperiences)
-    .where(eq(platformExperiences.slug, params.experienceSlug))
+    .where(eq(platformExperiences.slug, experienceSlug))
     .limit(1)
 
   if (!exp) return { title: 'Experience not found — PlaySmart' }
@@ -131,10 +132,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function ExperiencePage({ params }: Props) {
+  const { experienceSlug } = await params
   const [exp] = await db
     .select()
     .from(platformExperiences)
-    .where(eq(platformExperiences.slug, params.experienceSlug))
+    .where(eq(platformExperiences.slug, experienceSlug))
     .limit(1)
 
   if (!exp) notFound()

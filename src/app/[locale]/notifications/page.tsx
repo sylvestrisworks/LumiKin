@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { Bell, ArrowUpRight } from 'lucide-react'
 
 type Notification = {
@@ -38,6 +38,8 @@ export default function NotificationsPage() {
   const [notifs, setNotifs]   = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)
   const locale = useLocale()
+  const t = useTranslations('notifications')
+  const tCommon = useTranslations('common')
 
   useEffect(() => {
     fetch('/api/user/notifications')
@@ -55,19 +57,19 @@ export default function NotificationsPage() {
 
         <div className="flex items-center gap-3">
           <Bell size={20} className="text-indigo-600 dark:text-indigo-400 shrink-0" />
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">Notifications</h1>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t('title')}</h1>
         </div>
 
         {loading && (
-          <p className="text-sm text-slate-400 py-8 text-center">Loading…</p>
+          <p className="text-sm text-slate-400 py-8 text-center">{tCommon('loading')}</p>
         )}
 
         {!loading && notifs.length === 0 && (
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-10 text-center space-y-2">
             <p className="text-2xl">🔔</p>
-            <p className="font-semibold text-slate-700 dark:text-slate-300">All caught up</p>
+            <p className="font-semibold text-slate-700 dark:text-slate-300">{t('allCaughtUp')}</p>
             <p className="text-sm text-slate-400 dark:text-slate-500">
-              We&apos;ll notify you here when a game in your library gets re-rated.
+              {t('allCaughtUpDesc')}
             </p>
             <Link href={`/${locale}/dashboard`} className="inline-block mt-2 text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
               Go to my library →

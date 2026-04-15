@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 type PlaytimeRow = {
   appId: string
@@ -47,6 +48,8 @@ export default function NintendoPlaytimeWidget() {
   const [loading, setLoading] = useState(true)
   const params = useParams()
   const locale = (params?.locale as string) ?? 'en'
+  const t = useTranslations('nintendoWidget')
+  const tCommon = useTranslations('common')
 
   useEffect(() => {
     fetch('/api/nintendo/playtime')
@@ -74,14 +77,14 @@ export default function NintendoPlaytimeWidget() {
           <span className="text-2xl" aria-hidden="true">🎮</span>
           <div>
             <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">Nintendo Switch</p>
-            <p className="text-xs text-slate-400 dark:text-slate-500">Connect to see Switch play time</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500">{tCommon('loading')}</p>
           </div>
         </div>
         <Link
           href={`/${locale}/settings/nintendo`}
           className="text-xs px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-colors"
         >
-          Connect
+          {t('connect')}
         </Link>
       </div>
     )
@@ -93,12 +96,12 @@ export default function NintendoPlaytimeWidget() {
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
             <span className="text-base" aria-hidden="true">🎮</span>
-            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">Switch Play Time</p>
+            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{t('title')}</p>
           </div>
           <Link href={`/${locale}/settings/nintendo`} className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">settings</Link>
         </div>
         <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
-          No play time data yet.{' '}
+          {t('noData')}{' '}
           {data.lastSyncedAt ? 'Next sync runs tonight at 04:30 UTC.' : 'First sync runs tonight at 04:30 UTC.'}
         </p>
       </div>
@@ -113,8 +116,8 @@ export default function NintendoPlaytimeWidget() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-base" aria-hidden="true">🎮</span>
-          <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">Switch Play Time</p>
-          <span className="text-xs text-slate-400 dark:text-slate-500 font-normal">last 7 days</span>
+          <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{t('title')}</p>
+          <span className="text-xs text-slate-400 dark:text-slate-500 font-normal">{t('last7Days')}</span>
         </div>
         <div className="flex items-center gap-3">
           <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{formatTime(totalMinutes)} total</span>

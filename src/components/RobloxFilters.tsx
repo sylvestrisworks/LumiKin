@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import { Search } from 'lucide-react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -37,6 +38,7 @@ export default function RobloxFilters({ active, total }: { active: RobloxFilterS
   const pathname     = usePathname()
   const searchParams = useSearchParams()
   const inputRef     = useRef<HTMLInputElement>(null)
+  const t            = useTranslations('roblox')
 
   function push(updates: Partial<RobloxFilterState>) {
     const merged = { ...active, ...updates }
@@ -84,24 +86,24 @@ export default function RobloxFilters({ active, total }: { active: RobloxFilterS
       <div className="flex flex-wrap gap-2 items-center">
 
         {/* Sort */}
-        <span className="text-xs text-slate-400 dark:text-slate-500 font-medium shrink-0">Sort:</span>
-        <Chip label="Most active"  active={!active.sort || active.sort === 'active'}    onClick={() => push({ sort: 'active' })} />
-        <Chip label="Top rated"    active={active.sort === 'curascore'}                  onClick={() => push({ sort: 'curascore' })} />
-        <Chip label="Most visited" active={active.sort === 'visits'}                    onClick={() => push({ sort: 'visits' })} />
+        <span className="text-xs text-slate-400 dark:text-slate-500 font-medium shrink-0">{t('sortLabel')}</span>
+        <Chip label={t('sortMostActive')}  active={!active.sort || active.sort === 'active'}    onClick={() => push({ sort: 'active' })} />
+        <Chip label={t('sortTopRated')}    active={active.sort === 'curascore'}                  onClick={() => push({ sort: 'curascore' })} />
+        <Chip label={t('sortMostVisited')} active={active.sort === 'visits'}                    onClick={() => push({ sort: 'visits' })} />
 
         <span className="text-slate-200 dark:text-slate-700 shrink-0">|</span>
 
         {/* Risk */}
-        <span className="text-xs text-slate-400 dark:text-slate-500 font-medium shrink-0">Risk:</span>
-        <Chip label="Low risk only"   active={active.risk === 'low'}    onClick={() => push({ risk: active.risk === 'low'    ? '' : 'low' })} />
-        <Chip label="Medium or below" active={active.risk === 'medium'} onClick={() => push({ risk: active.risk === 'medium' ? '' : 'medium' })} />
+        <span className="text-xs text-slate-400 dark:text-slate-500 font-medium shrink-0">{t('riskLabel')}</span>
+        <Chip label={t('filterLowRisk')}    active={active.risk === 'low'}    onClick={() => push({ risk: active.risk === 'low'    ? '' : 'low' })} />
+        <Chip label={t('filterMediumRisk')} active={active.risk === 'medium'} onClick={() => push({ risk: active.risk === 'medium' ? '' : 'medium' })} />
 
         <span className="text-slate-200 dark:text-slate-700 shrink-0">|</span>
 
         {/* Time */}
-        <span className="text-xs text-slate-400 dark:text-slate-500 font-medium shrink-0">Time:</span>
-        <Chip label="≤ 30 min/day" active={active.time === '30'} onClick={() => push({ time: active.time === '30' ? '' : '30' })} />
-        <Chip label="≤ 60 min/day" active={active.time === '60'} onClick={() => push({ time: active.time === '60' ? '' : '60' })} />
+        <span className="text-xs text-slate-400 dark:text-slate-500 font-medium shrink-0">{t('timeLabel')}</span>
+        <Chip label={t('timeMax30')} active={active.time === '30'} onClick={() => push({ time: active.time === '30' ? '' : '30' })} />
+        <Chip label={t('timeMax60')} active={active.time === '60'} onClick={() => push({ time: active.time === '60' ? '' : '60' })} />
 
         {/* Clear all */}
         {hasFilters && (
@@ -109,7 +111,7 @@ export default function RobloxFilters({ active, total }: { active: RobloxFilterS
             onClick={() => router.push(pathname)}
             className="text-xs text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors ml-1 shrink-0"
           >
-            Clear all
+            {t('clearAll')}
           </button>
         )}
       </div>

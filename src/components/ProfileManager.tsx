@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { PLATFORM_OPTIONS, SKILL_OPTIONS } from '@/lib/childProfileOptions'
 import { calcAge } from '@/lib/age'
 
@@ -30,6 +31,7 @@ const EMPTY_FORM = { name: '', birthDate: defaultBirthDate, platforms: [] as str
 
 export default function ProfileManager({ initialProfiles }: Props) {
   const router = useRouter()
+  const t = useTranslations('profileManager')
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Profile | null>(null)
   const [form, setForm] = useState(EMPTY_FORM)
@@ -63,8 +65,8 @@ export default function ProfileManager({ initialProfiles }: Props) {
   }
 
   async function save() {
-    if (!form.name.trim()) { setError('Name is required'); return }
-    if (!form.birthDate)   { setError('Birth date is required'); return }
+    if (!form.name.trim()) { setError(t('name') + ' is required'); return }
+    if (!form.birthDate)   { setError(t('dateOfBirth') + ' is required'); return }
     setSaving(true)
     setError('')
     try {
@@ -86,8 +88,8 @@ export default function ProfileManager({ initialProfiles }: Props) {
     }
   }
 
-  async function remove(id: number) {
-    if (!confirm('Remove this profile?')) return
+  async function remove(id: number, name: string) {
+    if (!confirm(t('deleteConfirm', { name }))) return
     await fetch(`/api/child-profiles/${id}`, { method: 'DELETE' })
     router.refresh()
   }
@@ -117,7 +119,7 @@ export default function ProfileManager({ initialProfiles }: Props) {
                 Edit
               </button>
               <button
-                onClick={() => remove(p.id)}
+                onClick={() => remove(p.id, p.name)}
                 className="text-xs text-slate-300 hover:text-red-500 transition-colors"
               >
                 ✕
@@ -131,7 +133,7 @@ export default function ProfileManager({ initialProfiles }: Props) {
           className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600
             text-sm text-slate-500 dark:text-slate-400 hover:border-indigo-400 hover:text-indigo-600 transition-colors"
         >
-          + Add child
+          {t('addButton')}
         </button>
       </div>
 
@@ -140,24 +142,24 @@ export default function ProfileManager({ initialProfiles }: Props) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md p-6 space-y-5 max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">
-              {editing ? `Edit ${editing.name}` : 'Add child profile'}
+              {editing ? t('editProfile', { name: editing.name }) : t('addProfile')}
             </h2>
 
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Name</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('name')}</label>
               <input
                 type="text"
                 value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                placeholder="e.g. Emma"
+                placeholder={t('namePlaceholder')}
                 className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-400 dark:placeholder:text-slate-500"
               />
             </div>
 
             {/* Birth date */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Date of birth</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('dateOfBirth')}</label>
               <input
                 type="date"
                 value={form.birthDate}
@@ -175,7 +177,7 @@ export default function ProfileManager({ initialProfiles }: Props) {
 
             {/* Platforms */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Platforms</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t('platforms')}</label>
               <div className="flex flex-wrap gap-2">
                 {PLATFORM_OPTIONS.map(p => (
                   <button
@@ -197,7 +199,7 @@ export default function ProfileManager({ initialProfiles }: Props) {
             {/* Focus skills */}
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Focus skills <span className="text-slate-400 dark:text-slate-500 font-normal">(optional)</span>
+                {t('focusSkills')} <span className="text-slate-400 dark:text-slate-500 font-normal">(optional)</span>
               </label>
               <div className="flex flex-wrap gap-2">
                 {SKILL_OPTIONS.map(s => (
@@ -224,14 +226,14 @@ export default function ProfileManager({ initialProfiles }: Props) {
                 onClick={() => setShowForm(false)}
                 className="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 transition-colors"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={save}
                 disabled={saving}
                 className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-60"
               >
-                {saving ? 'Saving…' : 'Save'}
+                {saving ? t('saving') : t('save')}
               </button>
             </div>
           </div>

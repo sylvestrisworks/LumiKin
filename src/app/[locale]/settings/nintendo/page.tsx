@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 
 type ConnectionStatus = {
   connected: boolean
@@ -28,6 +29,8 @@ export default function NintendoConnectPage() {
   const [pasted,   setPasted]   = useState('')
   const [loading,  setLoading]  = useState(false)
   const [error,    setError]    = useState('')
+  const t = useTranslations('nintendo')
+  const tCommon = useTranslations('common')
 
   useEffect(() => {
     fetch('/api/nintendo/connect')
@@ -47,7 +50,7 @@ export default function NintendoConnectPage() {
       sessionStorage.setItem('nintendo_verifier', data.verifier)
       setStep('link')
     } catch {
-      setError('Failed to generate auth URL. Please try again.')
+      setError(t('error'))
     } finally {
       setLoading(false)
     }
@@ -86,7 +89,7 @@ export default function NintendoConnectPage() {
   if (status === null) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
-        <p className="text-slate-400">Loading…</p>
+        <p className="text-slate-400">{tCommon('loading')}</p>
       </div>
     )
   }
@@ -100,7 +103,7 @@ export default function NintendoConnectPage() {
           <span className="text-2xl" aria-hidden="true">🎮</span>
           <div>
             <h1 className="text-xl font-bold text-slate-900 dark:text-white">Nintendo Switch</h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Connect parental controls to track play time</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{t('connectDesc')}</p>
           </div>
         </div>
 
@@ -110,7 +113,7 @@ export default function NintendoConnectPage() {
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
               <p className="font-semibold text-slate-900 dark:text-white">
-                Connected{status.nickname ? ` — ${status.nickname}` : ''}
+                {status.nickname ? t('connectedAs', { name: status.nickname }) : t('connected')}
               </p>
             </div>
             {status.lastSyncedAt && (
@@ -123,7 +126,7 @@ export default function NintendoConnectPage() {
               onClick={disconnect}
               className="text-xs text-red-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
             >
-              Disconnect
+              {t('disconnect')}
             </button>
           </div>
         )}
@@ -150,7 +153,7 @@ export default function NintendoConnectPage() {
               disabled={loading}
               className="w-full py-2.5 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-bold rounded-xl transition-colors"
             >
-              {loading ? 'Preparing…' : 'Connect Nintendo Account'}
+              {loading ? t('connecting') : t('connectButton')}
             </button>
           </div>
         )}
@@ -208,13 +211,13 @@ export default function NintendoConnectPage() {
                 disabled={loading || !pasted.trim()}
                 className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold rounded-xl transition-colors"
               >
-                {loading ? 'Connecting…' : 'Connect'}
+                {loading ? t('connecting') : t('connectButton')}
               </button>
               <button
                 onClick={() => { setStep('link'); setError('') }}
                 className="px-4 py-2.5 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 text-sm rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
               >
-                Back
+                {tCommon('back')}
               </button>
             </div>
           </div>
@@ -222,7 +225,7 @@ export default function NintendoConnectPage() {
 
         {/* What data we collect */}
         <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 px-5 py-4 space-y-2 text-sm text-slate-500 dark:text-slate-400">
-          <p className="font-semibold text-slate-700 dark:text-slate-300">What we access</p>
+          <p className="font-semibold text-slate-700 dark:text-slate-300">{t('whatWeAccess')}</p>
           <ul className="space-y-1 list-disc list-inside">
             <li>Daily play time per game (last 7 days, refreshed nightly)</li>
             <li>Game titles and icons from your Switch</li>

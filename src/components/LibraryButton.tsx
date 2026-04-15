@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 type Props = {
   gameId: number
@@ -9,6 +10,7 @@ type Props = {
 }
 
 export default function LibraryButton({ gameId, initialOwned, initialWishlisted }: Props) {
+  const t = useTranslations('libraryButton')
   const [owned,     setOwned]     = useState(initialOwned)
   const [wishlisted, setWishlisted] = useState(initialWishlisted)
   const [loading,   setLoading]   = useState<'owned' | 'wishlist' | null>(null)
@@ -48,7 +50,7 @@ export default function LibraryButton({ gameId, initialOwned, initialWishlisted 
         ) : (
           <span>{owned ? '✓' : '+'}</span>
         )}
-        {owned ? 'In Library' : 'Add to Library'}
+        {owned ? t('inLibrary') : t('addToLibrary')}
       </button>
 
       <button
@@ -65,7 +67,7 @@ export default function LibraryButton({ gameId, initialOwned, initialWishlisted 
         ) : (
           <span>{wishlisted ? '★' : '☆'}</span>
         )}
-        {wishlisted ? 'Wishlisted' : 'Wishlist'}
+        {wishlisted ? t('wishlisted') : t('wishlist')}
       </button>
     </div>
   )

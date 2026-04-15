@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { platformExperiences, experienceScores } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 
 type Props = { params: Promise<{ experienceSlug: string }> }
 
@@ -132,7 +133,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function ExperiencePage({ params }: Props) {
-  const { experienceSlug } = await params
+  const [{ experienceSlug }, t] = await Promise.all([params, getTranslations('roblox')])
   const [exp] = await db
     .select()
     .from(platformExperiences)
@@ -224,18 +225,18 @@ export default async function ExperiencePage({ params }: Props) {
         {score && (
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-5 space-y-4">
             <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-              What your child develops
+              {t('whatChildDevelops')}
             </h2>
 
             <div className="space-y-3">
-              <BenefitBar label="Creativity"   value={score.creativityScore} />
-              <BenefitBar label="Social play"  value={score.socialScore} />
-              <BenefitBar label="Learning"     value={score.learningScore} />
+              <BenefitBar label={t('creativity')}  value={score.creativityScore} />
+              <BenefitBar label={t('socialPlay')}  value={score.socialScore} />
+              <BenefitBar label={t('learning')}    value={score.learningScore} />
             </div>
 
             {score.benefitsNarrative && (
               <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-4 mt-2">
-                <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300 mb-1">What your child develops</p>
+                <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300 mb-1">{t('whatChildDevelops')}</p>
                 <p className="text-sm text-emerald-900 dark:text-emerald-200 leading-relaxed">{score.benefitsNarrative}</p>
               </div>
             )}
@@ -246,21 +247,21 @@ export default async function ExperiencePage({ params }: Props) {
         {score && (
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-5 space-y-4">
             <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-              What to watch out for
+              {t('watchOutFor')}
             </h2>
 
             <div className="space-y-4">
-              <RiskMeter label="Dopamine traps"   value={score.dopamineTrapScore} />
-              <RiskMeter label="Toxicity"         value={score.toxicityScore} />
-              <RiskMeter label="UGC content risk" value={score.ugcContentRisk} />
-              <RiskMeter label="Stranger risk"    value={score.strangerRisk} />
-              <RiskMeter label="Robux pressure"   value={score.monetizationScore} />
-              <RiskMeter label="Privacy risk"     value={score.privacyRisk} />
+              <RiskMeter label={t('dopamineTraps')} value={score.dopamineTrapScore} />
+              <RiskMeter label={t('toxicity')}      value={score.toxicityScore} />
+              <RiskMeter label={t('ugcRisk')}       value={score.ugcContentRisk} />
+              <RiskMeter label={t('strangerRisk')}  value={score.strangerRisk} />
+              <RiskMeter label={t('monetization')}  value={score.monetizationScore} />
+              <RiskMeter label={t('privacyRisk')}   value={score.privacyRisk} />
             </div>
 
             {score.risksNarrative && (
               <div className="bg-slate-50 dark:bg-slate-700/50 rounded-2xl p-4 mt-2">
-                <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">What to watch out for</p>
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">{t('watchOutFor')}</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{score.risksNarrative}</p>
               </div>
             )}
@@ -270,7 +271,7 @@ export default async function ExperiencePage({ params }: Props) {
         {/* ── Parent tip ─────────────────────────────────────────────────────── */}
         {score?.parentTip && (
           <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl px-5 py-4">
-            <p className="text-xs font-black uppercase tracking-widest text-blue-700 dark:text-blue-400 mb-1">Parent tip</p>
+            <p className="text-xs font-black uppercase tracking-widest text-blue-700 dark:text-blue-400 mb-1">{t('parentTip')}</p>
             <p className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">{score.parentTip}</p>
           </div>
         )}
@@ -278,8 +279,8 @@ export default async function ExperiencePage({ params }: Props) {
         {/* ── No score yet ───────────────────────────────────────────────────── */}
         {!score && (
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-8 text-center text-slate-400">
-            <p className="font-medium">Rating in progress</p>
-            <p className="text-xs mt-1">Our AI is evaluating this experience. Check back soon.</p>
+            <p className="font-medium">{t('ratingInProgress')}</p>
+            <p className="text-xs mt-1">{t('ratingInProgressDesc')}</p>
           </div>
         )}
 
@@ -287,7 +288,7 @@ export default async function ExperiencePage({ params }: Props) {
           href="/game/roblox"
           className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
         >
-          ← Back to Roblox hub
+          {t('backToRoblox')}
         </Link>
 
       </main>

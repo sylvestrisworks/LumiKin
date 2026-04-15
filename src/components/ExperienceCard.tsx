@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { curascoreBg } from '@/lib/ui'
 
 export type ExperienceSummary = {
@@ -26,6 +27,7 @@ function formatCount(n: number | null): string {
 }
 
 export default function ExperienceCard({ exp }: { exp: ExperienceSummary }) {
+  const t = useTranslations('roblox')
   const hasHighStrangerRisk = (exp.strangerRisk ?? 0) >= 2
   const hasHighMonetization = (exp.monetizationScore ?? 0) >= 2
 
@@ -102,10 +104,10 @@ export default function ExperienceCard({ exp }: { exp: ExperienceSummary }) {
         {(hasHighStrangerRisk || hasHighMonetization) && (
           <div className="flex flex-wrap gap-x-2 gap-y-0.5">
             {hasHighStrangerRisk && (
-              <span className="text-xs text-amber-600 dark:text-amber-400">👥 Stranger risk</span>
+              <span className="text-xs text-amber-600 dark:text-amber-400">👥 {t('strangerRisk')}</span>
             )}
             {hasHighMonetization && (
-              <span className="text-xs text-amber-600 dark:text-amber-400">💰 Robux pressure</span>
+              <span className="text-xs text-amber-600 dark:text-amber-400">💰 {t('robuxPressure')}</span>
             )}
           </div>
         )}

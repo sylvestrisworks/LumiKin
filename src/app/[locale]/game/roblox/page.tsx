@@ -8,6 +8,7 @@ import { eq, desc, and, lte, ilike, isNotNull, type SQL } from 'drizzle-orm'
 import ExperienceCard, { type ExperienceSummary } from '@/components/ExperienceCard'
 import { curascoreText } from '@/lib/ui'
 import RobloxFilters, { type RobloxFilterState } from '@/components/RobloxFilters'
+import { getTranslations } from 'next-intl/server'
 
 export const metadata: Metadata = {
   title: 'Roblox Experience Guide — PlaySmart',
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> }
 
 export default async function RobloxHubPage({ searchParams }: Props) {
-  const sp = await searchParams
+  const [sp, t] = await Promise.all([searchParams, getTranslations('roblox')])
   const filters: RobloxFilterState = {
     q:    typeof sp.q    === 'string' ? sp.q    : '',
     sort: typeof sp.sort === 'string' ? sp.sort : 'active',
@@ -112,7 +113,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
                 Roblox is a platform of millions of user-generated experiences. Safety varies greatly by experience — browse our ratings below.
               </p>
               <div className="flex items-center gap-4 mt-2 text-xs text-slate-400 dark:text-slate-500">
-                <span>{scored.length} experience{scored.length !== 1 ? 's' : ''} rated</span>
+                <span>{scored.length} {t('rated').toLowerCase()}</span>
                 {platformScore?.timeRecommendationLabel && (
                   <span>Platform: {platformScore.timeRecommendationLabel}</span>
                 )}
@@ -146,7 +147,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
             {scored.length > 0 && (
               <section>
                 <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
-                  Rated experiences
+                  {t('rated')}
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {scored.map(exp => (
@@ -160,7 +161,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
             {unscored.length > 0 && (
               <section>
                 <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
-                  Awaiting review
+                  {t('awaitingRating')}
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {unscored.map(exp => (

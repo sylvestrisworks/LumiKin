@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 type MatchedGame = {
   gameId: number
@@ -24,6 +25,8 @@ type Platform = 'steam' | 'xbox'
 
 export default function ImportModal({ onClose }: { onClose: () => void }) {
   const router = useRouter()
+  const t = useTranslations('importModal')
+  const tCommon = useTranslations('common')
   const [platform, setPlatform] = useState<Platform>('steam')
   const [step, setStep] = useState<Step>('input')
   const [steamInput, setSteamInput] = useState('')
@@ -90,7 +93,7 @@ export default function ImportModal({ onClose }: { onClose: () => void }) {
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-          <h2 className="text-base font-bold text-slate-800">Import Library</h2>
+          <h2 className="text-base font-bold text-slate-800">{t('title')}</h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-xl leading-none">×</button>
         </div>
 
@@ -133,7 +136,7 @@ export default function ImportModal({ onClose }: { onClose: () => void }) {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Steam ID or profile URL
+                  {t('steamIdLabel')}
                 </label>
                 <input
                   ref={inputRef}
@@ -141,7 +144,7 @@ export default function ImportModal({ onClose }: { onClose: () => void }) {
                   value={steamInput}
                   onChange={e => setSteamInput(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handlePreview()}
-                  placeholder="e.g. 76561198012345678 or steamcommunity.com/id/username"
+                  placeholder={t('steamIdPlaceholder')}
                   className="w-full text-sm border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
                   autoFocus
                 />
@@ -149,7 +152,7 @@ export default function ImportModal({ onClose }: { onClose: () => void }) {
               </div>
 
               <details className="text-xs text-slate-500 bg-slate-50 rounded-xl p-3">
-                <summary className="cursor-pointer font-medium text-slate-600">How to find your Steam ID</summary>
+                <summary className="cursor-pointer font-medium text-slate-600">{t('howToFind')}</summary>
                 <ol className="mt-2 space-y-1 list-decimal list-inside">
                   <li>Open Steam and go to your Profile</li>
                   <li>The URL will be <code>steamcommunity.com/id/yourname</code> or <code>steamcommunity.com/profiles/76561...</code></li>
@@ -164,7 +167,7 @@ export default function ImportModal({ onClose }: { onClose: () => void }) {
           {step === 'loading' && (
             <div className="flex flex-col items-center justify-center py-12 gap-3">
               <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm text-slate-500">Fetching your library…</p>
+              <p className="text-sm text-slate-500">{t('importing')}</p>
             </div>
           )}
 
@@ -250,9 +253,9 @@ export default function ImportModal({ onClose }: { onClose: () => void }) {
             <div className="text-center py-8">
               <div className="text-4xl mb-3">✓</div>
               <p className="font-semibold text-slate-700">
-                {addedCount > 0 ? `${addedCount} game${addedCount > 1 ? 's' : ''} added to your library!` : 'Nothing new to add.'}
+                {addedCount > 0 ? t('success', { count: addedCount }) : 'Nothing new to add.'}
               </p>
-              <p className="text-sm text-slate-500 mt-1">Your library is up to date.</p>
+              <p className="text-sm text-slate-500 mt-1">{tCommon('loading')}</p>
             </div>
           )}
         </div>
@@ -261,12 +264,12 @@ export default function ImportModal({ onClose }: { onClose: () => void }) {
         <div className="px-6 py-4 border-t border-slate-100 flex justify-end gap-3">
           {step === 'done' || platform === 'xbox' ? (
             <button onClick={onClose} className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-colors">
-              Close
+              {t('close')}
             </button>
           ) : step === 'preview' ? (
             <>
               <button onClick={() => { setStep('input'); setPreview(null) }} className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
-                Back
+                {t('cancel')}
               </button>
               <button
                 onClick={handleConfirm}
@@ -279,14 +282,14 @@ export default function ImportModal({ onClose }: { onClose: () => void }) {
           ) : (
             <>
               <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={handlePreview}
                 disabled={!steamInput.trim() || step === 'loading'}
                 className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Find my games
+                {t('importButton')}
               </button>
             </>
           )}

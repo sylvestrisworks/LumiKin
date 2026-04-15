@@ -8,16 +8,10 @@ import { eq } from 'drizzle-orm'
 import GameCompactCard from '@/components/GameCompactCard'
 import ImportLibraryButton from '@/components/ImportLibraryButton'
 import type { GameSummary } from '@/types/game'
-import { getLocale } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { calcAge } from '@/lib/age'
 
 export const metadata = { title: 'My Library — PlaySmart' }
-
-const SKILL_LABELS: Record<string, string> = {
-  cognitive:      'Brain & Learning',
-  social:         'Social Skills',
-  motor:          'Motor Skills',
-}
 
 export default async function LibraryPage({ searchParams }: { searchParams: Promise<{ child?: string }> }) {
   const session = await auth()
@@ -25,7 +19,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
   const uid = (session?.user as any)?.id ?? session?.user?.email ?? null
   if (!uid) redirect('/')
 
-  const locale = await getLocale()
+  const [locale, t] = await Promise.all([getLocale(), getTranslations('library')])
   const params = await searchParams
   const selectedChildId = params.child ? parseInt(params.child) : null
 
@@ -99,6 +93,12 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
     }
   }
 
+  const skillLabels: Record<string, string> = {
+    cognitive: t('skillBrainLearning'),
+    social:    t('skillSocialSkills'),
+    motor:     t('skillMotorSkills'),
+  }
+
   const topSkills = skillCount > 0
     ? Object.entries(skillTotals)
         .map(([key, total]) => ({ key, avg: total / skillCount }))
@@ -133,13 +133,13 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">My Library</h1>
+              <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{t('title')}</h1>
               <ImportLibraryButton />
             </div>
             <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
               {selectedChild
-                ? `${owned.length} games for ${selectedChild.name} · ${wishlist.length} wishlisted`
-                : `${allOwned.length} games owned · ${allWishlist.length} wishlisted`}
+                ? `${owned.length} ${t('owned').toLowerCase()} · ${wishlist.length} ${t('wishlist').toLowerCase()}`
+                : `${allOwned.length} ${t('owned').toLowerCase()} · ${allWishlist.length} ${t('wishlist').toLowerCase()}`}
             </p>
           </div>
 
@@ -180,16 +180,16 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
         {/* Filtered notice */}
         {selectedChild && (allOwned.length !== owned.length || allWishlist.length !== wishlist.length) && (
           <div className="text-sm text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-2.5">
-            Showing {owned.length} of {allOwned.length} owned games appropriate for {selectedChild.name} (age {calcAge(selectedChild.birthDate, selectedChild.birthYear)}
+            {t('showingFor', { count: owned.length, total: allOwned.length })} {t('filterByChild', { name: selectedChild.name })} (age {calcAge(selectedChild.birthDate, selectedChild.birthYear)}
             {(selectedChild.platforms as string[]).length > 0 && `, ${(selectedChild.platforms as string[]).join('/')}`}).
-            {' '}<a href={`/${locale}/library`} className="underline hover:text-indigo-900">View all</a>
+            {' '}<a href={`/${locale}/library`} className="underline hover:text-indigo-900">{t('clearFilter')}</a>
           </div>
         )}
 
         {/* Stats summary */}
         {owned.length > 0 && (
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
-            <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">Library Summary</h2>
+            <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">{t('librarySummary')}</h2>
             <div className="flex flex-wrap gap-8">
 
               {/* Avg Curascore */}
@@ -201,20 +201,20 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
                   }`}>
                     {avgCurascore}
                   </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Avg Curascore</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t('avgCurascore')}</div>
                 </div>
               )}
 
               {/* Top skills */}
               {topSkills.length > 0 && (
                 <div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-2">Top Focus Skills</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-2">{t('topFocusSkills')}</div>
                   <div className="flex flex-col gap-1.5">
                     {topSkills.map((s, i) => (
                       <div key={s.key} className="flex items-center gap-2">
                         <span className="text-xs font-bold text-slate-400 w-4">{i + 1}.</span>
                         <div className="h-2 rounded-full bg-indigo-500" style={{ width: `${Math.round(s.avg * 120)}px`, minWidth: '20px' }} />
-                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{SKILL_LABELS[s.key]}</span>
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{skillLabels[s.key]}</span>
                         <span className="text-xs text-slate-400 dark:text-slate-500">{Math.round(s.avg * 100)}%</span>
                       </div>
                     ))}
@@ -230,7 +230,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
         {owned.length > 0 ? (
           <section>
             <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-4">
-              {selectedChild ? `For ${selectedChild.name}` : 'Owned'} ({owned.length})
+              {selectedChild ? selectedChild.name : t('owned')} ({owned.length})
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
               {owned.map(r => <GameCompactCard key={r.entryId} game={toSummary(r)} />)}
@@ -239,15 +239,15 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
         ) : (
           <div className="text-center py-16 text-slate-400">
             <p className="text-4xl mb-3">🎮</p>
-            <p className="font-medium text-slate-600 dark:text-slate-400">Your library is empty</p>
-            <p className="text-sm mt-1">Visit any game page and click &ldquo;Add to Library&rdquo;.</p>
+            <p className="font-medium text-slate-600 dark:text-slate-400">{t('emptyOwned')}</p>
+            <p className="text-sm mt-1">{t('emptyOwnedSub')}</p>
           </div>
         )}
 
         {/* Wishlist */}
         {wishlist.length > 0 && (
           <section>
-            <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-4">Wishlist ({wishlist.length})</h2>
+            <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-4">{t('wishlist')} ({wishlist.length})</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
               {wishlist.map(r => <GameCompactCard key={r.entryId} game={toSummary(r)} />)}
             </div>

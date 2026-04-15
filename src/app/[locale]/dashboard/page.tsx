@@ -7,7 +7,7 @@ import { curascoreBg } from '@/lib/ui'
 import { calcAge } from '@/lib/age'
 import ProfileManager from '@/components/ProfileManager'
 import NintendoPlaytimeWidget from '@/components/NintendoPlaytimeWidget'
-import { getLocale } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 
 export const metadata = { title: 'Family Dashboard — PlaySmart' }
 export const dynamic = 'force-dynamic'
@@ -28,7 +28,7 @@ export default async function FamilyDashboard() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userId = (session.user as any).id ?? session.user.email!
-  const locale = await getLocale()
+  const [locale, t] = await Promise.all([getLocale(), getTranslations('dashboard')])
 
   const [profiles, libraryRows] = await Promise.all([
     db.select().from(childProfiles).where(eq(childProfiles.userId, userId)),
@@ -75,20 +75,20 @@ export default async function FamilyDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Family Dashboard</h1>
-            <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">Signed in as {session.user.email}</p>
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{t('title')}</h1>
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">{t('signedInAs', { email: session.user.email ?? '' })}</p>
           </div>
           <div className="flex items-center gap-3 text-sm">
             <a href={`/${locale}/library`} className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-300 hover:border-indigo-300 hover:text-indigo-700 transition-colors text-xs font-medium">
-              🎮 {owned.length} owned
+              🎮 {t('owned', { count: owned.length })}
             </a>
             {wlCount > 0 && (
               <a href={`/${locale}/library`} className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-300 hover:border-amber-300 hover:text-amber-600 transition-colors text-xs font-medium">
-                ★ {wlCount} wishlisted
+                ★ {t('wishlisted', { count: wlCount })}
               </a>
             )}
             <a href={`/${locale}/notifications`} className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-300 hover:border-indigo-300 hover:text-indigo-700 transition-colors text-xs font-medium">
-              🔔 Notifications
+              🔔 {t('notifications')}
             </a>
           </div>
         </div>
@@ -126,7 +126,7 @@ export default async function FamilyDashboard() {
                   <div>
                     <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">{profile.name}</h2>
                     <p className="text-xs text-slate-400 dark:text-slate-500">
-                      Age {age}
+                      {t('age', { age })}
                       {(profile.platforms as string[]).length > 0 && ` · ${(profile.platforms as string[]).join(', ')}`}
                     </p>
                   </div>
@@ -139,11 +139,11 @@ export default async function FamilyDashboard() {
                       healthScore >= 70 ? 'text-emerald-600' :
                       healthScore >= 50 ? 'text-amber-500' : 'text-red-500'
                     }`}>{healthScore}</div>
-                    <div className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wide mt-0.5">Library score</div>
+                    <div className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wide mt-0.5">{t('libraryScore')}</div>
                   </div>
                 ) : owned.length > 0 ? (
                   <div className="text-right">
-                    <div className="text-xs text-slate-400 dark:text-slate-500">No owned games<br/>match this child yet</div>
+                    <div className="text-xs text-slate-400 dark:text-slate-500">{t('noGamesMatchChild')}</div>
                   </div>
                 ) : null}
               </div>
@@ -153,8 +153,8 @@ export default async function FamilyDashboard() {
                 {childGames.length > 0 ? (
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">From your library</h3>
-                      <a href={`/${locale}/library?child=${profile.id}`} className="text-xs text-indigo-600 hover:underline">{childGames.length} games →</a>
+                      <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">{t('fromYourLibrary')}</h3>
+                      <a href={`/${locale}/library?child=${profile.id}`} className="text-xs text-indigo-600 hover:underline">{t('gamesCount', { count: childGames.length })}</a>
                     </div>
                     <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                       {childGames.slice(0, 12).map(g => (
@@ -174,8 +174,8 @@ export default async function FamilyDashboard() {
                   </div>
                 ) : (
                   <p className="text-sm text-slate-400 dark:text-slate-500">
-                    No games in your library match {profile.name} yet.{' '}
-                    <a href={`/${locale}/browse?child=${profile.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline">Browse for {profile.name} →</a>
+                    {t('noGamesInLibrary', { name: profile.name })}{' '}
+                    <a href={`/${locale}/browse?child=${profile.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline">{t('browseForChild', { name: profile.name })}</a>
                   </p>
                 )}
               </div>
@@ -186,9 +186,9 @@ export default async function FamilyDashboard() {
         {profiles.length === 0 && (
           <div className="text-center py-20 text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
             <p className="text-4xl mb-3">👨‍👩‍👧</p>
-            <p className="font-medium text-slate-600 dark:text-slate-400 text-lg">Add a child profile to get started</p>
+            <p className="font-medium text-slate-600 dark:text-slate-400 text-lg">{t('addChildCta')}</p>
             <p className="text-sm mt-2 max-w-sm mx-auto text-slate-400 dark:text-slate-500">
-              We&apos;ll score your existing library for each child in your family.
+              {t('addChildDesc')}
             </p>
           </div>
         )}

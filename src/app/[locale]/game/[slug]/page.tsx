@@ -242,17 +242,21 @@ export default async function GamePage({ params }: Props) {
 
   // Overlay translated narrative content when locale is not English
   if (locale !== 'en' && data.game.id) {
-    const [tx] = await db
-      .select()
-      .from(gameTranslations)
-      .where(and(eq(gameTranslations.gameId, data.game.id), eq(gameTranslations.locale, locale)))
-      .limit(1)
-    if (tx) {
-      if (tx.executiveSummary  && data.scores) data.scores = { ...data.scores, executiveSummary: tx.executiveSummary }
-      if (tx.benefitsNarrative && data.review)  data.review = { ...data.review, benefitsNarrative: tx.benefitsNarrative }
-      if (tx.risksNarrative    && data.review)  data.review = { ...data.review, risksNarrative: tx.risksNarrative }
-      if (tx.parentTip         && data.review)  data.review = { ...data.review, parentTip: tx.parentTip }
-      if (tx.parentTipBenefits && data.review)  data.review = { ...data.review, parentTipBenefits: tx.parentTipBenefits }
+    try {
+      const [tx] = await db
+        .select()
+        .from(gameTranslations)
+        .where(and(eq(gameTranslations.gameId, data.game.id), eq(gameTranslations.locale, locale)))
+        .limit(1)
+      if (tx) {
+        if (tx.executiveSummary  && data.scores) data.scores = { ...data.scores, executiveSummary: tx.executiveSummary }
+        if (tx.benefitsNarrative && data.review)  data.review = { ...data.review, benefitsNarrative: tx.benefitsNarrative }
+        if (tx.risksNarrative    && data.review)  data.review = { ...data.review, risksNarrative: tx.risksNarrative }
+        if (tx.parentTip         && data.review)  data.review = { ...data.review, parentTip: tx.parentTip }
+        if (tx.parentTipBenefits && data.review)  data.review = { ...data.review, parentTipBenefits: tx.parentTipBenefits }
+      }
+    } catch {
+      // game_translations table not yet migrated — skip silently
     }
   }
 

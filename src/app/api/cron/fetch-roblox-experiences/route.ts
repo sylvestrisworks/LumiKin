@@ -208,7 +208,7 @@ function slugify(str: string): string {
 function isValidGame(game: RobloxGame): boolean {
   if (!game.name || game.name.trim() === '') return false
   if (game.isPublic === false) return false
-  if (game.name.endsWith("'s Place")) return false      // placeholder games
+  if (/\u2019s Place$|'s Place$/.test(game.name)) return false  // placeholder games (straight or curly apostrophe)
   if (game.visits === 0 && game.playing === 0) return false
   return true
 }
@@ -408,11 +408,9 @@ async function handler(req: NextRequest): Promise<NextResponse> {
     errors:     errors.length,
     ageMarked,
     _debug: {
-      gameMapSize:       gameMap.size,
-      newUniverseIds:    newUniverseIdsDeduped.length,
-      allUniverseIds:    allUniverseIds.length,
-      lastBatchStatus:   _lastBatchDebug?.status,
-      lastBatchBody:     _lastBatchDebug?.bodySnippet,
+      gameMapSize:    gameMap.size,
+      newUniverseIds: newUniverseIdsDeduped.length,
+      allUniverseIds: allUniverseIds.length,
     },
   })
 }

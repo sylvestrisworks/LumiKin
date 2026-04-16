@@ -113,10 +113,17 @@ async function fetchUniversesBatch(universeIds: string[]): Promise<RobloxGame[]>
   for (const chunk of chunks) {
     try {
       const res = await fetch(`https://games.roblox.com/v1/games?universeIds=${chunk.join(',')}`)
-      if (!res.ok) continue
+      if (!res.ok) {
+        const body = await res.text().catch(() => '')
+        console.error(`[fetch-roblox] games batch HTTP ${res.status}: ${body.slice(0, 200)}`)
+        continue
+      }
       const data = await res.json() as { data?: RobloxGame[] }
+      console.log(`[fetch-roblox] games batch: ${data.data?.length ?? 0} games for ${chunk.length} IDs`)
       results.push(...(data.data ?? []))
-    } catch { /* skip chunk on network error */ }
+    } catch (e) {
+      console.error(`[fetch-roblox] games batch network error:`, e)
+    }
   }
   return results
 }
@@ -261,8 +268,10 @@ async function handler(req: NextRequest): Promise<NextResponse> {
 
   // ── Batch-fetch metadata for all IDs (existing + new) ───────────────────────
   const allUniverseIds = [...Array.from(existingUniverseIds), ...newUniverseIdsDeduped]
+  console.log(`[fetch-roblox] Fetching metadata for ${allUniverseIds.length} IDs (${existingUniverseIds.size} existing + ${newUniverseIdsDeduped.length} new)`)
   const gamesData = await fetchUniversesBatch(allUniverseIds)
   const gameMap = new Map(gamesData.map(g => [String(g.id), g]))
+  console.log(`[fetch-roblox] gameMap has ${gameMap.size} entries`)
 
   const refreshed: string[] = []
   const inserted:  string[] = []

@@ -257,7 +257,7 @@ async function handler(req: NextRequest): Promise<NextResponse> {
     ...Array.from(discoveredUniverseIds),
   ]
   // Deduplicate
-  const newUniverseIdsDeduped = [...new Set(newUniverseIds)].slice(0, MAX_INSERTS_PER_RUN)
+  const newUniverseIdsDeduped = Array.from(new Set(newUniverseIds)).slice(0, MAX_INSERTS_PER_RUN)
 
   // ── Batch-fetch metadata for all IDs (existing + new) ───────────────────────
   const allUniverseIds = [...Array.from(existingUniverseIds), ...newUniverseIdsDeduped]

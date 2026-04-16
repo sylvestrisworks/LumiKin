@@ -1,6 +1,6 @@
 'use client'
 
-import Link from '@/navigation'
+import { Link } from '@/navigation'
 import { useTranslations } from 'next-intl'
 import { curascoreBg, esrbToAge, ageBadgeColor } from '@/lib/ui'
 import type { GameSummary } from '@/types/game'

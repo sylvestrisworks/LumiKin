@@ -19,8 +19,9 @@ export const maxDuration = 300
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const MAX_DEBATES_PER_RUN = 15
-const DELAY_MS            = 500
+const MAX_DEBATES_PER_RUN = 8
+const DELAY_MS            = 300
+const BUDGET_MS           = 240_000
 const BEDROCK_MODEL       = 'us.anthropic.claude-sonnet-4-5-20250929-v1:0'
 const BEDROCK_URL         = `https://bedrock-runtime.us-east-1.amazonaws.com/model/${BEDROCK_MODEL}/invoke`
 const CRITIC_WEIGHT       = 0.60
@@ -309,8 +310,13 @@ export async function GET(req: NextRequest) {
     const debated:  string[] = []
     const skipped:  string[] = []
     const errors:   string[] = []
+    const startedAt = Date.now()
 
     for (const { game, curascore } of candidates) {
+      if (Date.now() - startedAt > BUDGET_MS) {
+        console.log('[debate-games] Budget reached — stopping early')
+        break
+      }
       try {
         await sleep(DELAY_MS)
         console.log(`[debate-games] Debating: ${game.title} (curascore ${curascore})`)

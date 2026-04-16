@@ -48,8 +48,12 @@ async function translateToLocale(
   if (Object.keys(toTranslate).length === 0) return null
 
   const prompt = `Translate the following game review content from English to ${LANGUAGE_NAMES[locale]}.
-Return ONLY a valid JSON object with the same keys as the input. Keep the parent-friendly, informative tone.
-Do not add explanations or markdown — just the JSON object.
+
+Rules:
+- Return ONLY a valid JSON object with the same keys as the input
+- Keep the parent-friendly, informative tone
+- Do NOT translate game titles, character names, brand names, or developer/publisher names — keep those exactly as-is
+- Do not add explanations or markdown — just the JSON object
 
 Input:
 ${JSON.stringify(toTranslate, null, 2)}`

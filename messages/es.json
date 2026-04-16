@@ -632,7 +632,8 @@
     "privacyRisk": "Riesgo de privacidad",
     "recommended": "Recomendado: {label}",
     "playingNow": "{count} jugando ahora",
-    "upToPlayers": "Hasta {count}/servidor"
+    "upToPlayers": "Hasta {count}/servidor",
+    "carouselTitle": "Popular en Roblox"
   },
   "profileManager": {
     "editProfile": "Editar {name}",

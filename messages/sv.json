@@ -645,7 +645,8 @@
     "privacyRisk": "Integritetsrisk",
     "recommended": "Rekommenderat: {label}",
     "playingNow": "{count} spelar nu",
-    "upToPlayers": "Upp till {count}/server"
+    "upToPlayers": "Upp till {count}/server",
+    "carouselTitle": "Populärt på Roblox"
   },
   "profileManager": {
     "editProfile": "Redigera {name}",

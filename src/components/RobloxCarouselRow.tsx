@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import Link from 'next/link'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { curascoreBg } from '@/lib/ui'
 import type { ExperienceSummary } from '@/components/ExperienceCard'
 
@@ -82,14 +82,14 @@ function RobloxTile({ exp }: { exp: ExperienceSummary }) {
 
 // ─── Arrow button — identical to CarouselRow ─────────────────────────────────
 
-function Arrow({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => void }) {
+function Arrow({ dir, onClick, label }: { dir: 'left' | 'right'; onClick: () => void; label: string }) {
   return (
     <button
       onClick={onClick}
-      aria-label={dir === 'left' ? 'Scroll left' : 'Scroll right'}
+      aria-label={label}
       className={`absolute top-0 bottom-3 z-10 hidden sm:flex items-center
         ${dir === 'left' ? 'left-0 justify-start pl-1' : 'right-0 justify-end pr-1'}
-        opacity-0 group-hover:opacity-100 transition-opacity`}
+        transition-opacity`}
     >
       <span className="w-8 h-8 rounded-full bg-white/95 dark:bg-slate-800/95 shadow-md border border-slate-200 dark:border-slate-600 flex items-center justify-center text-lg text-slate-600 dark:text-slate-300 hover:text-indigo-700 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-500 transition-colors select-none leading-none">
         {dir === 'left' ? '‹' : '›'}
@@ -103,7 +103,8 @@ function Arrow({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => void })
 export default function RobloxCarouselRow({ experiences }: { experiences: ExperienceSummary[] }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const locale = useLocale()
-
+  const t  = useTranslations('roblox')
+  const tc = useTranslations('carousel')
 
   function scroll(dir: 'left' | 'right') {
     scrollRef.current?.scrollBy({ left: dir === 'right' ? 300 : -300, behavior: 'smooth' })
@@ -118,19 +119,19 @@ export default function RobloxCarouselRow({ experiences }: { experiences: Experi
           <span className="w-5 h-5 rounded-md bg-red-100 dark:bg-red-900/40 border border-red-200 dark:border-red-800 flex items-center justify-center shrink-0">
             <span className="text-[10px] font-black text-red-500 leading-none">R</span>
           </span>
-          <span>Popular on Roblox</span>
+          <span>{t('carouselTitle')}</span>
         </h2>
         <Link
           href={`/${locale}/game/roblox`}
           className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors shrink-0"
         >
-          See all
+          {tc('seeAll')}
         </Link>
       </div>
 
       <div className="relative group">
-        <Arrow dir="left"  onClick={() => scroll('left')}  />
-        <Arrow dir="right" onClick={() => scroll('right')} />
+        <Arrow dir="left"  onClick={() => scroll('left')}  label={tc('scrollLeft')}  />
+        <Arrow dir="right" onClick={() => scroll('right')} label={tc('scrollRight')} />
 
         <div
           ref={scrollRef}

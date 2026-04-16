@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { eq, and, ne, isNotNull, desc, sql } from 'drizzle-orm'
+import { eq, and, or, ne, isNotNull, desc, sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { games, gameScores, reviews, darkPatterns, complianceStatus, userGames, childProfiles } from '@/lib/db/schema'
 import GameCard from '@/components/GameCard'
@@ -241,14 +241,10 @@ export default async function GamePage({ params }: Props) {
 
   // Similar games — same genre, scored, exclude self
   const genreList = data.game.genres.slice(0, 3)
-  // Build per-genre containment checks with OR — avoids array param issues in Drizzle
-  const genreCondition = genreList.length > 0
-    ? genreList
-        .map(g => sql`${games.genres} @> jsonb_build_array(${g})`)
-        .reduce((a, b) => sql`(${a} OR ${b})`)
-    : sql`false`
-  const similarGames: GameSummary[] = genreList.length > 0
-    ? (await db
+  let similarGames: GameSummary[] = []
+  if (genreList.length > 0) {
+    try {
+      const rows = await db
         .select({
           slug:                     games.slug,
           title:                    games.title,
@@ -268,11 +264,11 @@ export default async function GamePage({ params }: Props) {
         .where(and(
           ne(games.slug, slug),
           isNotNull(gameScores.curascore),
-          genreCondition,
+          or(...genreList.map(g => sql`${games.genres} @> jsonb_build_array(${g})`)),
         ))
         .orderBy(desc(gameScores.curascore))
         .limit(6)
-      ).map(r => ({
+      similarGames = rows.map(r => ({
         slug:                     r.slug,
         title:                    r.title,
         developer:                r.developer,
@@ -286,7 +282,10 @@ export default async function GamePage({ params }: Props) {
         timeRecommendationMinutes: r.timeRecommendationMinutes ?? null,
         timeRecommendationColor:  (r.timeRecommendationColor as GameSummary['timeRecommendationColor']) ?? null,
       }))
-    : []
+    } catch (e) {
+      console.error('[similar-games] query failed:', e)
+    }
+  }
 
   const { game, scores } = data
 

@@ -241,6 +241,11 @@ async function handler(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ universeId, hint: `Add "${universeId}" to CURATED_UNIVERSE_IDS or it will be picked up by the crawler` })
   }
 
+  // Bulk mode: ?bulk=true — lifts per-run caps, crawls all existing games for discovery
+  const isBulk = req.nextUrl.searchParams.get('bulk') === 'true'
+  const discoverySample  = isBulk ? 9999 : DISCOVERY_SAMPLE
+  const maxInserts       = isBulk ? 500  : MAX_INSERTS_PER_RUN
+
   // Find Roblox platform row
   const [roblox] = await db.select({ id: games.id }).from(games).where(eq(games.slug, 'roblox')).limit(1)
   if (!roblox) return NextResponse.json({ error: 'Roblox platform row not found in games table' }, { status: 500 })
@@ -265,7 +270,7 @@ async function handler(req: NextRequest): Promise<NextResponse> {
   if (existing.length > 0) {
     // Pick a random sample of existing experiences to crawl recommendations for
     const shuffled = [...existing].sort(() => Math.random() - 0.5)
-    const sample = shuffled.slice(0, DISCOVERY_SAMPLE)
+    const sample = shuffled.slice(0, discoverySample)
 
     await Promise.all(
       sample.map(async exp => {
@@ -285,7 +290,7 @@ async function handler(req: NextRequest): Promise<NextResponse> {
     ...Array.from(discoveredUniverseIds),
   ]
   // Deduplicate
-  const newUniverseIdsDeduped = Array.from(new Set(newUniverseIds)).slice(0, MAX_INSERTS_PER_RUN)
+  const newUniverseIdsDeduped = Array.from(new Set(newUniverseIds)).slice(0, maxInserts)
 
   // ── Batch-fetch metadata for all IDs (existing + new) ───────────────────────
   const allUniverseIds = [...Array.from(existingUniverseIds), ...newUniverseIdsDeduped]

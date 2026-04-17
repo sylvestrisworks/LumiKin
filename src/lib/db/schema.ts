@@ -30,6 +30,7 @@ export const games = pgTable('games', {
 
   // From RAWG/Steam
   metacriticScore: integer('metacritic_score'),
+  rawgAdded: integer('rawg_added'),              // total RAWG library adds — popularity signal
   avgPlaytimeHours: real('avg_playtime_hours'),
   backgroundImage: text('background_image'),
 

@@ -92,6 +92,7 @@ export function mapSummaryToInsert(game: RawgGameSummary): GameInsert {
     title:              game.name,
     backgroundImage:    game.background_image,
     metacriticScore:    game.metacritic ?? null,
+    rawgAdded:          game.added > 0 ? game.added : null,
     avgPlaytimeHours:   game.playtime > 0 ? game.playtime : null,
     releaseDate:        game.released ? new Date(game.released) : null,
     genres:             game.genres.map((g) => g.name),

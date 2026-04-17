@@ -38,6 +38,7 @@ export type RawgGameSummary = {
   tags: RawgTag[] | null
   esrb_rating: RawgEsrbRating
   ratings_count: number
+  added: number           // total RAWG users who added this game — best popularity proxy
 }
 
 // Returned by the single-game detail endpoint (/games/{id})

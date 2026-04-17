@@ -43,6 +43,7 @@ const BASE_SELECT = {
   esrbRating:      games.esrbRating,
   backgroundImage: games.backgroundImage,
   metacriticScore: games.metacriticScore,
+  rawgAdded:       games.rawgAdded,
   curascore:       gameScores.curascore,
   timeRecommendationMinutes: gameScores.timeRecommendationMinutes,
   timeRecommendationColor:   gameScores.timeRecommendationColor,
@@ -98,7 +99,11 @@ async function getCarouselRows(platforms: string[], age?: string, locale = 'en')
     gte(gameScores.curascore, 55),
   )
 
-  const [topRated, coopPlay, lowRisk, highBenefit, teamwork, vrGames, beginnerGames, newAndGood] = await Promise.all([
+  // "Trending" = high rawgAdded + released in the last 18 months
+  const trendingCutoff = new Date()
+  trendingCutoff.setMonth(trendingCutoff.getMonth() - 18)
+
+  const [topRated, coopPlay, lowRisk, highBenefit, teamwork, vrGames, beginnerGames, newAndGood, popular, trending] = await Promise.all([
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base()).orderBy(desc(gameScores.curascore)).limit(12),
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base(gte(gameScores.socialEmotionalScore, 0.5))).orderBy(desc(gameScores.socialEmotionalScore)).limit(12),
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base(lte(gameScores.ris, 0.3))).orderBy(desc(gameScores.curascore)).limit(12),
@@ -107,6 +112,10 @@ async function getCarouselRows(platforms: string[], age?: string, locale = 'en')
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(isNotNull(gameScores.curascore), eq(games.isVr, true), ageFilter)).orderBy(desc(gameScores.curascore)).limit(12),
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(beginnerBase).orderBy(desc(gameScores.curascore)).limit(12),
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base(gte(gameScores.curascore, 60))).orderBy(desc(games.releaseDate)).limit(12),
+    // Popular: most RAWG library adds overall — proxy for all-time popularity
+    db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(base(), isNotNull(games.rawgAdded))).orderBy(desc(games.rawgAdded)).limit(12),
+    // Trending: high rawgAdded but released recently — genuine momentum
+    db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(base(), isNotNull(games.rawgAdded), gte(games.releaseDate, trendingCutoff))).orderBy(desc(games.rawgAdded)).limit(12),
   ])
 
   const browseBase = `/${locale}/browse`
@@ -115,14 +124,16 @@ async function getCarouselRows(platforms: string[], age?: string, locale = 'en')
   const baseParams = `${ageParam}${platformParam}`
 
   const rows: CarouselRowData[] = [
-    { id: 'newgood',  title: 'New & Worth Playing',   emoji: '✨', browseHref: `${browseBase}?sort=newest${baseParams}`,              games: newAndGood.map(toSummary)    },
-    { id: 'top',      title: 'The Highest Curascores', emoji: '⭐', browseHref: `${browseBase}?sort=curascore${baseParams}`,           games: topRated.map(toSummary)      },
-    { id: 'coop',     title: 'Family Co-Op',           emoji: '👨‍👩‍👧', browseHref: `${browseBase}?benefits=teamwork${baseParams}`,        games: coopPlay.map(toSummary)      },
-    { id: 'safe',     title: 'Safe & Stress-Free',     emoji: '✅', browseHref: `${browseBase}?risk=low${baseParams}`,                 games: lowRisk.map(toSummary)       },
-    { id: 'brain',    title: 'Sneaky Smart Games',     emoji: '🧠', browseHref: `${browseBase}?benefits=problem-solving${baseParams}`, games: highBenefit.map(toSummary)   },
-    { id: 'teamwork', title: 'Team up',                emoji: '🤝', browseHref: `${browseBase}?benefits=teamwork${baseParams}`,        games: teamwork.map(toSummary)      },
-    { id: 'vr',       title: 'VR & AR',                emoji: '🥽', browseHref: `${browseBase}?platforms=VR${ageParam}`,              games: vrGames.map(toSummary)       },
-    { id: 'beginner', title: 'New to gaming',          emoji: '🎯', browseHref: `${browseBase}?age=E10&risk=low${platformParam}`,     games: beginnerGames.map(toSummary) },
+    { id: 'popular',  title: 'Most Popular Right Now', emoji: '🔥', browseHref: `${browseBase}?sort=popular${baseParams}`,            games: popular.map(toSummary)       },
+    { id: 'trending', title: 'Trending',               emoji: '📈', browseHref: `${browseBase}?sort=trending${baseParams}`,           games: trending.map(toSummary)      },
+    { id: 'newgood',  title: 'New & Worth Playing',    emoji: '✨', browseHref: `${browseBase}?sort=newest${baseParams}`,             games: newAndGood.map(toSummary)    },
+    { id: 'top',      title: 'The Highest Curascores', emoji: '⭐', browseHref: `${browseBase}?sort=curascore${baseParams}`,          games: topRated.map(toSummary)      },
+    { id: 'coop',     title: 'Family Co-Op',           emoji: '👨‍👩‍👧', browseHref: `${browseBase}?benefits=teamwork${baseParams}`,       games: coopPlay.map(toSummary)      },
+    { id: 'safe',     title: 'Safe & Stress-Free',     emoji: '✅', browseHref: `${browseBase}?risk=low${baseParams}`,                games: lowRisk.map(toSummary)       },
+    { id: 'brain',    title: 'Sneaky Smart Games',     emoji: '🧠', browseHref: `${browseBase}?benefits=problem-solving${baseParams}`,games: highBenefit.map(toSummary)   },
+    { id: 'teamwork', title: 'Team up',                emoji: '🤝', browseHref: `${browseBase}?benefits=teamwork${baseParams}`,       games: teamwork.map(toSummary)      },
+    { id: 'vr',       title: 'VR & AR',                emoji: '🥽', browseHref: `${browseBase}?platforms=VR${ageParam}`,             games: vrGames.map(toSummary)       },
+    { id: 'beginner', title: 'New to gaming',          emoji: '🎯', browseHref: `${browseBase}?age=E10&risk=low${platformParam}`,    games: beginnerGames.map(toSummary) },
   ]
 
   return rows.filter(r => r.games.length > 0)
@@ -191,6 +202,8 @@ export default async function HomePage({ params, searchParams }: Props) {
   ])
 
   const CAROUSEL_TITLES: Record<string, string> = {
+    popular:  t('carouselPopular'),
+    trending: t('carouselTrending'),
     top:      t('carouselTop'),
     coop:     t('carouselCoop'),
     safe:     t('carouselSafe'),

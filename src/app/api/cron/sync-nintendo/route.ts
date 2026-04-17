@@ -51,20 +51,22 @@ export async function GET(req: NextRequest) {
       try {
         const aHdr  = JSON.parse(Buffer.from(accessToken.split('.')[0], 'base64url').toString())
         const aData = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64url').toString())
-        const iHdr  = idToken ? JSON.parse(Buffer.from(idToken.split('.')[0], 'base64url').toString()) : null
         const iData = idToken ? JSON.parse(Buffer.from(idToken.split('.')[1], 'base64url').toString()) : null
         diagnostics.push({
           naId:          freshNaId,
-          accessHdrTyp:  aHdr.typ,
-          accessHdrAlg:  aHdr.alg,
+          accessAlg:     aHdr.alg,
+          accessTyp:     aHdr.typ,
           accessAud:     aData.aud,
+          accessIss:     aData.iss,
           accessScope:   aData.scope,
-          idHdrTyp:      iHdr?.typ,
+          idTyp:         iData?.typ,
+          idAud:         iData?.aud,
+          idIss:         iData?.iss,
           idScope:       iData?.scope,
           hasIdToken:    !!idToken,
-          usingToken:    'access_token',
+          usingToken:    idToken ? 'id_token' : 'access_token',
         })
-      } catch { diagnostics.push({ naId: freshNaId, error: 'decode-failed', usingToken: 'access_token' }) }
+      } catch { diagnostics.push({ naId: freshNaId, error: 'decode-failed' }) }
       if (freshNaId !== conn.naId) {
         console.warn(`[sync-nintendo] naId mismatch: stored=${conn.naId} fresh=${freshNaId}`)
       }

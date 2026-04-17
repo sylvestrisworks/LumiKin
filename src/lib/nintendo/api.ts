@@ -120,11 +120,11 @@ function moonHeaders(accessToken: string) {
     'X-Moon-Os':                  'ANDROID',
     'X-Moon-App-Version':         '1.21.0',
     'X-Moon-App-Version-Code':    '294',
-    'X-Moon-App-Area':            'X',
     'X-Moon-App-Language':        'en-US',
     'X-Moon-App-Display-Version': '1.21.0',
     'Accept':                     'application/json',
     'Accept-Language':            'en-US',
+    'Content-Type':               'application/json; charset=utf-8',
   }
 }
 

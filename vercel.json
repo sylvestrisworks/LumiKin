@@ -1,9 +1,4 @@
 {
   "regions": ["arn1"],
-  "crons": [
-    {
-      "path": "/api/cron/ingest-games",
-      "schedule": "0 2 * * *"
-    }
-  ]
+  "crons": []
 }

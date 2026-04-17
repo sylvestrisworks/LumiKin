@@ -10,6 +10,7 @@ import PlatformPicker from '@/components/PlatformPicker'
 import AgePicker from '@/components/AgePicker'
 import CarouselRow from '@/components/CarouselRow'
 import RobloxCarouselRow from '@/components/RobloxCarouselRow'
+import FortniteCarouselRow from '@/components/FortniteCarouselRow'
 import { type ExperienceSummary } from '@/components/ExperienceCard'
 import type { GameSummary } from '@/types/game'
 
@@ -148,26 +149,45 @@ export default async function HomePage({ params, searchParams }: Props) {
 
   const age = typeof sp.age === 'string' && sp.age in ESRB_FOR_AGE ? sp.age : undefined
 
-  const [carousels, stats, robloxExperiences] = await Promise.all([
+  // Find platform IDs upfront to filter carousels correctly
+  const [robloxRow, fortniteRow] = await Promise.all([
+    db.select({ id: games.id }).from(games).where(eq(games.slug, 'roblox')).limit(1).then(r => r[0] ?? null),
+    db.select({ id: games.id }).from(games).where(eq(games.slug, 'fortnite-creative')).limit(1).then(r => r[0] ?? null),
+  ])
+
+  const experienceSelect = {
+    slug:          platformExperiences.slug,
+    title:         platformExperiences.title,
+    thumbnailUrl:  platformExperiences.thumbnailUrl,
+    creatorName:   platformExperiences.creatorName,
+    activePlayers: platformExperiences.activePlayers,
+    visitCount:    platformExperiences.visitCount,
+    curascore:     experienceScores.curascore,
+    timeRecommendationMinutes: experienceScores.timeRecommendationMinutes,
+    recommendedMinAge:         experienceScores.recommendedMinAge,
+    strangerRisk:              experienceScores.strangerRisk,
+    monetizationScore:         experienceScores.monetizationScore,
+  }
+
+  const [carousels, stats, robloxExperiences, fortniteExperiences] = await Promise.all([
     getCarouselRows(platforms, age, locale),
     getStats(),
-    db.select({
-      slug:          platformExperiences.slug,
-      title:         platformExperiences.title,
-      thumbnailUrl:  platformExperiences.thumbnailUrl,
-      creatorName:   platformExperiences.creatorName,
-      activePlayers: platformExperiences.activePlayers,
-      visitCount:    platformExperiences.visitCount,
-      curascore:     experienceScores.curascore,
-      timeRecommendationMinutes: experienceScores.timeRecommendationMinutes,
-      recommendedMinAge:         experienceScores.recommendedMinAge,
-      strangerRisk:              experienceScores.strangerRisk,
-      monetizationScore:         experienceScores.monetizationScore,
-    })
-    .from(platformExperiences)
-    .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
-    .orderBy(desc(platformExperiences.activePlayers))
-    .limit(8),
+    robloxRow
+      ? db.select(experienceSelect)
+          .from(platformExperiences)
+          .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
+          .where(eq(platformExperiences.platformId, robloxRow.id))
+          .orderBy(desc(platformExperiences.activePlayers))
+          .limit(8)
+      : Promise.resolve([]),
+    fortniteRow
+      ? db.select(experienceSelect)
+          .from(platformExperiences)
+          .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
+          .where(eq(platformExperiences.platformId, fortniteRow.id))
+          .orderBy(desc(experienceScores.curascore))
+          .limit(8)
+      : Promise.resolve([]),
   ])
 
   const CAROUSEL_TITLES: Record<string, string> = {
@@ -290,6 +310,9 @@ export default async function HomePage({ params, searchParams }: Props) {
 
         {/* Roblox section */}
         <RobloxCarouselRow experiences={robloxExperiences as ExperienceSummary[]} />
+
+        {/* Fortnite Creative section */}
+        <FortniteCarouselRow experiences={fortniteExperiences as ExperienceSummary[]} />
 
         {/* About */}
         <section className="border-t border-slate-200 dark:border-slate-700 py-14 pb-16">

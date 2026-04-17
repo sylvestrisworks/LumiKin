@@ -512,6 +512,39 @@ export const experienceScores = pgTable('experience_scores', {
 // ============================================
 
 // ============================================
+// EPIC GAMES INTEGRATION
+// ============================================
+
+export const epicConnections = pgTable('epic_connections', {
+  id:            serial('id').primaryKey(),
+  userId:        text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }).unique(),
+  epicAccountId: varchar('epic_account_id', { length: 50 }).notNull().unique(),
+  displayName:   varchar('display_name', { length: 255 }),
+  accessToken:   text('access_token').notNull(),
+  refreshToken:  text('refresh_token').notNull(),
+  expiresAt:     timestamp('expires_at').notNull(),
+  lastSyncedAt:  timestamp('last_synced_at'),
+  createdAt:     timestamp('created_at').defaultNow(),
+})
+
+// Raw Epic entitlement records (catalog items the user owns)
+export const epicLibrary = pgTable('epic_library', {
+  id:            serial('id').primaryKey(),
+  userId:        text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  epicAccountId: varchar('epic_account_id', { length: 50 }).notNull(),
+  catalogItemId: varchar('catalog_item_id', { length: 100 }).notNull(),
+  namespace:     varchar('namespace', { length: 100 }).notNull(),
+  appName:       varchar('app_name', { length: 255 }),
+  title:         varchar('title', { length: 500 }),
+  // Matched game in our catalog (null if no match found)
+  gameId:        integer('game_id').references(() => games.id, { onDelete: 'set null' }),
+  createdAt:     timestamp('created_at').defaultNow(),
+}, (table) => ({
+  uniqueEntry: uniqueIndex('epic_library_unique').on(table.userId, table.catalogItemId),
+  userIdx:     index('epic_library_user_idx').on(table.userId),
+}))
+
+// ============================================
 // NINTENDO PARENTAL CONTROLS INTEGRATION
 // ============================================
 

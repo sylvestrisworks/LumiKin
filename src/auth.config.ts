@@ -9,6 +9,8 @@ import Credentials from 'next-auth/providers/credentials'
 export const authConfig = {
   providers: [
     Google,
+    // Epic — minimal config for edge middleware (no fetch calls)
+    { id: 'epic', name: 'Epic Games', type: 'oauth' },
     Credentials({
       name: 'LumiKin Reviewer',
       credentials: {

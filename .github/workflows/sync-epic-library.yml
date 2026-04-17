@@ -1,0 +1,16 @@
+name: Sync Epic Library
+
+on:
+  schedule:
+    - cron: '30 3 * * *'   # 03:30 UTC daily (after Nintendo sync at 04:30)
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger sync-epic-library cron
+        run: |
+          curl -s -f -X GET \
+            "${{ secrets.APP_URL }}/api/cron/sync-epic-library" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

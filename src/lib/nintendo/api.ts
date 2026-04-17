@@ -114,17 +114,10 @@ export function getNaId(accessToken: string): string {
 // ─── Moon API helpers ─────────────────────────────────────────────────────────
 
 function moonHeaders(accessToken: string) {
+  // Minimal headers to isolate invalid_headers root cause
   return {
-    'Authorization':              `Bearer ${accessToken}`,
-    'X-Moon-App-Id':              'com.nintendo.znma',
-    'X-Moon-Os':                  'ANDROID',
-    'X-Moon-App-Version':         '1.21.0',
-    'X-Moon-App-Version-Code':    '294',
-    'X-Moon-App-Language':        'en-US',
-    'X-Moon-App-Display-Version': '1.21.0',
-    'Accept':                     'application/json',
-    'Accept-Language':            'en-US',
-    'User-Agent':                 'moon_ANDROID/1.21.0 (com.nintendo.znma; build:294; Android/14; ONEPLUS A5000)',
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept':        'application/json',
   }
 }
 

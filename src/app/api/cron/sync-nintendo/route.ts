@@ -46,10 +46,11 @@ export async function GET(req: NextRequest) {
 
       const { accessToken } = await getAccessToken(conn.sessionToken)
       const freshNaId = getNaId(accessToken)
+      const tokenParts = accessToken.split('.')
+      console.log(`[sync-nintendo] token parts=${tokenParts.length} naId=${freshNaId} stored=${conn.naId}`)
       if (freshNaId !== conn.naId) {
         console.warn(`[sync-nintendo] naId mismatch: stored=${conn.naId} fresh=${freshNaId}`)
       }
-      console.log(`[sync-nintendo] Using naId ${freshNaId} (stored: ${conn.naId})`)
       const devices         = await getDevices(freshNaId, accessToken)
 
       if (devices.length === 0) {

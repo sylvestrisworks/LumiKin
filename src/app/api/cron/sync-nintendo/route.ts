@@ -68,8 +68,9 @@ export async function GET(req: NextRequest) {
       if (freshNaId !== conn.naId) {
         console.warn(`[sync-nintendo] naId mismatch: stored=${conn.naId} fresh=${freshNaId}`)
       }
-      // Use access_token — id_token is OIDC identity only, access_token carries the API scopes
-      const moonToken = accessToken
+      // id_token has typ:"id_token" which Moon API requires; access_token has no typ → invalid_headers
+      // 403 with id_token means no Parental Controls configured, not a token issue
+      const moonToken = idToken ?? accessToken
       const devices   = await getDevices(freshNaId, moonToken)
 
       if (devices.length === 0) {

@@ -129,6 +129,7 @@ function moonHeaders(accessToken: string) {
     'X-Moon-App-Display-Version': '1.21.0',
     'Accept':                     'application/json',
     'Accept-Language':            'en-US',
+    'User-Agent':                 'moon_ANDROID/1.21.0',
   }
 }
 

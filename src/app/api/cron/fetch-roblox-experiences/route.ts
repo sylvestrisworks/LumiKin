@@ -253,13 +253,14 @@ async function handler(req: NextRequest): Promise<NextResponse> {
   // ── Load all existing experiences ───────────────────────────────────────────
   const existing = await db
     .select({
-      id:          platformExperiences.id,
-      universeId:  platformExperiences.universeId,
-      slug:        platformExperiences.slug,
-      title:       platformExperiences.title,
-      description: platformExperiences.description,
-      genre:       platformExperiences.genre,
-      maxPlayers:  platformExperiences.maxPlayers,
+      id:           platformExperiences.id,
+      universeId:   platformExperiences.universeId,
+      slug:         platformExperiences.slug,
+      title:        platformExperiences.title,
+      description:  platformExperiences.description,
+      genre:        platformExperiences.genre,
+      maxPlayers:   platformExperiences.maxPlayers,
+      thumbnailUrl: platformExperiences.thumbnailUrl,
     })
     .from(platformExperiences)
 
@@ -302,6 +303,31 @@ async function handler(req: NextRequest): Promise<NextResponse> {
   const refreshed: string[] = []
   const inserted:  string[] = []
   const errors:    string[] = []
+
+  // ── Restore missing thumbnails for existing experiences ──────────────────────
+  const missingThumbIds = existing
+    .filter(e => !e.thumbnailUrl && e.universeId)
+    .map(e => e.universeId as string)
+
+  let existingThumbMap = new Map<string, string>()
+  if (missingThumbIds.length > 0) {
+    console.log(`[fetch-roblox] Fetching missing thumbnails for ${missingThumbIds.length} existing experiences`)
+    existingThumbMap = await fetchThumbnailsBatch(missingThumbIds)
+    console.log(`[fetch-roblox] Restored ${existingThumbMap.size} missing thumbnails`)
+
+    for (const exp of existing) {
+      if (!exp.universeId || exp.thumbnailUrl) continue
+      const url = existingThumbMap.get(exp.universeId)
+      if (!url) continue
+      try {
+        await db.update(platformExperiences)
+          .set({ thumbnailUrl: url, updatedAt: new Date() })
+          .where(eq(platformExperiences.id, exp.id))
+      } catch (err) {
+        console.error(`[fetch-roblox] Thumbnail restore error for ${exp.universeId}:`, err)
+      }
+    }
+  }
 
   // ── Refresh existing experiences ─────────────────────────────────────────────
   for (const exp of existing) {
@@ -405,12 +431,13 @@ async function handler(req: NextRequest): Promise<NextResponse> {
   }
 
   return NextResponse.json({
-    existing:   existing.length,
-    refreshed:  refreshed.length,
-    discovered: discoveredUniverseIds.size,
-    inserted:   inserted.length,
-    newGames:   inserted,
-    errors:     errors.length,
+    existing:          existing.length,
+    thumbnailsRestored: existingThumbMap.size,
+    refreshed:         refreshed.length,
+    discovered:        discoveredUniverseIds.size,
+    inserted:          inserted.length,
+    newGames:          inserted,
+    errors:            errors.length,
     ageMarked,
     _debug: {
       gameMapSize:    gameMap.size,

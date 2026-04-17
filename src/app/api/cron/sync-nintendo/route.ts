@@ -45,7 +45,12 @@ export async function GET(req: NextRequest) {
       await sleep(200)
 
       const { accessToken } = await getAccessToken(conn.sessionToken)
-      const devices         = await getDevices(conn.naId, accessToken)
+      const freshNaId = getNaId(accessToken)
+      if (freshNaId !== conn.naId) {
+        console.warn(`[sync-nintendo] naId mismatch: stored=${conn.naId} fresh=${freshNaId}`)
+      }
+      console.log(`[sync-nintendo] Using naId ${freshNaId} (stored: ${conn.naId})`)
+      const devices         = await getDevices(freshNaId, accessToken)
 
       if (devices.length === 0) {
         console.log(`[sync-nintendo] No devices for naId ${conn.naId}`)

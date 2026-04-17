@@ -130,7 +130,10 @@ function moonHeaders(accessToken: string) {
 
 async function moonGet<T>(path: string, accessToken: string): Promise<T> {
   const res = await fetch(`${MOON_BASE}${path}`, { headers: moonHeaders(accessToken) })
-  if (!res.ok) throw new Error(`Moon API ${path} → ${res.status}`)
+  if (!res.ok) {
+    const body = await res.text().catch(() => '')
+    throw new Error(`Moon API ${path} → ${res.status}: ${body}`)
+  }
   return res.json() as Promise<T>
 }
 

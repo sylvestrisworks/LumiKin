@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm'
 import { curascoreBg } from '@/lib/ui'
 import { calcAge } from '@/lib/age'
 import ProfileManager from '@/components/ProfileManager'
-import NintendoPlaytimeWidget from '@/components/NintendoPlaytimeWidget'
+import PlatformConnectionsWidget from '@/components/PlatformConnectionsWidget'
 import { getLocale, getTranslations } from 'next-intl/server'
 
 export const metadata = { title: 'Family Dashboard — LumiKin' }
@@ -107,8 +107,8 @@ export default async function FamilyDashboard() {
           </div>
         </div>
 
-        {/* Nintendo Switch play time */}
-        <NintendoPlaytimeWidget />
+        {/* Platform connections */}
+        <PlatformConnectionsWidget />
 
         {/* Profile manager */}
         <ProfileManager

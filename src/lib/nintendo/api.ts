@@ -81,7 +81,7 @@ export async function exchangeCode(sessionTokenCode: string, verifier: string): 
 }
 
 /** Exchange a session_token for an access_token (expires in ~900s) */
-export async function getAccessToken(sessionToken: string): Promise<{ accessToken: string; expiresAt: Date }> {
+export async function getAccessToken(sessionToken: string): Promise<{ accessToken: string; idToken: string | null; expiresAt: Date }> {
   // Nintendo token endpoint requires form-encoded body (not JSON)
   const res = await fetch(NA_TOKEN, {
     method: 'POST',
@@ -100,10 +100,11 @@ export async function getAccessToken(sessionToken: string): Promise<{ accessToke
     const body = await res.text().catch(() => '')
     throw new Error(`Nintendo access_token exchange failed: ${res.status} ${body}`)
   }
-  const data = await res.json() as { access_token: string; expires_in: number }
+  const data = await res.json() as { access_token: string; id_token?: string; expires_in: number }
   if (!data.access_token) throw new Error('No access_token in response')
   return {
     accessToken: data.access_token,
+    idToken:     data.id_token ?? null,
     expiresAt:   new Date(Date.now() + data.expires_in * 1000),
   }
 }

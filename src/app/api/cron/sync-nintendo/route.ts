@@ -39,23 +39,32 @@ export async function GET(req: NextRequest) {
 
   let synced = 0
   const errors: Array<{ naId: string; message: string }> = []
-  const diagnostics: Array<{ naId: string; tokenAud?: unknown; tokenScope?: string }> = []
+  const diagnostics: Array<Record<string, unknown>> = []
 
   for (const conn of connections) {
     try {
       await sleep(200)
 
-      const { accessToken } = await getAccessToken(conn.sessionToken)
+      const { accessToken, idToken } = await getAccessToken(conn.sessionToken)
       const freshNaId = getNaId(accessToken)
-      // Capture JWT payload to diagnose token audience/scope issues
+      // Capture JWT payloads to diagnose which token Moon API needs
       try {
-        const payload = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64url').toString())
-        diagnostics.push({ naId: freshNaId, tokenAud: payload.aud, tokenScope: payload.scope })
+        const aPayload = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64url').toString())
+        const iPayload = idToken ? JSON.parse(Buffer.from(idToken.split('.')[1], 'base64url').toString()) : null
+        diagnostics.push({
+          naId: freshNaId,
+          tokenAud: aPayload.aud,
+          tokenScope: aPayload.scope,
+          idTokenAud: iPayload?.aud,
+          idTokenTyp: iPayload?.typ ?? aPayload?.typ,
+        } as typeof diagnostics[0])
       } catch { diagnostics.push({ naId: freshNaId, tokenAud: 'not-a-jwt' }) }
       if (freshNaId !== conn.naId) {
         console.warn(`[sync-nintendo] naId mismatch: stored=${conn.naId} fresh=${freshNaId}`)
       }
-      const devices         = await getDevices(freshNaId, accessToken)
+      // Try id_token first — some Nintendo services require it over access_token
+      const moonToken = idToken ?? accessToken
+      const devices   = await getDevices(freshNaId, moonToken)
 
       if (devices.length === 0) {
         console.log(`[sync-nintendo] No devices for naId ${conn.naId}`)
@@ -69,7 +78,7 @@ export async function GET(req: NextRequest) {
         const deviceName = device.label ?? null
         if (!deviceId) continue
 
-        const summaries = await getDailySummaries(deviceId, accessToken)
+        const summaries = await getDailySummaries(deviceId, moonToken)
 
         for (const summary of summaries) {
           const byApp = aggregatePlayTime(summary)

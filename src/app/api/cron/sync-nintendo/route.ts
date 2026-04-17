@@ -39,6 +39,7 @@ export async function GET(req: NextRequest) {
 
   let synced = 0
   const errors: Array<{ naId: string; message: string }> = []
+  const diagnostics: Array<{ naId: string; tokenAud?: unknown; tokenScope?: string }> = []
 
   for (const conn of connections) {
     try {
@@ -46,11 +47,11 @@ export async function GET(req: NextRequest) {
 
       const { accessToken } = await getAccessToken(conn.sessionToken)
       const freshNaId = getNaId(accessToken)
-      // Log JWT payload to diagnose token audience/scope issues
+      // Capture JWT payload to diagnose token audience/scope issues
       try {
         const payload = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64url').toString())
-        console.log(`[sync-nintendo] token aud=${JSON.stringify(payload.aud)} scope=${payload.scope} naId=${freshNaId}`)
-      } catch { console.log(`[sync-nintendo] token not a JWT, naId=${freshNaId}`) }
+        diagnostics.push({ naId: freshNaId, tokenAud: payload.aud, tokenScope: payload.scope })
+      } catch { diagnostics.push({ naId: freshNaId, tokenAud: 'not-a-jwt' }) }
       if (freshNaId !== conn.naId) {
         console.warn(`[sync-nintendo] naId mismatch: stored=${conn.naId} fresh=${freshNaId}`)
       }
@@ -109,5 +110,5 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ synced, errors: errors.length, errorDetails: errors })
+  return NextResponse.json({ synced, errors: errors.length, errorDetails: errors, diagnostics })
 }

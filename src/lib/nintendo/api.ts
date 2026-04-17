@@ -151,8 +151,21 @@ export type MoonDevice = {
 }
 
 export async function getDevices(naId: string, accessToken: string): Promise<MoonDevice[]> {
-  const data = await moonGet<{ items?: MoonDevice[]; [k: string]: unknown }>(`/users/${naId}/devices`, accessToken)
-  return data.items ?? (Array.isArray(data) ? data as MoonDevice[] : [])
+  // Try /users/me/devices first, fall back to /users/{naId}/devices
+  let meError: string | null = null
+  try {
+    const data = await moonGet<{ items?: MoonDevice[]; [k: string]: unknown }>('/users/me/devices', accessToken)
+    return data.items ?? (Array.isArray(data) ? data as MoonDevice[] : [])
+  } catch (e) {
+    meError = e instanceof Error ? e.message : String(e)
+  }
+  try {
+    const data = await moonGet<{ items?: MoonDevice[]; [k: string]: unknown }>(`/users/${naId}/devices`, accessToken)
+    return data.items ?? (Array.isArray(data) ? data as MoonDevice[] : [])
+  } catch (e) {
+    const naIdError = e instanceof Error ? e.message : String(e)
+    throw new Error(`/me: ${meError} | /${naId}: ${naIdError}`)
+  }
 }
 
 export type DevicePlayerTitle = {

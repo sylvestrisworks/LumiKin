@@ -384,20 +384,46 @@ export default async function LibraryPage({
         {/* Owned games */}
         {owned.length > 0 ? (
           <section>
-            <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-4">
-              {isFiltered
-                ? `${selectedChild!.name}'s ${t('owned').toLowerCase()} (${owned.length})`
-                : `${t('owned')} (${owned.length})`}
-            </h2>
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300">
+                {isFiltered
+                  ? `${selectedChild!.name}'s ${t('owned').toLowerCase()} (${owned.length})`
+                  : `${t('owned')} (${owned.length})`}
+              </h2>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-400 dark:text-slate-500 hidden sm:inline">
+                  Make sure Steam &rarr; Privacy Settings &rarr; Game details is set to <strong>Public</strong>
+                </span>
+                <ImportLibraryButton />
+              </div>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
               {owned.map(r => <GameCompactCard key={r.entryId} game={toSummary(r)} />)}
             </div>
           </section>
         ) : (
-          <div className="text-center py-16 text-slate-400">
-            <p className="text-4xl mb-3">🎮</p>
-            <p className="font-medium text-slate-600 dark:text-slate-400">{t('emptyOwned')}</p>
-            <p className="text-sm mt-1">{t('emptyOwnedSub')}</p>
+          <div className="max-w-md mx-auto py-6 space-y-3">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 space-y-4">
+              <div>
+                <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-base">{t('emptyOwned')}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{t('emptyOwnedSub')}</p>
+              </div>
+
+              {/* Privacy tip — visible by default, not collapsed */}
+              <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl px-4 py-3">
+                <p className="text-xs font-semibold text-amber-800 dark:text-amber-300 mb-1">
+                  First: make your Steam library public
+                </p>
+                <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
+                  Steam app &rarr; click your avatar &rarr; <strong>View my profile</strong> &rarr; <strong>Edit Profile</strong> &rarr; <strong>Privacy Settings</strong> &rarr; set <strong>Game details</strong> to <strong>Public</strong>
+                </p>
+              </div>
+
+              <ImportLibraryButton />
+            </div>
+            <p className="text-xs text-center text-slate-400 dark:text-slate-500">
+              Or browse the catalogue and use <strong>Add to Library</strong> on any game page
+            </p>
           </div>
         )}
 

@@ -11,11 +11,17 @@ export async function GET(req: NextRequest) {
   const session = await auth()
   const appUrl  = process.env.NEXTAUTH_URL ?? process.env.APP_URL ?? 'http://localhost:3000'
 
-  const code  = req.nextUrl.searchParams.get('code')
-  const error = req.nextUrl.searchParams.get('error')
+  const code          = req.nextUrl.searchParams.get('code')
+  const error         = req.nextUrl.searchParams.get('error')
+  const returnedState = req.nextUrl.searchParams.get('state')
+  const storedState   = req.cookies.get('epic_oauth_state')?.value
 
   if (error || !code) {
     return NextResponse.redirect(`${appUrl}/settings/epic?error=access_denied`)
+  }
+
+  if (!storedState || returnedState !== storedState) {
+    return NextResponse.redirect(`${appUrl}/settings/epic?error=state_mismatch`)
   }
 
   if (!session?.user?.id) {
@@ -86,7 +92,9 @@ export async function GET(req: NextRequest) {
 
     // Detect locale from cookie for redirect
     const locale = req.cookies.get('NEXT_LOCALE')?.value ?? 'en'
-    return NextResponse.redirect(`${appUrl}/${locale}/settings/epic?success=1`)
+    const res = NextResponse.redirect(`${appUrl}/${locale}/settings/epic?success=1`)
+    res.cookies.delete('epic_oauth_state')
+    return res
   } catch (err) {
     console.error('[epic/connect/callback] Error:', err)
     return NextResponse.redirect(`${appUrl}/settings/epic?error=server_error`)

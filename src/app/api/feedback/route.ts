@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { eq } from 'drizzle-orm'
+import { rateLimit, getIp } from '@/lib/rate-limit'
 import { db } from '@/lib/db'
 import { games, gameFeedback } from '@/lib/db/schema'
 
@@ -11,6 +12,10 @@ const schema = z.object({
 })
 
 export async function POST(req: Request) {
+  if (!rateLimit(`feedback:${getIp(req)}`, 5, 60_000)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   let body: unknown
   try {
     body = await req.json()

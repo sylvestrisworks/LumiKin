@@ -29,6 +29,7 @@ type TranslatableContent = {
   risksNarrative:    string | null
   parentTip:         string | null
   parentTipBenefits: string | null
+  bechdelNotes:      string | null
 }
 
 type TranslationResult = TranslatableContent
@@ -99,6 +100,7 @@ ${JSON.stringify(toTranslate, null, 2)}`
       risksNarrative:    parsed.risksNarrative    ?? null,
       parentTip:         parsed.parentTip         ?? null,
       parentTipBenefits: parsed.parentTipBenefits ?? null,
+      bechdelNotes:      parsed.bechdelNotes      ?? null,
     }
   } catch (err) {
     console.error(`[translate] Error for locale ${locale}:`, err)
@@ -162,6 +164,7 @@ export async function GET(req: Request) {
       let risksNarrative:    string | null = null
       let parentTip:         string | null = null
       let parentTipBenefits: string | null = null
+      let bechdelNotes:      string | null = null
 
       if (row.reviewId) {
         const [review] = await db
@@ -170,6 +173,7 @@ export async function GET(req: Request) {
             risksNarrative:    reviews.risksNarrative,
             parentTip:         reviews.parentTip,
             parentTipBenefits: reviews.parentTipBenefits,
+            bechdelNotes:      reviews.bechdelNotes,
           })
           .from(reviews)
           .where(eq(reviews.id, row.reviewId))
@@ -180,6 +184,7 @@ export async function GET(req: Request) {
           risksNarrative    = review.risksNarrative
           parentTip         = review.parentTip
           parentTipBenefits = review.parentTipBenefits
+          bechdelNotes      = review.bechdelNotes
         }
       }
 
@@ -189,6 +194,7 @@ export async function GET(req: Request) {
         risksNarrative,
         parentTip,
         parentTipBenefits,
+        bechdelNotes,
       }
 
       // Skip if nothing to translate
@@ -219,6 +225,7 @@ export async function GET(req: Request) {
         risksNarrative:    result.risksNarrative,
         parentTip:         result.parentTip,
         parentTipBenefits: result.parentTipBenefits,
+        bechdelNotes:      result.bechdelNotes,
       }).onConflictDoNothing()
 
       translated++

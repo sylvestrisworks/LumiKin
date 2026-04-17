@@ -12,10 +12,11 @@ export async function POST(req: NextRequest) {
   const session = await auth()
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { pastedUrl, verifier } = await req.json() as { pastedUrl: string; verifier: string }
+  const { pastedUrl } = await req.json() as { pastedUrl: string }
+  const verifier = req.cookies.get('nintendo_pkce_verifier')?.value
 
   if (!pastedUrl || !verifier)
-    return NextResponse.json({ error: 'Missing pastedUrl or verifier' }, { status: 400 })
+    return NextResponse.json({ error: 'Missing pastedUrl or session verifier — please restart the connection flow' }, { status: 400 })
 
   try {
     const sessionTokenCode = parseRedirectUrl(pastedUrl)
@@ -40,9 +41,11 @@ export async function POST(req: NextRequest) {
     })
 
     console.log(`[nintendo/connect] User ${session.user.id} connected naId ${naId}`)
-    return NextResponse.json({ ok: true, naId, nickname })
+    const res = NextResponse.json({ ok: true, naId, nickname })
+    res.cookies.delete('nintendo_pkce_verifier')
+    return res
   } catch (err) {
     console.error('[nintendo/connect] verify failed:', err)
-    return NextResponse.json({ error: String(err) }, { status: 400 })
+    return NextResponse.json({ error: 'Nintendo account connection failed' }, { status: 400 })
   }
 }

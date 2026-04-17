@@ -14,9 +14,8 @@ const ProfileSchema = z.object({
 
 export async function GET() {
   const session = await auth()
-  if (!session?.user?.email) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-
-  const userId = (session.user as { id?: string }).id ?? session.user.email
+  const userId = (session?.user as { id?: string } | undefined)?.id
+  if (!userId) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
   const profiles = await db
     .select()
     .from(childProfiles)
@@ -27,9 +26,8 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const session = await auth()
-  if (!session?.user?.email) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-
-  const userId = (session.user as { id?: string }).id ?? session.user.email
+  const userId = (session?.user as { id?: string } | undefined)?.id
+  if (!userId) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
   let body: unknown
   try { body = await req.json() } catch { return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }) }

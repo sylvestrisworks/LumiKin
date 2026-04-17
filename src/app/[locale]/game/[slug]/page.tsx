@@ -254,6 +254,7 @@ export default async function GamePage({ params }: Props) {
         if (tx.risksNarrative    && data.review)  data.review = { ...data.review, risksNarrative: tx.risksNarrative }
         if (tx.parentTip         && data.review)  data.review = { ...data.review, parentTip: tx.parentTip }
         if (tx.parentTipBenefits && data.review)  data.review = { ...data.review, parentTipBenefits: tx.parentTipBenefits }
+        if (tx.bechdelNotes      && data.review)  data.review = { ...data.review, bechdelNotes: tx.bechdelNotes }
       }
     } catch {
       // game_translations table not yet migrated — skip silently
@@ -359,7 +360,7 @@ export default async function GamePage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
       />
 
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900">

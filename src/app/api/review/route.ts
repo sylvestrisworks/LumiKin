@@ -61,8 +61,9 @@ const ReviewSchema = z.object({
 
 export async function POST(req: NextRequest) {
   const session = await auth()
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  const isReviewer = session?.user?.email === process.env.REVIEWER_EMAIL
+  if (!session || !isReviewer) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   let body: unknown

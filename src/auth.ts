@@ -2,6 +2,7 @@
 // Type errors below are a v4/v5 mismatch in the type definitions; they resolve once v5 is installed.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
+import { timingSafeEqual } from 'crypto'
 import NextAuth from 'next-auth'
 import Google from 'next-auth/providers/google'
 import Credentials from 'next-auth/providers/credentials'
@@ -31,11 +32,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       authorize(credentials) {
-        if (
-          credentials?.email    === process.env.REVIEWER_EMAIL &&
-          credentials?.password === process.env.REVIEWER_PASSWORD
-        ) {
-          return { id: '1', name: 'Reviewer', email: String(credentials.email) }
+        const expectedEmail    = process.env.REVIEWER_EMAIL    ?? ''
+        const expectedPassword = process.env.REVIEWER_PASSWORD ?? ''
+        const givenEmail       = String(credentials?.email    ?? '')
+        const givenPassword    = String(credentials?.password ?? '')
+        const safeCompare = (a: string, b: string) => {
+          const ab = Buffer.from(a)
+          const bb = Buffer.from(b)
+          return ab.length === bb.length && timingSafeEqual(ab, bb)
+        }
+        if (safeCompare(givenEmail, expectedEmail) && safeCompare(givenPassword, expectedPassword)) {
+          return { id: '1', name: 'Reviewer', email: givenEmail }
         }
         return null
       },

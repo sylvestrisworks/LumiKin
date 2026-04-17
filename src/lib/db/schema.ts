@@ -618,6 +618,7 @@ export const gameTranslations = pgTable('game_translations', {
   risksNarrative:     text('risks_narrative'),
   parentTip:          text('parent_tip'),
   parentTipBenefits:  text('parent_tip_benefits'),
+  bechdelNotes:       text('bechdel_notes'),
   createdAt:          timestamp('created_at').defaultNow(),
 }, (t) => ({
   uniqueGameLocale: uniqueIndex('game_translations_game_locale_idx').on(t.gameId, t.locale),

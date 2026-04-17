@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { eq, sql, desc, or } from 'drizzle-orm'
+import { rateLimit, getIp } from '@/lib/rate-limit'
 import { db } from '@/lib/db'
 import { games, gameScores, platformExperiences, experienceScores } from '@/lib/db/schema'
 import type { GameSummary } from '@/types/game'
@@ -7,6 +8,10 @@ import type { GameSummary } from '@/types/game'
 type SearchResult = GameSummary & { resultType?: 'game' | 'experience' }
 
 export async function GET(req: NextRequest) {
+  if (!rateLimit(`search:${getIp(req)}`, 30, 60_000)) {
+    return NextResponse.json([], { status: 429 })
+  }
+
   const q = req.nextUrl.searchParams.get('q')?.trim()
   if (!q || q.length < 1 || q.length > 200) return NextResponse.json([])
 

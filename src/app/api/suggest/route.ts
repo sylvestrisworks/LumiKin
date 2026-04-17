@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { eq, ne, lte, desc, sql, and, isNotNull } from 'drizzle-orm'
+import { rateLimit, getIp } from '@/lib/rate-limit'
 import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
 import type { GameSummary } from '@/types/game'
@@ -7,6 +8,10 @@ import type { GameSummary } from '@/types/game'
 // Returns up to 3 lower-risk games in the same genre, excluding the given slug.
 // Falls back to genre-only match if no scored alternatives are found.
 export async function GET(req: NextRequest) {
+  if (!rateLimit(`suggest:${getIp(req)}`, 30, 60_000)) {
+    return NextResponse.json([], { status: 429 })
+  }
+
   const genre  = req.nextUrl.searchParams.get('genre')
   const excludeSlug = req.nextUrl.searchParams.get('excludeSlug') ?? ''
 

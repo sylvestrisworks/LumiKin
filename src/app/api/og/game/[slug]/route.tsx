@@ -185,7 +185,7 @@ export async function GET(
               <div style={{ color: '#475569', fontSize: '24px' }}>Not yet scored</div>
             )}
 
-            <div style={{ color: '#334155', fontSize: '15px' }}>curascore.vercel.app</div>
+            <div style={{ color: '#334155', fontSize: '15px' }}>lumikin.org</div>
           </div>
         </div>
       </div>

@@ -208,7 +208,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? game.description.slice(0, 160)
     : `See the LumiKin rating for ${game.title} — benefits, risks, and time recommendations for parents.`
 
-  const ogImage = `${process.env.NEXTAUTH_URL ?? 'https://curascore.vercel.app'}/api/og/game/${slug}`
+  const ogImage = `${process.env.NEXTAUTH_URL ?? 'https://lumikin.org'}/api/og/game/${slug}`
 
   return {
     title: `${game.title} — LumiKin`,
@@ -352,7 +352,7 @@ export default async function GamePage({ params }: Props) {
       ? { '@type': 'AggregateRating', ratingValue: game.metacriticScore, bestRating: 100, ratingCount: 1 }
       : undefined,
     image: game.backgroundImage ?? undefined,
-    url: `https://lumikin.com/game/${game.slug}`,
+    url: `https://lumikin.org/game/${game.slug}`,
   }
 
   return (

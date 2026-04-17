@@ -128,7 +128,7 @@ function NutritionLabel({ data, labelRef }: { data: GameCardProps; labelRef: Ref
       )}
 
       <p className="text-[9px] text-gray-400 text-center mt-3 uppercase tracking-widest">
-        LumiScore · lumikin.com
+        LumiScore · lumikin.org
       </p>
     </div>
   )

@@ -112,10 +112,10 @@ async function getCarouselRows(platforms: string[], age?: string, locale = 'en')
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(isNotNull(gameScores.curascore), eq(games.isVr, true), ageFilter)).orderBy(desc(gameScores.curascore)).limit(12),
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(beginnerBase).orderBy(desc(gameScores.curascore)).limit(12),
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base(gte(gameScores.curascore, 60))).orderBy(desc(games.releaseDate)).limit(12),
-    // Popular: most RAWG library adds overall — proxy for all-time popularity
-    db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(base(), isNotNull(games.rawgAdded))).orderBy(desc(games.rawgAdded)).limit(12).catch(() => []),
-    // Trending: high rawgAdded but released recently — genuine momentum
-    db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(base(), isNotNull(games.rawgAdded), gte(games.releaseDate, trendingCutoff))).orderBy(desc(games.rawgAdded)).limit(12).catch(() => []),
+    // Popular: order by rawgAdded when available, fall back to metacritic
+    db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(base(), isNotNull(games.metacriticScore))).orderBy(desc(games.rawgAdded), desc(games.metacriticScore)).limit(12),
+    // Trending: high metacritic + released recently
+    db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(base(), isNotNull(games.metacriticScore), gte(games.releaseDate, trendingCutoff))).orderBy(desc(games.rawgAdded), desc(games.metacriticScore)).limit(12),
   ])
 
   const browseBase = `/${locale}/browse`

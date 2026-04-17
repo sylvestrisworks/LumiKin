@@ -47,23 +47,29 @@ export async function GET(req: NextRequest) {
 
       const { accessToken, idToken } = await getAccessToken(conn.sessionToken)
       const freshNaId = getNaId(accessToken)
-      // Capture JWT payloads to diagnose which token Moon API needs
+      // Capture JWT header+payload to diagnose token type issues
       try {
-        const aPayload = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64url').toString())
-        const iPayload = idToken ? JSON.parse(Buffer.from(idToken.split('.')[1], 'base64url').toString()) : null
+        const aHdr  = JSON.parse(Buffer.from(accessToken.split('.')[0], 'base64url').toString())
+        const aData = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64url').toString())
+        const iHdr  = idToken ? JSON.parse(Buffer.from(idToken.split('.')[0], 'base64url').toString()) : null
+        const iData = idToken ? JSON.parse(Buffer.from(idToken.split('.')[1], 'base64url').toString()) : null
         diagnostics.push({
-          naId: freshNaId,
-          tokenAud: aPayload.aud,
-          tokenScope: aPayload.scope,
-          idTokenAud: iPayload?.aud,
-          idTokenTyp: iPayload?.typ ?? aPayload?.typ,
-        } as typeof diagnostics[0])
-      } catch { diagnostics.push({ naId: freshNaId, tokenAud: 'not-a-jwt' }) }
+          naId:          freshNaId,
+          accessHdrTyp:  aHdr.typ,
+          accessHdrAlg:  aHdr.alg,
+          accessAud:     aData.aud,
+          accessScope:   aData.scope,
+          idHdrTyp:      iHdr?.typ,
+          idScope:       iData?.scope,
+          hasIdToken:    !!idToken,
+          usingToken:    'access_token',
+        })
+      } catch { diagnostics.push({ naId: freshNaId, error: 'decode-failed', usingToken: 'access_token' }) }
       if (freshNaId !== conn.naId) {
         console.warn(`[sync-nintendo] naId mismatch: stored=${conn.naId} fresh=${freshNaId}`)
       }
-      // Try id_token first — some Nintendo services require it over access_token
-      const moonToken = idToken ?? accessToken
+      // Use access_token — id_token is OIDC identity only, access_token carries the API scopes
+      const moonToken = accessToken
       const devices   = await getDevices(freshNaId, moonToken)
 
       if (devices.length === 0) {

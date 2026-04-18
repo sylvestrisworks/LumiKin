@@ -13,28 +13,39 @@ const nextConfig = {
     ],
   },
   async headers() {
-    return [
+    const securityHeaders = [
+      { key: 'X-Frame-Options',        value: 'DENY' },
+      { key: 'X-Content-Type-Options',  value: 'nosniff' },
+      { key: 'Referrer-Policy',         value: 'strict-origin-when-cross-origin' },
+      { key: 'Permissions-Policy',      value: 'camera=(), microphone=(), geolocation=()' },
       {
-        source: '/(.*)',
+        key: 'Content-Security-Policy',
+        // unsafe-inline needed for next-intl hydration and JSON-LD script tags
+        value: [
+          "default-src 'self'",
+          "script-src 'self' 'unsafe-inline'",
+          "style-src 'self' 'unsafe-inline'",
+          "img-src 'self' media.rawg.io images.igdb.com cdn.sanity.io *.rbxcdn.com tr.rbxcdn.com img2.fortnitemaps.com assets.fortnitecreativehq.com *.fortnite.com data: blob:",
+          "font-src 'self' data:",
+          "connect-src 'self' https://*.api.sanity.io wss://*.api.sanity.io https://cdn.sanity.io",
+          "frame-ancestors 'none'",
+        ].join('; '),
+      },
+    ]
+
+    return [
+      // Studio: no CSP — it makes many varied requests to sanity.io
+      {
+        source: '/studio(.*)',
         headers: [
-          { key: 'X-Frame-Options',        value: 'DENY' },
-          { key: 'X-Content-Type-Options',  value: 'nosniff' },
-          { key: 'Referrer-Policy',         value: 'strict-origin-when-cross-origin' },
-          { key: 'Permissions-Policy',      value: 'camera=(), microphone=(), geolocation=()' },
-          {
-            key: 'Content-Security-Policy',
-            // unsafe-inline needed for next-intl hydration and JSON-LD script tags
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-inline'",
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' media.rawg.io images.igdb.com cdn.sanity.io *.rbxcdn.com tr.rbxcdn.com img2.fortnitemaps.com assets.fortnitecreativehq.com *.fortnite.com data: blob:",
-              "font-src 'self' data:",
-              "connect-src 'self' https://*.api.sanity.io wss://*.api.sanity.io https://cdn.sanity.io",
-              "frame-ancestors 'none'",
-            ].join('; '),
-          },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy',        value: 'strict-origin-when-cross-origin' },
         ],
+      },
+      // All other routes: full security headers
+      {
+        source: '/((?!studio).*)',
+        headers: securityHeaders,
       },
     ]
   },

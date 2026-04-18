@@ -84,39 +84,49 @@ export default async function RobloxHubPage({ searchParams }: Props) {
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
 
         {/* Platform header */}
-        <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-800">
+        <div className="relative rounded-2xl overflow-hidden border border-slate-700 shadow-lg bg-slate-900">
           {roblox?.backgroundImage && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={roblox.backgroundImage}
               alt=""
-              className="absolute inset-0 w-full h-full object-cover opacity-20 dark:opacity-10"
+              className="absolute inset-0 w-full h-full object-cover opacity-30"
             />
           )}
-          <div className="relative px-6 py-5 flex items-start gap-5">
-            {/* Roblox logo placeholder */}
-            <div className="w-16 h-16 rounded-2xl bg-red-100 dark:bg-red-900/40 border border-red-200 dark:border-red-800 flex items-center justify-center shrink-0">
-              <span className="text-2xl font-black text-red-500 select-none">R</span>
+          <div className="absolute inset-0 bg-gradient-to-r from-red-950/95 via-red-900/70 to-slate-900/30" />
+          <div className="relative px-6 py-8 flex items-center gap-5">
+            {/* Roblox icon */}
+            <div className="w-[72px] h-[72px] rounded-2xl bg-red-600 flex items-center justify-center shrink-0 shadow-lg ring-2 ring-red-400/40">
+              <span className="text-3xl font-black text-white select-none">R</span>
             </div>
 
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-xl font-bold text-slate-900 dark:text-white">Roblox</h1>
-                <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full">Platform</span>
+              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                <span className="text-[11px] font-semibold bg-red-500/25 text-red-200 border border-red-400/30 px-2 py-0.5 rounded-full tracking-wide uppercase">Platform</span>
                 {platformScore?.curascore != null && (
-                  <span className={`text-sm font-black ${curascoreText(platformScore.curascore)}`}>
+                  <span className={`text-[11px] font-bold bg-white/10 border border-white/20 px-2 py-0.5 rounded-full ${curascoreText(platformScore.curascore)}`}>
                     Curascore {platformScore.curascore}
                   </span>
                 )}
               </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
-                Roblox is a platform of millions of user-generated experiences. Safety varies greatly by experience — browse our ratings below.
+              <h1 className="text-2xl font-bold text-white">Roblox</h1>
+              <p className="text-sm text-white/55 mt-1 line-clamp-2">
+                Millions of user-generated experiences — safety varies widely. Browse our ratings to find the best fits for your child.
               </p>
-              <div className="flex items-center gap-4 mt-2 text-xs text-slate-400 dark:text-slate-500">
-                <span>{scored.length} {t('rated').toLowerCase()}</span>
+              <div className="flex items-center gap-2 mt-3 flex-wrap">
+                <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
+                  <span className="text-base font-bold text-white">{scored.length}</span>
+                  <span className="text-xs text-white/50 ml-1">{t('rated').toLowerCase()}</span>
+                </div>
                 {platformScore?.timeRecommendationLabel && (
-                  <span>Platform: {platformScore.timeRecommendationLabel}</span>
+                  <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
+                    <span className="text-sm font-semibold text-white">{platformScore.timeRecommendationLabel}</span>
+                    <span className="text-xs text-white/50 ml-1">recommended</span>
+                  </div>
                 )}
+                <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
+                  <span className="text-xs text-white/60">Free to play</span>
+                </div>
               </div>
             </div>
           </div>

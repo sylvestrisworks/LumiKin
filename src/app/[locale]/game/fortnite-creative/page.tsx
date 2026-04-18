@@ -4,12 +4,38 @@ import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { platformExperiences, experienceScores, games, gameScores } from '@/lib/db/schema'
-import { eq, desc, and, lte, ilike, isNotNull, type SQL } from 'drizzle-orm'
+import { eq, desc, and, lte, ilike, isNotNull, inArray, type SQL } from 'drizzle-orm'
 import FortniteCard from '@/components/FortniteCard'
 import { curascoreText } from '@/lib/ui'
 import FortniteFilters, { type FortniteFilterState } from '@/components/FortniteFilters'
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
 import type { ExperienceSummary } from '@/components/ExperienceCard'
+
+const FORTNITE_MODE_SLUGS = ['fortnite-battle-royale', 'lego-fortnite', 'fortnite-festival', 'fortnite-rocket-racing'] as const
+
+const MODE_META: Record<string, { initial: string; tagline: string; iconBg: string; iconText: string; hoverBorder: string }> = {
+  'fortnite-battle-royale': {
+    initial: 'BR', tagline: '100-player battle royale',
+    iconBg: 'bg-orange-100 dark:bg-orange-900/40', iconText: 'text-orange-600 dark:text-orange-400',
+    hoverBorder: 'hover:border-orange-400 dark:hover:border-orange-600',
+  },
+  'lego-fortnite': {
+    initial: 'LF', tagline: 'Family survival & crafting',
+    iconBg: 'bg-yellow-100 dark:bg-yellow-900/40', iconText: 'text-yellow-700 dark:text-yellow-400',
+    hoverBorder: 'hover:border-yellow-400 dark:hover:border-yellow-600',
+  },
+  'fortnite-festival': {
+    initial: '♪', tagline: 'Rhythm game by Harmonix',
+    iconBg: 'bg-purple-100 dark:bg-purple-900/40', iconText: 'text-purple-600 dark:text-purple-400',
+    hoverBorder: 'hover:border-purple-400 dark:hover:border-purple-600',
+  },
+  'fortnite-rocket-racing': {
+    initial: 'RR', tagline: 'Arcade racing by Psyonix',
+    iconBg: 'bg-cyan-100 dark:bg-cyan-900/40', iconText: 'text-cyan-700 dark:text-cyan-400',
+    hoverBorder: 'hover:border-cyan-400 dark:hover:border-cyan-600',
+  },
+}
 
 export const metadata: Metadata = {
   title: 'Fortnite Creative Map Guide — LumiKin',
@@ -42,6 +68,24 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
         .where(eq(gameScores.gameId, fortnitePlatform.id))
         .limit(1)
     : [null]
+
+  // Fetch standalone Fortnite game modes
+  const gameModeRows = await db
+    .select({
+      slug:                    games.slug,
+      title:                   games.title,
+      esrbRating:              games.esrbRating,
+      curascore:               gameScores.curascore,
+      timeRecommendationLabel: gameScores.timeRecommendationLabel,
+    })
+    .from(games)
+    .leftJoin(gameScores, eq(gameScores.gameId, games.id))
+    .where(inArray(games.slug, [...FORTNITE_MODE_SLUGS]))
+
+  // Sort to match the canonical order
+  const orderedModes = FORTNITE_MODE_SLUGS
+    .map(s => gameModeRows.find(r => r.slug === s))
+    .filter(Boolean) as typeof gameModeRows
 
   // Build filter conditions — only show maps for this platform
   const conditions: SQL[] = []
@@ -85,43 +129,96 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
 
         {/* Platform header */}
-        <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-800">
+        <div className="relative rounded-2xl overflow-hidden border border-slate-700 shadow-lg bg-slate-900">
           {fortnitePlatform?.backgroundImage && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={fortnitePlatform.backgroundImage}
               alt=""
-              className="absolute inset-0 w-full h-full object-cover opacity-20 dark:opacity-10"
+              className="absolute inset-0 w-full h-full object-cover opacity-30"
             />
           )}
-          <div className="relative px-6 py-5 flex items-start gap-5">
-            {/* Fortnite Creative logo */}
-            <div className="w-16 h-16 rounded-2xl bg-blue-100 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800 flex items-center justify-center shrink-0">
-              <span className="text-xl font-black text-blue-500 select-none leading-none">FN</span>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-900/70 to-slate-900/30" />
+          <div className="relative px-6 py-8 flex items-center gap-5">
+            {/* Fortnite Creative icon */}
+            <div className="w-[72px] h-[72px] rounded-2xl bg-blue-600 flex items-center justify-center shrink-0 shadow-lg ring-2 ring-blue-400/40">
+              <span className="text-2xl font-black text-white select-none leading-none">FN</span>
             </div>
 
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-xl font-bold text-slate-900 dark:text-white">Fortnite Creative</h1>
-                <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full">Platform</span>
+              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                <span className="text-[11px] font-semibold bg-blue-500/25 text-blue-200 border border-blue-400/30 px-2 py-0.5 rounded-full tracking-wide uppercase">Platform</span>
                 {platformScore?.curascore != null && (
-                  <span className={`text-sm font-black ${curascoreText(platformScore.curascore)}`}>
+                  <span className={`text-[11px] font-bold bg-white/10 border border-white/20 px-2 py-0.5 rounded-full ${curascoreText(platformScore.curascore)}`}>
                     Curascore {platformScore.curascore}
                   </span>
                 )}
               </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
-                Fortnite Creative lets players build and share their own maps. Quality and safety vary by map — browse our ratings below.
+              <h1 className="text-2xl font-bold text-white">Fortnite Creative</h1>
+              <p className="text-sm text-white/55 mt-1 line-clamp-2">
+                Player-built maps across every genre — safety and quality vary widely. Browse our ratings to find the best fits.
               </p>
-              <div className="flex items-center gap-4 mt-2 text-xs text-slate-400 dark:text-slate-500">
-                <span>{scored.length} {t('rated').toLowerCase()}</span>
+              <div className="flex items-center gap-2 mt-3 flex-wrap">
+                <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
+                  <span className="text-base font-bold text-white">{scored.length}</span>
+                  <span className="text-xs text-white/50 ml-1">{t('rated').toLowerCase()}</span>
+                </div>
                 {platformScore?.timeRecommendationLabel && (
-                  <span>Platform: {platformScore.timeRecommendationLabel}</span>
+                  <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
+                    <span className="text-sm font-semibold text-white">{platformScore.timeRecommendationLabel}</span>
+                    <span className="text-xs text-white/50 ml-1">recommended</span>
+                  </div>
                 )}
+                <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
+                  <span className="text-xs text-white/60">Free to play</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Fortnite Game Modes */}
+        {orderedModes.length > 0 && (
+          <section>
+            <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+              Fortnite Game Modes
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {orderedModes.map(mode => {
+                const meta = MODE_META[mode.slug]
+                if (!meta) return null
+                return (
+                  <Link
+                    key={mode.slug}
+                    href={`/game/${mode.slug}`}
+                    className={`group rounded-xl border border-slate-200 dark:border-slate-700 p-3 bg-white dark:bg-slate-800 hover:shadow-md transition-all ${meta.hoverBorder}`}
+                  >
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2.5 ${meta.iconBg}`}>
+                      <span className={`text-sm font-black ${meta.iconText}`}>{meta.initial}</span>
+                    </div>
+                    <div className="text-sm font-semibold text-slate-800 dark:text-white leading-tight">{mode.title}</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-tight">{meta.tagline}</div>
+                    <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                      {mode.esrbRating && (
+                        <span className="text-[10px] bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded font-medium">
+                          {mode.esrbRating}
+                        </span>
+                      )}
+                      <span className="text-[10px] bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded font-medium">
+                        Free
+                      </span>
+                      {mode.curascore != null && (
+                        <span className={`text-[10px] font-bold ${curascoreText(mode.curascore)}`}>
+                          {mode.curascore}
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </section>
+        )}
 
         {/* Search + filters */}
         <Suspense>

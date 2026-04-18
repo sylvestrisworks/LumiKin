@@ -377,6 +377,20 @@ export default async function GamePage({ params }: Props) {
 
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
         <main className="max-w-2xl mx-auto px-4 py-6">
+
+          {/* Breadcrumb */}
+          <nav className="mb-4 flex items-center gap-1.5 text-sm text-slate-400 dark:text-slate-500">
+            <a href={`/${locale}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+              {t('navHome')}
+            </a>
+            <span>/</span>
+            <a href={`/${locale}/browse`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+              {t('navBrowse')}
+            </a>
+            <span>/</span>
+            <span className="text-slate-600 dark:text-slate-300 truncate">{data.game.title}</span>
+          </nav>
+
           <GameCard {...data} />
 
           {/* Library / Wishlist + Share */}

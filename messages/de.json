@@ -713,7 +713,9 @@
   "game": {
     "aboutThisGame": "Über dieses Spiel",
     "recommendedAge": "Empfohlenes Alter {age}+",
-    "similarGames": "Ähnliche Spiele"
+    "similarGames": "Ähnliche Spiele",
+    "navHome": "Start",
+    "navBrowse": "Entdecken"
   },
   "importModal": {
     "title": "Steam-Bibliothek importieren",

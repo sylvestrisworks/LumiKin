@@ -726,7 +726,9 @@
   "game": {
     "aboutThisGame": "Om spelet",
     "recommendedAge": "Rekommenderad ålder {age}+",
-    "similarGames": "Liknande spel"
+    "similarGames": "Liknande spel",
+    "navHome": "Hem",
+    "navBrowse": "Utforska"
   },
   "importModal": {
     "title": "Importera Steam-bibliotek",

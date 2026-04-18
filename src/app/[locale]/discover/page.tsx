@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 import { desc, eq, isNotNull, lte, gte, and, sql, inArray, count, avg } from 'drizzle-orm'
 import type { Metadata } from 'next'

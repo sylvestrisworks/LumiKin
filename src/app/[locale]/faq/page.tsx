@@ -1,3 +1,5 @@
+export const revalidate = 86400
+
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'

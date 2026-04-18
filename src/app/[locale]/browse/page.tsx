@@ -246,10 +246,12 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     case 'benefit':    orderBy = [desc(gameScores.bds),    desc(gameScores.curascore)]; break
     case 'safest':     orderBy = [asc(gameScores.ris),     desc(gameScores.curascore)]; break
     case 'riskiest':   orderBy = [desc(gameScores.ris),    asc(gameScores.curascore)];  break
-    case 'newest':     orderBy = [sql`${games.releaseDate} DESC NULLS LAST`];           break
-    case 'alpha':      orderBy = [asc(games.title)];                                    break
-    case 'metacritic': orderBy = [sql`${games.metacriticScore} DESC NULLS LAST`];       break
-    default:           orderBy = [desc(gameScores.curascore)];                          break
+    case 'newest':     orderBy = [sql`${games.releaseDate} DESC NULLS LAST`];                                    break
+    case 'alpha':      orderBy = [asc(games.title)];                                                            break
+    case 'metacritic': orderBy = [sql`${games.metacriticScore} DESC NULLS LAST`];                              break
+    case 'trending':   orderBy = [sql`${games.trendingScore} DESC NULLS LAST`, desc(gameScores.curascore)];    break
+    case 'popular':    orderBy = [sql`${games.rawgAdded} DESC NULLS LAST`, sql`${games.metacriticScore} DESC NULLS LAST`]; break
+    default:           orderBy = [desc(gameScores.curascore)];                                                  break
   }
 
   const where = conditions.length ? and(...conditions) : undefined
@@ -293,7 +295,7 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
 
 const VALID_AGE    = new Set(['E', 'E10', 'T', 'M'])
 const VALID_RISK   = new Set(['low', 'medium'])
-const VALID_SORT   = new Set(['curascore', 'benefit', 'safest', 'riskiest', 'newest', 'alpha', 'metacritic'])
+const VALID_SORT   = new Set(['curascore', 'benefit', 'safest', 'riskiest', 'newest', 'alpha', 'metacritic', 'trending', 'popular'])
 const VALID_PRICE  = new Set(['free', '20', '40'])
 const VALID_TIME   = new Set(['30', '60', '90'])
 const VALID_VIEW   = new Set(['list', 'grid'])

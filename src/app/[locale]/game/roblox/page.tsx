@@ -141,9 +141,11 @@ export default async function RobloxHubPage({ searchParams }: Props) {
         {hasFilters ? (
           /* When filtering: single flat grid */
           experiences.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
               {experiences.map(exp => (
-                <ExperienceCard key={exp.slug} exp={exp} />
+                <div key={exp.slug} className="snap-start shrink-0 w-40 sm:w-auto">
+                  <ExperienceCard exp={exp} />
+                </div>
               ))}
             </div>
           ) : (
@@ -159,9 +161,11 @@ export default async function RobloxHubPage({ searchParams }: Props) {
                 <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
                   {t('rated')}
                 </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
                   {scored.map(exp => (
-                    <ExperienceCard key={exp.slug} exp={exp} />
+                    <div key={exp.slug} className="snap-start shrink-0 w-40 sm:w-auto">
+                      <ExperienceCard exp={exp} />
+                    </div>
                   ))}
                 </div>
               </section>
@@ -173,9 +177,11 @@ export default async function RobloxHubPage({ searchParams }: Props) {
                 <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
                   {t('awaitingRating')}
                 </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
                   {unscored.map(exp => (
-                    <ExperienceCard key={exp.slug} exp={exp} />
+                    <div key={exp.slug} className="snap-start shrink-0 w-40 sm:w-auto">
+                      <ExperienceCard exp={exp} />
+                    </div>
                   ))}
                 </div>
               </section>

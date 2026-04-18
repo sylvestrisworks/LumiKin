@@ -183,15 +183,15 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
             <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
               Fortnite Game Modes
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:pb-0 sm:snap-none">
               {orderedModes.map(mode => {
                 const meta = MODE_META[mode.slug]
                 if (!meta) return null
                 return (
+                  <div key={mode.slug} className="snap-start shrink-0 w-36 sm:w-auto">
                   <Link
-                    key={mode.slug}
                     href={`/game/${mode.slug}`}
-                    className={`group rounded-xl border border-slate-200 dark:border-slate-700 p-3 bg-white dark:bg-slate-800 hover:shadow-md transition-all ${meta.hoverBorder}`}
+                    className={`group block rounded-xl border border-slate-200 dark:border-slate-700 p-3 bg-white dark:bg-slate-800 hover:shadow-md transition-all ${meta.hoverBorder}`}
                   >
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2.5 ${meta.iconBg}`}>
                       <span className={`text-sm font-black ${meta.iconText}`}>{meta.initial}</span>
@@ -214,6 +214,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
                       )}
                     </div>
                   </Link>
+                  </div>
                 )
               })}
             </div>
@@ -228,9 +229,11 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
         {/* Results */}
         {hasFilters ? (
           maps.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
               {maps.map(exp => (
-                <FortniteCard key={exp.slug} exp={exp} />
+                <div key={exp.slug} className="snap-start shrink-0 w-40 sm:w-auto">
+                  <FortniteCard exp={exp} />
+                </div>
               ))}
             </div>
           ) : (
@@ -245,9 +248,11 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
                 <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
                   {t('rated')}
                 </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
                   {scored.map(exp => (
-                    <FortniteCard key={exp.slug} exp={exp} />
+                    <div key={exp.slug} className="snap-start shrink-0 w-40 sm:w-auto">
+                      <FortniteCard exp={exp} />
+                    </div>
                   ))}
                 </div>
               </section>
@@ -258,9 +263,11 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
                 <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
                   {t('awaitingRating')}
                 </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
                   {unscored.map(exp => (
-                    <FortniteCard key={exp.slug} exp={exp} />
+                    <div key={exp.slug} className="snap-start shrink-0 w-40 sm:w-auto">
+                      <FortniteCard exp={exp} />
+                    </div>
                   ))}
                 </div>
               </section>

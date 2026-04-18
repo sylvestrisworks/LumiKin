@@ -317,7 +317,7 @@ export default async function GamePage({ params }: Props) {
         timeRecommendationColor:  (r.timeRecommendationColor as GameSummary['timeRecommendationColor']) ?? null,
       }))
     } catch (e) {
-      console.error('[similar-games] query failed:', e)
+      console.error('[similar-games] query failed:', e instanceof Error ? e.message : String(e))
     }
   }
 

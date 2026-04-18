@@ -159,7 +159,9 @@ export default async function HomePage({ params, searchParams }: Props) {
     ? platformParam.split(',').filter(Boolean).slice(0, 8).map(p => p.trim().slice(0, 50))
     : []
 
-  const age = typeof sp.age === 'string' && sp.age in ESRB_FOR_AGE ? sp.age : undefined
+  // ageParam = what the user explicitly chose; age = effective filter (defaults to T on first entry)
+  const ageParam = typeof sp.age === 'string' && sp.age in ESRB_FOR_AGE ? sp.age : null
+  const age = ageParam ?? 'T'
 
   // Find platform IDs upfront to filter carousels correctly
   const [robloxRow, fortniteRow] = await Promise.all([
@@ -276,7 +278,7 @@ export default async function HomePage({ params, searchParams }: Props) {
             <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
               {t('yourPlatforms')}
             </p>
-            {(platforms.length > 0 || age) && (
+            {(platforms.length > 0 || ageParam !== null) && (
               <a href={`/${locale}`} className="text-xs font-normal text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors">
                 {t('clearFilters')}
               </a>
@@ -302,7 +304,7 @@ export default async function HomePage({ params, searchParams }: Props) {
         ) : (
           <div className="text-center py-16 pb-12">
             <p className="text-4xl mb-3">🎮</p>
-            {(platforms.length > 0 || age) ? (
+            {(platforms.length > 0 || ageParam !== null) ? (
               <>
                 <p className="font-medium text-slate-600 dark:text-slate-300">
                   {t('noGamesFound')}

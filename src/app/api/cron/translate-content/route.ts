@@ -5,7 +5,7 @@ import { eq, and, notExists, isNotNull } from 'drizzle-orm'
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const BEDROCK_MODEL = 'us.anthropic.claude-haiku-4-5-20251001-v1:0'
+const BEDROCK_MODEL = 'global.anthropic.claude-haiku-4-5-20251001-v1:0'
 const BEDROCK_URL   = `https://bedrock-runtime.us-east-1.amazonaws.com/model/${BEDROCK_MODEL}/invoke`
 
 const LOCALES = ['sv', 'de', 'fr', 'es'] as const

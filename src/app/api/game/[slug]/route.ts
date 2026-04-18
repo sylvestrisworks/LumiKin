@@ -4,7 +4,11 @@ import { db } from '@/lib/db'
 import { games, gameScores, reviews, darkPatterns, complianceStatus } from '@/lib/db/schema'
 import type { ComplianceBadge, DarkPattern, GameCardProps, SerializedGame, SerializedScores, SerializedReview } from '@/types/game'
 
-export async function GET(_req: NextRequest, { params }: { params: { slug: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  if (!slug || slug.length > 255 || !/^[a-zA-Z0-9_-]+$/.test(slug)) {
+    return NextResponse.json({ error: 'Invalid slug' }, { status: 400 })
+  }
   try {
   const [game] = await db
     .select()

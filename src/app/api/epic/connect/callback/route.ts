@@ -90,8 +90,10 @@ export async function GET(req: NextRequest) {
         },
       })
 
-    // Detect locale from cookie for redirect
-    const locale = req.cookies.get('NEXT_LOCALE')?.value ?? 'en'
+    // Detect locale from cookie for redirect — validate against allowlist to prevent path injection
+    const VALID_LOCALES = new Set(['en', 'de', 'es', 'fr', 'sv'])
+    const rawLocale = req.cookies.get('NEXT_LOCALE')?.value ?? ''
+    const locale = VALID_LOCALES.has(rawLocale) ? rawLocale : 'en'
     const res = NextResponse.redirect(`${appUrl}/${locale}/settings/epic?success=1`)
     res.cookies.delete('epic_oauth_state')
     return res

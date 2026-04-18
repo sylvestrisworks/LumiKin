@@ -12,7 +12,11 @@ export async function POST(req: NextRequest) {
   const session = await auth()
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { pastedUrl } = await req.json() as { pastedUrl: string }
+  let body: unknown
+  try { body = await req.json() } catch { return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }) }
+  const pastedUrl = typeof (body as Record<string, unknown>)?.pastedUrl === 'string'
+    ? ((body as Record<string, unknown>).pastedUrl as string).trim().slice(0, 2000)
+    : null
   const verifier = req.cookies.get('nintendo_pkce_verifier')?.value
 
   if (!pastedUrl || !verifier)

@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { games, gameScores, userGames } from '@/lib/db/schema'
 import { eq, and, ilike, sql } from 'drizzle-orm'
 import { z } from 'zod'
+import { rateLimit } from '@/lib/rate-limit'
 
 const STEAM_API = 'https://api.steampowered.com'
 
@@ -78,6 +79,11 @@ export async function POST(req: NextRequest) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const uid = (session?.user as any)?.id ?? session?.user?.email ?? null
   if (!uid) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  // 5 requests per minute per user — enough for a normal import flow
+  if (!rateLimit(`steam-import:${uid}`, 5, 60_000)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
 
   const body = await req.json()
   const parsed = BodySchema.safeParse(body)
@@ -193,7 +199,12 @@ export async function POST(req: NextRequest) {
       .map(gameId => ({ userId: uid, gameId, listType: 'owned' as const }))
 
     if (toInsert.length > 0) {
-      await db.insert(userGames).values(toInsert).onConflictDoNothing()
+      try {
+        await db.insert(userGames).values(toInsert).onConflictDoNothing()
+      } catch (err) {
+        console.error('[import/steam] Insert failed — invalid gameId in batch:', err)
+        return NextResponse.json({ error: 'Some game IDs were invalid' }, { status: 400 })
+      }
     }
 
     return NextResponse.json({ added: toInsert.length })

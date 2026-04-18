@@ -1,7 +1,9 @@
 import type { MetadataRoute } from 'next'
 import { db } from '@/lib/db'
 import { games, platformExperiences } from '@/lib/db/schema'
-import { eq, isNotNull } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
+import { sanityClient } from '@/sanity/lib/client'
+import { allGuideSlugsQuery, allPostSlugsQuery } from '@/sanity/lib/queries'
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
 const LOCALES = ['en', 'es', 'fr', 'sv', 'de'] as const
@@ -40,6 +42,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...multiLocaleEntry('/', 1.0, 'daily'),
     ...multiLocaleEntry('/browse', 0.9, 'daily'),
     ...multiLocaleEntry('/discover', 0.8, 'weekly'),
+    ...multiLocaleEntry('/learn', 0.8, 'weekly'),
+    ...multiLocaleEntry('/guides', 0.8, 'weekly'),
+    ...multiLocaleEntry('/blog', 0.7, 'daily'),
     ...multiLocaleEntry('/faq', 0.5, 'monthly'),
     ...multiLocaleEntry('/privacy', 0.3, 'yearly'),
     ...multiLocaleEntry('/terms', 0.3, 'yearly'),
@@ -111,5 +116,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ),
   )
 
-  return [...staticEntries, ...gameEntries, ...robloxEntries, ...fortniteEntries]
+  // ── Sanity content pages ──────────────────────────────────────────────────
+  type SanitySlug = { slug: string; locale: string; _updatedAt?: string }
+
+  const [guideSlugs, postSlugs]: [SanitySlug[], SanitySlug[]] = await Promise.all([
+    sanityClient.fetch(allGuideSlugsQuery).catch(() => []),
+    sanityClient.fetch(allPostSlugsQuery).catch(() => []),
+  ])
+
+  const guideContentEntries: MetadataRoute.Sitemap = guideSlugs.map((g) => ({
+    url: localeUrl((g.locale as Locale) ?? 'en', `/guides/${g.slug}`),
+    lastModified: g._updatedAt ? new Date(g._updatedAt) : undefined,
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }))
+
+  const postContentEntries: MetadataRoute.Sitemap = postSlugs.map((p) => ({
+    url: localeUrl((p.locale as Locale) ?? 'en', `/blog/${p.slug}`),
+    lastModified: p._updatedAt ? new Date(p._updatedAt) : undefined,
+    changeFrequency: 'weekly' as const,
+    priority: 0.6,
+  }))
+
+  return [
+    ...staticEntries,
+    ...gameEntries,
+    ...robloxEntries,
+    ...fortniteEntries,
+    ...guideContentEntries,
+    ...postContentEntries,
+  ]
 }

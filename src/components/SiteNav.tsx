@@ -30,7 +30,7 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
   const NAV_LINKS = [
     { href: `/${locale}/discover`,   label: t('discover')  },
     { href: `/${locale}/browse`,     label: t('browse')    },
-    { href: `/${locale}/compare`,    label: t('compare')   },
+    { href: `/${locale}/learn`,      label: t('learn')     },
     { href: `/${locale}/dashboard`,  label: t('library')   },
   ]
 

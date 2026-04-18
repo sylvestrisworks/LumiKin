@@ -1,0 +1,77 @@
+Front page:
+
+Här är mina UI-förbättringsförslag för CuraScore/LumiKin:
+
+### 🎨 Visuell design
+
+1. **Hero-sektionen är stark men kan förbättras** — Den blå gradienten i bakgrunden är fin, men texten "utvecklande sinne" i gult sticker ut lite hårt. Överväg en mjukare guld/amber-nyans eller en gradient som bättre smälter in med det blå temat.
+
+2. **Statistik-pillerna (1260, 49, 1069)** — De har inget visuellt avstånd sinsemellan och ser lite klumpiga ut. Lägg till mer spacing, subtila ikoner, eller en bakgrundsskugga för att ge dem mer "luft".
+
+3. **Ålderskategorier-raden** — Den aktiva/inaktiva statusen är svår att urskilja. Använd tydligare visuell kontrast (t.ex. bakgrundsfärg, border, eller underline) för vald kategori.
+
+### 🧭 Navigation & UX
+
+4. **Sökfältet** — Bra placering men saknar autocomplete/förslag. Lägg till live-sökning med spelförslag som dropdown.
+
+5. **Plattformsfilter (PC, PlayStation, etc.)** — Dessa knappar saknar tydlig "vald"-status. Ge dem en starkare visuell indikator (bakgrundsfärg, border).
+
+6. **"Nya och värda att spela"** — Horisontell scroll utan synliga scroll-indikatorer gör det lätt att missa spel. Lägg till navigationspilar eller en subtil scrollbar.
+
+### 📐 Layout & Struktur
+
+7. **Spelkorten** — De har bra thumbnails men score-badgen (siffran i hörnet) är liten och svår att läsa. Gör den större med tydligare färgkodning (grön=bra, gul=ok, röd=risk).
+
+8. **"Så fungerar det"-sektionen** — De tre korten är bra men känns lite platta. Lägg till hover-effekter, subtila gradienter eller ikoner med mer visuell vikt.
+
+9. **Footer** — Väldigt minimal. Överväg att lägga till sociala medier-länkar, nyhetsbrev-signup, eller en kort "om oss"-text.
+
+### 📱 Övrigt
+
+10. **Cookie-noticen** — Kreativ ("Achievement unlocked" 🎮) men kan upplevas förvirrande för föräldrar som inte spelar. Överväg en mer informativ variant med samma charm.
+
+11. **CTA-knappen "Utforska alla spel"** — Bra, men den ensamma i botten. Lägg till en sekundär CTA högre upp, t.ex. efter sökfältet.
+
+Game cards:
+
+Här är min detaljerade feedback på game card-sidan:
+
+### ✅ Bra saker
+- **Hero-bannern** med spelets bild, titel och taggar (Sandbox, Survival, Creative) fungerar bra
+- **LumiScore-cirkeln** (61/100) är visuellt tydlig och snyggt animerad
+- **Uppdelningen Utveckling/Risk** som tvåkolumnslayout är logisk och lättläst
+- **Färgkodning** (grön=BRA, orange=MÅTTLIG) kommunicerar snabbt
+
+### 🔧 Förbättringsförslag
+
+**1. Hero-sektionen**
+- Texten "Minecraft: Bedrock Edition (with Marketplace)" har låg kontrast mot bakgrundsbilden — lägg till en starkare mörk gradient-overlay (bottom-to-top) så texten alltid är läsbar oavsett spelets bannerbild
+- Metacritic-badgen och åldersmärkningen (10+) uppe till höger är diskreta, bra — men de har ingen visuell koppling till varandra. Gruppera dem i en tydlig rad med konsekvent stil
+
+**2. LumiScore-sektionen**
+- Cirkeln är stor och tar mycket vertikal plats. Överväg att göra den mer kompakt, eller placera "BRA" och "90 min/dag" bredvid cirkeln istället för under
+- **"Share with a parent"** — texten är på engelska trots att sidan är på svenska. Lokalisera!
+- Knappen "Share with a parent" känns lite ensam. Ge den mer kontext — *varför* ska jag dela?
+
+**3. Utveckling & Risk-korten**
+- "Problem Solving", "Spatial Awareness", "Strategic Thinking" — dessa är på engelska, resten svenska. **Inkonsekvent språk** skadar trovärdigheten
+- Risk-kortet säger "MÅTTLIG" med stort typsnitt men det ger ingen direkt känsla av *vad* som är måttligt. En kort mening som undertitel (t.ex. "Begränsade risker identifierade") hade hjälpt
+- Listan i Utveckling-kortet har bara checkmarks — överväg en liten progress-bar eller poäng per kategori för att visa styrkor
+
+**4. OBS-sektionen (Månadskostnad)**
+- Den kapades av cookie-noticen i min vy, men generellt: varningsikoner bör vara tydligare — överväg en mer framträdande banner med gul/orange bakgrund
+
+**5. "Vad ditt barn utvecklar"-texten**
+- Bra innehåll men den presenteras som ett stort textblock. Bryt upp det med ikoner, bullet points eller korta highlight-kort (t.ex. "🧠 Problemlösning", "🎨 Kreativitet", "🤝 Samarbete")
+
+**6. Regelefterlevnad (DSA, GDPR-K, ODDS)**
+- Röda ✕-märken utan förklaring ser alarmerande ut. Ge direkt context — vad betyder det att "GDPR-K" inte är uppfyllt? En tooltip eller expanderbar sektion hade hjälpt föräldrar förstå
+
+**7. "Parent Tips" & "Om spelet"**
+- "No tips yet" ger en tom, ofärdig känsla. Fyll med redaktionellt innehåll som fallback (t.ex. "Våra experter rekommenderar att spela tillsammans första gångerna")
+- "Om spelet"-texten är bara en rad — sidan hade gynnats av mer innehåll här: screenshots, liknande spel, eller en kort FAQ
+
+**8. Generellt**
+- Sidan saknar en tydlig **CTA** — vad vill du att föräldern ska *göra* efter att ha läst? Lägga till i bibliotek? Ställa in skärmtid? Gör nästa steg uppenbart
+- Överväg en **"Liknande spel"**-sektion i botten för att hålla kvar besökaren
+- Mobil-responsivitet bör testas noggrant — tvåkolumnslayouten (Utveckling/Risk) kan bli trång

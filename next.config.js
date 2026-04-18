@@ -8,6 +8,7 @@ const nextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'media.rawg.io' },
       { protocol: 'https', hostname: 'images.igdb.com' },
+      { protocol: 'https', hostname: 'cdn.sanity.io' },
     ],
   },
   async headers() {
@@ -26,7 +27,7 @@ const nextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline'",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' media.rawg.io images.igdb.com *.rbxcdn.com tr.rbxcdn.com img2.fortnitemaps.com assets.fortnitecreativehq.com *.fortnite.com data: blob:",
+              "img-src 'self' media.rawg.io images.igdb.com cdn.sanity.io *.rbxcdn.com tr.rbxcdn.com img2.fortnitemaps.com assets.fortnitecreativehq.com *.fortnite.com data: blob:",
               "font-src 'self'",
               "connect-src 'self'",
               "frame-ancestors 'none'",

@@ -155,7 +155,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
                 )}
               </div>
               <h1 className="text-2xl font-bold text-white">Fortnite Creative</h1>
-              <p className="text-sm text-white/55 mt-1 line-clamp-2">
+              <p className="text-sm text-white/75 mt-1 line-clamp-2">
                 Player-built maps across every genre — safety and quality vary widely. Browse our ratings to find the best fits.
               </p>
               <div className="flex items-center gap-2 mt-3 flex-wrap">

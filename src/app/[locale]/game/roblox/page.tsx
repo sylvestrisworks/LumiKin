@@ -110,7 +110,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
                 )}
               </div>
               <h1 className="text-2xl font-bold text-white">Roblox</h1>
-              <p className="text-sm text-white/55 mt-1 line-clamp-2">
+              <p className="text-sm text-white/75 mt-1 line-clamp-2">
                 Millions of user-generated experiences — safety varies widely. Browse our ratings to find the best fits for your child.
               </p>
               <div className="flex items-center gap-2 mt-3 flex-wrap">

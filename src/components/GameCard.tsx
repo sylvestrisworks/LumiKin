@@ -703,7 +703,10 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
         const verdict = getVerdict(scores.curascore)
         return (
           <div className="relative bg-white dark:bg-slate-800 rounded-3xl shadow-sm px-6 pt-5 pb-6 text-center border border-slate-100 dark:border-slate-700">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">{t('curascore')}</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3 flex items-center justify-center gap-1">
+              {t('curascore')}
+              <Tooltip text="Our 0–100 score for how developmentally beneficial and low-risk this game is for children. Higher is better." />
+            </p>
 
             <div className="flex justify-center mb-3">
               <HorseshoeRing score={scores.curascore} />

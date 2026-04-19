@@ -49,10 +49,26 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
         {/* Logo */}
         <a
           href={`/${locale}`}
-          className="font-black tracking-tight text-indigo-700 dark:text-indigo-400 shrink-0 hover:text-indigo-900 dark:hover:text-indigo-300 transition-colors text-base"
+          className="shrink-0 flex items-center"
           onClick={() => setMenuOpen(false)}
+          aria-label="LumiKin — home"
         >
-          {t('brand')} <span className="font-normal text-slate-400 dark:text-slate-500 text-sm">{t('brandSub')}</span>
+          <img
+            src="/lumikin-logo.svg"
+            alt="LumiKin"
+            height={32}
+            width={131}
+            className="dark:hidden"
+            style={{ height: 32, width: 'auto' }}
+          />
+          <img
+            src="/lumikin-logo-dark.svg"
+            alt="LumiKin"
+            height={32}
+            width={131}
+            className="hidden dark:block"
+            style={{ height: 32, width: 'auto' }}
+          />
         </a>
 
         {/* Search — hidden on mobile (shown in second row) */}

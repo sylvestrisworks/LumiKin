@@ -1,0 +1,28 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="spark" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4f46e5"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <!--
+    4-pointed star / sparkle mark
+    Center (20,20) · outer R=18 · inner r=4
+
+    Outer points:
+      Top    (20, 2)
+      Right  (38, 20)
+      Bottom (20, 38)
+      Left   (2,  20)
+
+    Inner points at 45° offsets (r=4):
+      NE  (20+2.83, 20−2.83) = (22.83, 17.17)
+      SE  (22.83, 22.83)
+      SW  (17.17, 22.83)
+      NW  (17.17, 17.17)
+  -->
+  <path
+    d="M20 2 L22.83 17.17 L38 20 L22.83 22.83 L20 38 L17.17 22.83 L2 20 L17.17 17.17 Z"
+    fill="url(#spark)"
+  />
+</svg>

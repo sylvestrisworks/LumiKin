@@ -63,6 +63,7 @@ export default async function ReviewPage({ params }: { params: { gameSlug: strin
     hasStrangerChat:      game.hasStrangerChat ?? false,
     chatModeration:       game.chatModeration ?? null,
     updatedAt:            game.updatedAt?.toISOString() ?? null,
+    bundledOnlineNote:    game.bundledOnlineNote ?? null,
   }
 
   let existingReview: SerializedReview | null = null

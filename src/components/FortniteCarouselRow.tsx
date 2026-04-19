@@ -97,14 +97,12 @@ export default function FortniteCarouselRow({ experiences }: { experiences: Expe
     <section className="pt-10">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <span className="w-5 h-5 rounded-md bg-blue-100 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800 flex items-center justify-center shrink-0">
-            <span className="text-[10px] font-black text-blue-500 leading-none">FN</span>
-          </span>
+          <span>⚡</span>
           <span>{t('carouselTitle')}</span>
         </h2>
         <Link
           href={`/${locale}/game/fortnite-creative`}
-          className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors shrink-0"
+          className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors shrink-0 px-2 py-1 -mr-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-950/40"
         >
           {tc('seeAll')}
         </Link>

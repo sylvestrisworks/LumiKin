@@ -113,7 +113,7 @@ export default function CarouselRow({ emoji, title, browseHref, games, index }: 
         </h2>
         <Link
           href={browseHref}
-          className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors shrink-0"
+          className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors shrink-0 px-2 py-1 -mr-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-950/40"
         >
           {t('seeAll')}
         </Link>

@@ -196,26 +196,6 @@ export default async function RobloxHubPage({ searchParams }: Props) {
           </>
         )}
 
-        {/* Parent guidance — collapsible BLUF panel */}
-        <details className="group/panel">
-          <summary className="flex items-center justify-between gap-2 cursor-pointer list-none select-none py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-            <span className="flex items-center gap-1.5">
-              <span className="text-red-400">ℹ</span>
-              Roblox parent guide
-            </span>
-            <span className="transition-transform group-open/panel:rotate-180 text-slate-300 dark:text-slate-600">▾</span>
-          </summary>
-          <div className="mt-2 rounded-xl border border-red-100 dark:border-red-900/40 bg-red-50/60 dark:bg-red-950/30 px-4 py-3 text-xs text-slate-600 dark:text-slate-400 space-y-2.5 leading-relaxed">
-            <p className="font-semibold text-slate-700 dark:text-slate-300 text-[11px] uppercase tracking-wide">Bottom line first</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">By default, Roblox allows unfiltered chat and friend requests from strangers.</strong> Enable Account Restrictions immediately — it takes 2 minutes and makes the platform significantly safer for children under 13.</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">Roblox is a platform of 40 million+ user-made games</strong>, not a single game. Quality, safety, and age-appropriateness vary dramatically between experiences. The LumiKin ratings above reflect individual experiences — the platform itself does not guarantee safety.</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">Robux is the in-game currency</strong> used across most popular experiences. Many games are designed around Robux spending — pay-to-win mechanics, exclusive cosmetics, and social comparison of avatar items are common. Set a clear spending policy before your child encounters the first purchase prompt.</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">The chat filter is imperfect.</strong> Children regularly find workarounds (number substitutions, deliberate misspellings). Monitor chat history periodically using the Parent PIN tools, and have an open conversation about what to do if someone says something uncomfortable.</p>
-            <p className="pt-0.5 border-t border-red-100 dark:border-red-900/40 text-slate-500 dark:text-slate-400">
-              <strong className="text-slate-600 dark:text-slate-300">Action:</strong> Roblox settings → Privacy → Account Restrictions (ON). This restricts chat, friend requests, and game access to a pre-screened age-appropriate set. Set a Parent PIN to prevent your child from disabling it.
-            </p>
-          </div>
-        </details>
       </main>
     </div>
   )

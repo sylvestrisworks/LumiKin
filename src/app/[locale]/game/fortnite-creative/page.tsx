@@ -307,26 +307,6 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
           </>
         )}
 
-        {/* Parent guidance — collapsible BLUF panel */}
-        <details className="group/panel">
-          <summary className="flex items-center justify-between gap-2 cursor-pointer list-none select-none py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-            <span className="flex items-center gap-1.5">
-              <span className="text-blue-400">ℹ</span>
-              Fortnite parent guide
-            </span>
-            <span className="transition-transform group-open/panel:rotate-180 text-slate-300 dark:text-slate-600">▾</span>
-          </summary>
-          <div className="mt-2 rounded-xl border border-blue-100 dark:border-blue-900/40 bg-blue-50/60 dark:bg-blue-950/30 px-4 py-3 text-xs text-slate-600 dark:text-slate-400 space-y-2.5 leading-relaxed">
-            <p className="font-semibold text-slate-700 dark:text-slate-300 text-[11px] uppercase tracking-wide">Bottom line first</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">Fortnite Battle Royale has unfiltered voice chat with strangers enabled by default.</strong> Go to Epic Games account settings → Parental Controls and disable voice chat, or set it to friends-only, before your child plays any online mode.</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">Fortnite is five different games in one launcher.</strong> Battle Royale, LEGO Fortnite, Festival, Rocket Racing, and Creative each have different age-appropriateness and risk profiles. Your child may start in LEGO Fortnite and drift into Battle Royale — check which modes they're actually playing.</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">V-Bucks are the shared currency across all modes.</strong> The Battle Pass, cosmetic bundles, and in-map purchases all use V-Bucks. Many Creative maps surface V-Buck spending prompts. Set spending limits in Epic Games account settings or use a prepaid card with a fixed balance.</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">Creative map content can change after our rating.</strong> Each map is rated by our AI at a point in time — creators can update maps. We recommend periodically checking which maps your child plays and watching a few minutes of gameplay with them.</p>
-            <p className="pt-0.5 border-t border-blue-100 dark:border-blue-900/40 text-slate-500 dark:text-slate-400">
-              <strong className="text-slate-600 dark:text-slate-300">Action:</strong> Epic Games account → Parental Controls → set a PIN, disable voice chat, and cap monthly V-Buck spending. Takes under 5 minutes and significantly reduces risk across all Fortnite modes.
-            </p>
-          </div>
-        </details>
       </main>
     </div>
   )

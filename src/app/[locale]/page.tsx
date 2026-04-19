@@ -197,7 +197,10 @@ export default async function HomePage({ params, searchParams }: Props) {
       ? db.select(experienceSelect)
           .from(platformExperiences)
           .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
-          .where(eq(platformExperiences.platformId, fortniteRow.id))
+          .where(and(
+            eq(platformExperiences.platformId, fortniteRow.id),
+            isNotNull(platformExperiences.thumbnailUrl),
+          ))
           .orderBy(desc(experienceScores.curascore))
           .limit(8)
       : Promise.resolve([]),
@@ -326,7 +329,7 @@ export default async function HomePage({ params, searchParams }: Props) {
         <RobloxCarouselRow experiences={robloxExperiences as ExperienceSummary[]} />
 
         {/* Fortnite Creative section */}
-        <FortniteCarouselRow experiences={(fortniteExperiences as ExperienceSummary[]).filter(e => e.thumbnailUrl)} />
+        <FortniteCarouselRow experiences={fortniteExperiences as ExperienceSummary[]} />
 
         {/* About */}
         <section className="border-t border-slate-200 dark:border-slate-700 py-14 pb-16">

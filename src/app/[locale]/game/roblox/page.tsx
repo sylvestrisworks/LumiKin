@@ -144,7 +144,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
           experiences.length > 0 ? (
             <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
               {experiences.map(exp => (
-                <div key={exp.slug} className="snap-start shrink-0 w-40 sm:w-auto">
+                <div key={exp.slug} className="snap-start shrink-0 w-44 sm:w-auto">
                   <ExperienceCard exp={exp} />
                 </div>
               ))}
@@ -164,7 +164,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
                 </h2>
                 <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
                   {scored.map(exp => (
-                    <div key={exp.slug} className="snap-start shrink-0 w-40 sm:w-auto">
+                    <div key={exp.slug} className="snap-start shrink-0 w-44 sm:w-auto">
                       <ExperienceCard exp={exp} />
                     </div>
                   ))}
@@ -180,7 +180,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
                 </h2>
                 <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
                   {unscored.map(exp => (
-                    <div key={exp.slug} className="snap-start shrink-0 w-40 sm:w-auto">
+                    <div key={exp.slug} className="snap-start shrink-0 w-44 sm:w-auto">
                       <ExperienceCard exp={exp} />
                     </div>
                   ))}

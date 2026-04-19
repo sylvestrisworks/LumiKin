@@ -66,7 +66,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ slu
     requiresInternet: game.requiresInternet,
     hasStrangerChat:  game.hasStrangerChat ?? false,
     chatModeration:   game.chatModeration,
-    updatedAt:        game.updatedAt?.toISOString() ?? null,
+    updatedAt:           game.updatedAt?.toISOString() ?? null,
+    bundledOnlineNote:   game.bundledOnlineNote ?? null,
   }
 
   const serializedScores: SerializedScores | null = score ? {

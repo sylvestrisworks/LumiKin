@@ -10,9 +10,9 @@ import { curascoreBg, esrbToAge, ageBadgeColor } from '@/lib/ui'
 
 function CarouselTile({ game }: { game: GameSummary }) {
   return (
-    <Link href={`/game/${game.slug}`} className="group/tile shrink-0 w-36 sm:w-44 snap-start">
+    <Link href={`/game/${game.slug}`} className="group/tile shrink-0 w-44 sm:w-52 snap-start">
       {/* Image */}
-      <div className="relative w-full h-24 sm:h-28 rounded-xl overflow-hidden bg-indigo-100 dark:bg-indigo-900/40">
+      <div className="relative w-full h-28 sm:h-32 rounded-xl overflow-hidden bg-indigo-100 dark:bg-indigo-900/40">
         {game.backgroundImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

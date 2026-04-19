@@ -192,7 +192,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
                 const meta = MODE_META[mode.slug]
                 if (!meta) return null
                 return (
-                  <div key={mode.slug} className="snap-start shrink-0 w-36 sm:w-auto">
+                  <div key={mode.slug} className="snap-start shrink-0 w-44 sm:w-auto">
                   <Link
                     href={`/${locale}/game/${mode.slug}`}
                     className={`group block rounded-xl border border-slate-200 dark:border-slate-700 p-3 bg-white dark:bg-slate-800 hover:shadow-md transition-all ${meta.hoverBorder}`}
@@ -235,7 +235,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
           maps.length > 0 ? (
             <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
               {maps.map(exp => (
-                <div key={exp.slug} className="snap-start shrink-0 w-36 sm:w-auto">
+                <div key={exp.slug} className="snap-start shrink-0 w-44 sm:w-auto">
                   <FortniteCard exp={exp} />
                 </div>
               ))}
@@ -254,7 +254,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
                 </h2>
                 <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
                   {scored.map(exp => (
-                    <div key={exp.slug} className="snap-start shrink-0 w-36 sm:w-auto">
+                    <div key={exp.slug} className="snap-start shrink-0 w-44 sm:w-auto">
                       <FortniteCard exp={exp} />
                     </div>
                   ))}
@@ -269,7 +269,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
                 </h2>
                 <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
                   {unscored.map(exp => (
-                    <div key={exp.slug} className="snap-start shrink-0 w-36 sm:w-auto">
+                    <div key={exp.slug} className="snap-start shrink-0 w-44 sm:w-auto">
                       <FortniteCard exp={exp} />
                     </div>
                   ))}

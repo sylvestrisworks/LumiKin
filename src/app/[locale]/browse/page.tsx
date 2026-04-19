@@ -251,7 +251,7 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
     case 'metacritic': orderBy = [sql`${games.metacriticScore} DESC NULLS LAST`];                              break
     case 'trending':   orderBy = [sql`${games.trendingScore} DESC NULLS LAST`, desc(gameScores.curascore)];    break
     case 'popular':    orderBy = [sql`${games.rawgAdded} DESC NULLS LAST`, sql`${games.metacriticScore} DESC NULLS LAST`]; break
-    default:           orderBy = [desc(gameScores.curascore)];                                                  break
+    default:           orderBy = [desc(gameScores.curascore), sql`${games.rawgAdded} DESC NULLS LAST`, sql`${games.metacriticScore} DESC NULLS LAST`]; break
   }
 
   const where = conditions.length ? and(...conditions) : undefined

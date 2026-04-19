@@ -105,7 +105,7 @@ async function getCarouselRows(platforms: string[], age?: string, locale = 'en')
   trendingCutoff.setMonth(trendingCutoff.getMonth() - 18)
 
   const [topRated, coopPlay, , highBenefit, teamwork, vrGames, beginnerGames, newAndGood, popular, trending] = await Promise.all([
-    db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base()).orderBy(desc(gameScores.curascore)).limit(12),
+    db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base()).orderBy(desc(gameScores.curascore), sql`${games.rawgAdded} DESC NULLS LAST`, sql`${games.metacriticScore} DESC NULLS LAST`).limit(12),
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base(gte(gameScores.socialEmotionalScore, 0.5))).orderBy(desc(gameScores.socialEmotionalScore)).limit(12),
     Promise.resolve([]), // lowRisk — carousel removed, kept for stats counter
     db.select(BASE_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base(gte(gameScores.cognitiveScore, 0.6))).orderBy(desc(gameScores.bds)).limit(12),

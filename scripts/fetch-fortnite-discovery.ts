@@ -80,13 +80,28 @@ function slugify(str: string): string {
 async function main() {
   const browser = await chromium.launch({
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-blink-features=AutomationControlled',
+      '--disable-features=IsolateOrigins,site-per-process',
+    ],
   })
 
   const context = await browser.newContext({
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     viewport:  { width: 1920, height: 1080 },
     locale:    'en-US',
+    extraHTTPHeaders: {
+      'Accept-Language': 'en-US,en;q=0.9',
+    },
+  })
+
+  // Hide headless signals from JS fingerprinting
+  await context.addInitScript(() => {
+    Object.defineProperty(navigator, 'webdriver', { get: () => undefined })
+    Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3] })
   })
 
   const page = await context.newPage()
@@ -113,7 +128,17 @@ async function main() {
   })
 
   console.log('Launching browser and navigating to Fortnite Creative…')
-  await page.goto(CREATIVE_URL, { waitUntil: 'networkidle', timeout: 60_000 })
+  await page.goto(CREATIVE_URL, { waitUntil: 'domcontentloaded', timeout: 60_000 })
+
+  // Wait for Cloudflare challenge to resolve and actual content to appear.
+  // The discovery grid has a data attribute or we fall back to a fixed wait.
+  try {
+    await page.waitForSelector('[data-testid="discovery-panel"], [class*="CreativeDiscovery"], [class*="island-card"]', { timeout: 30_000 })
+    console.log('Discovery grid detected')
+  } catch {
+    console.log('Selector not found — waiting 20s for content to load anyway')
+    await page.waitForTimeout(20_000)
+  }
 
   // Scroll to trigger lazy-loaded panels
   console.log('Scrolling to trigger all panels…')

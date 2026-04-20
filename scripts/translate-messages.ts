@@ -17,7 +17,6 @@ config({ path: resolve(process.cwd(), '.env') })
 
 import fs from 'fs'
 import nodePath from 'path'
-import { GoogleGenAI } from '@google/genai'
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -51,10 +50,10 @@ const targetLocales = langArg
   ? langArg.split(',').map(l => l.trim()).filter(l => SUPPORTED_LOCALES.includes(l))
   : SUPPORTED_LOCALES
 
-// ─── Gemini setup ─────────────────────────────────────────────────────────────
+// ─── Bedrock setup ────────────────────────────────────────────────────────────
 
-const googleAI = new GoogleGenAI({ vertexai: true, project: process.env.GOOGLE_PROJECT_ID!, location: process.env.GOOGLE_LOCATION ?? 'us-central1' })
-const MODEL    = 'gemini-2.5-flash'
+const BEDROCK_MODEL = 'global.anthropic.claude-haiku-4-5-20251001-v1:0'
+const BEDROCK_URL   = `https://bedrock-runtime.us-east-1.amazonaws.com/model/${BEDROCK_MODEL}/invoke`
 
 // ─── Flatten/unflatten helpers ────────────────────────────────────────────────
 
@@ -118,12 +117,26 @@ ${JSON.stringify(strings, null, 2)}
 
 Output: localized JSON with the same keys, copy that sounds like it was written by a native speaker.`
 
-  const res = await googleAI.models.generateContent({
-    model: MODEL,
-    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+  const res = await fetch(BEDROCK_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.AWS_BEARER_TOKEN_BEDROCK}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      anthropic_version: 'bedrock-2023-05-31',
+      max_tokens: 4096,
+      messages: [{ role: 'user', content: prompt }],
+    }),
   })
 
-  const text = res.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+  if (!res.ok) {
+    const errText = await res.text()
+    throw Object.assign(new Error(`Bedrock ${res.status}: ${errText}`), { status: res.status })
+  }
+
+  const data = await res.json()
+  const text: string = data.content?.[0]?.text ?? ''
 
   // Strip any accidental markdown fences
   const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
@@ -132,7 +145,7 @@ Output: localized JSON with the same keys, copy that sounds like it was written 
     return JSON.parse(cleaned)
   } catch {
     console.error(`  [parse error] raw response:\n${text.slice(0, 500)}`)
-    throw new Error(`Failed to parse Gemini JSON response for ${targetLang}`)
+    throw new Error(`Failed to parse Haiku JSON response for ${targetLang}`)
   }
 }
 

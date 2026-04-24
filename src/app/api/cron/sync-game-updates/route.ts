@@ -20,7 +20,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
-import { eq, inArray, lt, isNotNull, sql } from 'drizzle-orm'
+import { and, eq, inArray, lt, sql } from 'drizzle-orm'
 
 export const maxDuration = 60
 
@@ -107,10 +107,12 @@ export async function GET(req: NextRequest) {
   const staleScores = await db
     .select({ gameId: gameScores.gameId })
     .from(gameScores)
+    .innerJoin(games, eq(gameScores.gameId, games.id))
     .where(
-      sql`${gameScores.calculatedAt} < ${staleCutoff} AND ${gameScores.gameId} IN (
-        SELECT id FROM games WHERE needs_rescore = false
-      )`
+      and(
+        lt(gameScores.calculatedAt, staleCutoff),
+        eq(games.needsRescore, false),
+      )
     )
 
   if (staleScores.length > 0) {

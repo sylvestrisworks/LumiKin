@@ -832,5 +832,34 @@
     "title": "Föräldraguider",
     "subtitle": "Djupgående artiklar som hjälper dig att hitta rätt i spelvärlden tillsammans med dina barn.",
     "comingSoon": "Guider kommer snart."
+  },
+  "banner": {
+    "betaTitle": "LumiKin är i beta",
+    "betaBody": "Vi bygger fortfarande. Räkna med att allt inte är perfekt, att spel kan saknas och att funktioner är under utveckling.",
+    "shareFeedback": "Ge feedback"
+  },
+  "cookie": {
+    "title": "Prestation upplåst: Cookie-information",
+    "body": "Till skillnad från vissa spel vi recenserar använder vi bara <bold>en cookie</bold> – en sessionscookie som håller dig inloggad. Ingen spårning. Inga annonser. Inga loot box-odds. Inga mörka mönster.",
+    "statSession": "Session: 1",
+    "statAnalytics": "Analys: cookie-fri",
+    "statAds": "Annonser: 0",
+    "accept": "Förstått – hämta belöning"
+  },
+  "feedback": {
+    "triggerLabel": "Håller du inte med om betyget?",
+    "title": "Ge feedback på det här betyget",
+    "thanks": "Tack – din feedback hjälper oss att hålla betygen korrekta.",
+    "placeholder": "Några detaljer? (valfritt)",
+    "submit": "Skicka",
+    "submitting": "Skickar…",
+    "cancel": "Avbryt",
+    "anonymous": "Anonymt",
+    "errorRetry": "Något gick fel – försök igen.",
+    "typeTooHigh": "Betyget verkar för högt",
+    "typeTooLow": "Betyget verkar för lågt",
+    "typeOutdated": "Betyget är inaktuellt",
+    "typeMissing": "Information saknas",
+    "typeOther": "Något annat"
   }
 }

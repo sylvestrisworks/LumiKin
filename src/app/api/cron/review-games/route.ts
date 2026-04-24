@@ -15,7 +15,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { games, gameScores, reviews, userGames, notifications } from '@/lib/db/schema'
 import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
-import { eq, isNull, or } from 'drizzle-orm'
+import { eq, isNotNull, isNull, or } from 'drizzle-orm'
 import { calculateGameScores } from '@/lib/scoring/engine'
 
 export const maxDuration = 300
@@ -427,7 +427,7 @@ export async function GET(req: NextRequest) {
       })
       .from(games)
       .leftJoin(gameScores, eq(gameScores.gameId, games.id))
-      .where(or(isNull(gameScores.id), eq(games.needsRescore, true)))
+      .where(or(isNull(gameScores.id), isNull(gameScores.curascore), eq(games.needsRescore, true)))
       .limit(MAX_REVIEWS_PER_RUN)
 
     if (pending.length === 0) {

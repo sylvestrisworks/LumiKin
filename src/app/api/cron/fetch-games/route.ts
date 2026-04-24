@@ -98,6 +98,14 @@ export async function GET(req: NextRequest) {
         const msg = err instanceof RawgError ? err.message : String(err)
         console.error(`[fetch-games] RAWG list failed for ${currentGenre} p${currentPage}: ${msg}`)
         errors.push(`${currentGenre}:p${currentPage}`)
+        // Advance past the failed page so the cursor doesn't stall permanently
+        currentPage = 1
+        currentGenreIndex++
+        if (currentGenreIndex >= GENRES.length) {
+          currentGenreIndex = 0
+          currentSweep++
+          if (currentSweep > Object.keys(SWEEP_ORDERINGS).length) currentSweep = 1
+        }
         break
       }
 

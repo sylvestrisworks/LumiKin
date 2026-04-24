@@ -7,18 +7,20 @@ import Link from 'next/link'
 import type { GameCardProps, GameSummary } from '@/types/game'
 import { esrbToAge, ageBadgeColor } from '@/lib/ui'
 
-// ─── Dark pattern labels ──────────────────────────────────────────────────────
+// ─── Dark pattern label keys ─────────────────────────────────────────────────
 
-const DP_LABELS: Record<string, string> = {
-  DP01: 'Gateway Purchase', DP02: 'Confirm-Shaming',   DP03: 'False Scarcity',
-  DP04: 'Currency Obfuscation', DP05: 'Parasocial Prompts', DP06: 'Streak Punishment',
-  DP07: 'Artificial Energy', DP08: 'Social Obligation', DP09: 'Loot Box / Gacha',
-  DP10: 'Pay-to-Skip',      DP11: 'Notification Spam', DP12: 'FOMO Events',
+const DP_KEY: Record<string, string> = {
+  DP01: 'dpGateway', DP02: 'dpConfirm',   DP03: 'dpScarcity',
+  DP04: 'dpCurrency', DP05: 'dpParasocial', DP06: 'dpStreak',
+  DP07: 'dpEnergy', DP08: 'dpSocial', DP09: 'dpLootBox',
+  DP10: 'dpPaySkip', DP11: 'dpNotif', DP12: 'dpFomo',
 }
 
 // ─── Verdict generator ────────────────────────────────────────────────────────
 
-function generateVerdict(a: GameCardProps, b: GameCardProps): string | null {
+type CompareT = ReturnType<typeof useTranslations<'compare'>>
+
+function generateVerdict(t: CompareT, a: GameCardProps, b: GameCardProps): string | null {
   const aS = a.scores; const bS = b.scores
   if (!aS || !bS) return null
 
@@ -39,34 +41,31 @@ function generateVerdict(a: GameCardProps, b: GameCardProps): string | null {
   const socialDiff = Math.abs((aS.socialRisk      ?? 0) - (bS.socialRisk      ?? 0))
   const maxRiskDiff = Math.max(monetDiff, dopDiff, socialDiff)
 
-  let riskLabel = 'overall risk'
-  if (maxRiskDiff > 0.15) {
-    if (maxRiskDiff === monetDiff)  riskLabel = 'monetization pressure'
-    else if (maxRiskDiff === dopDiff) riskLabel = 'addictive design'
-    else                              riskLabel = 'social risk'
-  }
+  const riskLabelKey = maxRiskDiff > 0.15
+    ? (maxRiskDiff === monetDiff ? 'riskLabelMonetization' : maxRiskDiff === dopDiff ? 'riskLabelDopamine' : 'riskLabelSocial')
+    : 'riskLabelOverall'
 
   if (gap < 5) {
-    return `${aName} and ${bName} score similarly overall — the choice comes down to which fits your child's interests and routine best.`
+    return t('verdictTie', { aName, bName })
   }
 
-  let s = `${betterName} scores ${gap} points higher`
-  if (timeDiff >= 30) s += ` and earns ${timeDiff} more minutes of daily playtime`
-  s += '.'
-  if (maxRiskDiff > 0.15) s += ` ${higherRis} carries notably higher ${riskLabel}.`
+  let s = timeDiff >= 30
+    ? t('verdictWithTime', { betterName, gap, timeDiff })
+    : t('verdictNoTime', { betterName, gap })
+  if (maxRiskDiff > 0.15) s += t('verdictRisk', { higherRis, riskLabel: t(riskLabelKey as Parameters<CompareT>[0]) })
   return s
 }
 
 // ─── Monetization tag builder ────────────────────────────────────────────────
 
-function monetTags(g: GameCardProps): string[] {
+function monetTags(t: CompareT, g: GameCardProps): string[] {
   const tags: string[] = []
-  if (g.game.hasLootBoxes)        tags.push('Loot Boxes')
-  if (g.game.hasBattlePass)       tags.push('Battle Pass')
-  if (g.game.hasSubscription)     tags.push('Subscription')
-  if (g.review?.payToWin != null && g.review.payToWin >= 2) tags.push('Pay-to-Win')
-  if (g.game.hasMicrotransactions && tags.length === 0)     tags.push('Microtransactions')
-  if (tags.length === 0 && g.game.basePrice != null && g.game.basePrice > 0) tags.push('One-time Purchase')
+  if (g.game.hasLootBoxes)        tags.push(t('monetLootBoxes'))
+  if (g.game.hasBattlePass)       tags.push(t('monetBattlePass'))
+  if (g.game.hasSubscription)     tags.push(t('monetSubscription'))
+  if (g.review?.payToWin != null && g.review.payToWin >= 2) tags.push(t('monetPayToWin'))
+  if (g.game.hasMicrotransactions && tags.length === 0)     tags.push(t('monetMicrotransactions'))
+  if (tags.length === 0 && g.game.basePrice != null && g.game.basePrice > 0) tags.push(t('monetOneTimePurchase'))
   return tags
 }
 
@@ -401,7 +400,7 @@ function TagsSection({ a, b }: { a: GameCardProps; b: GameCardProps }) {
             <div className="mb-3">
               <p className="text-[10px] text-slate-400 dark:text-slate-500 text-center mb-1.5">{t('tagsBothUse')}</p>
               <div className="flex flex-wrap gap-1.5 justify-center">
-                {sharedDP.map(p => <Tag key={p} label={DP_LABELS[p] ?? p} color="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300" />)}
+                {sharedDP.map(p => <Tag key={p} label={DP_KEY[p] ? t(DP_KEY[p] as Parameters<CompareT>[0]) : p} color="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300" />)}
               </div>
             </div>
           )}
@@ -410,13 +409,13 @@ function TagsSection({ a, b }: { a: GameCardProps; b: GameCardProps }) {
             <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-start">
               <div className="flex flex-wrap gap-1 justify-end">
                 {uniqueADP.length > 0
-                  ? uniqueADP.map(p => <Tag key={p} label={DP_LABELS[p] ?? p} color="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300" />)
+                  ? uniqueADP.map(p => <Tag key={p} label={DP_KEY[p] ? t(DP_KEY[p] as Parameters<CompareT>[0]) : p} color="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300" />)
                   : <span className="text-[11px] text-slate-300 dark:text-slate-600 italic">—</span>}
               </div>
               <div className="text-[10px] text-slate-400 dark:text-slate-500 text-center self-center px-1 min-w-[70px]">{t('tagsOnly')}</div>
               <div className="flex flex-wrap gap-1">
                 {uniqueBDP.length > 0
-                  ? uniqueBDP.map(p => <Tag key={p} label={DP_LABELS[p] ?? p} color="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300" />)
+                  ? uniqueBDP.map(p => <Tag key={p} label={DP_KEY[p] ? t(DP_KEY[p] as Parameters<CompareT>[0]) : p} color="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300" />)
                   : <span className="text-[11px] text-slate-300 dark:text-slate-600 italic">—</span>}
               </div>
             </div>
@@ -482,9 +481,9 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
   const gap   = Math.abs(aCura - bCura)
   const winner = gap >= 5 ? (aCura > bCura ? a.game.title : b.game.title) : null
 
-  const verdict = generateVerdict(a, b)
-  const aMonetTags = monetTags(a)
-  const bMonetTags = monetTags(b)
+  const verdict = generateVerdict(t, a, b)
+  const aMonetTags = monetTags(t, a)
+  const bMonetTags = monetTags(t, b)
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
@@ -678,36 +677,12 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
 // ─── Curated comparison pairs ────────────────────────────────────────────────
 
 const CURATED_PAIRS = [
-  {
-    label: 'The classic parenting debate',
-    a: { slug: 'fortnite',   name: 'Fortnite' },
-    b: { slug: 'minecraft',  name: 'Minecraft' },
-  },
-  {
-    label: 'Two giants of kids gaming',
-    a: { slug: 'roblox',     name: 'Roblox' },
-    b: { slug: 'minecraft',  name: 'Minecraft' },
-  },
-  {
-    label: 'Family racing showdown',
-    a: { slug: 'mario-kart-8-deluxe', name: 'Mario Kart 8' },
-    b: { slug: 'rocket-league',       name: 'Rocket League' },
-  },
-  {
-    label: 'Chill & creative',
-    a: { slug: 'animal-crossing-new-horizons', name: 'Animal Crossing' },
-    b: { slug: 'stardew-valley',               name: 'Stardew Valley' },
-  },
-  {
-    label: 'Co-op for families',
-    a: { slug: 'split-fiction', name: 'Split Fiction' },
-    b: { slug: 'portal-2',      name: 'Portal 2' },
-  },
-  {
-    label: 'Free-to-play face-off',
-    a: { slug: 'genshin-impact', name: 'Genshin Impact' },
-    b: { slug: 'fortnite',       name: 'Fortnite' },
-  },
+  { labelKey: 'curatedClassic', a: { slug: 'fortnite',   name: 'Fortnite' },          b: { slug: 'minecraft',  name: 'Minecraft' } },
+  { labelKey: 'curatedGiants',  a: { slug: 'roblox',     name: 'Roblox' },            b: { slug: 'minecraft',  name: 'Minecraft' } },
+  { labelKey: 'curatedRacing',  a: { slug: 'mario-kart-8-deluxe', name: 'Mario Kart 8' }, b: { slug: 'rocket-league', name: 'Rocket League' } },
+  { labelKey: 'curatedChill',   a: { slug: 'animal-crossing-new-horizons', name: 'Animal Crossing' }, b: { slug: 'stardew-valley', name: 'Stardew Valley' } },
+  { labelKey: 'curatedCoop',    a: { slug: 'split-fiction', name: 'Split Fiction' },   b: { slug: 'portal-2',  name: 'Portal 2' } },
+  { labelKey: 'curatedF2P',     a: { slug: 'genshin-impact', name: 'Genshin Impact' }, b: { slug: 'fortnite',  name: 'Fortnite' } },
 ]
 
 function PopularComparisons({
@@ -746,7 +721,7 @@ function PopularComparisons({
               className="group text-left rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 hover:border-indigo-300 dark:hover:border-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all disabled:opacity-50"
             >
               <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-1.5">
-                {pair.label}
+                {t(pair.labelKey as Parameters<CompareT>[0])}
               </p>
               {isLoading ? (
                 <div className="flex items-center gap-2">

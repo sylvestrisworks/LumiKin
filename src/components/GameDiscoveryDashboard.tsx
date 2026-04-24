@@ -18,14 +18,14 @@ const AGE_SEGMENTS = [
 ]
 
 const CATEGORY_PILLS = [
-  { icon: Brain,    emoji: '🧩', label: 'High Brain Power',        href: '/browse?benefits=problem-solving' },
-  { icon: Ban,      emoji: '🛑', label: 'Zero Microtransactions',  href: '/browse?compliance=DSA'           },
-  { icon: Users,    emoji: '🛋️', label: 'Family Co-Op',           href: '/browse?benefits=teamwork'        },
-  { icon: Timer,    emoji: '⏱️', label: 'Short Sessions',         href: '/browse?time=30'                  },
-  { icon: Sparkles, emoji: '🎨', label: 'Creative Play',          href: '/browse?genres=Puzzle'            },
-  { icon: Star,     emoji: '🏆', label: 'Top Rated',              href: '/browse?sort=curascore'           },
-  { icon: Leaf,     emoji: '🌱', label: 'Great for Young Kids',   href: '/browse?age=E'                    },
-  { icon: BookOpen, emoji: '🧠', label: 'Learning Focus',         href: '/browse?benefits=problem-solving' },
+  { icon: Brain,    emoji: '🧩', labelKey: 'pillHighBrainPower', href: '/browse?benefits=problem-solving' },
+  { icon: Ban,      emoji: '🛑', labelKey: 'pillZeroMicro',      href: '/browse?compliance=DSA'           },
+  { icon: Users,    emoji: '🛋️', labelKey: 'pillFamilyCoOp',    href: '/browse?benefits=teamwork'        },
+  { icon: Timer,    emoji: '⏱️', labelKey: 'pillShortSessions', href: '/browse?time=30'                  },
+  { icon: Sparkles, emoji: '🎨', labelKey: 'pillCreativePlay',   href: '/browse?genres=Puzzle'            },
+  { icon: Star,     emoji: '🏆', labelKey: 'pillTopRated',       href: '/browse?sort=curascore'           },
+  { icon: Leaf,     emoji: '🌱', labelKey: 'pillYoungKids',      href: '/browse?age=E'                    },
+  { icon: BookOpen, emoji: '🧠', labelKey: 'pillLearningFocus',  href: '/browse?benefits=problem-solving' },
 ]
 
 const DID_YOU_KNOW = [
@@ -91,12 +91,13 @@ function StatStrip({ stats, t }: { stats: CatalogStats; t: T }) {
 }
 
 function DidYouKnow() {
+  const t = useTranslations('discover')
   const [idx, setIdx] = useState(0)
   const item = DID_YOU_KNOW[idx]
   return (
     <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-2xl p-5">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-black uppercase tracking-widest text-indigo-400 dark:text-indigo-500">Did you know?</p>
+        <p className="text-xs font-black uppercase tracking-widest text-indigo-400 dark:text-indigo-500">{t('didYouKnow')}</p>
         <div className="flex gap-1">
           {DID_YOU_KNOW.map((_, i) => (
             <button
@@ -114,38 +115,39 @@ function DidYouKnow() {
         <button
           onClick={() => setIdx(i => (i - 1 + DID_YOU_KNOW.length) % DID_YOU_KNOW.length)}
           className="text-xs text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-semibold transition-colors"
-        >← Prev</button>
+        >{t('prev')}</button>
         <button
           onClick={() => setIdx(i => (i + 1) % DID_YOU_KNOW.length)}
           className="text-xs text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-semibold transition-colors"
-        >Next →</button>
+        >{t('next')}</button>
       </div>
     </div>
   )
 }
 
 function SafeSwap({ swap }: { swap: SwapPair }) {
+  const t = useTranslations('discover')
   const [expanded, setExpanded] = useState(false)
-  const RISK_LABELS: Record<string, string> = {
-    monetization: 'Monetization Risk',
-    dopamine:     'Compulsive Design',
-    social:       'Social Risk',
-    general:      'High Risk',
+  const RISK_LABELS: Record<string, Parameters<T>[0]> = {
+    monetization: 'riskMonetization',
+    dopamine:     'riskDopamine',
+    social:       'riskSocial',
+    general:      'riskGeneral',
   }
   return (
     <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
       {/* Header */}
       <div className="px-5 pt-5 pb-3">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Safe Swap</span>
+          <span className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">{t('safeSwap')}</span>
           <span className={`text-xs font-bold px-2 py-0.5 rounded-full text-white ${
             swap.from.riskType === 'monetization' ? 'bg-red-500' :
             swap.from.riskType === 'dopamine'     ? 'bg-orange-500' :
             swap.from.riskType === 'social'        ? 'bg-purple-500' : 'bg-slate-500'
-          }`}>{RISK_LABELS[swap.from.riskType]}</span>
+          }`}>{t(RISK_LABELS[swap.from.riskType])}</span>
         </div>
         <p className="text-lg font-black tracking-tight text-slate-800 dark:text-slate-100">
-          Is your child asking for{' '}
+          {t('safeSwapAskingFor')}{' '}
           <Link href={swap.from.href} className="text-red-500 dark:text-red-400 hover:underline">{swap.from.title}</Link>?
         </p>
       </div>
@@ -155,7 +157,7 @@ function SafeSwap({ swap }: { swap: SwapPair }) {
         onClick={() => setExpanded(e => !e)}
         className="w-full flex items-center justify-between px-5 py-2.5 bg-red-50 dark:bg-red-900/20 border-y border-red-100 dark:border-red-800 text-left hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
       >
-        <span className="text-xs font-semibold text-red-700 dark:text-red-400">Why is this a concern?</span>
+        <span className="text-xs font-semibold text-red-700 dark:text-red-400">{t('safeSwapWhyConcern')}</span>
         {expanded ? <ChevronUp size={14} className="text-red-400 dark:text-red-500" /> : <ChevronDown size={14} className="text-red-400 dark:text-red-500" />}
       </button>
       {expanded && (
@@ -180,7 +182,7 @@ function SafeSwap({ swap }: { swap: SwapPair }) {
 
       {/* Alternatives */}
       <div className="px-5 py-4">
-        <p className="text-xs font-black uppercase tracking-widest text-emerald-500 dark:text-emerald-400 mb-3">Better alternatives</p>
+        <p className="text-xs font-black uppercase tracking-widest text-emerald-500 dark:text-emerald-400 mb-3">{t('safeSwapBetterAlt')}</p>
         <div className="space-y-3">
           {swap.alternatives.map((alt) => (
             <Link
@@ -282,18 +284,18 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
         <div className="flex gap-2.5 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {CATEGORY_PILLS.map((pill) => (
             <Link
-              key={pill.label}
+              key={pill.labelKey}
               href={'/' + locale + pill.href}
-              onClick={() => setActiveCategory(activeCategory === pill.label ? null : pill.label)}
+              onClick={() => setActiveCategory(activeCategory === pill.labelKey ? null : pill.labelKey)}
               className={`shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold
                 border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm
-                ${activeCategory === pill.label
+                ${activeCategory === pill.labelKey
                   ? 'bg-indigo-100 dark:bg-indigo-900/40 border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 -translate-y-0.5 shadow-sm'
                   : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-indigo-200 dark:hover:border-indigo-700 hover:text-indigo-600 dark:hover:text-indigo-400'
                 }`}
             >
               <span>{pill.emoji}</span>
-              <span>{pill.label}</span>
+              <span>{t(pill.labelKey as Parameters<T>[0])}</span>
             </Link>
           ))}
         </div>

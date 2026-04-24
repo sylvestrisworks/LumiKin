@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { getLocale } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { sanityClient } from '@/sanity/lib/client'
 import { postsQuery } from '@/sanity/lib/queries'
 import { urlFor } from '@/sanity/lib/image'
@@ -30,7 +30,7 @@ function formatDate(iso?: string) {
 }
 
 export default async function BlogPage() {
-  const locale = await getLocale()
+  const [locale, t] = await Promise.all([getLocale(), getTranslations('blog')])
   const posts: SanityPost[] = await sanityClient
     ?.fetch(postsQuery, { locale })
     .catch(() => []) ?? []
@@ -44,30 +44,30 @@ export default async function BlogPage() {
 
         <div className="mb-8">
           <nav className="text-xs text-slate-400 dark:text-slate-500 mb-3">
-            <Link href={`/${locale}/learn`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Learn</Link>
+            <Link href={`/${locale}/learn`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">{t('breadcrumbLearn')}</Link>
             {' / '}
-            <span>Blog & News</span>
+            <span>{t('title')}</span>
           </nav>
-          <h1 className="text-3xl font-black text-slate-900 dark:text-white">Blog & News</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">Gaming from a parenting perspective.</p>
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white">{t('title')}</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">{t('subtitle')}</p>
         </div>
 
         {posts.length === 0 ? (
           <div className="text-center py-24 text-slate-400 dark:text-slate-600">
             <Newspaper size={40} className="mx-auto mb-3 opacity-40" />
-            <p className="font-medium">Posts coming soon.</p>
+            <p className="font-medium">{t('comingSoon')}</p>
           </div>
         ) : (
           <div className="space-y-10">
             {news.length > 0 && (
               <section>
-                <h2 className="text-sm font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">News</h2>
+                <h2 className="text-sm font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">{t('news')}</h2>
                 <PostGrid posts={news} locale={locale} />
               </section>
             )}
             {blogs.length > 0 && (
               <section>
-                <h2 className="text-sm font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">Blog</h2>
+                <h2 className="text-sm font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">{t('posts')}</h2>
                 <PostGrid posts={blogs} locale={locale} />
               </section>
             )}

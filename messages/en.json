@@ -561,7 +561,10 @@
     "loading": "Loading…",
     "error": "Something went wrong",
     "back": "Back",
-    "learnMore": "Learn more"
+    "learnMore": "Learn more",
+    "errorGameBody": "We couldn't load this game page. This is usually a temporary issue.",
+    "tryAgain": "Try again",
+    "goHome": "Go home"
   },
   "dashboard": {
     "title": "Family Dashboard",
@@ -795,5 +798,39 @@
     "cancel": "Cancel",
     "successSub": "Your library has been updated.",
     "nothingNew": "Nothing new to add."
+  },
+  "learn": {
+    "title": "Learn",
+    "subtitle": "Guides, news, and answers to help you make confident decisions about gaming.",
+    "guidesTitle": "Parental Guides",
+    "guidesSub": "In-depth guides on screen time, game safety, and age-appropriate choices.",
+    "blogTitle": "Blog & News",
+    "blogSub": "Gaming news, updates, and commentary from a parenting perspective.",
+    "faqTitle": "FAQ",
+    "faqSub": "How the LumiScore works, what our ratings mean, and how we score games.",
+    "featuredGuides": "Featured Guides",
+    "allGuides": "All guides",
+    "latestBlog": "Latest from the Blog",
+    "allPosts": "All posts",
+    "comingSoon": "Content coming soon.",
+    "catScreenTime": "Screen Time",
+    "catGameSafety": "Game Safety",
+    "catAgeGuide": "Age Guide",
+    "catParentingTips": "Parenting Tips"
+  },
+  "blog": {
+    "breadcrumbLearn": "Learn",
+    "title": "Blog & News",
+    "subtitle": "Gaming from a parenting perspective.",
+    "comingSoon": "Posts coming soon.",
+    "news": "News",
+    "posts": "Blog"
+  },
+  "guides": {
+    "breadcrumbLearn": "Learn",
+    "breadcrumbCurrent": "Guides",
+    "title": "Parental Guides",
+    "subtitle": "In-depth articles to help you navigate gaming with your kids.",
+    "comingSoon": "Guides coming soon."
   }
 }

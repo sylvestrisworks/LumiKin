@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { getLocale } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { sanityClient } from '@/sanity/lib/client'
 import { learnHubQuery } from '@/sanity/lib/queries'
 import { urlFor } from '@/sanity/lib/image'
@@ -13,18 +13,20 @@ export const metadata: Metadata = {
   description: 'Expert guides for parents on screen time, game safety, and age-appropriate gaming. News, tips, and answers to your most common questions.',
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  'screen-time': 'Screen Time',
-  'game-safety': 'Game Safety',
-  'age-guide': 'Age Guide',
-  'parenting-tips': 'Parenting Tips',
+const CATEGORY_COLORS: Record<string, string> = {
+  'screen-time':    'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
+  'game-safety':    'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
+  'age-guide':      'bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300',
+  'parenting-tips': 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
 }
 
-const CATEGORY_COLORS: Record<string, string> = {
-  'screen-time': 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
-  'game-safety': 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
-  'age-guide': 'bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300',
-  'parenting-tips': 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
+type LearnT = Awaited<ReturnType<typeof getTranslations<'learn'>>>
+
+const CATEGORY_KEY: Record<string, Parameters<LearnT>[0]> = {
+  'screen-time':    'catScreenTime',
+  'game-safety':    'catGameSafety',
+  'age-guide':      'catAgeGuide',
+  'parenting-tips': 'catParentingTips',
 }
 
 type SanityGuide = {
@@ -60,26 +62,26 @@ function formatDate(iso?: string) {
 }
 
 export default async function LearnPage() {
-  const locale = await getLocale()
+  const [locale, t] = await Promise.all([getLocale(), getTranslations('learn')])
 
   const data: HubData = await sanityClient
     ?.fetch(learnHubQuery, { locale })
     .catch(() => ({ featuredGuides: [], recentPosts: [], faqCount: 0 }))
     ?? { featuredGuides: [], recentPosts: [], faqCount: 0 }
 
-  const { featuredGuides, recentPosts, faqCount } = data
+  const { featuredGuides, recentPosts } = data
 
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <div className="max-w-5xl mx-auto px-4 py-12 space-y-16">
 
-        {/* ── Hero ─────────────────────────────────────────────────────── */}
+        {/* ── Hero ─────────────────────────────────────────────────── */}
         <div className="text-center space-y-3">
           <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-            Learn
+            {t('title')}
           </h1>
           <p className="text-lg text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
-            Guides, news, and answers to help you make confident decisions about gaming.
+            {t('subtitle')}
           </p>
         </div>
 
@@ -89,24 +91,24 @@ export default async function LearnPage() {
             <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center mb-4">
               <BookOpen size={20} className="text-indigo-600 dark:text-indigo-400" />
             </div>
-            <h2 className="font-black text-slate-900 dark:text-white mb-1 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">Parental Guides</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">In-depth guides on screen time, game safety, and age-appropriate choices.</p>
+            <h2 className="font-black text-slate-900 dark:text-white mb-1 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">{t('guidesTitle')}</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{t('guidesSub')}</p>
           </Link>
 
           <Link href={`/${locale}/blog`} className="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-md transition-all">
             <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center mb-4">
               <Newspaper size={20} className="text-emerald-600 dark:text-emerald-400" />
             </div>
-            <h2 className="font-black text-slate-900 dark:text-white mb-1 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">Blog & News</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Gaming news, updates, and commentary from a parenting perspective.</p>
+            <h2 className="font-black text-slate-900 dark:text-white mb-1 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">{t('blogTitle')}</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{t('blogSub')}</p>
           </Link>
 
           <Link href={`/${locale}/faq`} className="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-md transition-all">
             <div className="w-10 h-10 bg-violet-50 dark:bg-violet-900/30 rounded-xl flex items-center justify-center mb-4">
               <HelpCircle size={20} className="text-violet-600 dark:text-violet-400" />
             </div>
-            <h2 className="font-black text-slate-900 dark:text-white mb-1 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">FAQ</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">How the LumiScore works, what our ratings mean, and how we score games.</p>
+            <h2 className="font-black text-slate-900 dark:text-white mb-1 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">{t('faqTitle')}</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{t('faqSub')}</p>
           </Link>
         </div>
 
@@ -114,9 +116,9 @@ export default async function LearnPage() {
         {featuredGuides.length > 0 && (
           <section>
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-xl font-black text-slate-900 dark:text-white">Featured Guides</h2>
+              <h2 className="text-xl font-black text-slate-900 dark:text-white">{t('featuredGuides')}</h2>
               <Link href={`/${locale}/guides`} className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
-                All guides <ArrowRight size={14} />
+                {t('allGuides')} <ArrowRight size={14} />
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -135,7 +137,7 @@ export default async function LearnPage() {
                   <div className="p-4">
                     {guide.category && (
                       <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${CATEGORY_COLORS[guide.category] ?? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400'} mb-2 inline-block`}>
-                        {CATEGORY_LABELS[guide.category] ?? guide.category}
+                        {CATEGORY_KEY[guide.category] ? t(CATEGORY_KEY[guide.category]) : guide.category}
                       </span>
                     )}
                     <h3 className="font-bold text-slate-900 dark:text-white text-sm leading-snug group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">
@@ -155,9 +157,9 @@ export default async function LearnPage() {
         {recentPosts.length > 0 && (
           <section>
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-xl font-black text-slate-900 dark:text-white">Latest from the Blog</h2>
+              <h2 className="text-xl font-black text-slate-900 dark:text-white">{t('latestBlog')}</h2>
               <Link href={`/${locale}/blog`} className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
-                All posts <ArrowRight size={14} />
+                {t('allPosts')} <ArrowRight size={14} />
               </Link>
             </div>
             <div className="space-y-3">
@@ -198,7 +200,7 @@ export default async function LearnPage() {
         {featuredGuides.length === 0 && recentPosts.length === 0 && (
           <div className="text-center py-16 text-slate-400 dark:text-slate-600">
             <BookOpen size={40} className="mx-auto mb-3 opacity-40" />
-            <p className="font-medium">Content coming soon.</p>
+            <p className="font-medium">{t('comingSoon')}</p>
           </div>
         )}
 

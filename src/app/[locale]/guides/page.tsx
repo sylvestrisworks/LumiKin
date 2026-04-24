@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { getLocale } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { sanityClient } from '@/sanity/lib/client'
 import { guidesQuery } from '@/sanity/lib/queries'
 import { urlFor } from '@/sanity/lib/image'
@@ -13,18 +13,20 @@ export const metadata: Metadata = {
   description: 'In-depth guides for parents on screen time limits, game safety, age-appropriate gaming, and building healthy habits around video games.',
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  'screen-time': 'Screen Time',
-  'game-safety': 'Game Safety',
-  'age-guide': 'Age Guide',
-  'parenting-tips': 'Parenting Tips',
+const CATEGORY_COLORS: Record<string, string> = {
+  'screen-time':    'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
+  'game-safety':    'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
+  'age-guide':      'bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300',
+  'parenting-tips': 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
 }
 
-const CATEGORY_COLORS: Record<string, string> = {
-  'screen-time': 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
-  'game-safety': 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
-  'age-guide': 'bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300',
-  'parenting-tips': 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
+type LearnT = Awaited<ReturnType<typeof getTranslations<'learn'>>>
+
+const CATEGORY_KEY: Record<string, Parameters<LearnT>[0]> = {
+  'screen-time':    'catScreenTime',
+  'game-safety':    'catGameSafety',
+  'age-guide':      'catAgeGuide',
+  'parenting-tips': 'catParentingTips',
 }
 
 type SanityGuide = {
@@ -43,7 +45,11 @@ function formatDate(iso?: string) {
 }
 
 export default async function GuidesPage() {
-  const locale = await getLocale()
+  const [locale, t, tLearn] = await Promise.all([
+    getLocale(),
+    getTranslations('guides'),
+    getTranslations('learn'),
+  ])
   const guides: SanityGuide[] = await sanityClient
     ?.fetch(guidesQuery, { locale })
     .catch(() => []) ?? []
@@ -54,18 +60,18 @@ export default async function GuidesPage() {
 
         <div className="mb-8">
           <nav className="text-xs text-slate-400 dark:text-slate-500 mb-3">
-            <Link href={`/${locale}/learn`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Learn</Link>
+            <Link href={`/${locale}/learn`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">{t('breadcrumbLearn')}</Link>
             {' / '}
-            <span>Guides</span>
+            <span>{t('breadcrumbCurrent')}</span>
           </nav>
-          <h1 className="text-3xl font-black text-slate-900 dark:text-white">Parental Guides</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">In-depth articles to help you navigate gaming with your kids.</p>
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white">{t('title')}</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">{t('subtitle')}</p>
         </div>
 
         {guides.length === 0 ? (
           <div className="text-center py-24 text-slate-400 dark:text-slate-600">
             <BookOpen size={40} className="mx-auto mb-3 opacity-40" />
-            <p className="font-medium">Guides coming soon.</p>
+            <p className="font-medium">{t('comingSoon')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -86,7 +92,7 @@ export default async function GuidesPage() {
                 <div className="p-5">
                   {guide.category && (
                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full inline-block mb-2 ${CATEGORY_COLORS[guide.category] ?? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400'}`}>
-                      {CATEGORY_LABELS[guide.category] ?? guide.category}
+                      {CATEGORY_KEY[guide.category] ? tLearn(CATEGORY_KEY[guide.category]) : guide.category}
                     </span>
                   )}
                   <h2 className="font-bold text-slate-900 dark:text-white leading-snug group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">

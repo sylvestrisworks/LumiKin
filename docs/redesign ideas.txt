@@ -1,0 +1,42 @@
+1. Ditch the Default Typography
+AI almost always defaults to standard sans-serif fonts like Inter, Roboto, or standard system fonts. Changing your typography is the fastest way to change the vibe.
+
+Mix it up: Pair a character-rich Serif font for your headings (like Playfair Display, Merriweather, or Fraunces) with a clean Sans-serif for body text.
+
+Go bold: If it fits your brand, try a brutalist or geometric font (like Space Grotesk or Syne) for large, impactful headlines.
+
+Adjust weights: Stop using standard font-semibold. Try extreme weights, like font-black for massive impact or font-light for elegance.
+
+2. Move Away from "Tailwind Grays and Blues"
+The default AI color palette usually leans heavily on Tailwind's zinc, slate, and blue scales.
+
+Use an opinionated palette: Choose warmer off-whites (like a subtle cream or bone color) instead of stark white or cool gray for backgrounds.
+
+Unexpected accents: Instead of a standard primary blue button, try neon accents, deep earthy tones, or pastel highlights, depending on your brand.
+
+Monochrome with a twist: Try a highly saturated dark mode (deep purple or forest green backgrounds instead of black/dark gray).
+
+3. Break the Grid and Asymmetry
+AI generators love 3-column grids, centered hero sections, and perfectly symmetrical cards.
+
+Asymmetrical layouts: Put your hero text to the far left and a large, overlapping image bleeding off the right side of the screen.
+
+Varied sizing: If you have a grid of features, make one card span two columns (col-span-2) while the others are single columns to create visual interest (the "Bento box" style, but varied).
+
+Remove the containers: Stop putting everything inside a <div class="max-w-6xl mx-auto">. Let some elements stretch full-bleed across the entire screen.
+
+4. Swap Out the Icons
+AI code generators almost exclusively use Lucide React or Heroicons, which immediately gives away the "AI-generated SaaS" look.
+
+Change the icon family: Switch to a set with a different flavor, like Phosphor Icons (for a slightly softer, customized look) or Remix Icon.
+
+Use illustrations: Replace icons entirely with custom SVGs, abstract shapes, or even high-quality cut-out photography.
+
+5. Rethink Borders, Shadows, and Texture
+The classic AI card has a border-gray-200 and a shadow-sm.
+
+Neo-brutalism: Use thick, solid black borders (border-2 border-black) with hard, solid shadows (shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]) for a trendy, punchy look.
+
+Soft and glowing: Remove borders entirely and use large, highly blurred, colored shadows behind elements to make them look like they are glowing.
+
+Add texture: A very subtle CSS noise/grain overlay can immediately make a site feel less sterile and more organic.

@@ -8,6 +8,11 @@
 # Build output
 .next/
 out/
+dist/
+
+# Auto-generated
+.sanity/
+docs/lumikin.org-Coverage-*/
 
 # Dependencies
 node_modules/

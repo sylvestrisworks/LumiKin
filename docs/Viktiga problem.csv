@@ -1,0 +1,8 @@
+Skäl,Källa,Verifiering,Sidor
+Alternativ sida med korrekt kanonisk tagg,Webbplats,Misslyckades,3761
+Sida med omdirigering,Webbplats,Misslyckades,1500
+Dubblett utan att användaren valt en kanonisk sida,Webbplats,Har inte startats,559
+Blockerad av robots.txt,Webbplats,Har inte startats,23
+Upptäckt – inte indexerad för närvarande,Googles system,Har inte startats,10217
+Genomsökt – inte indexerad för närvarande,Googles system,Har inte startats,1475
+Server-fel (5xx),Webbplats,Startat,419

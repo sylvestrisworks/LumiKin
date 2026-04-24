@@ -1,0 +1,47 @@
+name: Coverage Report
+
+on:
+  schedule:
+    - cron: '0 8 * * *'  # 08:00 UTC daily — after all nightly jobs have run
+  workflow_dispatch:
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run coverage report
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$APP_URL" ]; then echo "::error::APP_URL missing"; exit 1; fi
+          if [ -z "$CRON_SECRET" ]; then echo "::error::CRON_SECRET missing"; exit 1; fi
+
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X GET \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "${APP_URL}/api/cron/coverage-report")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+
+          echo "Status: $HTTP_CODE"
+          echo "$BODY" | python3 -m json.tool 2>/dev/null || echo "$BODY"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::coverage-report failed with status $HTTP_CODE"
+            exit 1
+          fi
+
+          # Surface key numbers as step summary
+          COVERAGE=$(echo "$BODY" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['games']['coverage'])" 2>/dev/null || echo "?")
+          SCORED=$(echo "$BODY"   | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['games']['scored'])"   2>/dev/null || echo "?")
+          TOTAL=$(echo "$BODY"    | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['games']['total'])"    2>/dev/null || echo "?")
+          STALE=$(echo "$BODY"    | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['games']['stale'])"    2>/dev/null || echo "?")
+          AVG=$(echo "$BODY"      | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['games']['avgCurascore'])" 2>/dev/null || echo "?")
+
+          echo "## DB Coverage — $(date -u +%Y-%m-%d)" >> "$GITHUB_STEP_SUMMARY"
+          echo "| | |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Games scored | $SCORED / $TOTAL ($COVERAGE) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Stale (>180d) | $STALE |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Avg LumiScore | $AVG |" >> "$GITHUB_STEP_SUMMARY"

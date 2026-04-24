@@ -1,0 +1,40 @@
+name: Sitemap Ping
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # 09:00 UTC every Monday
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping search engines
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+        run: |
+          if [ -z "$APP_URL" ]; then echo "::error::APP_URL missing"; exit 1; fi
+
+          SITEMAP="${APP_URL}/sitemap.xml"
+          echo "Pinging with sitemap: $SITEMAP"
+
+          # Google
+          GOOGLE=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://www.google.com/ping?sitemap=${SITEMAP}")
+          echo "Google: $GOOGLE"
+
+          # Bing
+          BING=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://www.bing.com/ping?sitemap=${SITEMAP}")
+          echo "Bing: $BING"
+
+          if [ "$GOOGLE" != "200" ] && [ "$BING" != "200" ]; then
+            echo "::error::Both pings failed (Google: $GOOGLE, Bing: $BING)"
+            exit 1
+          fi
+
+          echo "## Sitemap Ping — $(date -u +%Y-%m-%d)" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Engine | Status |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Google | $GOOGLE |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Bing   | $BING |" >> "$GITHUB_STEP_SUMMARY"

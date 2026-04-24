@@ -832,5 +832,34 @@
     "title": "Eltern-Ratgeber",
     "subtitle": "Ausführliche Artikel, die dir helfen, Gaming mit deinen Kindern besser zu verstehen und zu begleiten.",
     "comingSoon": "Ratgeber folgen bald."
+  },
+  "banner": {
+    "betaTitle": "LumiKin ist noch in der Beta",
+    "betaBody": "Wir bauen noch fleißig. Rechne mit kleinen Fehlern, fehlenden Spielen und Funktionen, die noch nicht ganz fertig sind.",
+    "shareFeedback": "Gib uns Feedback"
+  },
+  "cookie": {
+    "title": "Erfolg freigeschaltet: Cookie-Hinweis",
+    "body": "Im Gegensatz zu manchen Spielen, die wir bewerten, nutzen wir nur <bold>einen Cookie</bold> – einen Session-Cookie, der dich angemeldet lässt. Kein Tracking. Keine Werbung. Keine Lootbox-Chancen. Keine dunklen Tricks.",
+    "statSession": "Sitzung: 1",
+    "statAnalytics": "Analyse: Cookie-frei",
+    "statAds": "Werbung: 0",
+    "accept": "Verstanden – Belohnung abholen"
+  },
+  "feedback": {
+    "triggerLabel": "Du bist mit dieser Bewertung nicht einverstanden?",
+    "title": "Gib uns Feedback zu dieser Bewertung",
+    "thanks": "Danke – dein Feedback hilft uns, die Bewertungen aktuell und genau zu halten.",
+    "placeholder": "Weitere Details? (optional)",
+    "submit": "Senden",
+    "submitting": "Wird gesendet…",
+    "cancel": "Abbrechen",
+    "anonymous": "Anonym",
+    "errorRetry": "Da ist etwas schiefgelaufen – bitte versuch es noch einmal.",
+    "typeTooHigh": "Bewertung scheint zu hoch",
+    "typeTooLow": "Bewertung scheint zu niedrig",
+    "typeOutdated": "Bewertung ist veraltet",
+    "typeMissing": "Informationen fehlen",
+    "typeOther": "Etwas anderes"
   }
 }

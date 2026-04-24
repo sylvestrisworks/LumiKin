@@ -1,8 +1,6 @@
 name: Nightly CodeRabbit Review
 
 on:
-  schedule:
-    - cron: '0 1 * * *'  # 01:00 UTC — after all crons, before workday
   workflow_dispatch:
 
 permissions:

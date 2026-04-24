@@ -561,7 +561,10 @@
     "loading": "Chargement en cours…",
     "error": "Une erreur est survenue",
     "back": "Retour",
-    "learnMore": "En savoir plus"
+    "learnMore": "En savoir plus",
+    "errorGameBody": "Nous n'avons pas pu charger cette page de jeu. Il s'agit généralement d'un problème temporaire.",
+    "tryAgain": "Réessayer",
+    "goHome": "Retour à l'accueil"
   },
   "dashboard": {
     "title": "Tableau de bord familial",
@@ -795,5 +798,39 @@
     "cancel": "Annuler",
     "successSub": "Votre bibliothèque a été mise à jour.",
     "nothingNew": "Rien de nouveau à ajouter."
+  },
+  "learn": {
+    "title": "Apprendre",
+    "subtitle": "Des guides, des actualités et des réponses pour vous aider à prendre des décisions éclairées concernant le jeu vidéo.",
+    "guidesTitle": "Guides Parentaux",
+    "guidesSub": "Des guides approfondis sur le temps d'écran, la sécurité des jeux et les choix adaptés à l'âge.",
+    "blogTitle": "Blog & Actualités",
+    "blogSub": "Actualités, mises à jour et commentaires sur le jeu vidéo, vus sous l'angle parental.",
+    "faqTitle": "FAQ",
+    "faqSub": "Comment fonctionne le LumiScore, ce que signifient nos évaluations et comment nous notons les jeux.",
+    "featuredGuides": "Guides en vedette",
+    "allGuides": "Tous les guides",
+    "latestBlog": "Derniers articles du blog",
+    "allPosts": "Tous les articles",
+    "comingSoon": "Contenu à venir.",
+    "catScreenTime": "Temps d'écran",
+    "catGameSafety": "Sécurité des jeux",
+    "catAgeGuide": "Guide par âge",
+    "catParentingTips": "Conseils parentaux"
+  },
+  "blog": {
+    "breadcrumbLearn": "Apprendre",
+    "title": "Blog & Actualités",
+    "subtitle": "Le jeu vidéo sous l'angle parental.",
+    "comingSoon": "Articles à venir.",
+    "news": "Actualités",
+    "posts": "Blog"
+  },
+  "guides": {
+    "breadcrumbLearn": "Découvrir",
+    "breadcrumbCurrent": "Guides",
+    "title": "Guides parentaux",
+    "subtitle": "Des articles détaillés pour vous accompagner dans l'univers du jeu vidéo avec vos enfants.",
+    "comingSoon": "Guides bientôt disponibles."
   }
 }

@@ -6,10 +6,10 @@
     "browse": "Navegar",
     "compare": "Comparar",
     "learn": "Aprender",
+    "library": "Biblioteca",
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
-    "search": "Buscar",
-    "library": "Biblioteca"
+    "search": "Buscar"
   },
   "footer": {
     "brand": "LumiKin",
@@ -50,8 +50,8 @@
     "carouselTeamwork": "Juega en equipo",
     "carouselVr": "RV y RA",
     "carouselBeginner": "Para quienes empiezan a jugar",
-    "carouselNewGood": "Nuevos y recomendados",
     "carouselDopamine": "Trampas de dopamina",
+    "carouselNewGood": "Nuevos y recomendados",
     "featureScience": "Puntuación con base científica",
     "featureScienceBody": "Traducimos la compleja ciencia cognitiva, la psicología conductual y el aprendizaje socioemocional en una puntuación clara y confiable.",
     "featureAgenda": "Sin intereses ocultos",
@@ -77,6 +77,10 @@
   },
   "browse": {
     "title": "Explorar juegos",
+    "searchPlaceholder": "Busca juegos…",
+    "searchButton": "Buscar",
+    "forChild": "Para:",
+    "forEveryone": "Para todos",
     "gamesCount": "{count, plural, one {# juego} other {# juegos}}",
     "filtersActive": "{count, plural, one {# filtro activo} other {# filtros activos}}",
     "pageOf": "Página {current} de {total}",
@@ -90,6 +94,9 @@
   "filters": {
     "heading": "Filtros",
     "clearAll": "Limpiar todo",
+    "close": "Cerrar",
+    "viewList": "Vista de lista",
+    "viewGrid": "Vista de cuadrícula",
     "showGames": "{count, plural, one {Mostrar # juego} other {Mostrar # juegos}}",
     "gamesFound": "{count, plural, one {# juego encontrado} other {# juegos encontrados}}",
     "sortBy": "Ordenar por",
@@ -120,6 +127,9 @@
     "riskLow": "Solo bajo (RIS ≤ 0.30)",
     "riskMedium": "Bajo + Medio (RIS ≤ 0.60)",
     "sectionTime": "Tiempo diario mínimo",
+    "timeUpTo30": "Hasta 30 min/día",
+    "timeUpTo60": "Hasta 60 min/día",
+    "timeUpTo90": "Hasta 90 min/día",
     "sectionPrice": "Precio",
     "priceFree": "Gratis para jugar",
     "priceUnder20": "Menos de $20",
@@ -133,7 +143,10 @@
     "sectionBechdel": "Test de Bechdel",
     "bechdelPass": "Pasa el test de Bechdel",
     "bechdelNote": "Personajes femeninas hablan entre sí sobre algo que no sea un hombre",
-    "sectionCompliance": "Cumplimiento"
+    "sectionCompliance": "Cumplimiento",
+    "complianceDsa": "Compatible con DSA",
+    "complianceGdprk": "Compatible con GDPR-K",
+    "complianceOdds": "Compatible con ODDS"
   },
   "discover": {
     "tagline": "Basado en el desarrollo infantil",

@@ -6,10 +6,10 @@
     "browse": "Explorer",
     "compare": "Comparer",
     "learn": "Apprendre",
+    "library": "Bibliothèque",
     "openMenu": "Ouvrir le menu",
     "closeMenu": "Fermer le menu",
-    "search": "Rechercher",
-    "library": "Bibliothèque"
+    "search": "Rechercher"
   },
   "footer": {
     "brand": "LumiKin",
@@ -50,8 +50,8 @@
     "carouselTeamwork": "Esprit d'équipe",
     "carouselVr": "VR & AR",
     "carouselBeginner": "Pour les débutants",
-    "carouselNewGood": "Nouveautés à découvrir",
     "carouselDopamine": "Pièges à dopamine",
+    "carouselNewGood": "Nouveautés à découvrir",
     "featureScience": "Une évaluation fondée sur la science",
     "featureScienceBody": "Nous traduisons des concepts complexes de science cognitive, de psychologie comportementale et d'apprentissage socio-émotionnel en un score clair et fiable.",
     "featureAgenda": "Transparence totale",
@@ -77,6 +77,10 @@
   },
   "browse": {
     "title": "Parcourir les jeux",
+    "searchPlaceholder": "Rechercher des jeux…",
+    "searchButton": "Rechercher",
+    "forChild": "Pour :",
+    "forEveryone": "Tout le monde",
     "gamesCount": "{count, plural, one {# jeu} other {# jeux}}",
     "filtersActive": "{count, plural, one {# filtre actif} other {# filtres actifs}}",
     "pageOf": "page {current} sur {total}",
@@ -90,6 +94,9 @@
   "filters": {
     "heading": "Filtres",
     "clearAll": "Tout effacer",
+    "close": "Fermer",
+    "viewList": "Vue liste",
+    "viewGrid": "Vue grille",
     "showGames": "{count, plural, one {Afficher # jeu} other {Afficher # jeux}}",
     "gamesFound": "{count, plural, one {# jeu trouvé} other {# jeux trouvés}}",
     "sortBy": "Trier par",
@@ -120,6 +127,9 @@
     "riskLow": "Faible seulement (RIS ≤ 0.30)",
     "riskMedium": "Faible + Modéré (RIS ≤ 0.60)",
     "sectionTime": "Temps quotidien minimum",
+    "timeUpTo30": "Jusqu'à 30 min/jour",
+    "timeUpTo60": "Jusqu'à 60 min/jour",
+    "timeUpTo90": "Jusqu'à 90 min/jour",
     "sectionPrice": "Prix",
     "priceFree": "Gratuit",
     "priceUnder20": "Moins de 20 €",
@@ -133,7 +143,10 @@
     "sectionBechdel": "Test de Bechdel",
     "bechdelPass": "Passe le test de Bechdel",
     "bechdelNote": "Des personnages féminins se parlent d'autre chose qu'un homme",
-    "sectionCompliance": "Conformité"
+    "sectionCompliance": "Conformité",
+    "complianceDsa": "Conforme au DSA",
+    "complianceGdprk": "Conforme au GDPR-K",
+    "complianceOdds": "Conforme à l'ODDS"
   },
   "discover": {
     "tagline": "Ancré dans le développement de l'enfant",

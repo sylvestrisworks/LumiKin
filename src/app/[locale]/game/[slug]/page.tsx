@@ -25,7 +25,7 @@ async function fetchGameData(slug: string): Promise<GameCardProps | null> {
     ;[game] = await db.select().from(games).where(eq(games.slug, slug)).limit(1)
   } catch (err) {
     console.error('[fetchGameData] db error:', err instanceof Error ? err.message : String(err))
-    throw err // let error.tsx handle it — don't silently 404 a real game
+    return null
   }
 
   if (!game) return null

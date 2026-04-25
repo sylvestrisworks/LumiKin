@@ -512,9 +512,8 @@ export async function GET(req: NextRequest) {
   try {
     return await handler()
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err)
-    console.error('[fetch-fortnite] Unhandled error:', message)
-    return NextResponse.json({ error: message }, { status: 500 })
+    console.error('[fetch-fortnite] Unhandled error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { db } from '@/lib/db'
-import { games, platformExperiences } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { games, gameScores, platformExperiences, experienceScores } from '@/lib/db/schema'
+import { and, eq, isNotNull } from 'drizzle-orm'
 import { sanityClient } from '@/sanity/lib/client'
 import { allGuideSlugsQuery, allPostSlugsQuery } from '@/sanity/lib/queries'
 
@@ -17,9 +17,7 @@ const DEFAULT_LOCALE = 'en'
 type Locale = typeof LOCALES[number]
 
 function localeUrl(locale: Locale, path: string): string {
-  return locale === DEFAULT_LOCALE
-    ? `${BASE_URL}${path}`
-    : `${BASE_URL}/${locale}${path}`
+  return `${BASE_URL}/${locale}${path}`
 }
 
 function multiLocaleEntry(
@@ -57,10 +55,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...multiLocaleEntry('/game/fortnite-creative', 0.8, 'weekly'),
   ]
 
-  // ── Game pages ────────────────────────────────────────────────────────────
+  // ── Game pages — only scored games (curascore IS NOT NULL) ───────────────
   const allGames = await db
     .select({ slug: games.slug, updatedAt: games.updatedAt })
     .from(games)
+    .innerJoin(gameScores, eq(gameScores.gameId, games.id))
+    .where(isNotNull(gameScores.curascore))
 
   const gameEntries: MetadataRoute.Sitemap = allGames.flatMap((game) =>
     multiLocaleEntry(
@@ -71,7 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ),
   )
 
-  // ── UGC experience pages + platform hub pages (all platforms, dynamic) ────
+  // ── UGC experience pages — only scored experiences ────────────────────────
   const allUgcExperiences = await db
     .select({
       slug:         platformExperiences.slug,
@@ -80,7 +80,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
     .from(platformExperiences)
     .innerJoin(games, eq(games.id, platformExperiences.platformId))
-    .where(eq(games.contentType, 'platform'))
+    .innerJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
+    .where(and(eq(games.contentType, 'platform'), isNotNull(experienceScores.curascore)))
 
   const ugcExperienceEntries: MetadataRoute.Sitemap = allUgcExperiences.flatMap((exp) =>
     multiLocaleEntry(

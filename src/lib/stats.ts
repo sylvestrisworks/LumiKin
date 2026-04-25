@@ -71,7 +71,7 @@ async function computeSiteStats(): Promise<SiteStats> {
   ] = await Promise.all([
     // ── Standalone / platform game stats ──────────────────────────────────────
 
-    db.select({ count: sql<number>`count(*)` }).from(gameScores),
+    db.select({ count: sql<number>`count(*)` }).from(gameScores).where(isNotNull(gameScores.curascore)),
 
     db.select({ count: sql<number>`count(*)` })
       .from(gameScores)
@@ -107,7 +107,7 @@ async function computeSiteStats(): Promise<SiteStats> {
       slug:      games.slug,
       score:     gameScores.curascore,
       scored_at: gameScores.calculatedAt,
-      platform:  sql<string | null>`CASE WHEN jsonb_typeof(g.platforms) = 'array' THEN g.platforms->>0 ELSE NULL END`,
+      platform:  sql<string | null>`CASE WHEN jsonb_typeof(${games.platforms}) = 'array' THEN ${games.platforms}->>0 ELSE NULL END`,
     })
       .from(gameScores)
       .innerJoin(games, eq(games.id, gameScores.gameId))

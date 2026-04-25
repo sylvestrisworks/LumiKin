@@ -134,7 +134,7 @@ export function fetchRelatedGames(
 ): Promise<RelatedGame[]> {
   return unstable_cache(
     _fetchRelatedGames,
-    ['related-games', slug],
+    ['related-games', slug, String(curascore)],
     { revalidate: 86400 },
   )(slug, curascore, platforms, esrb, pegi)
 }

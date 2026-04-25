@@ -138,8 +138,7 @@ export async function GET(req: NextRequest) {
       })),
     })
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err)
-    console.error('[youtube-trends] Unhandled error:', message)
-    return NextResponse.json({ error: message }, { status: 500 })
+    console.error('[youtube-trends] Unhandled error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

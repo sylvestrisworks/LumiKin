@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { getTranslations, getLocale } from 'next-intl/server'
 import UgcAttributionBlock from '@/components/UgcAttributionBlock'
 
-type Props = { params: Promise<{ mapSlug: string }> }
+type Props = { params: Promise<{ locale: string; mapSlug: string }> }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -106,8 +106,10 @@ function RiskMeter({ label, value, max = 3 }: { label: string; value: number | n
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
+const LOCALES = ['en', 'es', 'fr', 'sv', 'de'] as const
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { mapSlug } = await params
+  const { mapSlug, locale } = await params
   const [exp] = await db
     .select({ title: platformExperiences.title, description: platformExperiences.description, thumbnailUrl: platformExperiences.thumbnailUrl })
     .from(platformExperiences)
@@ -120,12 +122,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const desc = exp.description
     ? exp.description.slice(0, 155) + (exp.description.length > 155 ? '…' : '')
     : `LumiKin safety rating for ${exp.title} on Fortnite Creative — benefits, risks, and screen time guidance for parents.`
-  const canonical = `/game/fortnite-creative/${mapSlug}`
+  const canonical = `/${locale}/game/fortnite-creative/${mapSlug}`
 
   return {
     title,
     description: desc,
-    alternates: { canonical },
+    alternates: {
+      canonical,
+      languages: {
+        ...Object.fromEntries(LOCALES.map(l => [l, `/${l}/game/fortnite-creative/${mapSlug}`])),
+        'x-default': `/en/game/fortnite-creative/${mapSlug}`,
+      },
+    },
     openGraph: {
       title,
       description: desc,

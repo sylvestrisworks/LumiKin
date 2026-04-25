@@ -355,6 +355,6 @@ export async function GET(req: NextRequest) {
 
   } catch (err) {
     console.error('[debate-games] Fatal error:', err)
-    return NextResponse.json({ error: String(err) }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

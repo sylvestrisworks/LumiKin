@@ -24,20 +24,40 @@ export async function GET(
 ) {
   const { slug } = await params
 
-  const [row] = await db
-    .select({
-      title:           games.title,
-      backgroundImage: games.backgroundImage,
-      esrbRating:      games.esrbRating,
-      genres:          games.genres,
-      curascore:       gameScores.curascore,
-      timeRecommendationMinutes: gameScores.timeRecommendationMinutes,
-      timeRecommendationColor:   gameScores.timeRecommendationColor,
-    })
-    .from(games)
-    .leftJoin(gameScores, eq(gameScores.gameId, games.id))
-    .where(eq(games.slug, slug))
-    .limit(1)
+  let row: {
+    title: string | null
+    backgroundImage: string | null
+    esrbRating: string | null
+    genres: unknown
+    curascore: number | null
+    timeRecommendationMinutes: number | null
+    timeRecommendationColor: string | null
+  } | undefined
+
+  try {
+    ;[row] = await db
+      .select({
+        title:           games.title,
+        backgroundImage: games.backgroundImage,
+        esrbRating:      games.esrbRating,
+        genres:          games.genres,
+        curascore:       gameScores.curascore,
+        timeRecommendationMinutes: gameScores.timeRecommendationMinutes,
+        timeRecommendationColor:   gameScores.timeRecommendationColor,
+      })
+      .from(games)
+      .leftJoin(gameScores, eq(gameScores.gameId, games.id))
+      .where(eq(games.slug, slug))
+      .limit(1)
+  } catch (err) {
+    console.error('[og/game] DB error:', err)
+    return new ImageResponse(
+      (<div style={{ display: 'flex', width: '1200px', height: '630px', background: '#0f172a', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: 'white', fontSize: '48px', fontWeight: 700 }}>LumiKin</div>
+      </div>),
+      { width: 1200, height: 630 },
+    )
+  }
 
   const title      = row?.title ?? 'Unknown Game'
   const bgImage    = row?.backgroundImage ?? null

@@ -224,10 +224,8 @@ export async function GET(req: NextRequest) {
   try {
     return await handler(req)
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err)
-    const stack   = err instanceof Error ? err.stack : undefined
-    console.error('[fetch-roblox] Unhandled error:', message, stack)
-    return NextResponse.json({ error: message, stack }, { status: 500 })
+    console.error('[fetch-roblox] Unhandled error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 

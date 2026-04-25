@@ -99,7 +99,7 @@ export async function GET(req: NextRequest) {
       unscored: Number(totalGames) - Number(scoredGames),
       queued:   Number(queuedGames),
       stale:    Number(staleGames),
-      coverage: `${Math.round((Number(scoredGames) / Number(totalGames)) * 100)}%`,
+      coverage: Number(totalGames) > 0 ? `${Math.round((Number(scoredGames) / Number(totalGames)) * 100)}%` : '0%',
       avgCurascore: Number(avgCurascore),
       distribution: Object.fromEntries(distribution.map(r => [r.bucket, Number(r.count)])),
     },

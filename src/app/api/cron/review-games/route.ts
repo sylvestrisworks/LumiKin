@@ -17,6 +17,7 @@ import { games, gameScores, reviews, userGames, notifications } from '@/lib/db/s
 import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import { eq, isNotNull, isNull, or } from 'drizzle-orm'
 import { calculateGameScores } from '@/lib/scoring/engine'
+import { callGeminiTool } from '@/lib/vertex-ai'
 
 export const maxDuration = 300
 
@@ -25,8 +26,6 @@ export const maxDuration = 300
 const MAX_REVIEWS_PER_RUN = 20
 const DELAY_MS            = 200
 const BUDGET_MS           = 240_000 // bail at 240s — leaves 60s buffer before Vercel's 300s kill
-const BEDROCK_MODEL       = 'global.anthropic.claude-sonnet-4-6'
-const BEDROCK_URL         = `https://bedrock-runtime.us-east-1.amazonaws.com/model/${BEDROCK_MODEL}/invoke`
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 
@@ -194,52 +193,10 @@ Stranger chat: ${g.hasStrangerChat ? `Yes (${g.chatModeration ?? 'unknown modera
 Score this game accurately. Calibrate against the examples above. Call submit_game_review with your scores.`
 }
 
-// ─── Bedrock caller ───────────────────────────────────────────────────────────
+// ─── Gemini caller ────────────────────────────────────────────────────────────
 
-async function callBedrockReview(prompt: string, attempt = 0): Promise<ReviewInput> {
-  try {
-    const res = await fetch(BEDROCK_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.AWS_BEARER_TOKEN_BEDROCK}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        anthropic_version: 'bedrock-2023-05-31',
-        max_tokens: 4096,
-        tools: [REVIEW_TOOL],
-        tool_choice: { type: 'tool', name: 'submit_game_review' },
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    })
-
-    if (!res.ok) {
-      const errText = await res.text()
-      if ((res.status === 429 || res.status === 503) && attempt < 3) {
-        await sleep(Math.pow(2, attempt) * 5000)
-        return callBedrockReview(prompt, attempt + 1)
-      }
-      throw new Error(`Bedrock ${res.status}: ${errText}`)
-    }
-
-    const data = await res.json()
-    const toolUse = data.content?.find((c: { type: string }) => c.type === 'tool_use')
-    if (!toolUse?.input) {
-      if (attempt < 3) {
-        await sleep(Math.pow(2, attempt) * 5000)
-        return callBedrockReview(prompt, attempt + 1)
-      }
-      throw new Error('Bedrock did not return tool_use block')
-    }
-    return toolUse.input as ReviewInput
-  } catch (err: unknown) {
-    const isTransient = String(err).includes('fetch failed') || String(err).includes('ECONNRESET')
-    if (isTransient && attempt < 3) {
-      await sleep(Math.pow(2, attempt) * 5000)
-      return callBedrockReview(prompt, attempt + 1)
-    }
-    throw err
-  }
+function callGeminiReview(prompt: string): Promise<ReviewInput> {
+  return callGeminiTool<ReviewInput>(prompt, REVIEW_TOOL)
 }
 
 // ─── Notification helper ──────────────────────────────────────────────────────
@@ -395,8 +352,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  if (!process.env.AWS_BEARER_TOKEN_BEDROCK) {
-    return NextResponse.json({ error: 'AWS_BEARER_TOKEN_BEDROCK not set' }, { status: 500 })
+  if (!process.env.GOOGLE_CREDENTIALS_JSON) {
+    return NextResponse.json({ error: 'GOOGLE_CREDENTIALS_JSON not set' }, { status: 500 })
   }
 
   try {
@@ -453,7 +410,7 @@ export async function GET(req: NextRequest) {
         console.log(`[review-games] Reviewing: ${game.title}`)
 
         const prompt      = buildReviewPrompt(game)
-        const reviewInput = await callBedrockReview(prompt)
+        const reviewInput = await callGeminiReview(prompt)
         const { curascore } = await saveReview(game, reviewInput)
 
         // Clear rescore flag if it was set

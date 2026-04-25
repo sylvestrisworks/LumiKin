@@ -21,6 +21,7 @@ import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import { rawgGetByGenre, rawgGetDetail, RawgError } from '@/lib/rawg/client'
 import { mapDetailToInsert } from '@/lib/rawg/mapper'
 import { calculateGameScores } from '@/lib/scoring/engine'
+import { callGeminiTool } from '@/lib/vertex-ai'
 
 export const maxDuration = 300
 
@@ -52,9 +53,6 @@ const DEBATE_MAX_SCORE   = 55
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 
 // ─── Google AI client ─────────────────────────────────────────────────────────
-
-const BEDROCK_MODEL = 'global.anthropic.claude-sonnet-4-6'
-const BEDROCK_URL   = `https://bedrock-runtime.us-east-1.amazonaws.com/model/${BEDROCK_MODEL}/invoke`
 
 // ─── Rubric field definitions ─────────────────────────────────────────────────
 
@@ -290,66 +288,14 @@ function criticPrompt(gameInfo: string, round: number, advocateScores?: DebateSc
 
 // ─── Gemini callers ───────────────────────────────────────────────────────────
 
-async function callBedrockReview(prompt: string, attempt = 0): Promise<ReviewInput> {
-  try {
-    const res = await fetch(BEDROCK_URL, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${process.env.AWS_BEARER_TOKEN_BEDROCK}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        anthropic_version: 'bedrock-2023-05-31', max_tokens: 4096,
-        tools: [REVIEW_TOOL], tool_choice: { type: 'tool', name: 'submit_game_review' },
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    })
-    if (!res.ok) {
-      const errText = await res.text()
-      if ((res.status === 429 || res.status === 503) && attempt < 3) { await sleep(Math.pow(2, attempt) * 5000); return callBedrockReview(prompt, attempt + 1) }
-      throw new Error(`Bedrock ${res.status}: ${errText}`)
-    }
-    const data = await res.json()
-    const toolUse = data.content?.find((c: { type: string }) => c.type === 'tool_use')
-    if (!toolUse?.input) {
-      if (attempt < 3) { await sleep(Math.pow(2, attempt) * 5000); return callBedrockReview(prompt, attempt + 1) }
-      throw new Error('Bedrock did not return tool_use block')
-    }
-    return toolUse.input as ReviewInput
-  } catch (err: unknown) {
-    const isTransient = String(err).includes('fetch failed') || String(err).includes('ECONNRESET')
-    if (isTransient && attempt < 3) { await sleep(Math.pow(2, attempt) * 5000); return callBedrockReview(prompt, attempt + 1) }
-    throw err
-  }
+function callGeminiReview(prompt: string): Promise<ReviewInput> {
+  return callGeminiTool<ReviewInput>(prompt, REVIEW_TOOL)
 }
 
-async function callBedrockDebate(prompt: string, attempt = 0): Promise<{ scores: DebateScores; reasoning: string }> {
-  try {
-    const res = await fetch(BEDROCK_URL, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${process.env.AWS_BEARER_TOKEN_BEDROCK}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        anthropic_version: 'bedrock-2023-05-31', max_tokens: 4096,
-        tools: [DEBATE_TOOL], tool_choice: { type: 'tool', name: 'submit_scores' },
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    })
-    if (!res.ok) {
-      const errText = await res.text()
-      if ((res.status === 429 || res.status === 503) && attempt < 3) { await sleep(Math.pow(2, attempt) * 5000); return callBedrockDebate(prompt, attempt + 1) }
-      throw new Error(`Bedrock ${res.status}: ${errText}`)
-    }
-    const data = await res.json()
-    const toolUse = data.content?.find((c: { type: string }) => c.type === 'tool_use')
-    if (!toolUse?.input) {
-      if (attempt < 3) { await sleep(Math.pow(2, attempt) * 5000); return callBedrockDebate(prompt, attempt + 1) }
-      throw new Error('Bedrock did not return tool_use block')
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const a = toolUse.input as any
-    return { scores: { b1: a.b1, b2: a.b2, b3: a.b3, r1: a.r1, r2: a.r2, r3: a.r3 }, reasoning: a.reasoning }
-  } catch (err: unknown) {
-    const isTransient = String(err).includes('fetch failed') || String(err).includes('ECONNRESET')
-    if (isTransient && attempt < 3) { await sleep(Math.pow(2, attempt) * 5000); return callBedrockDebate(prompt, attempt + 1) }
-    throw err
-  }
+async function callGeminiDebate(prompt: string): Promise<{ scores: DebateScores; reasoning: string }> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const a = await callGeminiTool<any>(prompt, DEBATE_TOOL)
+  return { scores: { b1: a.b1, b2: a.b2, b3: a.b3, r1: a.r1, r2: a.r2, r3: a.r3 }, reasoning: a.reasoning }
 }
 
 // ─── Debate math ──────────────────────────────────────────────────────────────
@@ -454,15 +400,15 @@ async function runDebate(game: GameRow, currentCurascore: number): Promise<{ new
   const gInfo = gameBlock(game)
 
   // Round 1
-  const r1adv  = await callBedrockDebate(advocatePrompt(gInfo, 1))
+  const r1adv  = await callGeminiDebate(advocatePrompt(gInfo, 1))
   await sleep(DELAY_MS)
-  const r1crit = await callBedrockDebate(criticPrompt(gInfo, 1))
+  const r1crit = await callGeminiDebate(criticPrompt(gInfo, 1))
   await sleep(DELAY_MS)
 
   // Round 2
-  const r2adv  = await callBedrockDebate(advocatePrompt(gInfo, 2, r1crit.scores, r1crit.reasoning))
+  const r2adv  = await callGeminiDebate(advocatePrompt(gInfo, 2, r1crit.scores, r1crit.reasoning))
   await sleep(DELAY_MS)
-  const r2crit = await callBedrockDebate(criticPrompt(gInfo, 2, r1adv.scores, r1adv.reasoning))
+  const r2crit = await callGeminiDebate(criticPrompt(gInfo, 2, r1adv.scores, r1adv.reasoning))
   await sleep(DELAY_MS)
 
   const finalScores = weightedDebateScores(r2adv.scores, r2crit.scores)
@@ -499,8 +445,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  if (!process.env.AWS_BEARER_TOKEN_BEDROCK) {
-    return NextResponse.json({ error: 'AWS_BEARER_TOKEN_BEDROCK not set' }, { status: 500 })
+  if (!process.env.GOOGLE_CREDENTIALS_JSON) {
+    return NextResponse.json({ error: 'GOOGLE_CREDENTIALS_JSON not set' }, { status: 500 })
   }
 
   try {
@@ -615,7 +561,7 @@ export async function GET(req: NextRequest) {
         console.log(`[ingest] Reviewing: ${game.title}`)
 
         const prompt = buildReviewPrompt(game)
-        const reviewInput = await callBedrockReview(prompt)
+        const reviewInput = await callGeminiReview(prompt)
         const { curascore } = await saveReview(game, reviewInput)
         reviewed.push(game.slug)
 

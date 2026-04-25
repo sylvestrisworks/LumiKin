@@ -2,11 +2,7 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { games, gameScores, reviews, gameTranslations } from '@/lib/db/schema'
 import { eq, and, isNotNull, sql } from 'drizzle-orm'
-
-// ─── Config ───────────────────────────────────────────────────────────────────
-
-const BEDROCK_MODEL = 'global.anthropic.claude-haiku-4-5-20251001-v1:0'
-const BEDROCK_URL   = `https://bedrock-runtime.us-east-1.amazonaws.com/model/${BEDROCK_MODEL}/invoke`
+import { callGeminiText } from '@/lib/vertex-ai'
 
 const LOCALES = ['sv', 'de', 'fr', 'es'] as const
 type Locale = typeof LOCALES[number]
@@ -62,31 +58,7 @@ Input:
 ${JSON.stringify(toTranslate, null, 2)}`
 
   try {
-    const res = await fetch(BEDROCK_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.AWS_BEARER_TOKEN_BEDROCK}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        anthropic_version: 'bedrock-2023-05-31',
-        max_tokens: 2048,
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    })
-
-    if (!res.ok) {
-      const errText = await res.text()
-      if ((res.status === 429 || res.status === 503) && attempt < 2) {
-        await new Promise(r => setTimeout(r, Math.pow(2, attempt) * 3000))
-        return translateToLocale(content, locale, attempt + 1)
-      }
-      console.error(`[translate] Bedrock ${res.status}: ${errText.slice(0, 200)}`)
-      return null
-    }
-
-    const data = await res.json()
-    const text = data.content?.[0]?.text ?? ''
+    const text      = await callGeminiText(prompt)
     const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (!jsonMatch) {
       console.error(`[translate] No JSON in response for ${locale}:`, text.slice(0, 200))
@@ -116,8 +88,8 @@ export async function GET(req: Request) {
   if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-  if (!process.env.AWS_BEARER_TOKEN_BEDROCK) {
-    return NextResponse.json({ error: 'AWS_BEARER_TOKEN_BEDROCK not set' }, { status: 500 })
+  if (!process.env.GOOGLE_CREDENTIALS_JSON) {
+    return NextResponse.json({ error: 'GOOGLE_CREDENTIALS_JSON not set' }, { status: 500 })
   }
 
   const startedAt = Date.now()

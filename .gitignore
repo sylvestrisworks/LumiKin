@@ -2,6 +2,9 @@
 .env.*
 !.env.example
 
+# Service account keys — never commit
+scripts/*.json
+
 # Claude Code local config (may contain secrets)
 .claude/settings.local.json
 

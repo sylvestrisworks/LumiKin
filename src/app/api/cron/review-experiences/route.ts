@@ -17,16 +17,15 @@ import { eq, isNull, or } from 'drizzle-orm'
 import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import { calculateExperienceRisk, calculateExperienceBenefits } from '@/lib/scoring/experience-risk'
 import { deriveTimeRecommendation } from '@/lib/scoring/time'
+import { callGeminiTool } from '@/lib/vertex-ai'
 
 export const maxDuration = 300
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const MAX_PER_RUN  = 10
-const DELAY_MS     = 200
-const BUDGET_MS    = 240_000
-const BEDROCK_MODEL = 'global.anthropic.claude-sonnet-4-6'
-const BEDROCK_URL   = `https://bedrock-runtime.us-east-1.amazonaws.com/model/${BEDROCK_MODEL}/invoke`
+const MAX_PER_RUN = 10
+const DELAY_MS    = 200
+const BUDGET_MS   = 240_000
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 
@@ -218,43 +217,10 @@ function buildPrompt(e: ExperienceRow, platformSlug: string): string {
   return buildRobloxPrompt(e)
 }
 
-// ─── Bedrock caller ───────────────────────────────────────────────────────────
+// ─── Gemini caller ────────────────────────────────────────────────────────────
 
-async function callBedrock(prompt: string, attempt = 0): Promise<EvalInput> {
-  const res = await fetch(BEDROCK_URL, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${process.env.AWS_BEARER_TOKEN_BEDROCK}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      anthropic_version: 'bedrock-2023-05-31',
-      max_tokens: 2048,
-      tools: [EVAL_TOOL],
-      tool_choice: { type: 'tool', name: 'submit_experience_evaluation' },
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  })
-
-  if (!res.ok) {
-    const err = await res.text()
-    if ((res.status === 429 || res.status === 503) && attempt < 3) {
-      await sleep(Math.pow(2, attempt) * 5000)
-      return callBedrock(prompt, attempt + 1)
-    }
-    throw new Error(`Bedrock ${res.status}: ${err}`)
-  }
-
-  const data = await res.json()
-  const toolUse = data.content?.find((c: { type: string }) => c.type === 'tool_use')
-  if (!toolUse?.input) {
-    if (attempt < 3) {
-      await sleep(Math.pow(2, attempt) * 5000)
-      return callBedrock(prompt, attempt + 1)
-    }
-    throw new Error('Bedrock did not return tool_use block')
-  }
-  return toolUse.input as EvalInput
+function callGemini(prompt: string): Promise<EvalInput> {
+  return callGeminiTool<EvalInput>(prompt, EVAL_TOOL)
 }
 
 // ─── Save to DB ───────────────────────────────────────────────────────────────
@@ -408,8 +374,8 @@ export async function GET(req: NextRequest) {
     // Phase 1: rescore old-formula rows (no AI, runs every time)
     const rescored = await rescoreExisting()
 
-    if (!process.env.AWS_BEARER_TOKEN_BEDROCK) {
-      return NextResponse.json({ rescored, message: 'AWS_BEARER_TOKEN_BEDROCK not set — skipping new evaluations' })
+    if (!process.env.GOOGLE_CREDENTIALS_JSON) {
+      return NextResponse.json({ rescored, message: 'GOOGLE_CREDENTIALS_JSON not set — skipping new evaluations' })
     }
 
     const pending = await db
@@ -439,7 +405,7 @@ export async function GET(req: NextRequest) {
 
       try {
         console.log(`[review-experiences] Evaluating: ${exp.title} [${platformSlug}]`)
-        const result    = await callBedrock(buildPrompt(exp, platformSlug))
+        const result    = await callGemini(buildPrompt(exp, platformSlug))
         const curascore = await saveScore(exp, result)
 
         // Clear rescore flag if it was set

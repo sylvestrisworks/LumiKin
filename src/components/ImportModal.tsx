@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import Icon from '@/components/Icon'
 
 type MatchedGame = {
   gameId: number
@@ -109,7 +110,10 @@ export default function ImportModal({ onClose }: { onClose: () => void }) {
                   : 'text-slate-500 hover:text-slate-700'
               }`}
             >
-              {p === 'steam' ? '🎮 Steam' : '🎮 Xbox'}
+              {p === 'steam'
+                ? <><Icon name="steam" size={16} aria-hidden="true" /> Steam</>
+                : <><Icon name="xbox"  size={16} aria-hidden="true" /> Xbox</>
+              }
             </button>
           ))}
         </div>
@@ -120,7 +124,7 @@ export default function ImportModal({ onClose }: { onClose: () => void }) {
           {/* Xbox placeholder */}
           {platform === 'xbox' && (
             <div className="text-center py-8">
-              <div className="text-4xl mb-3">🎮</div>
+              <div className="mb-3 flex justify-center"><Icon name="xbox" size={48} aria-hidden="true" className="text-slate-300" /></div>
               <p className="font-semibold text-slate-700">Xbox import coming soon</p>
               <p className="text-sm text-slate-500 mt-2 max-w-xs mx-auto">
                 Xbox doesn&apos;t offer a public game library API — it requires Microsoft OAuth integration which we&apos;re working on.

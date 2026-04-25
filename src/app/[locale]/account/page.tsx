@@ -5,6 +5,7 @@ import { childProfiles } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { getLocale, getTranslations } from 'next-intl/server'
 import Link from 'next/link'
+import Icon from '@/components/Icon'
 import ProfileManager from '@/components/ProfileManager'
 import AccountActions from '@/components/AccountActions'
 
@@ -81,7 +82,7 @@ export default async function AccountPage() {
                 href={`/${locale}/settings/nintendo`}
                 className="flex items-center justify-between text-sm text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               >
-                <span className="flex items-center gap-2">🎮 Nintendo Switch</span>
+                <span className="flex items-center gap-2"><Icon name="switch" size={16} aria-hidden="true" /> Nintendo Switch</span>
                 <span className="text-slate-400 text-xs">{t('manage')} →</span>
               </Link>
             </div>
@@ -90,7 +91,7 @@ export default async function AccountPage() {
                 href={`/${locale}/settings/epic`}
                 className="flex items-center justify-between text-sm text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               >
-                <span className="flex items-center gap-2">🎮 Epic Games</span>
+                <span className="flex items-center gap-2"><Icon name="epicgames" size={16} aria-hidden="true" /> Epic Games</span>
                 <span className="text-slate-400 text-xs">{t('manage')} →</span>
               </Link>
             </div>

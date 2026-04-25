@@ -9,6 +9,7 @@ import SearchBar from '@/components/SearchBar'
 import PlatformPicker from '@/components/PlatformPicker'
 import AgePicker from '@/components/AgePicker'
 import CarouselRow from '@/components/CarouselRow'
+import Icon, { type IconName } from '@/components/Icon'
 import RobloxCarouselRow from '@/components/RobloxCarouselRow'
 import FortniteCarouselRow from '@/components/FortniteCarouselRow'
 import { type ExperienceSummary } from '@/components/ExperienceCard'
@@ -28,7 +29,7 @@ const ESRB_FOR_AGE: Record<string, string[]> = {
 type CarouselRowData = {
   id: string
   title: string
-  emoji: string
+  iconName: string
   browseHref: string
   games: GameSummary[]
 }
@@ -125,15 +126,15 @@ async function getCarouselRows(platforms: string[], age?: string, locale = 'en')
   const baseParams = `${ageParam}${platformParam}`
 
   const rows: CarouselRowData[] = [
-    { id: 'trending', title: 'Trending',               emoji: '📈', browseHref: `${browseBase}?sort=trending${baseParams}`,          games: trending.map(toSummary)      },
-    { id: 'popular',  title: 'Critically Acclaimed',   emoji: '🏆', browseHref: `${browseBase}?sort=popular${baseParams}`,            games: popular.map(toSummary)       },
-    { id: 'newgood',  title: 'New & Worth Playing',   emoji: '✨', browseHref: `${browseBase}?sort=newest${baseParams}`,             games: newAndGood.map(toSummary)    },
-    { id: 'top',      title: 'The Highest Curascores', emoji: '⭐', browseHref: `${browseBase}?sort=curascore${baseParams}`,          games: topRated.map(toSummary)      },
-    { id: 'coop',     title: 'Family Co-Op',           emoji: '👨‍👩‍👧', browseHref: `${browseBase}?benefits=teamwork${baseParams}`,       games: coopPlay.map(toSummary)      },
-    { id: 'brain',    title: 'Sneaky Smart Games',     emoji: '🧠', browseHref: `${browseBase}?benefits=problem-solving${baseParams}`,games: highBenefit.map(toSummary)   },
-    { id: 'teamwork', title: 'Team up',                emoji: '🤝', browseHref: `${browseBase}?benefits=teamwork${baseParams}`,       games: teamwork.map(toSummary)      },
-    { id: 'vr',       title: 'VR & AR',                emoji: '🥽', browseHref: `${browseBase}?platforms=VR${ageParam}`,             games: vrGames.map(toSummary)       },
-    { id: 'beginner', title: 'New to gaming',          emoji: '🎯', browseHref: `${browseBase}?age=E10&risk=low${platformParam}`,    games: beginnerGames.map(toSummary) },
+    { id: 'trending', title: 'Trending',               iconName: 'trending',  browseHref: `${browseBase}?sort=trending${baseParams}`,          games: trending.map(toSummary)      },
+    { id: 'popular',  title: 'Critically Acclaimed',   iconName: 'acclaimed', browseHref: `${browseBase}?sort=popular${baseParams}`,            games: popular.map(toSummary)       },
+    { id: 'newgood',  title: 'New & Worth Playing',    iconName: 'new',       browseHref: `${browseBase}?sort=newest${baseParams}`,             games: newAndGood.map(toSummary)    },
+    { id: 'top',      title: 'The Highest Curascores', iconName: 'topscore',  browseHref: `${browseBase}?sort=curascore${baseParams}`,          games: topRated.map(toSummary)      },
+    { id: 'coop',     title: 'Family Co-Op',           iconName: 'family',    browseHref: `${browseBase}?benefits=teamwork${baseParams}`,       games: coopPlay.map(toSummary)      },
+    { id: 'brain',    title: 'Sneaky Smart Games',     iconName: 'smart',     browseHref: `${browseBase}?benefits=problem-solving${baseParams}`,games: highBenefit.map(toSummary)   },
+    { id: 'teamwork', title: 'Team up',                iconName: 'teamwork',  browseHref: `${browseBase}?benefits=teamwork${baseParams}`,       games: teamwork.map(toSummary)      },
+    { id: 'vr',       title: 'VR & AR',                iconName: 'vr',        browseHref: `${browseBase}?platforms=VR${ageParam}`,             games: vrGames.map(toSummary)       },
+    { id: 'beginner', title: 'New to gaming',          iconName: 'beginner',  browseHref: `${browseBase}?age=E10&risk=low${platformParam}`,    games: beginnerGames.map(toSummary) },
   ]
 
   return rows.filter(r => r.games.length > 0)
@@ -220,9 +221,9 @@ export default async function HomePage({ params, searchParams }: Props) {
   }
 
   const HOW_IT_WORKS = [
-    { icon: '🧠', gradient: 'from-indigo-500 to-violet-600', title: t('featureScience'),  body: t('featureScienceBody') },
-    { icon: '⚠️', gradient: 'from-amber-500 to-orange-500',  title: t('featureAgenda'),   body: t('featureAgendaBody')  },
-    { icon: '⏱',  gradient: 'from-emerald-500 to-teal-600',  title: t('featureTime'),     body: t('featureTimeBody')    },
+    { iconName: 'smart',   gradient: 'from-indigo-500 to-violet-600', title: t('featureScience'),  body: t('featureScienceBody') },
+    { iconName: 'warning', gradient: 'from-amber-500 to-orange-500',  title: t('featureAgenda'),   body: t('featureAgendaBody')  },
+    { iconName: 'time',    gradient: 'from-emerald-500 to-teal-600',  title: t('featureTime'),     body: t('featureTimeBody')    },
   ]
 
   return (
@@ -289,7 +290,7 @@ export default async function HomePage({ params, searchParams }: Props) {
               <CarouselRow
                 key={row.id}
                 index={i}
-                emoji={row.emoji}
+                iconName={row.iconName}
                 title={CAROUSEL_TITLES[row.id] ?? row.title}
                 browseHref={row.browseHref}
                 games={row.games}
@@ -298,7 +299,7 @@ export default async function HomePage({ params, searchParams }: Props) {
           </div>
         ) : (
           <div className="text-center py-16 pb-12">
-            <p className="text-4xl mb-3">🎮</p>
+            <p className="mb-3 flex justify-center"><Icon name="pc" size={48} aria-hidden="true" className="text-slate-300 dark:text-slate-600" /></p>
             {(platforms.length > 0 || ageParam !== null) ? (
               <>
                 <p className="font-medium text-slate-600 dark:text-slate-300">
@@ -337,8 +338,8 @@ export default async function HomePage({ params, searchParams }: Props) {
                 href={`/${locale}/faq`}
                 className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-6 flex flex-col items-center text-center hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-600 transition-all cursor-pointer group"
               >
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.gradient} flex items-center justify-center text-2xl mb-4 shadow-sm group-hover:scale-110 transition-transform`}>
-                  {item.icon}
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.gradient} flex items-center justify-center text-white mb-4 shadow-sm group-hover:scale-110 transition-transform`}>
+                  <Icon name={item.iconName as IconName} size={32} />
                 </div>
                 <h3 className="font-semibold text-slate-800 dark:text-slate-100 mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{item.title}</h3>
                 <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{item.body}</p>

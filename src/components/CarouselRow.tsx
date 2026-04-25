@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import type { GameSummary } from '@/types/game'
 import { curascoreBg, esrbToAge, ageBadgeColor } from '@/lib/ui'
+import Icon, { type IconName } from '@/components/Icon'
 
 // ─── Tile ─────────────────────────────────────────────────────────────────────
 
@@ -89,14 +90,14 @@ function Arrow({ dir, onClick, label }: { dir: 'left' | 'right'; onClick: () => 
 // ─── Carousel row ─────────────────────────────────────────────────────────────
 
 type Props = {
-  emoji: string
+  iconName: string
   title: string
   browseHref: string
   games: GameSummary[]
   index: number
 }
 
-export default function CarouselRow({ emoji, title, browseHref, games, index }: Props) {
+export default function CarouselRow({ iconName, title, browseHref, games, index }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const t = useTranslations('carousel')
 
@@ -108,7 +109,7 @@ export default function CarouselRow({ emoji, title, browseHref, games, index }: 
     <section className={index > 0 ? 'pt-10' : ''}>
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <span>{emoji}</span>
+          <Icon name={iconName as IconName} size={20} aria-hidden="true" />
           <span>{title}</span>
         </h2>
         <Link

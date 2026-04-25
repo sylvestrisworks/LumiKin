@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { curascoreBg } from '@/lib/ui'
 import type { ExperienceSummary } from '@/components/ExperienceCard'
+import Icon from '@/components/Icon'
 
 // ─── Tile ─────────────────────────────────────────────────────────────────────
 
@@ -97,7 +98,7 @@ export default function FortniteCarouselRow({ experiences }: { experiences: Expe
     <section className="pt-10">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <span>⚡</span>
+          <Icon name="fortnite" size={20} aria-hidden="true" />
           <span>{t('carouselTitle')}</span>
         </h2>
         <Link

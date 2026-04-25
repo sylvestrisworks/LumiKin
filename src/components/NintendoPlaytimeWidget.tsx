@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import Icon from '@/components/Icon'
 
 type PlaytimeRow = {
   appId: string
@@ -74,7 +75,7 @@ export default function NintendoPlaytimeWidget() {
     return (
       <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-2xl" aria-hidden="true">🎮</span>
+          <Icon name="switch" size={24} aria-hidden="true" />
           <div>
             <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">Nintendo Switch</p>
             <p className="text-xs text-slate-400 dark:text-slate-500">{tCommon('loading')}</p>
@@ -95,7 +96,7 @@ export default function NintendoPlaytimeWidget() {
       <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
-            <span className="text-base" aria-hidden="true">🎮</span>
+            <Icon name="switch" size={16} aria-hidden="true" />
             <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{t('title')}</p>
           </div>
           <Link href={`/${locale}/settings/nintendo`} className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">settings</Link>
@@ -115,7 +116,7 @@ export default function NintendoPlaytimeWidget() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-base" aria-hidden="true">🎮</span>
+          <Icon name="switch" size={16} aria-hidden="true" />
           <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{t('title')}</p>
           <span className="text-xs text-slate-400 dark:text-slate-500 font-normal">{t('last7Days')}</span>
         </div>

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { curascoreBg } from '@/lib/ui'
 import type { ExperienceSummary } from '@/components/ExperienceCard'
+import Icon from '@/components/Icon'
 
 function formatCount(n: number | null): string {
   if (n == null) return ''
@@ -116,7 +117,7 @@ export default function RobloxCarouselRow({ experiences }: { experiences: Experi
     <section className="pt-10">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <span>🟥</span>
+          <Icon name="roblox" size={20} aria-hidden="true" />
           <span>{t('carouselTitle')}</span>
         </h2>
         <Link

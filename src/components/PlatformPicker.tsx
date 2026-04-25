@@ -2,14 +2,15 @@
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import Icon, { type IconName } from '@/components/Icon'
 
-const PLATFORMS = [
-  { value: 'PC',          label: 'PC',         emoji: '🖥️' },
-  { value: 'PlayStation', label: 'PlayStation', emoji: '🎮' },
-  { value: 'Xbox',        label: 'Xbox',        emoji: '🟢' },
-  { value: 'Switch',      label: 'Switch',      emoji: '🕹️' },
-  { value: 'iOS',         label: 'iOS',         emoji: '📱' },
-  { value: 'Android',     label: 'Android',     emoji: '🤖' },
+const PLATFORMS: { value: string; label: string; iconName: IconName }[] = [
+  { value: 'PC',          label: 'PC',          iconName: 'pc'          },
+  { value: 'PlayStation', label: 'PlayStation', iconName: 'playstation' },
+  { value: 'Xbox',        label: 'Xbox',        iconName: 'xbox'        },
+  { value: 'Switch',      label: 'Switch',      iconName: 'switch'      },
+  { value: 'iOS',         label: 'iOS',         iconName: 'ios'         },
+  { value: 'Android',     label: 'Android',     iconName: 'android'     },
 ]
 
 function PlatformPickerInner({ current }: { current: string[] }) {
@@ -46,7 +47,7 @@ function PlatformPickerInner({ current }: { current: string[] }) {
                 : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400'
             }`}
           >
-            <span>{p.emoji}</span>
+            <Icon name={p.iconName} size={16} label={p.label} />
             <span>{p.label}</span>
           </button>
         )

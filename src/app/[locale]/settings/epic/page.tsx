@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Icon from '@/components/Icon'
 
 type ConnectionStatus = {
   connected:     boolean
@@ -68,7 +69,7 @@ export default function EpicConnectPage() {
 
         {/* Header */}
         <div className="flex items-center gap-3">
-          <span className="text-2xl" aria-hidden="true">🎮</span>
+          <Icon name="fortnite" size={28} aria-hidden="true" />
           <div>
             <h1 className="text-xl font-bold text-slate-900 dark:text-white">Epic Games</h1>
             <p className="text-sm text-slate-500 dark:text-slate-400">

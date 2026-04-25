@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useTranslations, useLocale } from 'next-intl'
-import { ArrowRight, ChevronDown, ChevronUp, Sparkles, Ban, Users, Timer, Brain, Star, Leaf, BookOpen } from 'lucide-react'
+import { ArrowRight, ChevronDown, ChevronUp, Sparkles, Ban, Users, Timer, Brain, Star, Leaf, BookOpen, Monitor } from 'lucide-react'
 import GameCompactCard from './GameCompactCard'
 import { curascoreGradient, curascoreRing, curascoreBg } from '@/lib/ui'
 import type { GameSummary, SwapPair, CatalogStats } from '@/types/game'
@@ -18,14 +18,14 @@ const AGE_SEGMENTS = [
 ]
 
 const CATEGORY_PILLS = [
-  { icon: Brain,    emoji: '🧩', labelKey: 'pillHighBrainPower', href: '/browse?benefits=problem-solving' },
-  { icon: Ban,      emoji: '🛑', labelKey: 'pillZeroMicro',      href: '/browse?compliance=DSA'           },
-  { icon: Users,    emoji: '🛋️', labelKey: 'pillFamilyCoOp',    href: '/browse?benefits=teamwork'        },
-  { icon: Timer,    emoji: '⏱️', labelKey: 'pillShortSessions', href: '/browse?time=30'                  },
-  { icon: Sparkles, emoji: '🎨', labelKey: 'pillCreativePlay',   href: '/browse?genres=Puzzle'            },
-  { icon: Star,     emoji: '🏆', labelKey: 'pillTopRated',       href: '/browse?sort=curascore'           },
-  { icon: Leaf,     emoji: '🌱', labelKey: 'pillYoungKids',      href: '/browse?age=E'                    },
-  { icon: BookOpen, emoji: '🧠', labelKey: 'pillLearningFocus',  href: '/browse?benefits=problem-solving' },
+  { icon: Brain,    labelKey: 'pillHighBrainPower', href: '/browse?benefits=problem-solving' },
+  { icon: Ban,      labelKey: 'pillZeroMicro',      href: '/browse?compliance=DSA'           },
+  { icon: Users,    labelKey: 'pillFamilyCoOp',     href: '/browse?benefits=teamwork'        },
+  { icon: Timer,    labelKey: 'pillShortSessions',  href: '/browse?time=30'                  },
+  { icon: Sparkles, labelKey: 'pillCreativePlay',   href: '/browse?genres=Puzzle'            },
+  { icon: Star,     labelKey: 'pillTopRated',       href: '/browse?sort=curascore'           },
+  { icon: Leaf,     labelKey: 'pillYoungKids',      href: '/browse?age=E'                    },
+  { icon: BookOpen, labelKey: 'pillLearningFocus',  href: '/browse?benefits=problem-solving' },
 ]
 
 const DID_YOU_KNOW = [
@@ -294,7 +294,7 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
                   : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-indigo-200 dark:hover:border-indigo-700 hover:text-indigo-600 dark:hover:text-indigo-400'
                 }`}
             >
-              <span>{pill.emoji}</span>
+              <pill.icon size={16} aria-hidden="true" />
               <span>{t(pill.labelKey as Parameters<T>[0])}</span>
             </Link>
           ))}
@@ -348,7 +348,7 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
             </div>
           ) : (
             <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700">
-              <p className="text-3xl mb-2">🎮</p>
+              <p className="mb-2 flex justify-center"><Monitor size={36} aria-hidden="true" className="text-slate-300 dark:text-slate-600" /></p>
               <p className="font-semibold text-slate-600 dark:text-slate-300">{t('noMatchFilters')}</p>
               <button
                 onClick={() => { setActiveAge(null); setActiveGenre(null) }}

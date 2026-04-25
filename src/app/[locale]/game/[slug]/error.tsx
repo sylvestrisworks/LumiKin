@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import Icon from '@/components/Icon'
 
 export default function GameError({
   error,
@@ -20,7 +21,7 @@ export default function GameError({
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center">
-        <p className="text-4xl mb-4">⚠️</p>
+        <p className="mb-4 flex justify-center"><Icon name="warning" size={48} aria-hidden="true" className="text-amber-500" /></p>
         <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
           {t('error')}
         </h1>

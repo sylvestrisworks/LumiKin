@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import { Bell, ArrowUpRight } from 'lucide-react'
+import { Bell, ArrowUpRight, TrendingUp } from 'lucide-react'
 
 type Notification = {
   id: number
@@ -29,7 +29,7 @@ function timeAgo(dateStr: string): string {
 
 function typeIcon(type: string) {
   if (type === 'first_score') return '🎉'
-  if (type === 'score_up')    return '📈'
+  if (type === 'score_up')    return <TrendingUp size={20} aria-hidden="true" className="text-emerald-500" />
   if (type === 'score_down')  return '📉'
   return '📊'
 }

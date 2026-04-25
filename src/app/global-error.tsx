@@ -2,6 +2,7 @@
 
 import * as Sentry from '@sentry/nextjs'
 import { useEffect } from 'react'
+import Icon from '@/components/Icon'
 
 export default function GlobalError({
   error,
@@ -18,7 +19,7 @@ export default function GlobalError({
     <html>
       <body className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="text-center max-w-sm">
-          <p className="text-4xl mb-4">⚠️</p>
+          <p className="mb-4 flex justify-center"><Icon name="warning" size={48} aria-hidden="true" className="text-amber-500" /></p>
           <h2 className="text-xl font-black text-slate-900 mb-2">Something went wrong</h2>
           <p className="text-slate-500 text-sm mb-6">
             We&apos;ve been notified and are looking into it.

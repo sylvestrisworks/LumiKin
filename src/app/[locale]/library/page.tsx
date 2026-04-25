@@ -10,6 +10,7 @@ import ImportLibraryButton from '@/components/ImportLibraryButton'
 import type { GameSummary } from '@/types/game'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { calcAge } from '@/lib/age'
+import Icon from '@/components/Icon'
 
 export const metadata = { title: 'My Library — LumiKin' }
 
@@ -322,10 +323,10 @@ export default async function LibraryPage({
             <p className="text-xs text-indigo-600 dark:text-indigo-400 flex flex-wrap gap-x-3 gap-y-1">
               <span>Age {calcAge(selectedChild!.birthDate, selectedChild!.birthYear)}</span>
               {childPlatforms.length > 0 && (
-                <span>📱 {childPlatforms.join(', ')}</span>
+                <span className="flex items-center gap-1"><Icon name="ios" size={12} aria-hidden="true" />{childPlatforms.join(', ')}</span>
               )}
               {childSkills.length > 0 && (
-                <span>⭐ {childSkills.map(s => SKILL_DISPLAY[s] ?? s).join(', ')}</span>
+                <span className="flex items-center gap-1"><Icon name="topscore" size={12} aria-hidden="true" />{childSkills.map(s => SKILL_DISPLAY[s] ?? s).join(', ')}</span>
               )}
             </p>
             {owned.length === 0 && allOwned.length > 0 && (

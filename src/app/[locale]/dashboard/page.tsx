@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { childProfiles, userGames, games, gameScores } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { curascoreBg } from '@/lib/ui'
+import Icon from '@/components/Icon'
 import { calcAge } from '@/lib/age'
 import ProfileManager from '@/components/ProfileManager'
 import PlatformConnectionsWidget from '@/components/PlatformConnectionsWidget'
@@ -94,7 +95,7 @@ export default async function FamilyDashboard() {
           </div>
           <div className="flex items-center gap-3 text-sm">
             <a href={`/${locale}/library`} className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-300 hover:border-indigo-300 hover:text-indigo-700 transition-colors text-xs font-medium">
-              🎮 {t('owned', { count: owned.length })}
+              <Icon name="pc" size={14} aria-hidden="true" /> {t('owned', { count: owned.length })}
             </a>
             {wlCount > 0 && (
               <a href={`/${locale}/library`} className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-300 hover:border-amber-300 hover:text-amber-600 transition-colors text-xs font-medium">
@@ -199,7 +200,7 @@ export default async function FamilyDashboard() {
 
         {profiles.length === 0 && (
           <div className="text-center py-20 text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
-            <p className="text-4xl mb-3">👨‍👩‍👧</p>
+            <p className="mb-3 flex justify-center"><Icon name="family" size={48} aria-hidden="true" className="text-slate-300 dark:text-slate-600" /></p>
             <p className="font-medium text-slate-600 dark:text-slate-400 text-lg">{t('addChildCta')}</p>
             <p className="text-sm mt-2 max-w-sm mx-auto text-slate-400 dark:text-slate-500">
               {t('addChildDesc')}

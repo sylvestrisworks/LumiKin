@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import Link from 'next/link'
 import type { GameCardProps, GameSummary } from '@/types/game'
 import { esrbToAge, ageBadgeColor } from '@/lib/ui'
+import Icon from '@/components/Icon'
 
 // ─── Dark pattern label keys ─────────────────────────────────────────────────
 
@@ -615,13 +616,13 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
           <div className="grid grid-cols-[1fr_auto_1fr] gap-0 py-2 border-b border-slate-100 dark:border-slate-700/50">
             <div className="text-right px-3">
               {a.game.hasSubscription && (
-                <span className="text-[11px] text-amber-700 dark:text-amber-400 font-semibold">⚠️ {t('scSubRequired')}</span>
+                <span className="text-[11px] text-amber-700 dark:text-amber-400 font-semibold flex items-center gap-1"><Icon name="warning" size={12} aria-hidden="true" />{t('scSubRequired')}</span>
               )}
             </div>
             <div className="min-w-[100px] sm:min-w-[120px]" />
             <div className="px-3">
               {b.game.hasSubscription && (
-                <span className="text-[11px] text-amber-700 dark:text-amber-400 font-semibold">⚠️ {t('scSubRequired')}</span>
+                <span className="text-[11px] text-amber-700 dark:text-amber-400 font-semibold flex items-center gap-1"><Icon name="warning" size={12} aria-hidden="true" />{t('scSubRequired')}</span>
               )}
             </div>
           </div>

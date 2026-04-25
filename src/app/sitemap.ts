@@ -5,6 +5,11 @@ import { eq } from 'drizzle-orm'
 import { sanityClient } from '@/sanity/lib/client'
 import { allGuideSlugsQuery, allPostSlugsQuery } from '@/sanity/lib/queries'
 
+// DB slug → friendly hub URL slug (must match platform/[slug]/page.tsx)
+const DB_TO_URL_SLUG: Record<string, string> = {
+  'fortnite-creative': 'fortnite',
+}
+
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
 const LOCALES = ['en', 'es', 'fr', 'sv', 'de'] as const
 const DEFAULT_LOCALE = 'en'
@@ -66,53 +71,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ),
   )
 
-  // ── Roblox experience pages ────────────────────────────────────────────────
-  const robloxPlatformId = (
-    await db
-      .select({ id: games.id })
-      .from(games)
-      .where(eq(games.slug, 'roblox'))
-      .limit(1)
-  )[0]?.id
+  // ── UGC experience pages + platform hub pages (all platforms, dynamic) ────
+  const allUgcExperiences = await db
+    .select({
+      slug:         platformExperiences.slug,
+      updatedAt:    platformExperiences.updatedAt,
+      platformSlug: games.slug,
+    })
+    .from(platformExperiences)
+    .innerJoin(games, eq(games.id, platformExperiences.platformId))
+    .where(eq(games.contentType, 'platform'))
 
-  const robloxExperiences = robloxPlatformId
-    ? await db
-        .select({ slug: platformExperiences.slug, updatedAt: platformExperiences.updatedAt })
-        .from(platformExperiences)
-        .where(eq(platformExperiences.platformId, robloxPlatformId))
-    : []
-
-  const robloxEntries: MetadataRoute.Sitemap = robloxExperiences.flatMap((exp) =>
+  const ugcExperienceEntries: MetadataRoute.Sitemap = allUgcExperiences.flatMap((exp) =>
     multiLocaleEntry(
-      `/game/roblox/${exp.slug}`,
+      `/game/${exp.platformSlug}/${exp.slug}`,
       0.7,
       'weekly',
       exp.updatedAt ?? undefined,
     ),
   )
 
-  // ── Fortnite Creative island pages ────────────────────────────────────────
-  const fortnitePlatformId = (
-    await db
-      .select({ id: games.id })
-      .from(games)
-      .where(eq(games.slug, 'fortnite'))
-      .limit(1)
-  )[0]?.id
-
-  const fortniteIslands = fortnitePlatformId
-    ? await db
-        .select({ slug: platformExperiences.slug, updatedAt: platformExperiences.updatedAt })
-        .from(platformExperiences)
-        .where(eq(platformExperiences.platformId, fortnitePlatformId))
-    : []
-
-  const fortniteEntries: MetadataRoute.Sitemap = fortniteIslands.flatMap((island) =>
+  // One hub page entry per platform that has at least one experience
+  const platformDbSlugs = Array.from(new Set(allUgcExperiences.map((e) => e.platformSlug)))
+  const platformHubEntries: MetadataRoute.Sitemap = platformDbSlugs.flatMap((dbSlug) =>
     multiLocaleEntry(
-      `/game/fortnite-creative/${island.slug}`,
-      0.7,
+      `/platform/${DB_TO_URL_SLUG[dbSlug] ?? dbSlug}`,
+      0.8,
       'weekly',
-      island.updatedAt ?? undefined,
     ),
   )
 
@@ -143,8 +128,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...staticEntries,
     ...gameEntries,
-    ...robloxEntries,
-    ...fortniteEntries,
+    ...ugcExperienceEntries,
+    ...platformHubEntries,
     ...guideContentEntries,
     ...postContentEntries,
   ]

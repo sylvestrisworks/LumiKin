@@ -19,7 +19,7 @@ export type FetchExperienceResult =
 
 /**
  * Server action: fetch Roblox experience metadata by Place ID and upsert into DB.
- * The Roblox platform game row must already exist in `games` with isPlatform=true.
+ * The Roblox platform game row must already exist in `games` with contentType='platform'.
  */
 export async function upsertRobloxExperience(placeId: string): Promise<FetchExperienceResult> {
   try {

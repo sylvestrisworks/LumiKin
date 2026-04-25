@@ -49,8 +49,11 @@ export const games = pgTable('games', {
   chatModeration: varchar('chat_moderation', { length: 50 }),     // none, basic, strong
   bundledOnlineNote: text('bundled_online_note'),                 // manually curated warning for games where a toxic online mode is bundled with a good single-player campaign (e.g. RDR2, GTA V)
 
-  // Platform flag — true for apps like Roblox that host UGC experiences
-  isPlatform: boolean('is_platform').default(false),
+  // Content type — distinguishes standalone games from UGC platform hosts
+  contentType: varchar('content_type', { length: 20 })
+    .$type<'standalone_game' | 'platform'>()
+    .notNull()
+    .default('standalone_game'),
 
   // Rescore flag — set by sync-game-updates when RAWG detects a change
   needsRescore: boolean('needs_rescore').notNull().default(false),
@@ -512,6 +515,9 @@ export const experienceScores = pgTable('experience_scores', {
 
   // Recommended minimum age
   recommendedMinAge: integer('recommended_min_age'),
+
+  // Methodology traceability (matches game_scores.methodologyVersion)
+  methodologyVersion: varchar('methodology_version', { length: 10 }),
 
   // Timestamps
   calculatedAt: timestamp('calculated_at').defaultNow(),

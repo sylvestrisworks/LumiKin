@@ -3,10 +3,11 @@ export const revalidate = 3600
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
-import { platformExperiences, experienceScores } from '@/lib/db/schema'
+import { platformExperiences, experienceScores, games } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import Link from 'next/link'
 import { getTranslations, getLocale } from 'next-intl/server'
+import UgcAttributionBlock from '@/components/UgcAttributionBlock'
 
 type Props = { params: Promise<{ mapSlug: string }> }
 
@@ -155,11 +156,21 @@ export default async function FortniteMapPage({ params }: Props) {
 
   if (!exp) notFound()
 
-  const [score] = await db
-    .select()
-    .from(experienceScores)
-    .where(eq(experienceScores.experienceId, exp.id))
-    .limit(1)
+  const [[score], [parentPlatform]] = await Promise.all([
+    db.select()
+      .from(experienceScores)
+      .where(eq(experienceScores.experienceId, exp.id))
+      .limit(1),
+    db.select({
+        slug:        games.slug,
+        title:       games.title,
+        esrbRating:  games.esrbRating,
+        pegiRating:  games.pegiRating,
+      })
+      .from(games)
+      .where(eq(games.id, exp.platformId))
+      .limit(1),
+  ])
 
   const verdict = score?.curascore != null ? getVerdict(score.curascore) : null
 
@@ -234,6 +245,18 @@ export default async function FortniteMapPage({ params }: Props) {
             </div>
           </div>
         </div>
+
+        {/* ── UGC attribution ────────────────────────────────────────────────── */}
+        {parentPlatform && (
+          <UgcAttributionBlock
+            locale={locale}
+            platformName={parentPlatform.title}
+            platformSlug={parentPlatform.slug}
+            esrbRating={parentPlatform.esrbRating}
+            pegiRating={parentPlatform.pegiRating}
+            curascore={score?.curascore ?? null}
+          />
+        )}
 
         {/* ── Summary ────────────────────────────────────────────────────────── */}
         {score?.summary && (

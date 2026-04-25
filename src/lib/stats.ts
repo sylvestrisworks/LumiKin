@@ -1,7 +1,7 @@
 import { unstable_cache } from 'next/cache'
 import { sql, eq, gte, isNotNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { games, gameScores, gameTranslations } from '@/lib/db/schema'
+import { games, gameScores, gameTranslations, platformExperiences, experienceScores } from '@/lib/db/schema'
 
 export type PlatformStat = {
   platform_name: string
@@ -22,6 +22,15 @@ export type RecentScore = {
   platform: string | null
 }
 
+export type RecentUgcScore = {
+  id: number
+  name: string
+  slug: string
+  score: number | null
+  scored_at: string | null
+  parent_platform: string
+}
+
 export type SiteStats = {
   total_games_scored: number
   scored_last_7_days: number
@@ -29,6 +38,17 @@ export type SiteStats = {
   platforms: PlatformStat[]
   languages: LanguageStat[]
   recent_scores: RecentScore[]
+
+  // UGC coverage
+  total_ugc_experiences_scored: number
+  ugc_scored_last_7_days: number
+  ugc_scored_last_30_days: number
+  ugc_by_parent_platform: PlatformStat[]
+  // null: platform_experiences has no publish-date field from the source platform.
+  // To enable this metric, add platformPublishedAt to platform_experiences and backfill
+  // from the Roblox API (games.v1 `created` field) or Fortnite map metadata.
+  median_hours_publish_to_score_ugc: null
+  recent_ugc_scores: RecentUgcScore[]
 }
 
 async function computeSiteStats(): Promise<SiteStats> {
@@ -43,16 +63,20 @@ async function computeSiteStats(): Promise<SiteStats> {
     platformRows,
     translationRows,
     recentRows,
+    ugcTotalResult,
+    ugcLast7Result,
+    ugcLast30Result,
+    ugcByPlatformRows,
+    recentUgcRows,
   ] = await Promise.all([
-    // total scored
+    // ── Standalone / platform game stats ──────────────────────────────────────
+
     db.select({ count: sql<number>`count(*)` }).from(gameScores),
 
-    // scored in last 7 days
     db.select({ count: sql<number>`count(*)` })
       .from(gameScores)
       .where(gte(gameScores.calculatedAt, ago7)),
 
-    // scored in last 30 days
     db.select({ count: sql<number>`count(*)` })
       .from(gameScores)
       .where(gte(gameScores.calculatedAt, ago30)),
@@ -76,7 +100,7 @@ async function computeSiteStats(): Promise<SiteStats> {
       .from(gameTranslations)
       .groupBy(gameTranslations.locale),
 
-    // 10 most recently scored
+    // 10 most recently scored games
     db.select({
       game_id:   games.id,
       name:      games.title,
@@ -90,11 +114,51 @@ async function computeSiteStats(): Promise<SiteStats> {
       .where(isNotNull(gameScores.curascore))
       .orderBy(sql`${gameScores.calculatedAt} DESC`)
       .limit(10),
+
+    // ── UGC experience stats ───────────────────────────────────────────────────
+
+    db.select({ count: sql<number>`count(*)` })
+      .from(experienceScores)
+      .where(isNotNull(experienceScores.curascore)),
+
+    db.select({ count: sql<number>`count(*)` })
+      .from(experienceScores)
+      .where(gte(experienceScores.calculatedAt, ago7)),
+
+    db.select({ count: sql<number>`count(*)` })
+      .from(experienceScores)
+      .where(gte(experienceScores.calculatedAt, ago30)),
+
+    // UGC breakdown by parent platform (e.g. Roblox: 220, Fortnite Creative: 14)
+    db.execute(sql`
+      SELECT g.title AS platform_name, count(*)::int AS count
+      FROM experience_scores es
+      JOIN platform_experiences pe ON pe.id = es.experience_id
+      JOIN games g ON g.id = pe.platform_id
+      WHERE es.curascore IS NOT NULL
+      GROUP BY g.title
+      ORDER BY count DESC
+    `),
+
+    // 10 most recently scored UGC experiences
+    db.select({
+      id:              platformExperiences.id,
+      name:            platformExperiences.title,
+      slug:            platformExperiences.slug,
+      score:           experienceScores.curascore,
+      scored_at:       experienceScores.calculatedAt,
+      parent_platform: games.title,
+    })
+      .from(experienceScores)
+      .innerJoin(platformExperiences, eq(platformExperiences.id, experienceScores.experienceId))
+      .innerJoin(games, eq(games.id, platformExperiences.platformId))
+      .where(isNotNull(experienceScores.curascore))
+      .orderBy(sql`${experienceScores.calculatedAt} DESC`)
+      .limit(10),
   ])
 
   const totalScored = Number(totalResult[0]?.count ?? 0)
 
-  // Build languages array: English = all scored games; others from translations table
   const langMap = new Map<string, number>([['en', totalScored]])
   for (const row of translationRows) {
     langMap.set(row.locale, Number(row.count))
@@ -102,7 +166,7 @@ async function computeSiteStats(): Promise<SiteStats> {
   const languages: LanguageStat[] = Array.from(langMap.entries()).map(([locale, count]) => ({ locale, count }))
 
   return {
-    total_games_scored: totalScored,
+    total_games_scored:  totalScored,
     scored_last_7_days:  Number(last7Result[0]?.count  ?? 0),
     scored_last_30_days: Number(last30Result[0]?.count ?? 0),
     platforms: (platformRows as unknown as { platform_name: string; count: number }[]).map(r => ({
@@ -117,6 +181,23 @@ async function computeSiteStats(): Promise<SiteStats> {
       score:     r.score ?? null,
       scored_at: r.scored_at ? new Date(r.scored_at).toISOString() : null,
       platform:  r.platform ?? null,
+    })),
+
+    total_ugc_experiences_scored: Number(ugcTotalResult[0]?.count ?? 0),
+    ugc_scored_last_7_days:       Number(ugcLast7Result[0]?.count  ?? 0),
+    ugc_scored_last_30_days:      Number(ugcLast30Result[0]?.count ?? 0),
+    ugc_by_parent_platform: (ugcByPlatformRows as unknown as { platform_name: string; count: number }[]).map(r => ({
+      platform_name: r.platform_name,
+      count: Number(r.count),
+    })),
+    median_hours_publish_to_score_ugc: null,
+    recent_ugc_scores: recentUgcRows.map(r => ({
+      id:              r.id,
+      name:            r.name,
+      slug:            r.slug,
+      score:           r.score ?? null,
+      scored_at:       r.scored_at ? new Date(r.scored_at).toISOString() : null,
+      parent_platform: r.parent_platform,
     })),
   }
 }

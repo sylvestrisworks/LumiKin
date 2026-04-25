@@ -7,7 +7,7 @@ import { eq, desc, asc, sql, and, lte, gte, ilike, inArray, isNull, isNotNull, o
 import { curascoreBg } from '@/lib/ui'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
-import { games, gameScores, childProfiles } from '@/lib/db/schema'
+import { games, gameScores, childProfiles, platformExperiences } from '@/lib/db/schema'
 import BrowseFilters, { ViewToggle, type ActiveFilters } from '@/components/BrowseFilters'
 import GameCompactCard from '@/components/GameCompactCard'
 import BrowseSearch from '@/components/BrowseSearch'
@@ -22,6 +22,11 @@ export const metadata: Metadata = {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const PAGE_SIZE = 48
+
+// DB slug → friendly hub URL slug (mirrors platform/[slug]/page.tsx)
+const DB_TO_URL: Record<string, string> = {
+  'fortnite-creative': 'fortnite',
+}
 
 // ─── Platform keyword map ─────────────────────────────────────────────────────
 const PLATFORM_KEYWORDS: Record<string, string[]> = {
@@ -416,7 +421,14 @@ export default async function BrowsePage({ params, searchParams }: Props) {
     ? { age: selectedChild.age, platforms: selectedChild.platforms }
     : undefined
 
-  const { rows, total } = await queryGames(filters, childFilter)
+  const [{ rows, total }, ugcPlatforms] = await Promise.all([
+    queryGames(filters, childFilter),
+    db
+      .selectDistinct({ slug: games.slug, title: games.title })
+      .from(games)
+      .innerJoin(platformExperiences, eq(platformExperiences.platformId, games.id))
+      .where(eq(games.contentType, 'platform')),
+  ])
 
   const totalPages  = Math.ceil(total / PAGE_SIZE)
   const currentPage = filters.page ?? 1
@@ -522,6 +534,24 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                 gridHref={pageUrl({ ...filters, view: 'grid' }, 1, locale, childIdParam ?? undefined)}
               />
             </div>
+
+            {/* Browse by UGC platform */}
+            {ugcPlatforms.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap mb-4">
+                <span className="text-xs text-slate-400 dark:text-slate-500 font-medium shrink-0">
+                  UGC platforms:
+                </span>
+                {ugcPlatforms.map(p => (
+                  <Link
+                    key={p.slug}
+                    href={`/${locale}/platform/${DB_TO_URL[p.slug] ?? p.slug}`}
+                    className="text-xs px-3 py-1.5 rounded-full font-medium bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400 transition-colors"
+                  >
+                    {p.title}
+                  </Link>
+                ))}
+              </div>
+            )}
 
             {rows.length === 0 ? (
               <div className="text-center py-16 sm:py-20 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">

@@ -44,6 +44,7 @@ async function runQuery(
     .from(games)
     .innerJoin(gameScores, eq(gameScores.gameId, games.id))
     .where(and(
+      eq(games.contentType, 'standalone_game'),
       isNotNull(gameScores.curascore),
       gte(gameScores.curascore, minScore),
       lte(gameScores.curascore, maxScore),

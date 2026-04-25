@@ -17,6 +17,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { games, gameScores, reviews, ingestCursor } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
+import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import { rawgGetByGenre, rawgGetDetail, RawgError } from '@/lib/rawg/client'
 import { mapDetailToInsert } from '@/lib/rawg/mapper'
 import { calculateGameScores } from '@/lib/scoring/engine'
@@ -432,6 +433,7 @@ async function saveReview(game: GameRow, r: ReviewInput): Promise<{ reviewId: nu
     representationScore:         (r.representation.repGenderBalance + r.representation.repEthnicDiversity) / 6,
     propagandaLevel:             r.propaganda.propagandaLevel,
     bechdelResult:               r.bechdel.result,
+    methodologyVersion:          CURRENT_METHODOLOGY_VERSION,
     calculatedAt:                new Date(),
   }
 
@@ -477,8 +479,10 @@ async function runDebate(game: GameRow, currentCurascore: number): Promise<{ new
   // Update game_scores with debate result
   await db.update(gameScores).set({
     bds, ris, curascore,
-    debateTranscript: transcript,
-    debateRounds: 2,
+    debateTranscript:   transcript,
+    debateRounds:       2,
+    methodologyVersion: CURRENT_METHODOLOGY_VERSION,
+    calculatedAt:       new Date(),
   }).where(eq(gameScores.gameId, game.id))
 
   return { newCurascore: curascore, transcript }

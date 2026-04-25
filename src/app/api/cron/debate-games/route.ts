@@ -15,6 +15,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
 import { eq, gte, lte, isNull, isNotNull, and } from 'drizzle-orm'
+import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 export const maxDuration = 300
 
 // ─── Config ───────────────────────────────────────────────────────────────────
@@ -267,8 +268,10 @@ async function runDebate(
 
   await db.update(gameScores).set({
     bds, ris, curascore,
-    debateTranscript: transcript,
-    debateRounds:     2,
+    debateTranscript:   transcript,
+    debateRounds:       2,
+    methodologyVersion: CURRENT_METHODOLOGY_VERSION,
+    calculatedAt:       new Date(),
   }).where(eq(gameScores.gameId, game.id))
 
   return { newCurascore: curascore, saved: true }

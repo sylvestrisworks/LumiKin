@@ -14,6 +14,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { platformExperiences, experienceScores, games } from '@/lib/db/schema'
 import { eq, isNull, or } from 'drizzle-orm'
+import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 
 export const maxDuration = 300
 
@@ -188,8 +189,11 @@ Every map gets two independent profiles: a Benefits Profile (what the child deve
 - **dopamineTrapScore**: Infinite play loops, no natural stopping points, score-chasing without progression, near-miss mechanics.
 - **toxicityScore**: Rank systems that shame low-skill players, designs that reward griefing, or elimination mechanics that humiliate.
 - **ugcContentRisk**: Exposure to inappropriate player-built structures, textures, or custom images within the map experience.
-- **strangerRisk**: How much the map design exposes children to unknown adults — open proximity voice chat, designed team-up with randoms, DM invites.
-  Note: Fortnite has proximity voice chat ON by default; maps cannot disable it, so base stranger risk starts at 1 unless the map is solo-only.
+- **strangerRisk** calibration:
+  - 0: Solo-instance maps where no other live players are possible (single-player deathrun, aim trainer with no lobby, solo parkour)
+  - 1: Multiplayer-lobby maps with proximity voice but no chat focus (zone wars, box fights — voice exists but gameplay is fast/ambient)
+  - 2: Multiplayer maps with social/hangout structure (hub maps, roleplay maps, lobby-heavy experiences)
+  - 3: Maps designed around stranger interaction (open chat, friend-add prompts, "make new friends" framing)
 - **monetizationScore**: V-Buck pressure built into the map — cosmetic requirements, pay-to-win map items, social comparison of skins.
 - **privacyRisk**: Map prompts players to share real info or join external Discord/social accounts.
 
@@ -311,6 +315,8 @@ async function saveScore(experience: ExperienceRow, eval_: EvalInput): Promise<n
     risksNarrative:            eval_.narratives.risksNarrative,
     parentTip:                 eval_.narratives.parentTip,
     recommendedMinAge:         eval_.recommendation.recommendedMinAge,
+    methodologyVersion:        CURRENT_METHODOLOGY_VERSION,
+    calculatedAt:              new Date(),
     updatedAt:                 new Date(),
   }
 

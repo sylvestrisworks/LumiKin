@@ -338,29 +338,73 @@ export default async function GamePage({ params }: Props) {
   }
 
   // JSON-LD structured data
-  const jsonLd = {
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
+
+  const videoGameLd = {
     '@context': 'https://schema.org',
     '@type': 'VideoGame',
     name: game.title,
     description: game.description ?? undefined,
     developer: game.developer ? { '@type': 'Organization', name: game.developer } : undefined,
     publisher: game.publisher ? { '@type': 'Organization', name: game.publisher } : undefined,
-    genre: game.genres,
-    gamePlatform: game.platforms,
+    genre: game.genres.length > 0 ? game.genres : undefined,
+    gamePlatform: game.platforms.length > 0 ? game.platforms : undefined,
     contentRating: game.esrbRating ?? undefined,
     aggregateRating: game.metacriticScore
       ? { '@type': 'AggregateRating', ratingValue: game.metacriticScore, bestRating: 100, ratingCount: 1 }
       : undefined,
     image: game.backgroundImage ?? undefined,
-    url: `https://lumikin.org/game/${game.slug}`,
+    url: `${SITE_URL}/en/game/${game.slug}`,
   }
+
+  // Review schema — only emitted when a LumiScore exists
+  const reviewBodyRaw = scores?.executiveSummary
+    ?? (scores?.curascore != null
+      ? `${game.title} received a LumiScore of ${scores.curascore}/100.${scores.timeRecommendationLabel ? ` Recommended play time: ${scores.timeRecommendationLabel}.` : ''}`
+      : null)
+  const reviewBody = reviewBodyRaw
+    ? reviewBodyRaw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 500)
+    : null
+
+  const reviewLd = scores?.curascore != null ? {
+    '@context': 'https://schema.org',
+    '@type': 'Review',
+    itemReviewed: {
+      '@type': 'VideoGame',
+      name: game.title,
+      gamePlatform: game.platforms.length > 0 ? game.platforms : undefined,
+      genre: game.genres.length > 0 ? game.genres : undefined,
+      publisher: game.publisher ? { '@type': 'Organization', name: game.publisher } : undefined,
+    },
+    author: {
+      '@type': 'Organization',
+      name: 'LumiKin',
+      url: SITE_URL,
+    },
+    reviewRating: {
+      '@type': 'Rating',
+      ratingValue: scores.curascore,
+      bestRating: 100,
+      worstRating: 0,
+    },
+    datePublished: scores.calculatedAt ? scores.calculatedAt.slice(0, 10) : undefined,
+    dateModified: (game.updatedAt ?? scores.calculatedAt)?.slice(0, 10),
+    reviewBody: reviewBody ?? undefined,
+    url: `${SITE_URL}/en/game/${game.slug}`,
+  } : null
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(videoGameLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
       />
+      {reviewLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
+        />
+      )}
 
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
         <main className="max-w-2xl mx-auto px-4 py-6">

@@ -55,6 +55,12 @@ export default async function LocaleLayout({
                   <a href={`/${locale}/terms`} className="hover:text-indigo-700 dark:hover:text-indigo-400 hover:underline transition-colors">
                     {t('navTerms')}
                   </a>
+                  <a href="/feed.xml" className="hover:text-indigo-700 dark:hover:text-indigo-400 hover:underline transition-colors">
+                    RSS
+                  </a>
+                  <a href="/feed.json" className="hover:text-indigo-700 dark:hover:text-indigo-400 hover:underline transition-colors">
+                    JSON Feed
+                  </a>
                 </nav>
                 <LanguageSwitcher />
               </div>

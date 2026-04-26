@@ -339,6 +339,32 @@ export default async function PressPage({ params }: Props) {
         </div>
       </section>
 
+      {/* ── Feeds ────────────────────────────────────────────────────────────── */}
+      <section className="border-t border-zinc-200 dark:border-zinc-800">
+        <div className="max-w-5xl mx-auto px-6 py-16">
+          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-8">
+            Live feeds
+          </p>
+          <p className="text-zinc-600 dark:text-zinc-300 text-sm max-w-lg mb-8 leading-relaxed">
+            Subscribe to the 50 most recently scored games. Updates within an hour of new scores landing.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <a
+              href="/feed.xml"
+              className="inline-flex items-center gap-2 rounded-md border border-zinc-200 dark:border-zinc-700 px-5 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
+            >
+              RSS feed ↗
+            </a>
+            <a
+              href="/feed.json"
+              className="inline-flex items-center gap-2 rounded-md border border-zinc-200 dark:border-zinc-700 px-5 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
+            >
+              JSON Feed ↗
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* ── Press contact ────────────────────────────────────────────────────── */}
       <section className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
         <div className="max-w-5xl mx-auto px-6 py-16">

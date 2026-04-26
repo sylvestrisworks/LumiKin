@@ -27,8 +27,9 @@ export function calculateExperienceBenefits(
   learningScore: number | null | undefined,
 ): ExperienceBenefitResult {
   // creativity spans both expressive (B1) and collaborative (B2) — split 50/50
-  const cognitive       = (v(learningScore) + v(creativityScore) * 0.5) / 3
-  const socialEmotional = (v(socialScore)   + v(creativityScore) * 0.5) / 3
+  // Max input to each composite = learning/social(3) + creativity(3)×0.5 = 4.5 → divide by 4.5
+  const cognitive       = (v(learningScore) + v(creativityScore) * 0.5) / 4.5
+  const socialEmotional = (v(socialScore)   + v(creativityScore) * 0.5) / 4.5
   // motor = 0: experience pipeline does not assess motor skills
 
   const bds = cognitive * 0.50 + socialEmotional * 0.30

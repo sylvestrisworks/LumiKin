@@ -180,27 +180,28 @@ Every map gets two independent profiles: a Benefits Profile (what the child deve
 - **strangerRisk** calibration:
   - 0: Solo-instance maps where no other live players are possible (single-player deathrun, aim trainer with no lobby, solo parkour)
   - 1: Multiplayer-lobby maps with proximity voice but no chat focus (zone wars, box fights — voice exists but gameplay is fast/ambient)
-  - 2: Multiplayer maps with social/hangout structure (hub maps, roleplay maps, lobby-heavy experiences)
-  - 3: Maps designed around stranger interaction (open chat, friend-add prompts, "make new friends" framing)
+  - 2: Multiplayer maps with passive social/hangout structure (hub waiting areas, lobby-heavy experiences where socialising is incidental)
+  - 3: Roleplay and social hangout maps where meeting strangers is the point — open text chat, friend-add prompts, "make new friends" framing, or RP maps modelled on Roblox Brookhaven-style open social worlds
 - **monetizationScore**: V-Buck pressure built into the map — cosmetic requirements, pay-to-win map items, social comparison of skins.
 - **privacyRisk**: Map prompts players to share real info or join external Discord/social accounts.
 
 **Do not output a time recommendation or curascore — the engine derives both from your dimensional scores.**
 
 ## CALIBRATION EXAMPLES
-Reference: Fortnite Battle Royale itself scores 42 on LumiKin. Most Creative maps should sit in the 35–60 range. Only exceptional experiences with strong creative, cooperative, AND learning dimensions should approach 70+.
+Reference: Fortnite Battle Royale itself scores 42 on LumiKin.
 
 | Map type | What it is | Key scores | Curascore |
 |---|---|---|---|
 | Zone Wars | Rotating storm, skill practice, competitive | creativity 0, social 1, learning 2 / dopamine 2, stranger 1, monetization 0 | ~44 |
 | Box Fight / Aim Trainer | Aim trainer, structured duels, no real creativity | creativity 0, social 1, learning 2 / dopamine 1, stranger 1, monetization 0 | ~48 |
 | Deathrun | Obstacle course, memorisation, solo | creativity 0, social 0, learning 2 / dopamine 1, stranger 0, monetization 0 | ~52 |
+| RP / Social Hangout | Open roleplay, social chat, stranger-meeting design | creativity 1, social 3, learning 0 / dopamine 1, stranger 3, monetization 0 | ~42 |
 | Puzzle / Escape Room | Spatial reasoning, story, problem-solving | creativity 1, social 1, learning 3 / dopamine 1, stranger 1, monetization 0 | ~58 |
 | Creative Sandbox | Open building, world creation tools, full editor | creativity 3, social 2, learning 2 / dopamine 1, stranger 2, monetization 0 | ~68 |
 | Prop Hunt | Social hide-and-seek, large lobbies, text chat | creativity 1, social 3, learning 0 / dopamine 1, stranger 2, monetization 0 | ~48 |
 | XP Farm | Infinite loop designed purely to grind Battle Pass | creativity 0, social 0, learning 0 / dopamine 3, stranger 0, monetization 2 | ~15 |
 
-IMPORTANT: Aim training courses and combat maps (box fights, zone wars, deathrun) should score 40–55 unless they have a strong cooperative or creative element. Do not inflate learningScore for maps that only develop hand-eye coordination in an aim-trainer context — that is a 1, not a 3.
+IMPORTANT: Aim training courses and combat maps (box fights, zone wars, deathrun) should score 40–55 unless they have a strong cooperative or creative element. RP and social hangout maps have high stranger exposure and score 35–45. Only experiences with genuinely strong creative, cooperative, AND learning dimensions should approach 65+. Do not inflate learningScore for maps that only develop hand-eye coordination in an aim-trainer context — that is a 1, not a 3.
 
 ## MAP TO EVALUATE
 Title: ${e.title}

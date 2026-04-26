@@ -5,8 +5,8 @@ const createMDX = require('@next/mdx')
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 const withMDX = createMDX({
   options: {
-    remarkPlugins: [require('remark-gfm')],
-    rehypePlugins: [require('rehype-slug')],
+    remarkPlugins: [require('remark-gfm').default],
+    rehypePlugins: [require('rehype-slug').default],
   },
 })
 

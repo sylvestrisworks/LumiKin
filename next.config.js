@@ -35,11 +35,11 @@ const nextConfig = {
         // unsafe-inline needed for next-intl hydration and JSON-LD script tags
         value: [
           "default-src 'self'",
-          "script-src 'self' 'unsafe-inline'",
+          "script-src 'self' 'unsafe-inline' https://plausible.io",
           "style-src 'self' 'unsafe-inline'",
           "img-src 'self' media.rawg.io images.igdb.com cdn.sanity.io *.rbxcdn.com tr.rbxcdn.com img2.fortnitemaps.com cdn2.unrealengine.com *.qstv.on.epicgames.com assets.fortnitecreativehq.com *.fortnite.com data: blob:",
           "font-src 'self' data:",
-          "connect-src 'self' https://*.api.sanity.io wss://*.api.sanity.io https://cdn.sanity.io",
+          "connect-src 'self' https://*.api.sanity.io wss://*.api.sanity.io https://cdn.sanity.io https://plausible.io",
           "frame-ancestors 'none'",
         ].join('; '),
       },

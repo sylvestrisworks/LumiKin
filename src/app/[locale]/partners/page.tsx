@@ -97,11 +97,11 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
       <PlausibleGoal goal="partners_page_view" />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_SCHEMA) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_SCHEMA).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(SERVICE_SCHEMA) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SERVICE_SCHEMA).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
       />
 
       {/* ── Hero ─────────────────────────────────────────────────────────────── */}

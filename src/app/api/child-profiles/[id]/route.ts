@@ -14,7 +14,7 @@ const ProfileSchema = z.object({
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getUserId(session: any): string | null {
-  return session?.user?.id ?? session?.user?.email ?? null
+  return session?.user?.id ?? null
 }
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {

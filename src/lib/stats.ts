@@ -1,5 +1,5 @@
 import { unstable_cache } from 'next/cache'
-import { sql, eq, gte, isNotNull } from 'drizzle-orm'
+import { sql, eq, gte, isNotNull, desc } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { games, gameScores, gameTranslations, platformExperiences, experienceScores } from '@/lib/db/schema'
 
@@ -112,7 +112,7 @@ async function computeSiteStats(): Promise<SiteStats> {
       .from(gameScores)
       .innerJoin(games, eq(games.id, gameScores.gameId))
       .where(isNotNull(gameScores.curascore))
-      .orderBy(sql`${gameScores.calculatedAt} DESC`)
+      .orderBy(desc(gameScores.calculatedAt))
       .limit(10),
 
     // ── UGC experience stats ───────────────────────────────────────────────────
@@ -153,7 +153,7 @@ async function computeSiteStats(): Promise<SiteStats> {
       .innerJoin(platformExperiences, eq(platformExperiences.id, experienceScores.experienceId))
       .innerJoin(games, eq(games.id, platformExperiences.platformId))
       .where(isNotNull(experienceScores.curascore))
-      .orderBy(sql`${experienceScores.calculatedAt} DESC`)
+      .orderBy(desc(experienceScores.calculatedAt))
       .limit(10),
   ])
 

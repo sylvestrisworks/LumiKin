@@ -171,11 +171,12 @@ async function callDebate(
 
     if (!res.ok) {
       const errText = await res.text()
+      console.error('[debate-games] Azure OpenAI error', res.status, errText)
       if ((res.status === 429 || res.status === 503) && attempt < 3) {
         await sleep(Math.pow(2, attempt) * 5000)
         return callDebate(prompt, attempt + 1)
       }
-      throw new Error(`Azure OpenAI ${res.status}: ${errText}`)
+      throw new Error(`Azure OpenAI error (${res.status})`)
     }
 
     const data = await res.json()

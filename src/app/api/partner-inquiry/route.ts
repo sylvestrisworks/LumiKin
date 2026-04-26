@@ -15,7 +15,7 @@ const schema = z.object({
   website: z.string().max(0), // honeypot — must be empty
 })
 
-const NOTIFY_TO = 'johan@sylvestris.works'
+const NOTIFY_TO = process.env.PARTNER_NOTIFY_EMAIL ?? 'johan@sylvestris.works'
 
 export async function POST(req: Request) {
   if (!rateLimit(`partner-inquiry:${getIp(req)}`, 3, 10 * 60_000)) {

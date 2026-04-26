@@ -12,7 +12,7 @@ const AddSchema = z.object({
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function userId(session: any): string | null {
-  return session?.user?.id ?? session?.user?.email ?? null
+  return session?.user?.id ?? null
 }
 
 export async function GET() {

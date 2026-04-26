@@ -6,7 +6,7 @@ import { db } from '@/lib/db'
 import { games, gameFeedback } from '@/lib/db/schema'
 
 const schema = z.object({
-  gameSlug: z.string().min(1).max(200),
+  gameSlug: z.string().regex(/^[a-z0-9-]+$/).min(1).max(200),
   type:     z.enum(['too_high', 'too_low', 'outdated', 'missing_info', 'other']),
   comment:  z.string().max(1000).optional(),
 })

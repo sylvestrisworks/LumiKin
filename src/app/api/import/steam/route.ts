@@ -77,7 +77,7 @@ const BodySchema = z.discriminatedUnion('action', [
 export async function POST(req: NextRequest) {
   const session = await auth()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const uid = (session?.user as any)?.id ?? session?.user?.email ?? null
+  const uid = (session?.user as any)?.id ?? null
   if (!uid) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   // 5 requests per minute per user — enough for a normal import flow

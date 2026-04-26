@@ -14,7 +14,7 @@ import { createSign } from 'crypto'
 
 export const VERTEX_PROJECT  = 'curametrics-492614'
 export const GEMINI_FLASH    = 'gemini-2.5-flash'   // main scoring model
-export const GEMINI_FAST     = 'gemini-2.0-flash'   // translation / cheap tasks
+export const GEMINI_FAST     = 'gemini-2.5-flash'   // translation / cheap tasks
 
 const BASE_URL = `https://aiplatform.googleapis.com/v1/projects/${VERTEX_PROJECT}/locations/global/publishers/google/models`
 

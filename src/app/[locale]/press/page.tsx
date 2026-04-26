@@ -3,7 +3,7 @@ export const revalidate = 3600
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { fetchSiteStats } from '@/lib/stats'
-import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
+import { CURRENT_METHODOLOGY_VERSION, RUBRIC_DIMENSION_COUNT } from '@/lib/methodology'
 import PlausibleGoal from '@/components/PlausibleGoal'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
@@ -28,7 +28,7 @@ const ONE_LINE =
   'LumiKin rates video games on developmental benefits and design risks, giving parents a single evidence-based time recommendation for every title.'
 
 const ONE_PARAGRAPH =
-  'LumiKin is a structured game-rating engine for parents. Every game in the database is scored across twenty-six developmental dimensions — covering cognitive skills, social-emotional growth, and motor development — and assessed for design risks including dopamine manipulation, monetisation pressure, and social risk. The output is a single LumiScore (0–100), a daily time recommendation, and a set of machine-readable flags. Ratings are produced against the PlaySmart methodology, a versioned open rubric, and are available both via a consumer website and a structured API for parental-control vendors and platform operators.'
+  `LumiKin is a structured game-rating engine for parents. Every game in the database is scored across ${RUBRIC_DIMENSION_COUNT} dimensions — covering cognitive skills, social-emotional growth, motor development, and design risks including dopamine manipulation, monetisation pressure, and social risk. The output is a single LumiScore (0–100), a daily time recommendation, and a set of machine-readable flags. Ratings are produced against the PlaySmart methodology, a versioned open rubric, and are available both via a consumer website and a structured API for parental-control vendors and platform operators.`
 
 const PALETTE = [
   { name: 'Indigo',      hex: '#4f46e5', textClass: 'text-white', usage: 'Logo mark, primary links, CTAs'    },

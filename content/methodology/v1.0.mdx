@@ -1,10 +1,10 @@
 ## Overview
 
-[Rationale paragraph 1: What LumiKin measures — describe the dual-profile approach (benefits + risks) and why measuring both independently matters. Explain that every game gets a Benefits Development Score and a Risk Influence Score, and that the LumiScore time recommendation is derived from the interaction between the two — not a simple average.]
+LumiKin measures two things about every game and reports them independently. The first is what a child stands to gain from playing — measured as a Benefits Development Score (BDS) across cognitive, social-emotional, and motor dimensions. The second is the design pressure the game exerts on a developing brain — measured as a Risk Influence Score (RIS) across dopamine manipulation, monetization pressure, and social risk. From these two scores, LumiKin derives two outputs: a LumiScore (0–100), which is a harmonic mean of benefit and safety that penalises games that are high-risk or low-benefit on either axis; and a daily time recommendation in five tiers, derived from the RIS with adjustments for unusually high or low benefit scores. Many games score meaningfully on both axes simultaneously, and LumiKin is designed to make that visible rather than collapse it into a single judgement.
 
-[Rationale paragraph 2: What LumiKin does not measure — it does not measure how much a child enjoys a game, how skilled a player is, or whether a particular game is "good" or "bad". It measures what the designers built and how those design choices interact with a developing brain. A game can score high on both benefits and risks simultaneously.]
+LumiKin does not measure how much a child enjoys a game, how skilled a player is, or whether a particular title is "good" or "bad" in any general sense. It measures structural design choices — what the game asks of a player and what mechanisms it uses to keep them playing. A beloved family favourite can carry meaningful design risks; a forgettable puzzle game can quietly deliver real cognitive benefit. The framework is deliberately separated from taste, popularity, and critical reception, all of which are well-served by other rating systems.
 
-[Rationale paragraph 3: Why parents and businesses can rely on it — structured rubric with fixed scoring dimensions, versioned methodology so score changes are traceable, transparent weighting, and calibration against known reference games. Describe the review process and quality controls briefly.]
+The framework is designed to be auditable. Every dimension has a fixed scoring scale, every category has a documented weight, and every score carries the methodology version that produced it. When the rubric changes, a new version is published and prior versions remain queryable. Reviewers — whether human or automated — score against the same rubric, with reference titles used to calibrate against drift. Limitations and edge cases (UGC platforms, live-service content, automated scoring) are documented openly in the Limitations section below rather than buried.
 
 ## The Scoring Model
 
@@ -56,7 +56,7 @@ These adjustments do not stack.
 
 ## B1 Cognitive
 
-**Rationale:** [Why cognitive skill development is a core scoring category — explain the developmental window argument (games played between ages 6–16 coincide with significant cognitive development), why game mechanics can meaningfully train or neglect cognitive skills, and why this matters to parents and to businesses building filtering products.]
+**Rationale:** Cognitive development is the largest single weight in the BDS (50%) because the age range LumiKin targets — roughly six to sixteen — overlaps with significant maturation of executive function, working memory, spatial reasoning, and metacognition. Games occupy a meaningful share of discretionary time in this window. The mechanics a child engages with repeatedly during this period are not neutral: they constitute a form of practice. Some games offer rich, varied cognitive challenges; others offer narrow, repetitive ones. The B1 dimensions attempt to characterise that landscape so parents and partners can distinguish between superficially similar titles that differ substantially in what they actually train.
 
 **What's measured:** Ten dimensions, each scored 0–5 by a trained reviewer:
 
@@ -77,11 +77,15 @@ These adjustments do not stack.
 
 **Weighting:** B1 contributes 50% of the BDS — the largest single weight, reflecting the centrality of cognitive development in the age ranges LumiKin targets.
 
-**Research basis:** [2–3 citations to peer-reviewed research on games and cognitive development — e.g. Green & Bavelier (2012) on action games and attention, relevant meta-analyses. To be added.]
+**Research basis:**
+
+- Bavelier, D. & Green, C.S. (2019). Enhancing attentional control: Lessons from action video games. *Neuron*, 104(1), 147–163. [verify]
+- Granic, I., Lobel, A., & Engels, R.C.M.E. (2014). The benefits of playing video games. *American Psychologist*, 69(1), 66–78. [verify]
+- Sala, G., Tatlidil, K.S., & Gobet, F. (2018). Video game training does not enhance cognitive ability: A comprehensive meta-analytic investigation. *Psychological Bulletin*, 144(2), 111–139. [verify] (Included deliberately as a critical counterweight — LumiKin does not claim broad transfer effects, and the B1 framework distinguishes specific trained skills from general cognitive enhancement.)
 
 ## B2 Social-Emotional
 
-**Rationale:** [Why social-emotional development belongs in a game rating — explain the role cooperative and narrative games can play in developing empathy, communication, and emotional regulation. Distinguish between games that incidentally develop these skills and games designed to exploit them (social manipulation, FOMO, identity pressure — which appear in the risk categories).]
+**Rationale:** Cooperative play, narrative-driven games, and well-moderated multiplayer environments can develop genuine social and emotional skills — perspective-taking, emotional regulation under pressure, ethical reasoning in low-stakes contexts. The same structural feature that makes games effective at training these skills (sustained social interaction with consequence) also makes them vulnerable to exploitation, which is why the social-emotional dimensions are scored separately from social-emotional risks (R3). A game can simultaneously develop authentic teamwork (high B2) and expose a child to identity pressure or unmoderated strangers (high R3); these are independent axes and the framework treats them that way.
 
 **What's measured:** Six dimensions, each scored 0–5:
 
@@ -98,11 +102,14 @@ These adjustments do not stack.
 
 **Weighting:** B2 contributes 30% of the BDS.
 
-**Research basis:** [Citations to research on cooperative games, empathy development, social play. To be added.]
+**Research basis:**
+
+- Greitemeyer, T. & Mügge, D.O. (2014). Video games do affect social outcomes: A meta-analytic review of the effects of violent and prosocial video game play. *Personality and Social Psychology Bulletin*, 40(5), 578–589. [verify]
+- Harrington, B. & O'Connell, M. (2016). Video games as virtual teachers: Prosocial video game use by children and adolescents from different socioeconomic groups is associated with increased empathy and prosocial behaviour. *Computers in Human Behavior*, 63, 650–658. [verify]
 
 ## B3 Motor
 
-**Rationale:** [Why motor development is included even for screen-based games — explain that hand-eye coordination and reaction time training have documented cognitive co-benefits, and that VR/motion-control games extend this into physical activity. Note that B3 is weighted lowest (20%) because most screen-time concerns centre on sedentary behaviour, not motor deficits.]
+**Rationale:** Motor development is the smallest weight in the BDS (20%) because the dominant concern for screen time in this age range is sedentary behaviour rather than fine-motor deficit. The dimension is retained because some games — particularly motion-controlled, VR, and AR titles — meaningfully extend into physical activity, and because hand-eye coordination training has documented co-benefits in attention and reaction tasks. Games that contribute negligibly to motor development are scored low here without penalty to the overall BDS provided they perform well on B1 and B2.
 
 **What's measured:** Four dimensions, each scored 0–5:
 
@@ -117,11 +124,14 @@ These adjustments do not stack.
 
 **Weighting:** B3 contributes 20% of the BDS.
 
-**Research basis:** [Citations to research on games and motor development, VR physical activity research. To be added.]
+**Research basis:**
+
+- Polechoński, J., Dębska, M., & Dębski, P.G. (2020). Exergaming can be a health-related aerobic physical activity. *BioMed Research International*, 2020. [verify]
+- Li, R., Polat, U., Makous, W., & Bavelier, D. (2009). Enhancing the contrast sensitivity function through action video game training. *Nature Neuroscience*, 12(5), 549–551. [verify]
 
 ## R1 Dopamine Design
 
-**Rationale:** [Why dopamine manipulation mechanics are the heaviest-weighted risk category (45% of RIS) — explain the behavioural psychology behind variable ratio reward schedules, the evidence that these are deliberately engineered in many free-to-play games, and why this risk is particularly acute for developing brains. Reference the SHARP-G framework that this category is based on.]
+**Rationale:** Dopamine manipulation design is weighted highest in the RIS (45%) because the mechanisms involved — variable ratio reward schedules, near-miss feedback, loss aversion triggers, time-limited urgency — are the most thoroughly documented in behavioural psychology and the most aggressively engineered into modern free-to-play games. The same techniques are used in regulated gambling products. The developmental concern is acute: the prefrontal regulation that helps adults resist these mechanisms is still maturing through adolescence. R1 attempts to characterise the intensity and variety of these mechanisms in a given title, on the principle that a game with one mild streak feature and a game built end-to-end around variable rewards present qualitatively different risks even if both technically contain "engagement design".
 
 **What's measured:** Ten risk factors, each scored 0–3:
 
@@ -142,11 +152,16 @@ These adjustments do not stack.
 
 **Weighting:** R1 contributes 45% of the RIS — the highest weight, reflecting the documented developmental harm of these mechanics in children's products.
 
-**Research basis:** [Citations to SHARP-G framework, Saini & Hodgins (2024), loot box research, FTC reports on manipulative design in children's apps. To be added.]
+**Research basis:**
+
+- Zendle, D. & Cairns, P. (2018). Video game loot boxes are linked to problem gambling: Results of a large-scale survey. *PLOS ONE*, 13(11). [verify]
+- King, D.L. & Delfabbro, P.H. (2019). Predatory monetization features in video games (e.g., 'loot boxes') and Internet gaming disorder. *Addiction*, 114(11), 1967–1969. [verify]
+- UK Competition and Markets Authority (2023). Online choice architecture: How digital design can harm competition and consumers. Discussion paper. [verify]
+- The R1 dimension list draws on the SHARP-G framework (Saini & Hodgins, 2024) [verify] adapted for children's contexts.
 
 ## R2 Monetization
 
-**Rationale:** [Why monetization pressure is a distinct risk category from dopamine design — explain the difference between a game that psychologically manipulates (R1) and one that financially extracts (R2). Both can co-occur. R2 is particularly concerning in games marketed to children and in contexts where children have access to parental payment methods. Reference regulatory context (UK Children's Code, FTC guidelines).]
+**Rationale:** Monetization pressure (R2, 30% of RIS) is scored separately from dopamine design because the mechanisms are distinct even when they co-occur. R1 measures psychological extraction — how strongly the game pulls a child into continuing to play. R2 measures financial extraction — how strongly the game pulls a child or parent into continuing to spend. A game can be high on one and low on the other: a free advertising-funded game may have minimal monetization pressure but heavy dopamine design; a flat-fee premium title may have low dopamine design but in-game purchase prompts targeting children. R2 is particularly load-bearing in regulatory contexts (UK Children's Code, FTC guidance on dark patterns in children's apps), and partner products typically need to filter on it independently of overall game quality.
 
 **What's measured:** Eight risk factors, each scored 0–3:
 
@@ -165,11 +180,15 @@ These adjustments do not stack.
 
 **Weighting:** R2 contributes 30% of the RIS.
 
-**Research basis:** [Citations to research on children and in-app purchases, regulatory reports, dark pattern research. To be added.]
+**Research basis:**
+
+- Federal Trade Commission (2022). Bringing dark patterns to light. FTC Staff Report. [verify]
+- Information Commissioner's Office, UK (2020/2025). Age Appropriate Design Code (Children's Code). [verify]
+- Fitton, D. & Read, J.C. (2019). Creating a framework to support the critical consideration of dark design aspects in free-to-play apps. *Proceedings of IDC '19*. [verify]
 
 ## R3 Social Risk
 
-**Rationale:** [Why social risk is scored separately from the positive social dimensions in B2 — explain that a game can simultaneously develop genuine teamwork skills (high B2) while exposing players to toxic strangers or identity-threatening competitive pressure (high R3). These are independent axes. Note the particular concern around unmoderated voice chat with unknown adults.]
+**Rationale:** Social risk is scored independently of the positive social dimensions in B2 because they describe different phenomena even when they share a surface — multiplayer interaction. A game with strong cooperative design and active community moderation can develop genuine teamwork (high B2) while remaining low-risk (low R3). A game with the same multiplayer surface but without moderation, with public ranking, and with unmoderated voice chat available to strangers can develop similar surface skills while exposing a child to qualitatively different risks. R3 attempts to characterise those risks distinctly: the chance of toxic competitive environments, the presence of unknown adults in voice or chat, social comparison pressure tied to spending or in-game performance, and privacy practices. The most acute concern in this category — particularly for children under 13 — is unmoderated stranger contact, which is scored as its own factor and weighted heavily within R3.
 
 **What's measured:** Six risk factors, each scored 0–3:
 
@@ -186,7 +205,11 @@ These adjustments do not stack.
 
 **Weighting:** R3 contributes 25% of the RIS.
 
-**Research basis:** [Citations to research on online toxicity, stranger danger in gaming, identity and gaming. To be added.]
+**Research basis:**
+
+- Kowert, R. (2020). Dark Participation in Games. *Frontiers in Psychology*, 11. [verify]
+- Internet Watch Foundation annual reports — relevant sections on grooming via gaming platforms. [verify]
+- 5Rights Foundation (2021). Pathways: How digital design puts children at risk. [verify]
 
 ## R4 Content Risk
 
@@ -206,19 +229,17 @@ These adjustments do not stack.
 
 ## Update and Versioning Policy
 
-[Versioning policy: explain when a game gets rescored — currently triggered when RAWG detects a metadata change (DLC, platform update, significant content update). Describe the planned manual rescore triggers. Explain what happens to the score history when a game is rescored: the previous score is retained and timestamped, and the delta is visible on the game page.]
+Games are rescored under three triggers. First, automated rescore is initiated when the upstream metadata source (RAWG) reports a substantive update — DLC, platform expansion, or content patches that materially alter mechanics. Second, manual rescore is initiated for live-service titles where mechanics have changed in ways the automated pipeline did not detect. Third, ad-hoc rescore is initiated when LumiKin receives credible information about changes via community reports, regulatory action, or publisher disclosure.
 
-[Methodology version policy: explain that the scoring weights, dimension definitions, and tier thresholds are locked within a methodology version. When any of these change, a new version is published. All game scores carry the methodology version that produced them. Historical scores remain queryable under their original version via `?version=X` on this page.]
-
-[Communication policy: when a game's score changes by more than a defined threshold, a freshness indicator appears on the game page showing the previous and current scores and the rescore date. Partners consuming the API receive a `methodology_version` field on every score response and can filter or flag score changes in their own products.]
+The scoring weights, dimension definitions, scoring scales, and tier thresholds are locked within a methodology version. Any change to these — adding a dimension, adjusting a weight, redefining a tier boundary — requires publishing a new methodology version. Version numbers follow semantic versioning: minor version increments (1.0 → 1.1) for additive changes that do not alter existing scores, major version increments (1.0 → 2.0) for changes that require all games to be rescored. Every score carries the methodology version that produced it. Historical scores remain queryable under their original version via the `?version=X` parameter on this page and via the `methodology_version` field in the API. Partners consuming the API receive `methodology_version` and `calculated_at` fields on every score response.
 
 ## Limitations and Edge Cases
 
 **UGC platforms (Roblox, Fortnite Creative).** LumiKin scores individual experiences on UGC platforms as well as the platform itself. The platform score reflects the host environment (moderation quality, monetization model, stranger interaction risk). Individual experience scores reflect the specific content. Consumers of the API should be aware that a "Roblox" platform score is not a score for Roblox experiences as a category — individual experience scores vary widely and should be queried separately.
 
-**Live-service games with evolving content.** Games with weekly content updates, seasonal events, or ongoing battle passes are scored on their current state at review time plus any persistent structural mechanics. Time-limited events are scored under R1 (FOMO) but the content of those events may not be individually reviewed. Scores for live-service games carry a `live_service: true` flag and are prioritised for periodic rescore.
+**Live-service games with evolving content.** Games with weekly content updates, seasonal events, or ongoing battle passes are scored on their current state at review time plus any persistent structural mechanics. Time-limited events are scored under R1 (FOMO) but the content of those events may not be individually reviewed. Live-service titles are prioritised for periodic rescore when mechanics change materially.
 
-**Early access games.** Early access titles are scored with an `early_access: true` flag. Scores may change substantially on full release. LumiKin does not guarantee rescore coverage for all early access titles on release.
+**Early access games.** Early access titles are scored at the state available at review time. Scores may change substantially on full release. LumiKin does not guarantee rescore coverage for all early access titles on release.
 
 **Regional content differences.** Some games ship with different content ratings by region (e.g., a game rated M in North America may be rated 16+ in Europe with modified content). LumiKin scores the international/default release where possible. Regional variants are noted where known but are not systematically tracked.
 

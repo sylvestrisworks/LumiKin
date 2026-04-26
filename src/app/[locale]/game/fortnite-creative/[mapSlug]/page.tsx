@@ -8,6 +8,7 @@ import { eq } from 'drizzle-orm'
 import Link from 'next/link'
 import { getTranslations, getLocale } from 'next-intl/server'
 import UgcAttributionBlock from '@/components/UgcAttributionBlock'
+import { RUBRIC_DIMENSION_COUNT } from '@/lib/methodology'
 
 type Props = { params: Promise<{ locale: string; mapSlug: string }> }
 
@@ -323,7 +324,7 @@ export default async function FortniteMapPage({ params }: Props) {
         {/* ── Scoring method note (Fix 8) ────────────────────────────────────── */}
         {score && (
           <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed px-1">
-            This experience is scored on 9 dimensions adapted from the 49-dimension LumiKin rubric.
+            This experience is scored on 9 dimensions adapted from the {RUBRIC_DIMENSION_COUNT}-dimension LumiKin rubric.
             Risk category weights match the rubric (Dopamine 45%, Monetization 30%, Social 25%);
             per-category sub-items are aggregated into a single score.
           </p>

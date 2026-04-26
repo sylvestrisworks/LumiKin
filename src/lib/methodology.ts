@@ -40,6 +40,9 @@ export const METHODOLOGY_REGISTRY: MethodologyVersion[] = [
 export const CURRENT_METHODOLOGY_VERSION =
   METHODOLOGY_REGISTRY.find(m => m.isCurrent)!.version
 
+/** Total number of scoring dimensions defined in the rubric (B1+B2+B3+R1+R2+R3+R4). */
+export const RUBRIC_DIMENSION_COUNT = 49
+
 export function getMethodologyVersion(versionParam: string | undefined): MethodologyVersion | null {
   if (!versionParam) return METHODOLOGY_REGISTRY.find(m => m.isCurrent) ?? null
   return METHODOLOGY_REGISTRY.find(m => m.version === versionParam) ?? null

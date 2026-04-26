@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { RUBRIC_DIMENSION_COUNT } from '@/lib/methodology'
 
 function relativeDate(iso: string): string {
   const diffMs   = Date.now() - new Date(iso).getTime()
@@ -14,7 +15,7 @@ function relativeDate(iso: string): string {
 }
 
 const SCORING_METHOD_LABEL: Record<string, { label: string; tooltip: string }> = {
-  full_rubric:  { label: '49-dim rubric',  tooltip: 'Scored across 49 dimensions by the standard LumiKin rubric.' },
+  full_rubric:  { label: `${RUBRIC_DIMENSION_COUNT}-dim rubric`,  tooltip: `Scored across ${RUBRIC_DIMENSION_COUNT} dimensions by the standard LumiKin rubric.` },
   ugc_adapted:  { label: 'UGC adapted',    tooltip: 'Scored on 9 dimensions adapted from the standard rubric. Risk and benefit weights match; granularity is coarser.' },
   hand_curated: { label: 'Hand-curated',   tooltip: 'Scored by an editor rather than the automated pipeline.' },
 }

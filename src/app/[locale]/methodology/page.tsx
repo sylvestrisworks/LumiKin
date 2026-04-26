@@ -5,6 +5,7 @@ import { getMethodologyVersion, CURRENT_METHODOLOGY_VERSION } from '@/lib/method
 import { VERSION_COMPONENTS } from '@/lib/methodology-versions'
 import TableOfContents from './_components/TableOfContents'
 import VersionBanner from './_components/VersionBanner'
+import PlausibleScrollDepth from '@/components/PlausibleScrollDepth'
 
 export const dynamic = 'force-dynamic'
 
@@ -46,6 +47,7 @@ export default async function MethodologyPage({
 
   return (
     <div className={`${lora.variable} bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100`}>
+      <PlausibleScrollDepth goal="methodology_deep_read" threshold={50} />
       <VersionBanner version={entry} locale={locale} />
 
       <div className="max-w-5xl mx-auto px-6 py-12">

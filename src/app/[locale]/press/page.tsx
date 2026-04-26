@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { fetchSiteStats } from '@/lib/stats'
 import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
+import PlausibleGoal from '@/components/PlausibleGoal'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
 const PAGE_URL = `${SITE_URL}/en/press`
@@ -94,6 +95,7 @@ export default async function PressPage({ params }: Props) {
 
   return (
     <div className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+      <PlausibleGoal goal="press_kit_view" />
 
       {/* ── Hero ─────────────────────────────────────────────────────────────── */}
       <section className="max-w-5xl mx-auto px-6 pt-20 pb-16">

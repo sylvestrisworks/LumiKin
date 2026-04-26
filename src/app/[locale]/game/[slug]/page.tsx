@@ -11,6 +11,7 @@ import { fetchRelatedGames } from '@/lib/related-games'
 import LibraryButton from '@/components/LibraryButton'
 import ParentTips from '@/components/ParentTips'
 import ShareButton from '@/components/ShareButton'
+import PlausibleSearchReferrer from '@/components/PlausibleSearchReferrer'
 import { auth } from '@/auth'
 import { calcAge } from '@/lib/age'
 import { Suspense } from 'react'
@@ -395,6 +396,7 @@ export default async function GamePage({ params }: Props) {
 
   return (
     <>
+      <PlausibleSearchReferrer />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(videoGameLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}

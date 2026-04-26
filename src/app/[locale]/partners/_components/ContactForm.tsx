@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, type FormEvent } from 'react'
+import { trackGoal } from '@/lib/plausible'
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error'
 
@@ -23,6 +24,7 @@ export default function ContactForm() {
       })
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      trackGoal('partners_form_submit')
       setState('success')
     } catch {
       setState('error')

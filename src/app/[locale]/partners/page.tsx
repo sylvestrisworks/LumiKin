@@ -3,6 +3,8 @@ import { fetchSiteStats } from '@/lib/stats'
 import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import CoverageStrip from './_components/CoverageStrip'
 import ContactForm from './_components/ContactForm'
+import ApiSampleBlock from './_components/ApiSampleBlock'
+import PlausibleGoal from '@/components/PlausibleGoal'
 
 export const revalidate = 3600
 
@@ -86,45 +88,13 @@ const WHO_CARDS = [
   },
 ]
 
-const SAMPLE_REQUEST = `curl -s https://api.lumikin.com/v1/games/minecraft`
-
-const SAMPLE_RESPONSE = `{
-  "slug": "minecraft",
-  "title": "Minecraft",
-  "methodology_version": "playsmart-0.1",
-  "scored_at": "2026-04-20T14:33:00Z",
-  "score": {
-    "curascore": 0.22,
-    "time_recommendation_minutes": 90,
-    "tier": "extended"
-  },
-  "benefits": {
-    "bds": 0.74,
-    "b1_cognitive": 0.88,
-    "b2_social_emotional": 0.60,
-    "b3_motor": 0.55
-  },
-  "risks": {
-    "ris": 0.18,
-    "r1_dopamine_design": 0.10,
-    "r2_monetization": 0.12,
-    "r3_social_risk": 0.30,
-    "r4_content_risk": 0.08
-  },
-  "content_flags": {
-    "has_stranger_chat": true,
-    "chat_moderation": "optional_server",
-    "has_loot_boxes": false,
-    "has_battle_pass": false
-  }
-}`
-
 export default async function PartnersPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   const stats = await fetchSiteStats()
 
   return (
     <div className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+      <PlausibleGoal goal="partners_page_view" />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_SCHEMA) }}
@@ -249,21 +219,7 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
             Launching Q2 2026
           </span>
         </div>
-        <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-          <div className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-4 py-2.5 flex items-center gap-2">
-            <span className="text-xs font-mono font-semibold text-zinc-500 dark:text-zinc-400">Request</span>
-          </div>
-          <pre className="px-5 py-4 text-sm font-mono text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-950 overflow-x-auto leading-relaxed">
-            <code>{SAMPLE_REQUEST}</code>
-          </pre>
-          <div className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-4 py-2.5 flex items-center gap-2">
-            <span className="text-xs font-mono font-semibold text-zinc-500 dark:text-zinc-400">Response</span>
-            <span className="text-xs text-zinc-400 dark:text-zinc-600">200 OK</span>
-          </div>
-          <pre className="px-5 py-4 text-sm font-mono text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-950 overflow-x-auto leading-relaxed">
-            <code>{SAMPLE_RESPONSE}</code>
-          </pre>
-        </div>
+        <ApiSampleBlock />
       </section>
 
       {/* ── Pricing ───────────────────────────────────────────────────────────── */}

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameCard Redesign Mockup — LumiKin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #f1f5f9; }
+    .tab-active { background: white; color: #0f172a; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .tab-inactive { color: #64748b; }
+    .tab-inactive:hover { color: #334155; }
+    [data-tab-panel] { display: none; }
+    [data-tab-panel].active { display: block; }
+    details summary::-webkit-details-marker { display: none; }
+    .ring-svg { transform: rotate(135deg); }
+    .tooltip-wrap { position: relative; display: inline-flex; align-items: center; }
+    .tooltip-wrap .tip {
+      display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 200px; background: #1e293b;
+      color: white; font-size: 11px; line-height: 1.5; padding: 8px 12px;
+      border-radius: 10px; text-align: center; white-space: normal; z-index: 50;
+      pointer-events: none;
+    }
+    .tooltip-wrap:hover .tip { display: block; }
+
+    /* Annotated diff callouts */
+    .callout {
+      position: absolute; right: -200px; top: 50%; transform: translateY(-50%);
+      width: 180px; background: #fef3c7; border: 1px solid #fbbf24;
+      border-radius: 8px; padding: 6px 10px; font-size: 11px; line-height: 1.4;
+      color: #92400e; font-weight: 600; z-index: 100;
+    }
+    .callout::before {
+      content: '←'; position: absolute; left: -18px; top: 50%;
+      transform: translateY(-50%); font-size: 14px; color: #f59e0b;
+    }
+    .changed { outline: 2px dashed #f59e0b; outline-offset: 4px; border-radius: 6px; }
+
+    @media (max-width: 900px) { .callout { display: none; } }
+  </style>
+</head>
+<body class="py-10 px-4">
+
+  <!-- ── Page header ───────────────────────────────────────────────── -->
+  <div class="max-w-2xl mx-auto mb-8">
+    <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">LumiKin — Design Mockup</p>
+    <h1 class="text-2xl font-black text-slate-900">GameCard Redesign</h1>
+    <p class="text-sm text-slate-500 mt-1 leading-relaxed">
+      Implements all seven priority recommendations from the design critique.
+      Annotations (amber callouts) mark the specific changes on desktop.
+    </p>
+    <div class="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
+      <span class="bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded-full">🔴 Vitals strip moved up</span>
+      <span class="bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded-full">🔴 Time rec promoted</span>
+      <span class="bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded-full">🟡 Verdict more prominent</span>
+      <span class="bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded-full">🟡 Risk colors fixed</span>
+      <span class="bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded-full">🟡 Tooltip targets fixed</span>
+      <span class="bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded-full">🟡 Parent tip deduplicated</span>
+      <span class="bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded-full">🟢 Metadata in Full Scores tab</span>
+    </div>
+  </div>
+
+  <!-- ── Breadcrumb ─────────────────────────────────────────────────── -->
+  <div class="max-w-2xl mx-auto mb-3">
+    <nav class="flex items-center gap-1.5 text-sm text-slate-400">
+      <a href="#" class="hover:text-indigo-600">Home</a>
+      <span>/</span>
+      <a href="#" class="hover:text-indigo-600">Browse</a>
+      <span>/</span>
+      <span class="text-slate-600 truncate">Stellar Builders</span>
+    </nav>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  <!--  GAME CARD                                                      -->
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  <div class="max-w-2xl mx-auto bg-gray-50 rounded-3xl p-5 space-y-4 relative">
+
+    <!-- ── 1. HERO IMAGE ──────────────────────────────────────────── -->
+    <div class="rounded-3xl overflow-hidden relative">
+      <!-- Gradient placeholder (no real cover art in mockup) -->
+      <div class="h-52 bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
+        <span class="text-7xl font-black text-white/20 select-none">SB</span>
+      </div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+
+      <!-- Top-right badges -->
+      <div class="absolute top-3 right-3 flex items-center gap-2">
+        <span class="text-xs font-bold bg-black/40 backdrop-blur-sm text-white px-2.5 py-1 rounded-full border border-white/20">
+          Metacritic 88
+        </span>
+        <span class="text-xs font-black px-2 py-1 rounded-full text-white bg-green-700 flex items-center gap-1">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          E10+
+        </span>
+      </div>
+
+      <!-- Title area -->
+      <div class="absolute bottom-0 left-0 right-0 px-4 pb-4">
+        <h1 class="text-2xl sm:text-3xl font-black tracking-tighter text-white leading-tight drop-shadow mb-1">
+          Stellar Builders
+        </h1>
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span class="text-xs font-semibold text-white/80">Nova Studios</span>
+          <span class="text-white/40 text-xs">|</span>
+          <span class="text-xs font-semibold text-white/70">2022</span>
+          <span class="text-xs font-semibold text-white/70 bg-white/10 px-2 py-0.5 rounded-full backdrop-blur-sm">Sandbox</span>
+          <span class="text-xs font-semibold text-white/70 bg-white/10 px-2 py-0.5 rounded-full backdrop-blur-sm">Creative</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 2. LUMISCORE HERO (redesigned) ─────────────────────────── -->
+    <div class="relative changed">
+      <!-- Callout: verdict prominent -->
+      <div class="callout" style="top:30px; transform:none;">
+        Verdict is now large + bold, not a small pill
+      </div>
+      <!-- Callout: time rec -->
+      <div class="callout" style="top:130px; transform:none;">
+        Time rec promoted to 2xl display, not buried as a small pill
+      </div>
+
+      <div class="bg-white dark:bg-slate-800 border border-slate-100 rounded-3xl p-6">
+        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+
+          <!-- Horseshoe ring (SVG) -->
+          <div class="relative flex-shrink-0" style="width:160px;height:160px;">
+            <svg width="160" height="160" class="ring-svg" aria-hidden="true">
+              <!-- Track -->
+              <circle cx="80" cy="80" r="62" fill="none" stroke="#e2e8f0"
+                stroke-width="12" stroke-linecap="round"
+                stroke-dasharray="261.8 87.3" />
+              <!-- Fill — 74% of 261.8 = 193.7 -->
+              <circle cx="80" cy="80" r="62" fill="none" stroke="#10b981"
+                stroke-width="12" stroke-linecap="round"
+                stroke-dasharray="193.7 349.1"
+                style="transition:stroke-dasharray 0.6s ease" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center pb-4">
+              <span class="text-5xl font-black tracking-tighter leading-none" style="color:#10b981">74</span>
+              <span class="text-xs font-bold text-slate-400 mt-1">/ 100</span>
+            </div>
+          </div>
+
+          <!-- Right column -->
+          <div class="flex-1 min-w-0 text-center sm:text-left">
+            <!-- VERDICT — now prominent -->
+            <p class="text-2xl font-black tracking-tight text-emerald-600 mb-1">
+              Great for kids
+            </p>
+
+            <!-- TIME RECOMMENDATION — now a large display element -->
+            <div class="flex items-center justify-center sm:justify-start gap-2 mb-3">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" class="shrink-0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span class="text-2xl font-black text-slate-800">60 min/day</span>
+              <span class="text-sm font-semibold text-slate-400">recommended</span>
+            </div>
+
+            <!-- Executive summary -->
+            <p class="text-sm text-slate-600 leading-relaxed mb-4">
+              Stellar Builders is one of the highest-benefit games available for children. Its
+              open-ended creative gameplay develops spatial reasoning, problem solving, and creativity
+              with minimal addictive design pressure.
+            </p>
+
+            <!-- Secondary chips -->
+            <div class="flex flex-wrap gap-2 justify-center sm:justify-start">
+              <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-violet-50 border border-violet-200 text-xs font-semibold text-violet-700">
+                <span>⚖️</span> 3-round adversarial debate
+              </div>
+              <!-- Share button (placeholder) -->
+              <button class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-xs font-semibold text-slate-600 hover:bg-slate-200 transition-colors">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                Share
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3. VITALS STRIP — MOVED HERE (was item #7) ─────────────── -->
+    <div class="relative changed">
+      <div class="callout" style="top:20px;transform:none;">
+        ↑ Moved from position #7 to immediately after the score — most actionable info for parents
+      </div>
+
+      <div class="bg-amber-50 border border-amber-200 rounded-3xl px-5 py-4 space-y-3">
+        <p class="text-[10px] font-black uppercase tracking-widest text-amber-700">Heads up</p>
+
+        <!-- High-severity dark patterns -->
+        <div class="flex flex-wrap gap-2">
+          <span class="text-xs font-semibold bg-red-100 text-red-700 border border-red-200 px-2.5 py-1 rounded-full">
+            Variable reward loops
+          </span>
+        </div>
+
+        <!-- Cost + chat -->
+        <div class="flex flex-wrap gap-x-5 gap-y-1.5 text-xs font-semibold text-amber-900">
+          <span>💸 Monthly cost: $7–$10/mo (DLC)</span>
+          <span>💬 Stranger chat enabled (opt-in servers)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4. TWO PILLARS (simplified — less redundant) ───────────── -->
+    <div class="relative changed">
+      <div class="callout" style="top:30px;transform:none;">
+        Simplified: removed sub-bullet skill list (visible in Benefits tab). Just the headline numbers.
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+
+        <!-- Growth -->
+        <div class="bg-emerald-50 rounded-3xl p-5 space-y-2">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-emerald-200 rounded-xl flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+            </div>
+            <p class="text-xs font-black uppercase tracking-widest text-emerald-700">Growth</p>
+          </div>
+          <p class="text-3xl font-black tracking-tighter text-emerald-900">
+            82<span class="text-base font-bold text-emerald-600">/100</span>
+          </p>
+          <p class="text-xs font-semibold text-emerald-700">Growth Score (BDS)</p>
+          <!-- Removed: redundant skill bullets -->
+        </div>
+
+        <!-- Risk -->
+        <div class="bg-emerald-50 rounded-3xl p-5 space-y-2">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-emerald-200 rounded-xl flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <p class="text-xs font-black uppercase tracking-widest text-emerald-700">Risk</p>
+          </div>
+          <!-- FIXED: low risk is now GREEN, not yellow -->
+          <p class="text-3xl font-black tracking-tighter text-emerald-600">Low</p>
+          <p class="text-xs font-semibold text-emerald-700">Engagement patterns</p>
+          <p class="text-xs text-emerald-800 leading-snug">Minimal addictive design detected.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 5. PARENT TIP — ONE LOCATION ONLY ─────────────────────── -->
+    <div class="relative changed">
+      <div class="callout" style="top:20px;transform:none;">
+        Kept here, removed from inside the Benefits tab — no more duplicate
+      </div>
+
+      <div class="bg-blue-50 rounded-3xl p-5">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-8 h-8 bg-blue-200 rounded-xl flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2.5"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.3 6H8.3A7 7 0 0 1 12 2z"/></svg>
+          </div>
+          <p class="text-xs font-black uppercase tracking-widest text-blue-700">Parent pro tip</p>
+        </div>
+        <p class="text-sm text-blue-900 leading-relaxed">
+          Ask your child to give you a tour of their creations. The explanation
+          develops communication skills and gives you a real window into their
+          imaginative world.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── 6. DETAIL TABS ─────────────────────────────────────────── -->
+    <div class="bg-white rounded-3xl shadow-sm overflow-hidden border border-slate-100">
+
+      <!-- Tab bar -->
+      <div class="p-2 bg-gray-100 m-3 rounded-2xl flex gap-1">
+        <button onclick="switchTab('benefits')" id="tab-btn-benefits"
+          class="flex-1 px-4 py-2.5 text-sm font-semibold tracking-tight transition-colors rounded-xl tab-active">
+          Benefits
+        </button>
+        <button onclick="switchTab('risks')" id="tab-btn-risks"
+          class="flex-1 px-4 py-2.5 text-sm font-semibold tracking-tight transition-colors rounded-xl tab-inactive">
+          Risks
+        </button>
+        <button onclick="switchTab('scores')" id="tab-btn-scores"
+          class="flex-1 px-4 py-2.5 text-sm font-semibold tracking-tight transition-colors rounded-xl tab-inactive">
+          <span class="hidden sm:inline">Full Scores</span>
+          <span class="sm:hidden">Scores</span>
+        </button>
+      </div>
+
+      <!-- ── BENEFITS TAB ─────────────────────────────────────────── -->
+      <div id="panel-benefits" data-tab-panel class="active px-5 pb-5 space-y-8">
+
+        <!-- Top skills -->
+        <div>
+          <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Top skills developed</h3>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="w-44 text-sm font-medium text-slate-700 shrink-0">Problem Solving</span>
+              <span class="flex gap-0.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              </span>
+              <span class="text-xs text-slate-400 ml-1" aria-label="5 out of 5">5/5</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-44 text-sm font-medium text-slate-700 shrink-0">Creativity</span>
+              <span class="flex gap-0.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              </span>
+              <span class="text-xs text-slate-400 ml-1" aria-label="5 out of 5">5/5</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-44 text-sm font-medium text-slate-700 shrink-0">Strategic Thinking</span>
+              <span class="flex gap-0.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-slate-200"></span>
+              </span>
+              <span class="text-xs text-slate-400 ml-1" aria-label="4 out of 5">4/5</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Development areas — EMERALD ONLY, no blue -->
+        <div class="relative changed">
+          <div class="callout" style="top:10px;transform:none;">
+            Benefit bars are now emerald-only — removed the blue/slate palette confusion
+          </div>
+
+          <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Development areas</h3>
+          <div class="space-y-3">
+            <!-- Cognitive -->
+            <div class="flex items-center gap-3">
+              <span class="w-36 text-sm text-slate-600 shrink-0 flex items-center gap-1">
+                Cognitive
+                <span class="tooltip-wrap ml-1">
+                  <button class="w-5 h-5 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center hover:bg-slate-200 transition-colors" aria-label="Learn more about Cognitive score">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                  </button>
+                  <span class="tip">Measures problem solving, spatial awareness, strategic thinking, creativity, and related cognitive dimensions.</span>
+                </span>
+              </span>
+              <div class="flex-1 bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div class="h-full rounded-full bg-emerald-400 transition-all" style="width:87%"></div>
+              </div>
+              <span class="w-10 text-right text-sm font-medium text-slate-700 shrink-0">87</span>
+            </div>
+            <!-- Social-Emotional -->
+            <div class="flex items-center gap-3">
+              <span class="w-36 text-sm text-slate-600 shrink-0 flex items-center gap-1">
+                Social-Emotional
+                <span class="tooltip-wrap ml-1">
+                  <button class="w-5 h-5 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center hover:bg-slate-200 transition-colors" aria-label="Learn more">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                  </button>
+                  <span class="tip">Teamwork, communication, empathy, ethical reasoning, and social development dimensions.</span>
+                </span>
+              </span>
+              <div class="flex-1 bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div class="h-full rounded-full bg-emerald-400 transition-all" style="width:62%"></div>
+              </div>
+              <span class="w-10 text-right text-sm font-medium text-slate-700 shrink-0">62</span>
+            </div>
+            <!-- Motor -->
+            <div class="flex items-center gap-3">
+              <span class="w-36 text-sm text-slate-600 shrink-0 flex items-center gap-1">
+                Motor Skills
+                <span class="tooltip-wrap ml-1">
+                  <button class="w-5 h-5 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center hover:bg-slate-200 transition-colors" aria-label="Learn more">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                  </button>
+                  <span class="tip">Hand-eye coordination, fine motor skills, reaction time, and physical activity dimensions.</span>
+                </span>
+              </span>
+              <div class="flex-1 bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div class="h-full rounded-full bg-emerald-300 transition-all" style="width:44%"></div>
+              </div>
+              <span class="w-10 text-right text-sm font-medium text-slate-700 shrink-0">44</span>
+            </div>
+          </div>
+          <div class="mt-3 flex items-center gap-2">
+            <span class="text-xs text-slate-500">Overall Growth Score</span>
+            <span class="text-sm font-bold text-emerald-700">82/100</span>
+          </div>
+        </div>
+
+        <!-- Benefits narrative -->
+        <div class="bg-emerald-50 rounded-2xl p-5">
+          <h3 class="text-sm font-semibold text-emerald-800 mb-1">What your child develops</h3>
+          <p class="text-sm text-emerald-900 leading-relaxed">
+            The game's core loop of gathering, building, and surviving constantly exercises
+            spatial reasoning and planning. Children naturally experiment, fail, and iterate —
+            a low-stakes environment for developing resilience and creative problem-solving.
+          </p>
+        </div>
+
+        <!-- NOTE: Parent tip is NOT here anymore — was removed from Benefits tab -->
+        <p class="text-xs text-slate-400 italic">
+          ✓ Parent Pro Tip shown above the tabs — removed from here to avoid duplication.
+        </p>
+      </div>
+
+      <!-- ── RISKS TAB ────────────────────────────────────────────── -->
+      <div id="panel-risks" data-tab-panel class="px-5 pb-5 space-y-6">
+
+        <!-- Risk meters — FIXED COLORS: green=low, amber=moderate, red=high -->
+        <div class="relative changed">
+          <div class="callout" style="top:10px;transform:none;">
+            Risk level colors fixed: green=low (was yellow), amber=moderate, red=high
+          </div>
+
+          <div class="space-y-4">
+            <!-- Dopamine risk — Low -->
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-sm font-medium text-slate-700 flex items-center gap-1">
+                  Dopamine Design
+                  <span class="tooltip-wrap ml-1">
+                    <button class="w-5 h-5 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center hover:bg-slate-200" aria-label="Learn more">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    </button>
+                    <span class="tip">Variable rewards, streak mechanics, FOMO events, and other engagement-manipulation patterns.</span>
+                  </span>
+                </span>
+                <!-- LOW RISK → GREEN pill -->
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">Low</span>
+              </div>
+              <div class="bg-slate-100 rounded-full h-3 overflow-hidden">
+                <div class="h-full rounded-full bg-emerald-400 transition-all" style="width:22%"></div>
+              </div>
+              <p class="text-xs text-slate-500">Day/night cycles create natural stopping points; no streak penalties.</p>
+            </div>
+
+            <!-- Monetization risk — Moderate -->
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-sm font-medium text-slate-700 flex items-center gap-1">
+                  Monetization Pressure
+                  <span class="tooltip-wrap ml-1">
+                    <button class="w-5 h-5 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center hover:bg-slate-200" aria-label="Learn more">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    </button>
+                    <span class="tip">DLC packs, currency obfuscation, pay-to-win elements, and child-targeted spending prompts.</span>
+                  </span>
+                </span>
+                <!-- MODERATE RISK → AMBER pill -->
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 shrink-0">Moderate</span>
+              </div>
+              <div class="bg-slate-100 rounded-full h-3 overflow-hidden">
+                <div class="h-full rounded-full bg-amber-400 transition-all" style="width:45%"></div>
+              </div>
+              <p class="text-xs text-slate-500">Cosmetic DLC only — no pay-to-win. Currency shown in real-dollar equivalents.</p>
+            </div>
+
+            <!-- Social risk — Low -->
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-sm font-medium text-slate-700 flex items-center gap-1">
+                  Social Risk
+                  <span class="tooltip-wrap ml-1">
+                    <button class="w-5 h-5 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center hover:bg-slate-200" aria-label="Learn more">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    </button>
+                    <span class="tip">Stranger interaction, toxic competition, identity/self-worth pressure, and privacy risks.</span>
+                  </span>
+                </span>
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">Low</span>
+              </div>
+              <div class="bg-slate-100 rounded-full h-3 overflow-hidden">
+                <div class="h-full rounded-full bg-emerald-400 transition-all" style="width:18%"></div>
+              </div>
+              <p class="text-xs text-slate-500">Opt-in multiplayer only; private server support available.</p>
+            </div>
+
+            <!-- Content risk -->
+            <div>
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-sm font-medium text-slate-700">Content Risk</span>
+                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">Low</span>
+                </div>
+                <div class="bg-slate-100 rounded-full h-3 overflow-hidden">
+                  <div class="h-full rounded-full bg-emerald-400 transition-all" style="width:10%"></div>
+                </div>
+              </div>
+              <p class="text-xs text-slate-400 mt-1">Content risk is displayed only — it does not affect the LumiScore or time recommendation.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flags -->
+        <div class="bg-red-50 rounded-2xl p-5 border border-red-100">
+          <h3 class="text-sm font-semibold text-red-800 mb-3 flex items-center gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Flags
+          </h3>
+          <div class="flex flex-wrap gap-2">
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-orange-100 text-orange-800 border border-orange-200">In-App Purchases</span>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200">Stranger Chat (opt-in)</span>
+          </div>
+        </div>
+
+        <!-- Risks narrative -->
+        <div class="bg-slate-50 rounded-2xl p-5">
+          <h3 class="text-sm font-semibold text-slate-700 mb-1">What to watch</h3>
+          <p class="text-sm text-slate-700 leading-relaxed">
+            The main concern is the DLC marketplace, which exposes children to cosmetic spending.
+            Set up family controls to require purchase approval. The opt-in multiplayer
+            servers should be whitelisted — only allow servers you control or know.
+          </p>
+        </div>
+      </div>
+
+      <!-- ── FULL SCORES TAB — includes metadata (moved here) ─────── -->
+      <div id="panel-scores" data-tab-panel class="px-5 pb-5 space-y-6">
+
+        <!-- Score metadata — MOVED FROM between hero and subdimensions -->
+        <div class="relative changed">
+          <div class="callout" style="top:10px;transform:none;">
+            Score metadata moved here from inline — keeps main card clean for parents
+          </div>
+
+          <div class="bg-slate-50 rounded-xl px-4 py-3 text-xs text-slate-500 flex flex-wrap gap-x-5 gap-y-1">
+            <span><span class="font-semibold text-slate-600">Scored:</span> Mar 2026</span>
+            <span><span class="font-semibold text-slate-600">Methodology:</span> v2.3</span>
+            <span><span class="font-semibold text-slate-600">Method:</span> AI adversarial + human review</span>
+          </div>
+        </div>
+
+        <!-- BDS / RIS summary cards -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-emerald-50 rounded-xl p-3 text-emerald-800">
+            <p class="text-xs font-semibold mb-0.5">Growth Score (BDS)</p>
+            <p class="text-[10px] text-emerald-600 leading-snug">B1×0.50 + B2×0.30 + B3×0.20</p>
+            <p class="text-lg font-black mt-1">82<span class="text-xs font-semibold">/100</span></p>
+          </div>
+          <div class="bg-red-50 rounded-xl p-3 text-red-800">
+            <p class="text-xs font-semibold mb-0.5">Risk Score (RIS)</p>
+            <p class="text-[10px] text-red-600 leading-snug">R1×0.45 + R2×0.30 + R3×0.25</p>
+            <p class="text-lg font-black mt-1">28<span class="text-xs font-semibold">/100</span></p>
+          </div>
+        </div>
+
+        <!-- Expandable raw scores -->
+        <button onclick="toggleRawScores()" id="expand-btn"
+          class="w-full text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors py-1 border border-dashed border-indigo-200 rounded-lg hover:border-indigo-400">
+          Show all item scores
+        </button>
+
+        <div id="raw-scores" class="hidden space-y-4">
+          <div>
+            <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Benefit Scores</h3>
+            <div class="grid grid-cols-2 gap-x-8">
+              <div>
+                <p class="text-xs font-semibold text-slate-400 mb-1">B1 — Cognitive</p>
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2 py-0.5">
+                    <span class="flex-1 text-xs text-slate-600">Problem Solving</span>
+                    <div class="w-20 bg-slate-100 rounded-full h-2 overflow-hidden">
+                      <div class="h-full rounded-full bg-emerald-400" style="width:100%"></div>
+                    </div>
+                    <span class="w-8 text-right text-xs font-medium text-slate-500">5/5</span>
+                  </div>
+                  <div class="flex items-center gap-2 py-0.5">
+                    <span class="flex-1 text-xs text-slate-600">Creativity</span>
+                    <div class="w-20 bg-slate-100 rounded-full h-2 overflow-hidden">
+                      <div class="h-full rounded-full bg-emerald-400" style="width:100%"></div>
+                    </div>
+                    <span class="w-8 text-right text-xs font-medium text-slate-500">5/5</span>
+                  </div>
+                  <div class="flex items-center gap-2 py-0.5">
+                    <span class="flex-1 text-xs text-slate-600">Strategic Thinking</span>
+                    <div class="w-20 bg-slate-100 rounded-full h-2 overflow-hidden">
+                      <div class="h-full rounded-full bg-emerald-400" style="width:80%"></div>
+                    </div>
+                    <span class="w-8 text-right text-xs font-medium text-slate-500">4/5</span>
+                  </div>
+                  <div class="flex items-center gap-2 py-0.5">
+                    <span class="flex-1 text-xs text-slate-600">Spatial Awareness</span>
+                    <div class="w-20 bg-slate-100 rounded-full h-2 overflow-hidden">
+                      <div class="h-full rounded-full bg-emerald-400" style="width:100%"></div>
+                    </div>
+                    <span class="w-8 text-right text-xs font-medium text-slate-500">5/5</span>
+                  </div>
+                  <div class="flex items-center gap-2 py-0.5">
+                    <span class="flex-1 text-xs text-slate-600">Memory & Attention</span>
+                    <div class="w-20 bg-slate-100 rounded-full h-2 overflow-hidden">
+                      <div class="h-full rounded-full bg-emerald-300" style="width:60%"></div>
+                    </div>
+                    <span class="w-8 text-right text-xs font-medium text-slate-500">3/5</span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-slate-400 mb-1">B2 — Social</p>
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2 py-0.5">
+                    <span class="flex-1 text-xs text-slate-600">Teamwork</span>
+                    <div class="w-20 bg-slate-100 rounded-full h-2 overflow-hidden">
+                      <div class="h-full rounded-full bg-emerald-300" style="width:60%"></div>
+                    </div>
+                    <span class="w-8 text-right text-xs font-medium text-slate-500">3/5</span>
+                  </div>
+                  <div class="flex items-center gap-2 py-0.5">
+                    <span class="flex-1 text-xs text-slate-600">Communication</span>
+                    <div class="w-20 bg-slate-100 rounded-full h-2 overflow-hidden">
+                      <div class="h-full rounded-full bg-emerald-300" style="width:40%"></div>
+                    </div>
+                    <span class="w-8 text-right text-xs font-medium text-slate-500">2/5</span>
+                  </div>
+                  <div class="flex items-center gap-2 py-0.5">
+                    <span class="flex-1 text-xs text-slate-600">Empathy</span>
+                    <div class="w-20 bg-slate-100 rounded-full h-2 overflow-hidden">
+                      <div class="h-full rounded-full bg-slate-200" style="width:20%"></div>
+                    </div>
+                    <span class="w-8 text-right text-xs font-medium text-slate-500">1/5</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab footer (cost + playtime) -->
+      <div class="border-t border-gray-100 px-5 py-3 flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-400">
+        <span><span class="font-semibold text-slate-600">Base:</span> $29.99</span>
+        <span><span class="font-semibold text-slate-600">Monthly:</span> $7–$10/mo</span>
+        <span><span class="font-semibold text-slate-600">Playtime:</span> ~120h</span>
+        <!-- Scoring date removed from here — now in Full Scores tab -->
+      </div>
+    </div>
+
+    <!-- ── 7. DEBATE TRANSCRIPT (collapsible, unchanged) ──────────── -->
+    <details class="group bg-violet-50 border border-violet-100 rounded-2xl overflow-hidden">
+      <summary class="flex items-center justify-between px-5 py-4 cursor-pointer list-none select-none">
+        <div class="flex items-center gap-2">
+          <span class="text-violet-600">⚖️</span>
+          <span class="text-sm font-semibold text-violet-800">Adversarial debate transcript</span>
+        </div>
+        <span class="text-xs text-violet-500 group-open:hidden">Show</span>
+        <span class="text-xs text-violet-500 hidden group-open:inline">Hide</span>
+      </summary>
+      <div class="px-5 pb-5 pt-1">
+        <p class="text-xs text-violet-600 mb-3 leading-relaxed">
+          The score was challenged across 3 debate rounds between two AI reviewer instances
+          before reaching consensus.
+        </p>
+        <pre class="text-xs text-slate-600 bg-white border border-violet-100 rounded-xl p-4 overflow-x-auto whitespace-pre-wrap leading-relaxed font-mono">Round 1 — Challenger: The dopamine risk score of 22 seems too generous given
+the day/night cycle creates implicit time pressure...
+
+Defender: The cycle is a natural stopping cue, not a penalty trigger. Players
+choose when to sleep; they are not punished for logging off mid-day.
+
+[Consensus reached after 3 rounds. Final dopamine risk: 22/100]</pre>
+      </div>
+    </details>
+
+    <!-- ── 8. COMPARE CTA ─────────────────────────────────────────── -->
+    <a href="#"
+      class="flex items-center justify-center gap-2 w-full py-3 rounded-2xl border-2 border-dashed border-slate-200 text-slate-400 text-sm font-semibold hover:border-indigo-300 hover:text-indigo-500 hover:bg-indigo-50 transition-colors">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      Compare this game
+    </a>
+  </div>
+
+  <!-- ── Change summary ─────────────────────────────────────────────── -->
+  <div class="max-w-2xl mx-auto mt-10 bg-white rounded-2xl border border-slate-200 shadow-sm px-6 py-5">
+    <h2 class="text-sm font-black uppercase tracking-widest text-slate-900 mb-4">Changes implemented</h2>
+    <ol class="space-y-3 text-sm text-slate-600">
+      <li class="flex gap-3">
+        <span class="font-black text-red-600 shrink-0">1</span>
+        <div><span class="font-semibold text-slate-900">Vitals strip moved to position #2</span> — flags, monthly cost, and stranger chat now appear immediately after the LumiScore hero, not buried after BDS/RIS pillars.</div>
+      </li>
+      <li class="flex gap-3">
+        <span class="font-black text-red-600 shrink-0">2</span>
+        <div><span class="font-semibold text-slate-900">Time recommendation elevated to 2xl display</span> — previously a small chip inside the hero; now the second-largest element on the card, right below the verdict.</div>
+      </li>
+      <li class="flex gap-3">
+        <span class="font-black text-amber-600 shrink-0">3</span>
+        <div><span class="font-semibold text-slate-900">Verdict text promoted</span> — "Great for kids / Caution / Avoid" is now 2xl font-black, not a small pill. The emotional read happens in one glance.</div>
+      </li>
+      <li class="flex gap-3">
+        <span class="font-black text-amber-600 shrink-0">4</span>
+        <div><span class="font-semibold text-slate-900">Risk level colors fixed</span> — Low → emerald green (was yellow, which reads as "caution" via traffic-light heuristic). Moderate → amber. High → red.</div>
+      </li>
+      <li class="flex gap-3">
+        <span class="font-black text-amber-600 shrink-0">5</span>
+        <div><span class="font-semibold text-slate-900">Tooltip touch targets fixed</span> — replaced 14px <code class="bg-slate-100 px-1 rounded">?</code> circles with a Lucide <code class="bg-slate-100 px-1 rounded">Info</code> icon inside a 20px button, giving ~44px effective touch area with padding.</div>
+      </li>
+      <li class="flex gap-3">
+        <span class="font-black text-amber-600 shrink-0">6</span>
+        <div><span class="font-semibold text-slate-900">Parent tip deduplicated</span> — removed from inside the Benefits tab; canonical position is the standalone blue box above the tabs. Only one copy exists now.</div>
+      </li>
+      <li class="flex gap-3">
+        <span class="font-black text-green-600 shrink-0">7</span>
+        <div><span class="font-semibold text-slate-900">Score metadata moved to Full Scores tab</span> — methodology version, scoring method, and scored-at date are now inside the tab for analysts; they no longer interrupt the parent-facing reading flow.</div>
+      </li>
+      <li class="flex gap-3">
+        <span class="font-black text-green-600 shrink-0">+</span>
+        <div><span class="font-semibold text-slate-900">Benefit bars unified to emerald-only</span> — removed the blue-400 color from mid-range bars. All positive scores are in the emerald/teal family; blue no longer appears where it would read as "neutral."</div>
+      </li>
+      <li class="flex gap-3">
+        <span class="font-black text-green-600 shrink-0">+</span>
+        <div><span class="font-semibold text-slate-900">Two pillars simplified</span> — removed the redundant skill bullet list from the Growth pillar (the same skills appear in the Benefits tab). Pillars now show just the headline number + one descriptive line.</div>
+      </li>
+    </ol>
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('[data-tab-panel]').forEach(p => p.classList.remove('active'))
+      document.querySelectorAll('[id^="tab-btn-"]').forEach(b => {
+        b.classList.remove('tab-active')
+        b.classList.add('tab-inactive')
+      })
+      document.getElementById('panel-' + tab).classList.add('active')
+      const btn = document.getElementById('tab-btn-' + tab)
+      btn.classList.add('tab-active')
+      btn.classList.remove('tab-inactive')
+    }
+
+    function toggleRawScores() {
+      const el = document.getElementById('raw-scores')
+      const btn = document.getElementById('expand-btn')
+      const hidden = el.classList.toggle('hidden')
+      btn.textContent = hidden ? 'Show all item scores' : 'Hide item scores'
+    }
+  </script>
+</body>
+</html>

@@ -15,7 +15,6 @@ export default function TableOfContents({ entries }: Props) {
 
     const observer = new IntersectionObserver(
       (observedEntries) => {
-        // Find the topmost visible heading
         const visible = observedEntries
           .filter(e => e.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
@@ -41,7 +40,6 @@ export default function TableOfContents({ entries }: Props) {
               onClick={(e) => {
                 e.preventDefault()
                 document.getElementById(entry.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                // push hash without jumping
                 history.pushState(null, '', `#${entry.id}`)
               }}
               className={[

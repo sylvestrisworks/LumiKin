@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Lora } from 'next/font/google'
 import { notFound } from 'next/navigation'
 import { getMethodologyVersion, CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import { VERSION_COMPONENTS } from '@/lib/methodology-versions'
@@ -6,6 +7,12 @@ import TableOfContents from './_components/TableOfContents'
 import VersionBanner from './_components/VersionBanner'
 
 export const dynamic = 'force-dynamic'
+
+const lora = Lora({
+  subsets: ['latin'],
+  variable: '--font-lora',
+  display: 'swap',
+})
 
 export function generateMetadata(): Metadata {
   return {
@@ -16,10 +23,13 @@ export function generateMetadata(): Metadata {
 }
 
 export default async function MethodologyPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>
   searchParams: Promise<{ version?: string }>
 }) {
+  const { locale } = await params
   const { version: versionParam } = await searchParams
   const entry = getMethodologyVersion(versionParam)
 
@@ -35,8 +45,8 @@ export default async function MethodologyPage({
   const pdfPath = `/lumikin-methodology-v${entry.version}.pdf`
 
   return (
-    <>
-      <VersionBanner version={entry} />
+    <div className={`${lora.variable} bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100`}>
+      <VersionBanner version={entry} locale={locale} />
 
       <div className="max-w-5xl mx-auto px-6 py-12">
 
@@ -87,7 +97,7 @@ export default async function MethodologyPage({
 
           {/* Sticky ToC — desktop only, hidden on print */}
           <aside className="hidden lg:block print:hidden">
-            <div className="sticky top-6">
+            <div className="sticky top-20">
               <TableOfContents entries={entry.toc} />
             </div>
           </aside>
@@ -198,6 +208,6 @@ export default async function MethodologyPage({
           .methodology-prose h3 { font-size: 12pt; }
         }
       `}</style>
-    </>
+    </div>
   )
 }

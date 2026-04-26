@@ -3,9 +3,10 @@ import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 
 type Props = {
   version: MethodologyVersion
+  locale: string
 }
 
-export default function VersionBanner({ version }: Props) {
+export default function VersionBanner({ version, locale }: Props) {
   if (version.isCurrent) return null
 
   return (
@@ -16,7 +17,7 @@ export default function VersionBanner({ version }: Props) {
           You're viewing methodology v{version.version} (published {version.publishedDate}).
         </span>
         <a
-          href="/methodology"
+          href={`/${locale}/methodology`}
           className="font-semibold underline underline-offset-2 hover:no-underline"
         >
           View current version (v{CURRENT_METHODOLOGY_VERSION}) →

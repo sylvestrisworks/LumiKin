@@ -391,6 +391,7 @@ Reasoning: ${r.criticReasoning}
         bds, ris, curascore,
         debateTranscript: transcript,
         debateRounds: rounds.length,
+        calculatedAt: new Date(),
       })
       .where(eq(gameScores.gameId, game.id))
     console.log('  Saved.')

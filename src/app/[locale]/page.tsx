@@ -29,7 +29,7 @@ const PATH_CARDS = [
     audience: 'For journalists',
     heading: 'Coverage stats, methodology, press kit',
     body: 'Sourced data, PDF methodology, and contact info.',
-    slug: 'methodology',
+    slug: 'press',
     accent: false,
   },
 ]

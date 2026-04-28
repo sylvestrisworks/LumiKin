@@ -17,7 +17,7 @@ jobs:
           if [ -z "$APP_URL" ]; then echo "::error::APP_URL missing"; exit 1; fi
           if [ -z "$CRON_SECRET" ]; then echo "::error::CRON_SECRET missing"; exit 1; fi
 
-          RESPONSE=$(curl -s -w "\n%{http_code}" -X GET \
+          RESPONSE=$(curl -s --max-time 290 -w "\n%{http_code}" -X GET \
             -H "Authorization: Bearer ${CRON_SECRET}" \
             "${APP_URL}/api/cron/translate-content")
 

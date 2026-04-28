@@ -4,6 +4,8 @@ import { games, gameScores, reviews, gameTranslations } from '@/lib/db/schema'
 import { eq, and, isNotNull, sql } from 'drizzle-orm'
 import { callGeminiText } from '@/lib/vertex-ai'
 
+export const maxDuration = 300
+
 const LOCALES = ['sv', 'de', 'fr', 'es'] as const
 type Locale = typeof LOCALES[number]
 
@@ -14,11 +16,9 @@ const LANGUAGE_NAMES: Record<Locale, string> = {
   es: 'Spanish (Latin American)',
 }
 
-// 50 games × 4 parallel locale calls × ~4s each ≈ 200s — fits Vercel's 300s limit.
-// At 84 runs/week this clears ~16 800 translations, enough to close the full backlog
-// of ~16 000 in under a week.
-const MAX_GAMES_PER_RUN = 50
-const BUDGET_MS         = 270_000
+// 25 games × 4 parallel locale calls × ~5s each ≈ 125s — leaves ample margin inside the 300s wall.
+const MAX_GAMES_PER_RUN = 25
+const BUDGET_MS         = 220_000
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

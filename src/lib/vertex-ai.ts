@@ -103,6 +103,9 @@ export async function callGeminiTool<T>(
       toolConfig: {
         functionCallingConfig: { mode: 'ANY', allowedFunctionNames: [tool.name] },
       },
+      generationConfig: {
+        thinkingConfig: { thinkingBudget: 0 },  // disable thinking — keeps calls under ~10s
+      },
     }),
   })
 
@@ -144,6 +147,9 @@ export async function callGeminiText(
     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: {
+        thinkingConfig: { thinkingBudget: 0 },  // disable thinking — keeps calls under ~10s
+      },
     }),
   })
 

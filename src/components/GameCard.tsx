@@ -3,8 +3,9 @@
 import { useState, type ReactNode } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import Link from 'next/link'
-import { Lightbulb, Sparkles, Zap, Clock, CheckCircle2, User, GitCompareArrows, AlertTriangle, Info } from 'lucide-react'
+import { Lightbulb, Sparkles, Zap, Clock, User, GitCompareArrows, AlertTriangle } from 'lucide-react'
 import type { DarkPattern, GameCardProps, SerializedReview, SerializedScores } from '@/types/game'
+import { Tooltip } from './Tooltip'
 import { esrbToAge, ageBadgeColor } from '@/lib/ui'
 import DarkPatternPills from './DarkPatternPills'
 import ComplianceBadges from './ComplianceBadges'
@@ -124,55 +125,6 @@ function riskFlagClass(flagKey: string): string {
   return RISK_FLAG_COLORS[flagKey] ?? 'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border border-orange-200 dark:border-orange-700'
 }
 
-// ─── Horseshoe ring ───────────────────────────────────────────────────────────
-
-function HorseshoeRing({ score }: { score: number | null }) {
-  const s       = score ?? 0
-  const verdict = getVerdict(s)
-  const size    = 160
-  const cx      = size / 2
-  const cy      = size / 2
-  const r       = 62
-  const stroke  = 12
-  const circ    = 2 * Math.PI * r
-  const totalArc = (270 / 360) * circ
-  const gap      = circ - totalArc
-  const filled   = (s / 100) * totalArc
-
-  return (
-    <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
-      <svg width={size} height={size} style={{ transform: 'rotate(135deg)' }} aria-hidden="true">
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="currentColor"
-          className="text-slate-200 dark:text-slate-700"
-          strokeWidth={stroke} strokeLinecap="round"
-          strokeDasharray={`${totalArc} ${gap}`} />
-        <circle cx={cx} cy={cy} r={r} fill="none"
-          stroke={verdict.ring} strokeWidth={stroke} strokeLinecap="round"
-          strokeDasharray={`${filled} ${circ - filled}`}
-          style={{ transition: 'stroke-dasharray 0.6s ease' }} />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center pb-4">
-        <span className="text-5xl font-black tracking-tighter leading-none" style={{ color: verdict.ring }}>{s}</span>
-        <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mt-1">/ 100</span>
-      </div>
-    </div>
-  )
-}
-
-// ─── Tooltip ─────────────────────────────────────────────────────────────────
-
-function Tooltip({ text }: { text: string }) {
-  return (
-    <span className="relative group/tip inline-flex items-center ml-1">
-      <span className="w-5 h-5 -m-0.5 p-0.5 rounded-full flex items-center justify-center cursor-help hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-        <Info size={13} className="text-slate-400 dark:text-slate-500" />
-      </span>
-      <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-52 rounded-xl bg-slate-800 dark:bg-slate-700 px-3 py-2 text-xs text-white leading-snug opacity-0 group-hover/tip:opacity-100 transition-opacity z-50 text-center shadow-lg">
-        {text}
-      </span>
-    </span>
-  )
-}
 
 // ─── Shared small components ──────────────────────────────────────────────────
 
@@ -328,14 +280,7 @@ function BenefitsTab({ scores, review, t }: { scores: SerializedScores; review: 
               <div>
                 <p className={`text-xs font-semibold flex items-center gap-1 ${review.bechdelResult === 'pass' ? 'text-violet-800 dark:text-violet-300' : 'text-purple-600 dark:text-purple-400'}`}>
                   {t('bechdelTitle')}
-                  <span className="relative group/btip inline-flex items-center cursor-help">
-                    <span className="w-3.5 h-3.5 rounded-full bg-purple-200 dark:bg-purple-800 text-purple-600 dark:text-purple-300 text-[9px] font-black flex items-center justify-center leading-none">
-                      ?
-                    </span>
-                    <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-60 rounded-xl bg-slate-800 dark:bg-slate-700 px-3 py-2 text-xs text-white leading-snug opacity-0 group-hover/btip:opacity-100 transition-opacity z-50 text-left shadow-lg font-normal">
-                      {t('bechdelTooltip')}
-                    </span>
-                  </span>
+                  <Tooltip text={t('bechdelTooltip')} />
                   <span className={`ml-1 font-normal ${review.bechdelResult === 'pass' ? 'text-violet-700 dark:text-violet-400' : 'text-purple-500 dark:text-purple-500'}`}>
                     — {review.bechdelResult === 'pass' ? t('bechdelPass') : review.bechdelResult === 'na' ? t('bechdelNa') : t('bechdelFail')}
                   </span>
@@ -451,12 +396,12 @@ function FullScoresTab({ scores, review, t, metaLine }: { scores: SerializedScor
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-3 text-emerald-800 dark:text-emerald-300">
           <p className="text-xs font-semibold mb-0.5">{t('bdsLabel')}</p>
-          <p className="text-[10px] text-emerald-600 dark:text-emerald-400 leading-snug">{t('bdsFormula')}</p>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 leading-snug">{t('bdsFormula')}</p>
           <p className="text-lg font-black mt-1">{Math.round((scores.bds ?? 0) * 100)}<span className="text-xs font-semibold">/100</span></p>
         </div>
         <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-3 text-red-800 dark:text-red-300">
           <p className="text-xs font-semibold mb-0.5">{t('risLabel')}</p>
-          <p className="text-[10px] text-red-600 dark:text-red-400 leading-snug">{t('risFormula')}</p>
+          <p className="text-xs text-red-600 dark:text-red-400 leading-snug">{t('risFormula')}</p>
           <p className="text-lg font-black mt-1">{Math.round((scores.ris ?? 0) * 100)}<span className="text-xs font-semibold">/100</span></p>
         </div>
       </div>
@@ -739,7 +684,7 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
         if (!highFlags.length && !hasCost && !hasChat) return null
         return (
           <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-3xl px-5 py-4 space-y-3">
-            <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">{t('headsUp')}</p>
+            <p className="text-xs font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">{t('headsUp')}</p>
             {highFlags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {highFlags.map(p => (
@@ -767,25 +712,6 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
           </div>
         )
       })()}
-
-      {/* ── 2c. SUB-DIMENSION BREAKDOWN ──────────────────────────────────────────── */}
-      {scores && <SubDimensionBreakdown scores={scores} locale={locale} />}
-
-      {/* ── BUNDLED ONLINE WARNING ─────────────────────────────────────────────── */}
-      {game.bundledOnlineNote && (
-        <div className="rounded-2xl border-2 border-red-400 dark:border-red-600 bg-red-50 dark:bg-red-950/60 px-5 py-4 space-y-2">
-          <div className="flex items-center gap-2">
-            <AlertTriangle size={16} className="text-red-600 dark:text-red-400 shrink-0" strokeWidth={2.5} />
-            <p className="text-xs font-black uppercase tracking-widest text-red-700 dark:text-red-400">
-              Bundled online mode — additional risk
-            </p>
-          </div>
-          <p className="text-sm text-red-900 dark:text-red-200 leading-relaxed">
-            <strong>The LumiScore above reflects the single-player campaign only.</strong>{' '}
-            {game.bundledOnlineNote}
-          </p>
-        </div>
-      )}
 
       {/* ── 3. TWO PILLARS ─────────────────────────────────────────────────────── */}
       {hasReview && (
@@ -846,6 +772,25 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
         </div>
       )}
 
+      {/* ── SCORE BREAKDOWN ──────────────────────────────────────────────────────── */}
+      {scores && <SubDimensionBreakdown scores={scores} locale={locale} />}
+
+      {/* ── BUNDLED ONLINE WARNING ─────────────────────────────────────────────── */}
+      {game.bundledOnlineNote && (
+        <div className="rounded-2xl border-2 border-red-400 dark:border-red-600 bg-red-50 dark:bg-red-950/60 px-5 py-4 space-y-2">
+          <div className="flex items-center gap-2">
+            <AlertTriangle size={16} className="text-red-600 dark:text-red-400 shrink-0" strokeWidth={2.5} />
+            <p className="text-xs font-black uppercase tracking-widest text-red-700 dark:text-red-400">
+              Bundled online mode — additional risk
+            </p>
+          </div>
+          <p className="text-sm text-red-900 dark:text-red-200 leading-relaxed">
+            <strong>The LumiScore above reflects the single-player campaign only.</strong>{' '}
+            {game.bundledOnlineNote}
+          </p>
+        </div>
+      )}
+
       {/* ── VIRTUAL CURRENCY BANNER ─────────────────────────────────────────── */}
       {darkPatterns.some((p) => p.patternId === 'DP04') && (
         <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-3xl px-5 py-4 text-sm text-amber-900 dark:text-amber-300">
@@ -862,9 +807,9 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
 
       {/* ── 6. DETAIL TABS ─────────────────────────────────────────────────────── */}
       <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm overflow-hidden border border-slate-100 dark:border-slate-700">
-        <div className="p-2 bg-gray-100 dark:bg-slate-700 m-3 rounded-2xl flex gap-1">
+        <div className="p-2 bg-gray-100 dark:bg-slate-700 m-3 rounded-2xl flex gap-1" role="tablist">
           {(['benefits', 'risks', 'scores'] as Tab[]).map((tab) => (
-            <button key={tab} className={`flex-1 ${tabClass(tab)}`} onClick={() => setActiveTab(tab)}>
+            <button key={tab} className={`flex-1 ${tabClass(tab)}`} onClick={() => setActiveTab(tab)} role="tab" aria-selected={activeTab === tab}>
               {tab === 'benefits'
               ? t('tabBenefits')
               : tab === 'risks'
@@ -906,16 +851,6 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
             <span className="font-semibold text-slate-600 dark:text-slate-300">{t('base')}: </span>
             {game.basePrice != null ? `$${game.basePrice.toFixed(2)}` : t('baseUnknown')}
           </span>
-          {review?.estimatedMonthlyCostLow != null && (
-            <span>
-              <span className="font-semibold text-slate-600 dark:text-slate-300">{t('monthly')}: </span>
-              {review.estimatedMonthlyCostLow === 0 && review.estimatedMonthlyCostHigh === 0
-                ? t('free')
-                : review.estimatedMonthlyCostHigh != null
-                ? `$${review.estimatedMonthlyCostLow}–$${review.estimatedMonthlyCostHigh}/mo`
-                : `$${review.estimatedMonthlyCostLow}/mo`}
-            </span>
-          )}
           {game.avgPlaytimeHours != null && game.avgPlaytimeHours > 0 && (
             <span>
               <span className="font-semibold text-slate-600 dark:text-slate-300">{t('playtime')}: </span>~{game.avgPlaytimeHours}h

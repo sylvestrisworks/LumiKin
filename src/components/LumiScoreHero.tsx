@@ -48,7 +48,7 @@ export function LumiScoreHero({ curascore, recommendedMinAge, esrbRating, pegiRa
     <div className="relative bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 px-6 pt-6 pb-6 text-center">
       {action && <div className="absolute top-3 right-3">{action}</div>}
 
-      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
+      <p className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
         LumiScore
       </p>
 

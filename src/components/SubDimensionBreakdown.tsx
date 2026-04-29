@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { CATEGORY_DIMENSIONS } from '@/lib/dimensions'
 import type { Dimension } from '@/lib/dimensions'
 import type { SerializedScores } from '@/types/game'
+import { Tooltip } from './Tooltip'
 
 export const CONCERN_THRESHOLD = 30
 export const STRONG_THRESHOLD  = 70
@@ -46,18 +47,6 @@ function getScore(scores: SerializedScores, key: string): number | null {
   return typeof val === 'number' ? val : null
 }
 
-function InfoTip({ text }: { text: string }) {
-  return (
-    <span className="relative group/dim-tip inline-flex items-center ml-1 shrink-0">
-      <span className="w-3.5 h-3.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-[9px] font-black flex items-center justify-center cursor-help leading-none">
-        ?
-      </span>
-      <span className="pointer-events-none absolute bottom-full left-0 mb-2 w-56 rounded-xl bg-slate-800 dark:bg-slate-700 px-3 py-2 text-xs text-white leading-snug opacity-0 group-hover/dim-tip:opacity-100 transition-opacity z-50 shadow-lg">
-        {text}
-      </span>
-    </span>
-  )
-}
 
 type Props = {
   scores: SerializedScores
@@ -67,7 +56,7 @@ type Props = {
 export function SubDimensionBreakdown({ scores, locale }: Props) {
   return (
     <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 px-5 py-5 space-y-5">
-      <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+      <h2 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
         Score breakdown
       </h2>
 
@@ -96,7 +85,7 @@ export function SubDimensionBreakdown({ scores, locale }: Props) {
                       className="flex-1 flex items-center text-sm text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline transition-colors min-w-0"
                     >
                       {dim.display_name}
-                      <InfoTip text={dim.short_description} />
+                      <Tooltip text={dim.short_description} />
                     </Link>
                     <span className={`text-sm font-semibold tabular-nums shrink-0 w-7 text-right ${colorClass}`}>
                       {value100 != null ? value100 : '—'}
@@ -109,7 +98,7 @@ export function SubDimensionBreakdown({ scores, locale }: Props) {
         )
       })}
 
-      <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-snug">
+      <p className="text-xs text-slate-400 dark:text-slate-500 leading-snug">
         Benefits: higher is better. Risks: lower is better. Values highlighted when &lt;30 or &gt;70.
       </p>
     </div>

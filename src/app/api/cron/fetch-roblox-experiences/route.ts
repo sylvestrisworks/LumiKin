@@ -20,6 +20,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { platformExperiences, experienceScores, games } from '@/lib/db/schema'
 import { eq, inArray, sql, lt } from 'drizzle-orm'
+import { logCronRun } from '@/lib/cron-logger'
 
 const STALE_SCORE_DAYS    = 90
 const DISCOVERY_SAMPLE    = 25   // how many existing games to crawl per run
@@ -243,6 +244,7 @@ async function handler(req: NextRequest): Promise<NextResponse> {
   const isBulk = req.nextUrl.searchParams.get('bulk') === 'true'
   const discoverySample  = isBulk ? 9999 : DISCOVERY_SAMPLE
   const maxInserts       = isBulk ? 500  : MAX_INSERTS_PER_RUN
+  const runStartedAt = new Date()
 
   // Find Roblox platform row
   const [roblox] = await db.select({ id: games.id }).from(games).where(eq(games.slug, 'roblox')).limit(1)
@@ -428,6 +430,11 @@ async function handler(req: NextRequest): Promise<NextResponse> {
     console.log(`[fetch-roblox] Stale sweep: ${ageMarked} experience(s) flagged (>${STALE_SCORE_DAYS} days old)`)
   }
 
+  await logCronRun('fetch-roblox-experiences', runStartedAt, {
+    itemsProcessed: inserted.length + refreshed.length,
+    errors:         errors.length,
+    meta:           { inserted: inserted.length, refreshed: refreshed.length, ageMarked },
+  })
   return NextResponse.json({
     existing:          existing.length,
     thumbnailsRestored: existingThumbMap.size,

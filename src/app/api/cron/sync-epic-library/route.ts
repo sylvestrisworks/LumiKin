@@ -14,6 +14,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { epicConnections, epicLibrary, games, userGames } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import { logCronRun } from '@/lib/cron-logger'
 
 export const maxDuration = 300
 
@@ -112,6 +113,8 @@ export async function GET(req: NextRequest) {
   if (req.headers.get('authorization') !== `Bearer ${cronSecret}`)
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const runStartedAt = new Date()
+
   const connections = await db.select().from(epicConnections)
   if (connections.length === 0) return NextResponse.json({ ok: true, synced: 0 })
 
@@ -174,5 +177,6 @@ export async function GET(req: NextRequest) {
     synced++
   }
 
+  await logCronRun('sync-epic-library', runStartedAt, { itemsProcessed: synced, errors: 0 })
   return NextResponse.json({ ok: true, synced, total: connections.length })
 }

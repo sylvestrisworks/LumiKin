@@ -22,6 +22,7 @@ import { rawgGetByGenre, rawgGetDetail, RawgError } from '@/lib/rawg/client'
 import { mapDetailToInsert } from '@/lib/rawg/mapper'
 import { calculateGameScores } from '@/lib/scoring/engine'
 import { callGeminiTool } from '@/lib/vertex-ai'
+import { logCronRun } from '@/lib/cron-logger'
 
 export const maxDuration = 300
 
@@ -449,6 +450,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'GOOGLE_CREDENTIALS_JSON not set' }, { status: 500 })
   }
 
+  const runStartedAt = new Date()
+
   try {
     // ── 1. Läs cursor ─────────────────────────────────────────────────────────
     let [cursor] = await db.select().from(ingestCursor).where(eq(ingestCursor.id, 1))
@@ -588,6 +591,11 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    await logCronRun('ingest-games', runStartedAt, {
+      itemsProcessed: newGames.length + reviewed.length,
+      errors:         errors.length,
+      meta:           { fetched: newGames.length, reviewed: reviewed.length, debated: debated.length },
+    })
     return NextResponse.json({
       genre,
       page,
@@ -603,6 +611,7 @@ export async function GET(req: NextRequest) {
 
   } catch (err) {
     console.error('[ingest] Fatal error:', err)
+    await logCronRun('ingest-games', runStartedAt, { itemsProcessed: 0, errors: 1, meta: { error: String(err) } })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

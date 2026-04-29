@@ -16,6 +16,7 @@ import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
 import { eq, gte, lte, isNull, isNotNull, and } from 'drizzle-orm'
 import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
+import { logCronRun } from '@/lib/cron-logger'
 export const maxDuration = 300
 
 // ─── Config ───────────────────────────────────────────────────────────────────
@@ -296,6 +297,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'AZURE_OPENAI_API_KEY or AZURE_OPENAI_ENDPOINT not set' }, { status: 500 })
   }
 
+  const runStartedAt = new Date()
+
   try {
     // Hämta borderline-spel utan debate-scores
     const candidates = await db
@@ -314,6 +317,7 @@ export async function GET(req: NextRequest) {
       .limit(MAX_DEBATES_PER_RUN)
 
     if (candidates.length === 0) {
+      await logCronRun('debate-games', runStartedAt, { itemsProcessed: 0, errors: 0 })
       return NextResponse.json({ message: 'No debate candidates found', debated: 0 })
     }
 
@@ -347,6 +351,12 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    await logCronRun('debate-games', runStartedAt, {
+      itemsProcessed: debated.length,
+      itemsSkipped:   skipped.length,
+      errors:         errors.length,
+      meta:           { slugs: debated, skipped, failed: errors },
+    })
     return NextResponse.json({
       debated:  debated.length,
       skipped:  skipped.length,
@@ -356,6 +366,7 @@ export async function GET(req: NextRequest) {
 
   } catch (err) {
     console.error('[debate-games] Fatal error:', err)
+    await logCronRun('debate-games', runStartedAt, { itemsProcessed: 0, errors: 1, meta: { error: String(err) } })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

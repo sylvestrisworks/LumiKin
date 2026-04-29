@@ -20,6 +20,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
+import { logCronRun } from '@/lib/cron-logger'
 import { and, eq, inArray, lt, sql } from 'drizzle-orm'
 
 export const maxDuration = 60
@@ -64,6 +65,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const runStartedAt = new Date()
   let rawgMarked = 0
   let ageMarked  = 0
 
@@ -130,6 +132,11 @@ export async function GET(req: NextRequest) {
     .from(games)
     .where(eq(games.needsRescore, true))
 
+  await logCronRun('sync-game-updates', runStartedAt, {
+    itemsProcessed: rawgMarked + ageMarked,
+    errors:         0,
+    meta:           { rawgMarked, ageMarked, totalQueued: Number(queued) },
+  })
   return NextResponse.json({
     rawgMarked,
     ageMarked,

@@ -23,4 +23,26 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
-        run: node node_modules/tsx/dist/cli.cjs scripts/fetch-games-cron.ts
+        run: |
+          STARTED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          OUTPUT=$(node node_modules/tsx/dist/cli.cjs scripts/fetch-games-cron.ts 2>&1)
+          EXIT_CODE=$?
+          echo "$OUTPUT"
+
+          INSERTED=$(echo "$OUTPUT" | grep -o '"inserted":[0-9]*' | grep -o '[0-9]*' | tail -1 || echo 0)
+          SKIPPED=$(echo "$OUTPUT"  | grep -o '"skipped":[0-9]*'  | grep -o '[0-9]*' | tail -1 || echo 0)
+          ERRORS=$(echo "$OUTPUT"   | grep -o '"errors":[0-9]*'   | grep -o '[0-9]*' | tail -1 || echo 0)
+
+          if [ -n "$APP_URL" ] && [ -n "$CRON_SECRET" ]; then
+            curl -s -X POST "${APP_URL}/api/internal/cron-run" \
+              -H "Authorization: Bearer ${CRON_SECRET}" \
+              -H "Content-Type: application/json" \
+              -d "{\"jobName\":\"fetch-games\",\"startedAt\":\"${STARTED_AT}\",\"itemsProcessed\":${INSERTED:-0},\"itemsSkipped\":${SKIPPED:-0},\"errors\":${ERRORS:-0}}" || true
+          fi
+
+          exit $EXIT_CODE
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
+          APP_URL:      ${{ secrets.APP_URL }}
+          CRON_SECRET:  ${{ secrets.CRON_SECRET }}

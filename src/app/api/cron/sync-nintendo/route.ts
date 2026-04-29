@@ -15,6 +15,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { nintendoConnections, nintendoPlaytime } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import { logCronRun } from '@/lib/cron-logger'
 import {
   getAccessToken, getNaId, getDevices,
   getDailySummaries, aggregatePlayTime,
@@ -30,6 +31,7 @@ export async function GET(req: NextRequest) {
   if (req.headers.get('authorization') !== `Bearer ${cronSecret}`)
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const runStartedAt = new Date()
   const connections = await db.select().from(nintendoConnections)
 
   if (connections.length === 0)
@@ -128,5 +130,6 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  await logCronRun('sync-nintendo', runStartedAt, { itemsProcessed: synced, errors: errors.length })
   return NextResponse.json({ synced, errors: errors.length, errorDetails: errors, diagnostics })
 }

@@ -18,6 +18,7 @@ import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import { eq, isNotNull, isNull, or } from 'drizzle-orm'
 import { calculateGameScores } from '@/lib/scoring/engine'
 import { callGeminiTool } from '@/lib/vertex-ai'
+import { logCronRun } from '@/lib/cron-logger'
 
 export const maxDuration = 300
 
@@ -356,6 +357,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'GOOGLE_CREDENTIALS_JSON not set' }, { status: 500 })
   }
 
+  const runStartedAt = new Date()
+
   try {
     // Fetch unreviewed games OR games flagged for rescore (RAWG update / age sweep)
     const pending = await db
@@ -389,6 +392,7 @@ export async function GET(req: NextRequest) {
       .limit(MAX_REVIEWS_PER_RUN)
 
     if (pending.length === 0) {
+      await logCronRun('review-games', runStartedAt, { itemsProcessed: 0, errors: 0 })
       return NextResponse.json({ message: 'No unreviewed games found', reviewed: 0 })
     }
 
@@ -426,6 +430,11 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    await logCronRun('review-games', runStartedAt, {
+      itemsProcessed: reviewed.length,
+      errors:         errors.length,
+      meta:           { slugs: reviewed, failed: errors },
+    })
     return NextResponse.json({
       reviewed: reviewed.length,
       errors:   errors.length,
@@ -434,6 +443,7 @@ export async function GET(req: NextRequest) {
 
   } catch (err) {
     console.error('[review-games] Fatal error:', err)
+    await logCronRun('review-games', runStartedAt, { itemsProcessed: 0, errors: 1, meta: { error: String(err) } })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

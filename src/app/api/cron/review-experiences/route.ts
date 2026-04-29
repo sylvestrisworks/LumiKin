@@ -18,6 +18,7 @@ import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import { calculateExperienceRisk, calculateExperienceBenefits } from '@/lib/scoring/experience-risk'
 import { deriveTimeRecommendation } from '@/lib/scoring/time'
 import { callGeminiTool } from '@/lib/vertex-ai'
+import { logCronRun } from '@/lib/cron-logger'
 
 export const maxDuration = 300
 
@@ -371,6 +372,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const runStartedAt = new Date()
+
   try {
     // Phase 1: rescore old-formula rows (no AI, runs every time)
     const rescored = await rescoreExisting()
@@ -388,6 +391,7 @@ export async function GET(req: NextRequest) {
       .limit(MAX_PER_RUN)
 
     if (pending.length === 0) {
+      await logCronRun('review-experiences', runStartedAt, { itemsProcessed: rescored, errors: 0, meta: { rescored } })
       return NextResponse.json({ rescored, message: 'No unscored experiences', evaluated: 0 })
     }
 
@@ -422,10 +426,16 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    await logCronRun('review-experiences', runStartedAt, {
+      itemsProcessed: evaluated.length + rescored,
+      errors:         errors.length,
+      meta:           { evaluated: evaluated.length, rescored, failed: errors },
+    })
     return NextResponse.json({ rescored, evaluated: evaluated.length, errors: errors.length, slugs: evaluated })
 
   } catch (err) {
     console.error('[review-experiences] Fatal:', err)
+    await logCronRun('review-experiences', runStartedAt, { itemsProcessed: 0, errors: 1, meta: { error: String(err) } })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

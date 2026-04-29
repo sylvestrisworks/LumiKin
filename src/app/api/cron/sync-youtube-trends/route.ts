@@ -16,6 +16,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { games } from '@/lib/db/schema'
 import { isNotNull, gt, sql } from 'drizzle-orm'
+import { logCronRun } from '@/lib/cron-logger'
 
 export const maxDuration = 60
 
@@ -37,6 +38,8 @@ export async function GET(req: NextRequest) {
 
   const apiKey = process.env.YOUTUBE_API_KEY
   if (!apiKey) return NextResponse.json({ error: 'YOUTUBE_API_KEY not set' }, { status: 500 })
+
+  const runStartedAt = new Date()
 
   try {
     // ── 1. Fetch trending gaming videos from YouTube ──────────────────────────
@@ -126,6 +129,11 @@ export async function GET(req: NextRequest) {
       updated++
     }
 
+    await logCronRun('sync-youtube-trends', runStartedAt, {
+      itemsProcessed: updated,
+      errors:         0,
+      meta:           { videosFetched: videoTitles.length, gamesMatched: scored.length },
+    })
     return NextResponse.json({
       ok:           true,
       videosFetched: videoTitles.length,
@@ -139,6 +147,7 @@ export async function GET(req: NextRequest) {
     })
   } catch (err) {
     console.error('[youtube-trends] Unhandled error:', err)
+    await logCronRun('sync-youtube-trends', runStartedAt, { itemsProcessed: 0, errors: 1, meta: { error: String(err) } })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

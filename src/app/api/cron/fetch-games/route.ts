@@ -17,6 +17,7 @@ import { games, ingestCursor } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { rawgGetByGenre, rawgGetDetail, RawgError } from '@/lib/rawg/client'
 import { mapDetailToInsert } from '@/lib/rawg/mapper'
+import { logCronRun } from '@/lib/cron-logger'
 
 export const maxDuration = 300
 
@@ -55,6 +56,8 @@ export async function GET(req: NextRequest) {
   if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  const runStartedAt = new Date()
 
   try {
     // ── 1. Läs cursor ─────────────────────────────────────────────────────────
@@ -187,6 +190,11 @@ export async function GET(req: NextRequest) {
 
     console.log(`[fetch-games] Done. Inserted: ${inserted.length}, Skipped: ${skipped.length}, Errors: ${errors.length}`)
 
+    await logCronRun('fetch-games', runStartedAt, {
+      itemsProcessed: inserted.length,
+      itemsSkipped:   skipped.length,
+      errors:         errors.length,
+    })
     return NextResponse.json({
       inserted: inserted.length,
       skipped:  skipped.length,
@@ -202,6 +210,7 @@ export async function GET(req: NextRequest) {
 
   } catch (err) {
     console.error('[fetch-games] Fatal error:', err)
+    await logCronRun('fetch-games', runStartedAt, { itemsProcessed: 0, errors: 1, meta: { error: String(err) } })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { games, gameScores, reviews, gameTranslations } from '@/lib/db/schema'
 import { eq, and, isNotNull, sql } from 'drizzle-orm'
 import { callGeminiText } from '@/lib/vertex-ai'
+import { logCronRun } from '@/lib/cron-logger'
 
 export const maxDuration = 300
 
@@ -92,6 +93,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'GOOGLE_CREDENTIALS_JSON not set' }, { status: 500 })
   }
 
+  const runStartedAt = new Date()
   const startedAt = Date.now()
   let translated = 0
   let skipped = 0
@@ -196,6 +198,11 @@ export async function GET(req: Request) {
     }
   }
 
+  await logCronRun('translate-content', runStartedAt, {
+    itemsProcessed: translated,
+    itemsSkipped:   skipped,
+    errors,
+  })
   return NextResponse.json({
     ok: true,
     translated,

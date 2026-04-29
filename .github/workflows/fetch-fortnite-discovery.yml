@@ -2,13 +2,13 @@ name: Fetch Fortnite Discovery
 
 on:
   schedule:
-    - cron: '0 7 * * *'   # Daily at 7am UTC — thumbnails + live CCU
+    - cron: '0 7 * * *'   # Daily at 7am UTC
   workflow_dispatch:
 
 jobs:
   discover:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v4
@@ -21,10 +21,27 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright Chromium
-        run: npx playwright install chromium --with-deps
-
-      - name: Run discovery
+      - name: Fetch Fortnite Creative discovery
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npx tsx scripts/fetch-fortnite-discovery.ts
+          DATABASE_URL:       ${{ secrets.DATABASE_URL }}
+          EPIC_CLIENT_ID:     ${{ secrets.EPIC_CLIENT_ID }}
+          EPIC_CLIENT_SECRET: ${{ secrets.EPIC_CLIENT_SECRET }}
+          APP_URL:            ${{ secrets.APP_URL }}
+          CRON_SECRET:        ${{ secrets.CRON_SECRET }}
+        run: |
+          STARTED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          OUTPUT=$(node node_modules/tsx/dist/cli.cjs scripts/fetch-fortnite-discovery.ts 2>&1)
+          EXIT_CODE=$?
+          echo "$OUTPUT"
+
+          INSERTED=$(echo "$OUTPUT" | grep -o '"inserted":[0-9]*' | grep -o '[0-9]*' | tail -1 || echo 0)
+          ERRORS=$(echo "$OUTPUT"   | grep -o '"errors":[0-9]*'   | grep -o '[0-9]*' | tail -1 || echo 0)
+
+          if [ -n "$APP_URL" ] && [ -n "$CRON_SECRET" ]; then
+            curl -s -X POST "${APP_URL}/api/internal/cron-run" \
+              -H "Authorization: Bearer ${CRON_SECRET}" \
+              -H "Content-Type: application/json" \
+              -d "{\"jobName\":\"fetch-fortnite-discovery\",\"startedAt\":\"${STARTED_AT}\",\"itemsProcessed\":${INSERTED:-0},\"errors\":${ERRORS:-0}}" || true
+          fi
+
+          exit $EXIT_CODE

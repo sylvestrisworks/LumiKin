@@ -668,3 +668,23 @@ export const gameTranslations = pgTable('game_translations', {
 }, (t) => ({
   uniqueGameLocale: uniqueIndex('game_translations_game_locale_idx').on(t.gameId, t.locale),
 }))
+
+// ============================================
+// PIPELINE OBSERVABILITY
+// ============================================
+
+export const cronRuns = pgTable('cron_runs', {
+  id:             serial('id').primaryKey(),
+  jobName:        varchar('job_name', { length: 100 }).notNull(),
+  startedAt:      timestamp('started_at').notNull(),
+  finishedAt:     timestamp('finished_at'),
+  status:         varchar('status', { length: 20 }).notNull(), // 'success' | 'partial' | 'error'
+  itemsProcessed: integer('items_processed').notNull().default(0),
+  itemsSkipped:   integer('items_skipped').notNull().default(0),
+  errors:         integer('errors').notNull().default(0),
+  durationMs:     integer('duration_ms'),
+  meta:           jsonb('meta').$type<Record<string, unknown>>(),
+}, (t) => ({
+  jobNameIdx:   index('cron_runs_job_name_idx').on(t.jobName),
+  startedAtIdx: index('cron_runs_started_at_idx').on(t.startedAt),
+}))

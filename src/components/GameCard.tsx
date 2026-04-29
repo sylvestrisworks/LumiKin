@@ -254,54 +254,6 @@ function BenefitsTab({ scores, review, t }: { scores: SerializedScores; review: 
         </div>
       </div>
 
-      {review && (review.repGenderBalance != null || review.repEthnicDiversity != null || review.bechdelResult != null) && (
-        <div className="bg-purple-50 dark:bg-purple-900/20 rounded-2xl p-5 space-y-3">
-          <h3 className="text-sm font-semibold text-purple-800 dark:text-purple-300 flex items-center gap-1.5">
-            {t('representationSection')}
-            <Tooltip text={t('tooltipRepresentation')} />
-          </h3>
-          <div className="space-y-1.5">
-            {review.repGenderBalance != null && (
-              <div className="flex items-center gap-3">
-                <span className="w-28 sm:w-36 text-xs text-purple-700 dark:text-purple-400 shrink-0">{t('genderBalance')}</span>
-                <div className="flex-1 bg-purple-100 dark:bg-purple-900/40 rounded-full h-2 overflow-hidden">
-                  <div className="h-full rounded-full bg-purple-400 transition-all" style={{ width: `${(review.repGenderBalance / 3) * 100}%` }} />
-                </div>
-                <span className="w-8 text-right text-xs font-medium text-purple-700 dark:text-purple-400">{review.repGenderBalance}/3</span>
-              </div>
-            )}
-            {review.repEthnicDiversity != null && (
-              <div className="flex items-center gap-3">
-                <span className="w-28 sm:w-36 text-xs text-purple-700 dark:text-purple-400 shrink-0">{t('ethnicDiversity')}</span>
-                <div className="flex-1 bg-purple-100 dark:bg-purple-900/40 rounded-full h-2 overflow-hidden">
-                  <div className="h-full rounded-full bg-purple-400 transition-all" style={{ width: `${(review.repEthnicDiversity / 3) * 100}%` }} />
-                </div>
-                <span className="w-8 text-right text-xs font-medium text-purple-700 dark:text-purple-400">{review.repEthnicDiversity}/3</span>
-              </div>
-            )}
-          </div>
-          {review.bechdelResult != null && (
-            <div className={`flex items-start gap-3 rounded-xl p-3 ${
-              review.bechdelResult === 'pass' ? 'bg-violet-100 dark:bg-violet-900/30' : 'bg-purple-100 dark:bg-purple-900/30'
-            }`}>
-              <span className="text-base leading-none mt-0.5">♀</span>
-              <div>
-                <p className={`text-xs font-semibold flex items-center gap-1 ${review.bechdelResult === 'pass' ? 'text-violet-800 dark:text-violet-300' : 'text-purple-600 dark:text-purple-400'}`}>
-                  {t('bechdelTitle')}
-                  <Tooltip text={t('bechdelTooltip')} />
-                  <span className={`ml-1 font-normal ${review.bechdelResult === 'pass' ? 'text-violet-700 dark:text-violet-400' : 'text-purple-500 dark:text-purple-500'}`}>
-                    — {review.bechdelResult === 'pass' ? t('bechdelPass') : review.bechdelResult === 'na' ? t('bechdelNa') : t('bechdelFail')}
-                  </span>
-                </p>
-                {review.bechdelNotes && (
-                  <p className="text-xs text-purple-700 dark:text-purple-400 mt-0.5 leading-relaxed">{review.bechdelNotes}</p>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
       {review?.benefitsNarrative && (
         <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-5">
           <h3 className="text-sm font-semibold text-emerald-800 dark:text-emerald-300 mb-1">{t('whatChildDevelops')}</h3>
@@ -413,6 +365,26 @@ function FullScoresTab({ scores, review, t, metaLine }: { scores: SerializedScor
           <p className="text-lg font-black mt-1">{Math.round((scores.ris ?? 0) * 100)}<span className="text-xs font-semibold">/100</span></p>
         </div>
       </div>
+
+      {review.bechdelResult != null && (
+        <div className={`flex items-start gap-3 rounded-2xl p-4 ${
+          review.bechdelResult === 'pass' ? 'bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800' : 'bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800'
+        }`}>
+          <span className="text-base leading-none mt-0.5">♀</span>
+          <div>
+            <p className={`text-xs font-semibold flex items-center gap-1 ${review.bechdelResult === 'pass' ? 'text-violet-800 dark:text-violet-300' : 'text-purple-600 dark:text-purple-400'}`}>
+              {t('bechdelTitle')}
+              <Tooltip text={t('bechdelTooltip')} />
+              <span className={`ml-1 font-normal ${review.bechdelResult === 'pass' ? 'text-violet-700 dark:text-violet-400' : 'text-purple-500 dark:text-purple-500'}`}>
+                — {review.bechdelResult === 'pass' ? t('bechdelPass') : review.bechdelResult === 'na' ? t('bechdelNa') : t('bechdelFail')}
+              </span>
+            </p>
+            {review.bechdelNotes && (
+              <p className="text-xs text-purple-700 dark:text-purple-400 mt-0.5 leading-relaxed">{review.bechdelNotes}</p>
+            )}
+          </div>
+        </div>
+      )}
 
       <button
         onClick={() => setExpanded(v => !v)}

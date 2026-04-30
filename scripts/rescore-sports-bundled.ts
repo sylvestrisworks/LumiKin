@@ -33,21 +33,38 @@ const NBA2K_NOTE =
 // ─── Targets ──────────────────────────────────────────────────────────────────
 
 const TARGETS: { slug: string; note: string; franchise: string }[] = [
-  // EA Sports FC / FIFA
-  { slug: 'ea-sports-fc-25',   note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
-  { slug: 'ea-sports-fc-24',   note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
-  { slug: 'fifa-22',           note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
-  { slug: 'fifa-22-xbox-one', note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
-  { slug: 'fifa-13',           note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
-  // Madden NFL
-  { slug: 'madden-nfl-24',     note: MUT_NOTE,   franchise: 'Madden NFL' },
-  { slug: 'madden-nfl-22',     note: MUT_NOTE,   franchise: 'Madden NFL' },
-  { slug: 'madden-nfl-18',     note: MUT_NOTE,   franchise: 'Madden NFL' },
-  // NBA 2K
-  { slug: 'nba-2k24',          note: NBA2K_NOTE, franchise: 'NBA 2K' },
-  { slug: 'nba-2k21',          note: NBA2K_NOTE, franchise: 'NBA 2K' },
-  { slug: 'nba-2k20',          note: NBA2K_NOTE, franchise: 'NBA 2K' },
-  { slug: 'nba-2k16',          note: NBA2K_NOTE, franchise: 'NBA 2K' },
+  // EA Sports FC / FIFA — FUT live-service mode (FIFA 12 onwards, significant real-money pressure)
+  { slug: 'ea-sports-fc-25',    note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
+  { slug: 'ea-sports-fc-24',    note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
+  { slug: 'fifa-22',            note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
+  { slug: 'fifa-22-xbox-one',   note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
+  { slug: 'fifa-19',            note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
+  { slug: 'fifa-18',            note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
+  { slug: 'ea-sports-fifa-17',  note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
+  { slug: 'ea-sports-fifa-16',  note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
+  { slug: 'fifa-15',            note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
+  { slug: 'fifa-14',            note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
+  { slug: 'fifa-13',            note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
+  { slug: 'fifa-12',            note: FUT_NOTE,   franchise: 'EA FC / FIFA' },
+  // Madden NFL — MUT live-service mode
+  { slug: 'madden-nfl-24',      note: MUT_NOTE,   franchise: 'Madden NFL' },
+  { slug: 'madden-nfl-22',      note: MUT_NOTE,   franchise: 'Madden NFL' },
+  { slug: 'madden-nfl-19',      note: MUT_NOTE,   franchise: 'Madden NFL' },
+  { slug: 'madden-nfl-18',      note: MUT_NOTE,   franchise: 'Madden NFL' },
+  { slug: 'madden-nfl-17',      note: MUT_NOTE,   franchise: 'Madden NFL' },
+  { slug: 'madden-nfl-16',      note: MUT_NOTE,   franchise: 'Madden NFL' },
+  { slug: 'madden-nfl-15',      note: MUT_NOTE,   franchise: 'Madden NFL' },
+  { slug: 'madden-nfl-12',      note: MUT_NOTE,   franchise: 'Madden NFL' },
+  // NBA 2K — MyTeam live-service mode (launched NBA 2K13, VC introduced same year)
+  { slug: 'nba-2k24',           note: NBA2K_NOTE, franchise: 'NBA 2K' },
+  { slug: 'nba-2k21',           note: NBA2K_NOTE, franchise: 'NBA 2K' },
+  { slug: 'nba-2k20',           note: NBA2K_NOTE, franchise: 'NBA 2K' },
+  { slug: 'nba-2k19-2',         note: NBA2K_NOTE, franchise: 'NBA 2K' },
+  { slug: 'nba-2k17',           note: NBA2K_NOTE, franchise: 'NBA 2K' },
+  { slug: 'nba-2k16',           note: NBA2K_NOTE, franchise: 'NBA 2K' },
+  { slug: 'nba-2k15',           note: NBA2K_NOTE, franchise: 'NBA 2K' },
+  { slug: 'nba-2k14',           note: NBA2K_NOTE, franchise: 'NBA 2K' },
+  { slug: 'nba-2k13',           note: NBA2K_NOTE, franchise: 'NBA 2K' },
 ]
 
 // ─── Review tool ──────────────────────────────────────────────────────────────

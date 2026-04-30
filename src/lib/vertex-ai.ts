@@ -15,6 +15,7 @@ import { createSign } from 'crypto'
 export const VERTEX_PROJECT  = 'curametrics-492614'
 export const GEMINI_FLASH    = 'gemini-2.5-flash'   // main scoring model
 export const GEMINI_FAST     = 'gemini-2.5-flash'   // translation / cheap tasks
+export const GEMINI_PRO      = 'gemini-2.5-pro'     // debate — thinking always on, cannot set budget to 0
 
 const BASE_URL = `https://aiplatform.googleapis.com/v1/projects/${VERTEX_PROJECT}/locations/global/publishers/google/models`
 
@@ -81,10 +82,11 @@ export type GeminiTool = {
 }
 
 export async function callGeminiTool<T>(
-  prompt:   string,
-  tool:     GeminiTool,
-  model     = GEMINI_FLASH,
-  attempt   = 0,
+  prompt:        string,
+  tool:          GeminiTool,
+  model          = GEMINI_FLASH,
+  attempt        = 0,
+  thinkingBudget = 0,
 ): Promise<T> {
   const token = await getAccessToken()
 
@@ -103,9 +105,9 @@ export async function callGeminiTool<T>(
       toolConfig: {
         functionCallingConfig: { mode: 'ANY', allowedFunctionNames: [tool.name] },
       },
-      generationConfig: {
-        thinkingConfig: { thinkingBudget: 0 },  // disable thinking — keeps calls under ~10s
-      },
+      ...(thinkingBudget >= 0 && {
+        generationConfig: { thinkingConfig: { thinkingBudget } },
+      }),
     }),
   })
 
@@ -113,7 +115,7 @@ export async function callGeminiTool<T>(
     const err = await res.text()
     if ((res.status === 429 || res.status === 503) && attempt < 3) {
       await sleep(Math.pow(2, attempt) * 5000)
-      return callGeminiTool<T>(prompt, tool, model, attempt + 1)
+      return callGeminiTool<T>(prompt, tool, model, attempt + 1, thinkingBudget)
     }
     throw new Error(`Vertex AI ${res.status}: ${err.slice(0, 300)}`)
   }
@@ -125,7 +127,7 @@ export async function callGeminiTool<T>(
   if (!call?.functionCall) {
     if (attempt < 3) {
       await sleep(Math.pow(2, attempt) * 5000)
-      return callGeminiTool<T>(prompt, tool, model, attempt + 1)
+      return callGeminiTool<T>(prompt, tool, model, attempt + 1, thinkingBudget)
     }
     throw new Error(`Gemini did not return a function call (finish: ${data.candidates?.[0]?.finishReason})`)
   }

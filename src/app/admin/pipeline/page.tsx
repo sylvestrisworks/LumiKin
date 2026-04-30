@@ -19,7 +19,6 @@ const JOB_INTERVALS: Record<string, number> = {
   'sync-youtube-trends':    24 * 60 * 60 * 1000,
   'sync-epic-library':      24 * 60 * 60 * 1000,
   'sync-nintendo':          24 * 60 * 60 * 1000,
-  'ingest-games':              30 * 60 * 1000,
 }
 
 const JOB_ORDER = Object.keys(JOB_INTERVALS)
@@ -150,6 +149,7 @@ export default async function PipelinePage() {
             <Stat label="sv translations"      value={translationCoverage['sv'] ?? 0} sub={`/ ${scoredTotal}`} />
             <Stat label="de translations"      value={translationCoverage['de'] ?? 0} sub={`/ ${scoredTotal}`} />
             <Stat label="fr translations"      value={translationCoverage['fr'] ?? 0} sub={`/ ${scoredTotal}`} />
+            <Stat label="es translations"      value={translationCoverage['es'] ?? 0} sub={`/ ${scoredTotal}`} />
           </div>
         </section>
 

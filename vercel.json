@@ -1,18 +1,4 @@
 {
   "regions": ["arn1"],
-  "crons": [
-    { "path": "/api/cron/fetch-games",              "schedule": "*/30 * * * *"  },
-    { "path": "/api/cron/review-games",             "schedule": "5 * * * *"     },
-    { "path": "/api/cron/review-games",             "schedule": "35 * * * *"    },
-    { "path": "/api/cron/review-experiences",       "schedule": "25 * * * *"    },
-    { "path": "/api/cron/debate-games",             "schedule": "45 */2 * * *"  },
-    { "path": "/api/cron/translate-content",        "schedule": "5 */2 * * *"   },
-    { "path": "/api/cron/fetch-roblox-experiences", "schedule": "55 */6 * * *"  },
-    { "path": "/api/cron/fetch-fortnite-maps",      "schedule": "20 0 * * *"    },
-    { "path": "/api/cron/fetch-fortnite-discovery", "schedule": "0 7 * * *"     },
-    { "path": "/api/cron/sync-game-updates",        "schedule": "0 3 * * *"     },
-    { "path": "/api/cron/sync-epic-library",        "schedule": "30 3 * * *"    },
-    { "path": "/api/cron/sync-youtube-trends",      "schedule": "0 6 * * *"     },
-    { "path": "/api/cron/coverage-report",          "schedule": "0 8 * * *"     }
-  ]
+  "crons": []
 }

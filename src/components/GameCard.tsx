@@ -26,6 +26,14 @@ function placeholderGradient(title: string): string {
   return PLACEHOLDER_COLORS[Math.abs(hash) % PLACEHOLDER_COLORS.length]
 }
 
+const PLATFORM_ABBREV: Record<string, string> = {
+  'PlayStation 5': 'PS5', 'PlayStation 4': 'PS4', 'PlayStation 3': 'PS3',
+  'PlayStation 2': 'PS2', 'Xbox Series S/X': 'Xbox Series', 'Nintendo Switch': 'Switch',
+  'Nintendo 3DS': '3DS', 'Nintendo DS': 'DS', 'Wii U': 'Wii U',
+  'macOS': 'macOS', 'Classical Macintosh': 'Mac',
+}
+function abbreviatePlatform(p: string): string { return PLATFORM_ABBREV[p] ?? p }
+
 function pct(value: number | null | undefined): string {
   return `${Math.round((value ?? 0) * 100)}%`
 }
@@ -366,26 +374,6 @@ function FullScoresTab({ scores, review, t, metaLine }: { scores: SerializedScor
         </div>
       </div>
 
-      {review.bechdelResult != null && (
-        <div className={`flex items-start gap-3 rounded-2xl p-4 ${
-          review.bechdelResult === 'pass' ? 'bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800' : 'bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800'
-        }`}>
-          <span className="text-base leading-none mt-0.5">♀</span>
-          <div>
-            <p className={`text-xs font-semibold flex items-center gap-1 ${review.bechdelResult === 'pass' ? 'text-violet-800 dark:text-violet-300' : 'text-purple-600 dark:text-purple-400'}`}>
-              {t('bechdelTitle')}
-              <Tooltip text={t('bechdelTooltip')} />
-              <span className={`ml-1 font-normal ${review.bechdelResult === 'pass' ? 'text-violet-700 dark:text-violet-400' : 'text-purple-500 dark:text-purple-500'}`}>
-                — {review.bechdelResult === 'pass' ? t('bechdelPass') : review.bechdelResult === 'na' ? t('bechdelNa') : t('bechdelFail')}
-              </span>
-            </p>
-            {review.bechdelNotes && (
-              <p className="text-xs text-purple-700 dark:text-purple-400 mt-0.5 leading-relaxed">{review.bechdelNotes}</p>
-            )}
-          </div>
-        </div>
-      )}
-
       <button
         onClick={() => setExpanded(v => !v)}
         className="w-full text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors py-1 border border-dashed border-indigo-200 dark:border-indigo-700 rounded-lg hover:border-indigo-400 dark:hover:border-indigo-500"
@@ -542,6 +530,26 @@ function FullScoresTab({ scores, review, t, metaLine }: { scores: SerializedScor
           </div>
         </div>
       )}
+
+      {review.bechdelResult != null && (
+        <div className={`flex items-start gap-3 rounded-2xl p-4 ${
+          review.bechdelResult === 'pass' ? 'bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800' : 'bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800'
+        }`}>
+          <span className="text-base leading-none mt-0.5">♀</span>
+          <div>
+            <p className={`text-xs font-semibold flex items-center gap-1 ${review.bechdelResult === 'pass' ? 'text-violet-800 dark:text-violet-300' : 'text-purple-600 dark:text-purple-400'}`}>
+              {t('bechdelTitle')}
+              <Tooltip text={t('bechdelTooltip')} />
+              <span className={`ml-1 font-normal ${review.bechdelResult === 'pass' ? 'text-violet-700 dark:text-violet-400' : 'text-purple-500 dark:text-purple-500'}`}>
+                — {review.bechdelResult === 'pass' ? t('bechdelPass') : review.bechdelResult === 'na' ? t('bechdelNa') : t('bechdelFail')}
+              </span>
+            </p>
+            {review.bechdelNotes && (
+              <p className="text-xs text-purple-700 dark:text-purple-400 mt-0.5 leading-relaxed">{review.bechdelNotes}</p>
+            )}
+          </div>
+        </div>
+      )}
       </>
       )}
     </div>
@@ -621,6 +629,17 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
           </div>
         </div>
       </div>
+
+      {/* ── 1b. PLATFORMS ─────────────────────────────────────────────────────── */}
+      {game.platforms.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {game.platforms.map(p => (
+            <span key={p} className="text-xs font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600/60 px-2.5 py-0.5 rounded-full">
+              {abbreviatePlatform(p)}
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* ── 2. LUMISCORE HERO ────────────────────────────────────────────────────── */}
       {hasReview && scores.curascore != null ? (

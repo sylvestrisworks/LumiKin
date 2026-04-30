@@ -1,39 +1,40 @@
 /**
- * GET /api/cron/debate-games
+ * Adversarial debate scorer — runs in GitHub Actions (no Vercel time limit).
  *
- * Steg 3 i ingest-pipeline:
- *   - Hittar spel med curascore 35–55 som inte har debate-scores ännu
- *   - Kör 2-ronders adversarial debate (advocate vs critic)
- *   - Uppdaterar curascore i DB om swing ≤ 20 poäng
+ * Candidate selection: games where |curascore - metacriticScore| >= threshold.
+ * These are the games where our assessment diverges most from critic consensus —
+ * exactly where a second adversarial opinion adds the most value for parents.
  *
- * Körs var 6:e timme via GitHub Actions.
- * Protection: Authorization: Bearer <CRON_SECRET>
- * Max duration: 300s (Vercel Pro)
+ * Uses Gemini 2.5 Pro (thinking always on) for quality reasoning.
+ *
+ * Run locally:
+ *   node --env-file=.env.local node_modules/tsx/dist/cli.cjs scripts/debate-games-cron.ts
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { config } from 'dotenv'
+import { resolve } from 'path'
+config({ path: resolve(process.cwd(), '.env.local') })
+config({ path: resolve(process.cwd(), '.env') })
+
 import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
 import { eq, sql, isNull, isNotNull, and, gte } from 'drizzle-orm'
-import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
-import { logCronRun } from '@/lib/cron-logger'
 import { callGeminiTool, GEMINI_PRO, type GeminiTool } from '@/lib/vertex-ai'
-
-export const maxDuration = 300
+import { logCronRun } from '@/lib/cron-logger'
+import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const MAX_DEBATES_PER_RUN       = 2    // Pro ~30s/call × 4 calls = ~120s/game; 2 games fits in 300s
-const DELAY_MS                  = 500
-const BUDGET_MS                 = 240_000
-const CRITIC_WEIGHT             = 0.60
-const MAX_AUTO_SWING            = 20
-const METACRITIC_DIVERGENCE_MIN = 25
-const MIN_METACRITIC_SCORE      = 50
+const MAX_DEBATES_PER_RUN        = 8    // ~2 min/game × 8 = ~16 min per run
+const METACRITIC_DIVERGENCE_MIN  = 25   // debate when |curascore - metacritic| >= this
+const MIN_METACRITIC_SCORE       = 50   // skip games with no meaningful critical reception
+const DELAY_MS                   = 500
+const CRITIC_WEIGHT              = 0.60
+const MAX_AUTO_SWING             = 20
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 
-// ─── Rubric field definitions ─────────────────────────────────────────────────
+// ─── Rubric fields ────────────────────────────────────────────────────────────
 
 const B1_FIELDS = ['problemSolving','spatialAwareness','strategicThinking','criticalThinking','memoryAttention','creativity','readingLanguage','mathSystems','learningTransfer','adaptiveChallenge']
 const B2_FIELDS = ['teamwork','communication','empathy','emotionalRegulation','ethicalReasoning','positiveSocial']
@@ -48,17 +49,17 @@ type DebateScores = {
   b1: Record<string, number>; b2: Record<string, number>; b3: Record<string, number>
   r1: Record<string, number>; r2: Record<string, number>; r3: Record<string, number>
 }
-
+type DebateResult = DebateScores & { reasoning: string }
 type GameRow = typeof games.$inferSelect
 
-function scoreGroupDebate(fields: string[], max: number) {
+// ─── Tool schema ──────────────────────────────────────────────────────────────
+
+function scoreGroup(fields: string[], max: number) {
   return {
     type: 'object' as const, required: fields,
     properties: Object.fromEntries(fields.map(f => [f, { type: 'integer' as const, minimum: 0, maximum: max }])),
   }
 }
-
-// ─── Debate tool schema (Gemini format) ──────────────────────────────────────
 
 const DEBATE_TOOL: GeminiTool = {
   name: 'submit_scores',
@@ -67,18 +68,14 @@ const DEBATE_TOOL: GeminiTool = {
     type: 'object',
     required: ['b1','b2','b3','r1','r2','r3','reasoning'],
     properties: {
-      b1: scoreGroupDebate(B1_FIELDS, 5),
-      b2: scoreGroupDebate(B2_FIELDS, 5),
-      b3: scoreGroupDebate(B3_FIELDS, 5),
-      r1: scoreGroupDebate(R1_FIELDS, 3),
-      r2: scoreGroupDebate(R2_FIELDS, 3),
-      r3: scoreGroupDebate(R3_FIELDS, 3),
+      b1: scoreGroup(B1_FIELDS, 5), b2: scoreGroup(B2_FIELDS, 5), b3: scoreGroup(B3_FIELDS, 5),
+      r1: scoreGroup(R1_FIELDS, 3), r2: scoreGroup(R2_FIELDS, 3), r3: scoreGroup(R3_FIELDS, 3),
       reasoning: { type: 'string' as const },
     },
   },
 }
 
-// ─── Prompt builders ──────────────────────────────────────────────────────────
+// ─── Prompts ──────────────────────────────────────────────────────────────────
 
 function rubricsBlock(): string {
   return `## RUBRIC (0–5 per benefit field, 0–3 per risk field)
@@ -96,8 +93,8 @@ Fortnite:    B1=19, B2=10, B3=13 | R1=18, R2=13, R3=11 → curascore 42
 Brawl Stars: B1=14, B2=9,  B3=11 | R1=23, R2=18, R3=12 → curascore 30`
 }
 
-function gameBlock(g: GameRow, currentCurascore: number, metacriticScore: number): string {
-  const gap = currentCurascore - metacriticScore
+function gameBlock(g: GameRow, currentCurascore: number, metacritic: number): string {
+  const gap = currentCurascore - metacritic
   const gapNote = gap > 0
     ? `NOTE: LumiKin rates this ${gap} points HIGHER than critics. Debate whether benefits justify this.`
     : `NOTE: LumiKin rates this ${Math.abs(gap)} points LOWER than critics. Debate whether risks justify this.`
@@ -105,7 +102,7 @@ function gameBlock(g: GameRow, currentCurascore: number, metacriticScore: number
 Genres: ${(g.genres as string[])?.join(', ') || 'Unknown'}
 Platforms: ${(g.platforms as string[])?.join(', ') || 'Unknown'}
 Description: ${g.description ?? 'Not available'}
-Metacritic: ${metacriticScore}   LumiKin curascore: ${currentCurascore}
+Metacritic: ${metacritic}   LumiKin curascore: ${currentCurascore}
 ${gapNote}
 Microtransactions: ${g.hasMicrotransactions ? 'Yes' : 'No'}  Loot boxes: ${g.hasLootBoxes ? 'Yes' : 'No'}  Battle pass: ${g.hasBattlePass ? 'Yes' : 'No'}
 Stranger chat: ${g.hasStrangerChat ? 'Yes' : 'No'}`
@@ -126,8 +123,7 @@ function advocatePrompt(gameInfo: string, round: number, criticScores?: DebateSc
 - Push risk scores DOWN when risks are manageable
 - Base arguments on child development research
 - CRITICAL: Single-player games with no co-op get teamwork=0, communication=0, positiveSocial≤1
-- CRITICAL: If a game has an optional online/multiplayer mode (e.g. Red Dead Online bundled with RDR2, Minecraft Realms), score it on its PRIMARY/CORE experience — the single-player or default offline mode. Do NOT inflate R1/R2/R3 risks for a separate online component that parents can simply not use. The critic will try to use the online component to drive risk scores up; push back firmly.`
-
+- CRITICAL: If a game has an optional online/multiplayer mode, score it on its PRIMARY/CORE experience. Do NOT inflate risks for a separate online component parents can simply not use.`
   if (round === 1) {
     return `${role}\n\n${rubricsBlock()}\n\n## GAME\n${gameInfo}\n\nProduce your OPENING position. Call submit_scores with your scores and reasoning.`
   }
@@ -140,30 +136,11 @@ function criticPrompt(gameInfo: string, round: number, advocateScores?: DebateSc
 - Push risk scores UP whenever a design pattern is present
 - Single-player games with no multiplayer: teamwork=0, communication=0, positiveSocial≤1
 - High metacritic does NOT mean high developmental scores
-- IMPORTANT: If a game has an optional/bundled online mode (e.g. Red Dead Online, Minecraft Realms), you may note it exists — but score R1/R2/R3 risks for the PRIMARY experience, not the optional online add-on. Do not use a bundled online component to max out social/monetization risk scores on an otherwise offline premium game.`
-
+- If a game has an optional/bundled online mode, score R1/R2/R3 for the PRIMARY experience. Do not use a bundled online component to max out social/monetization risks on an otherwise offline premium game.`
   if (round === 1) {
     return `${role}\n\n${rubricsBlock()}\n\n## GAME\n${gameInfo}\n\nProduce your OPENING position. Call submit_scores with your scores and reasoning.`
   }
   return `${role}\n\n${rubricsBlock()}\n\n## GAME\n${gameInfo}\n\n## ADVOCATE'S POSITION\nScores:\n${scoresBlock(advocateScores!)}\nAdvocate's reasoning: "${advocateReasoning}"\n\nChallenge the weakest claims. Call submit_scores with your revised scores and rebuttal.`
-}
-
-// ─── Gemini caller ────────────────────────────────────────────────────────────
-
-type DebateResult = DebateScores & { reasoning: string }
-
-async function callDebate(prompt: string): Promise<{ scores: DebateScores; reasoning: string }> {
-  const result = await callGeminiTool<DebateResult>(
-    prompt,
-    DEBATE_TOOL,
-    GEMINI_PRO,
-    0,
-    -1,  // Pro has thinking always on — omit thinkingConfig entirely
-  )
-  return {
-    scores: { b1: result.b1, b2: result.b2, b3: result.b3, r1: result.r1, r2: result.r2, r3: result.r3 },
-    reasoning: result.reasoning,
-  }
 }
 
 // ─── Debate math ──────────────────────────────────────────────────────────────
@@ -189,7 +166,17 @@ function computeDebateCurascore(s: DebateScores): { bds: number; ris: number; cu
   return { bds, ris, curascore }
 }
 
-// ─── Run debate on one game ───────────────────────────────────────────────────
+// ─── Gemini caller ────────────────────────────────────────────────────────────
+
+async function callDebate(prompt: string): Promise<{ scores: DebateScores; reasoning: string }> {
+  const result = await callGeminiTool<DebateResult>(prompt, DEBATE_TOOL, GEMINI_PRO, 0, -1)
+  return {
+    scores:    { b1: result.b1, b2: result.b2, b3: result.b3, r1: result.r1, r2: result.r2, r3: result.r3 },
+    reasoning: result.reasoning,
+  }
+}
+
+// ─── Run one debate ───────────────────────────────────────────────────────────
 
 async function runDebate(
   game: GameRow,
@@ -198,13 +185,10 @@ async function runDebate(
 ): Promise<{ newCurascore: number; saved: boolean }> {
   const gInfo = gameBlock(game, currentCurascore, metacriticScore)
 
-  // Round 1 — opening positions
   const r1adv  = await callDebate(advocatePrompt(gInfo, 1))
   await sleep(DELAY_MS)
   const r1crit = await callDebate(criticPrompt(gInfo, 1))
   await sleep(DELAY_MS)
-
-  // Round 2 — rebuttals
   const r2adv  = await callDebate(advocatePrompt(gInfo, 2, r1crit.scores, r1crit.reasoning))
   await sleep(DELAY_MS)
   const r2crit = await callDebate(criticPrompt(gInfo, 2, r1adv.scores, r1adv.reasoning))
@@ -226,7 +210,7 @@ async function runDebate(
   ].join('\n\n')
 
   if (Math.abs(swing) > MAX_AUTO_SWING) {
-    console.log(`[debate-games] Swing ±${swing} too large for ${game.slug} — skipping save`)
+    console.log(`  swing ±${swing} too large — skipping save`)
     return { newCurascore: curascore, saved: false }
   }
 
@@ -242,95 +226,89 @@ async function runDebate(
   return { newCurascore: curascore, saved: true }
 }
 
-// ─── Handler ──────────────────────────────────────────────────────────────────
+// ─── Main ─────────────────────────────────────────────────────────────────────
 
-export async function GET(req: NextRequest) {
-  const cronSecret = process.env.CRON_SECRET
-  if (!cronSecret) {
-    console.error('[debate-games] CRON_SECRET is not set — refusing all requests')
-    return NextResponse.json({ error: 'Server misconfiguration' }, { status: 500 })
-  }
-  const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+const runStartedAt = new Date()
 
+async function main() {
+  if (!process.env.DATABASE_URL)          { console.error('DATABASE_URL not set');          process.exit(1) }
   if (!process.env.GOOGLE_CREDENTIALS_JSON) {
-    return NextResponse.json({ error: 'GOOGLE_CREDENTIALS_JSON not set' }, { status: 500 })
-  }
-
-  const runStartedAt = new Date()
-
-  try {
-    const candidates = await db
-      .select({
-        game:            games,
-        curascore:       gameScores.curascore,
-        metacriticScore: games.metacriticScore,
-      })
-      .from(games)
-      .innerJoin(gameScores, eq(gameScores.gameId, games.id))
-      .where(and(
-        isNotNull(gameScores.curascore),
-        isNotNull(games.metacriticScore),
-        gte(games.metacriticScore, MIN_METACRITIC_SCORE),
-        isNull(gameScores.debateRounds),
-        sql`ABS(${gameScores.curascore} - ${games.metacriticScore}) >= ${METACRITIC_DIVERGENCE_MIN}`,
-      ))
-      .orderBy(sql`ABS(${gameScores.curascore} - ${games.metacriticScore}) DESC`)
-      .limit(MAX_DEBATES_PER_RUN)
-
-    if (candidates.length === 0) {
-      await logCronRun('debate-games', runStartedAt, { itemsProcessed: 0, errors: 0 })
-      return NextResponse.json({ message: 'No debate candidates found', debated: 0 })
-    }
-
-    console.log(`[debate-games] Found ${candidates.length} debate candidates`)
-
-    const debated:  string[] = []
-    const skipped:  string[] = []
-    const errors:   string[] = []
-    const startedAt = Date.now()
-
-    for (const { game, curascore, metacriticScore } of candidates) {
-      if (Date.now() - startedAt > BUDGET_MS) {
-        console.log('[debate-games] Budget reached — stopping early')
-        break
-      }
-      try {
-        await sleep(DELAY_MS)
-        console.log(`[debate-games] Debating: ${game.title} (curascore ${curascore}, metacritic ${metacriticScore})`)
-
-        const result = await runDebate(game, curascore!, metacriticScore!)
-
-        if (result.saved) {
-          debated.push(game.slug)
-          console.log(`[debate-games] ${game.title}: ${curascore} → ${result.newCurascore}`)
-        } else {
-          skipped.push(game.slug)
-        }
-      } catch (err) {
-        console.error(`[debate-games] Failed for ${game.slug}:`, err)
-        errors.push(game.slug)
-      }
-    }
-
+    console.error('GOOGLE_CREDENTIALS_JSON not set')
     await logCronRun('debate-games', runStartedAt, {
-      itemsProcessed: debated.length,
-      itemsSkipped:   skipped.length,
-      errors:         errors.length,
-      meta:           { slugs: debated, skipped, failed: errors },
-    })
-    return NextResponse.json({
-      debated:  debated.length,
-      skipped:  skipped.length,
-      errors:   errors.length,
-      slugs:    debated,
-    })
-
-  } catch (err) {
-    console.error('[debate-games] Fatal error:', err)
-    await logCronRun('debate-games', runStartedAt, { itemsProcessed: 0, errors: 1, meta: { error: String(err) } })
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+      itemsProcessed: 0, errors: 1, meta: { error: 'GOOGLE_CREDENTIALS_JSON not set' },
+    }).catch(() => {})
+    process.exit(1)
   }
+
+  // Fetch candidates: games where our score diverges from Metacritic by >= threshold
+  // Order by divergence descending — most controversial first
+  const candidates = await db
+    .select({
+      game:            games,
+      curascore:       gameScores.curascore,
+      metacriticScore: games.metacriticScore,
+      divergence:      sql<number>`ABS(${gameScores.curascore} - ${games.metacriticScore})`,
+    })
+    .from(games)
+    .innerJoin(gameScores, eq(gameScores.gameId, games.id))
+    .where(and(
+      isNotNull(gameScores.curascore),
+      isNotNull(games.metacriticScore),
+      gte(games.metacriticScore, MIN_METACRITIC_SCORE),
+      isNull(gameScores.debateRounds),
+      sql`ABS(${gameScores.curascore} - ${games.metacriticScore}) >= ${METACRITIC_DIVERGENCE_MIN}`,
+    ))
+    .orderBy(sql`ABS(${gameScores.curascore} - ${games.metacriticScore}) DESC`)
+    .limit(MAX_DEBATES_PER_RUN)
+
+  console.log(`Found ${candidates.length} debate candidates (divergence ≥ ${METACRITIC_DIVERGENCE_MIN})`)
+  for (const c of candidates) {
+    console.log(`  ${c.game.title}: curascore=${c.curascore} metacritic=${c.metacriticScore} gap=${c.divergence > 0 ? '+' : ''}${c.curascore! - c.metacriticScore!}`)
+  }
+
+  if (candidates.length === 0) {
+    await logCronRun('debate-games', runStartedAt, { itemsProcessed: 0, errors: 0 })
+    process.exit(0)
+  }
+
+  const debated: string[] = []
+  const skipped: string[] = []
+  const errors:  string[] = []
+
+  for (const { game, curascore, metacriticScore } of candidates) {
+    await sleep(DELAY_MS)
+    console.log(`\nDebating: ${game.title} (curascore ${curascore}, metacritic ${metacriticScore})`)
+    try {
+      const result = await runDebate(game, curascore!, metacriticScore!)
+      if (result.saved) {
+        debated.push(game.slug)
+        console.log(`  ✓ ${game.title}: ${curascore} → ${result.newCurascore}`)
+      } else {
+        skipped.push(game.slug)
+        console.log(`  ~ ${game.title}: swing too large, skipped`)
+      }
+    } catch (err) {
+      console.error(`  ✗ ${game.slug}:`, err)
+      errors.push(game.slug)
+    }
+  }
+
+  console.log(`\nDone — debated: ${debated.length}, skipped: ${skipped.length}, errors: ${errors.length}`)
+
+  await logCronRun('debate-games', runStartedAt, {
+    itemsProcessed: debated.length,
+    itemsSkipped:   skipped.length,
+    errors:         errors.length,
+    meta:           errors.length > 0 ? { failed: errors } : undefined,
+  })
+
+  process.exit(errors.length > 0 && debated.length === 0 ? 1 : 0)
 }
+
+main().catch(async e => {
+  console.error('Fatal:', e)
+  await logCronRun('debate-games', runStartedAt, {
+    itemsProcessed: 0, errors: 1, meta: { error: String(e) },
+  }).catch(() => {})
+  process.exit(1)
+})

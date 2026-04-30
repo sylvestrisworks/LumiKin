@@ -141,66 +141,78 @@ type GameRow = Pick<typeof games.$inferSelect,
   'id' | 'slug' | 'title' | 'developer' | 'publisher' | 'description' |
   'genres' | 'platforms' | 'esrbRating' | 'metacriticScore' | 'basePrice' |
   'hasMicrotransactions' | 'hasLootBoxes' | 'hasBattlePass' | 'hasSubscription' |
-  'requiresInternet' | 'hasStrangerChat' | 'chatModeration' | 'needsRescore'
+  'requiresInternet' | 'hasStrangerChat' | 'chatModeration' | 'needsRescore' |
+  'bundledOnlineNote'
 >
 
 // ─── Prompt builder ───────────────────────────────────────────────────────────
 
 function buildReviewPrompt(g: GameRow): string {
-  return `You are a child development researcher scoring a video game using the LumiKin rubric.
+  const price = g.basePrice === 0 ? 'Free-to-play'
+    : g.basePrice != null ? `$${g.basePrice}` : 'Unknown'
+  const chat = g.hasStrangerChat
+    ? `Yes (${g.chatModeration ?? 'unknown moderation'})` : 'No'
 
-## SCORING RUBRIC SUMMARY
+  const bundledOnlineBlock = g.bundledOnlineNote
+    ? `\n⚠ BUNDLED ONLINE MODE — SCORE BASE GAME ONLY:\nThis title ships with a separate online/live-service mode that is covered by a dedicated caution notice shown to parents. Score ONLY the single-player or base offline experience. Set all R1/R2/R3 flags that belong exclusively to the online mode (live-service loops, real-money currency, stranger chat, FOMO events, social pressure) to 0. Narratives should describe the base game experience only.\n`
+    : ''
 
-### Benefits (B1–B3) — scale 0–5 per item
-B1 Cognitive (max 50): problemSolving, spatialAwareness, strategicThinking, criticalThinking, memoryAttention, creativity, readingLanguage, mathSystems, learningTransfer, adaptiveChallenge
-  0=not present, 1=minimal, 3=moderate, 5=core mechanic
-
-B2 Social-emotional (max 30): teamwork, communication, empathy, emotionalRegulation, ethicalReasoning, positiveSocial
-  Score genuine cooperative design highly; solo games with cosmetic multiplayer score low
-
-B3 Motor (max 20): handEyeCoord, fineMotor, reactionTime, physicalActivity
-  physicalActivity=5 only for VR/motion games
-
-### Risks (R1–R4) — scale 0–3 per item
-R1 Dopamine manipulation (max 30): variableRewards, streakMechanics, lossAversion, fomoEvents, stoppingBarriers, notifications, nearMiss, infinitePlay, escalatingCommitment, variableRewardFreq
-R2 Monetization (max 24): spendingCeiling, payToWin, currencyObfuscation, spendingPrompts, childTargeting, adPressure, subscriptionPressure, socialSpending
-R3 Social risk (max 18): socialObligation, competitiveToxicity, strangerRisk, socialComparison, identitySelfWorth, privacyRisk
-R4 Content (max 15): violenceLevel, sexualContent, language, substanceRef, fearHorror
-
-### Representation (REP) — higher = better (0–3 each)
-repGenderBalance, repEthnicDiversity
-
-### Propaganda (PROP)
-propagandaLevel: 0=neutral, 1=mild, 2=notable, 3=heavy
-propagandaNotes: brief description if level≥1
-
-### Bechdel Test
-result: pass/fail/na
-notes: one sentence explanation
-
-## CALIBRATION EXAMPLES
-Minecraft: B1=38, B2=16, B3=6 | R1=4, R2=2, R3=4 → curascore 75, 120 min/day
-Fortnite: B1=19, B2=10, B3=13 | R1=18, R2=13, R3=11 → curascore 42, 30 min/day
-Brawl Stars: B1=14, B2=9, B3=11 | R1=23, R2=18, R3=12 → curascore 30, 15 min/day
-
-## GAME TO REVIEW
-Title: ${g.title}
-Developer: ${g.developer ?? 'Unknown'}
-Publisher: ${g.publisher ?? 'Unknown'}
-Description: ${g.description ?? 'Not available'}
-Genres: ${(g.genres as string[])?.join(', ') || 'Unknown'}
-Platforms: ${(g.platforms as string[])?.join(', ') || 'Unknown'}
-ESRB Rating: ${g.esrbRating ?? 'Not rated'}
-Metacritic: ${g.metacriticScore ?? 'N/A'}
-Base price: ${g.basePrice === 0 ? 'Free-to-play' : g.basePrice != null ? `$${g.basePrice}` : 'Unknown'}
-Microtransactions: ${g.hasMicrotransactions ? 'Yes' : 'No'}
-Loot boxes: ${g.hasLootBoxes ? 'Yes' : 'No'}
-Battle pass: ${g.hasBattlePass ? 'Yes' : 'No'}
-Subscription: ${g.hasSubscription ? 'Yes' : 'No'}
-Requires internet: ${g.requiresInternet ?? 'Unknown'}
-Stranger chat: ${g.hasStrangerChat ? `Yes (${g.chatModeration ?? 'unknown moderation'})` : 'No'}
-
-Score this game accurately. Calibrate against the examples above. Call submit_game_review with your scores.`
+  return [
+    'You are a child development researcher scoring a video game using the LumiKin rubric.',
+    '',
+    '## SCORING RUBRIC SUMMARY',
+    '',
+    '### Benefits (B1–B3) — scale 0–5 per item',
+    'B1 Cognitive (max 50): problemSolving, spatialAwareness, strategicThinking, criticalThinking, memoryAttention, creativity, readingLanguage, mathSystems, learningTransfer, adaptiveChallenge',
+    '  0=not present, 1=minimal, 3=moderate, 5=core mechanic',
+    '',
+    'B2 Social-emotional (max 30): teamwork, communication, empathy, emotionalRegulation, ethicalReasoning, positiveSocial',
+    '  Score genuine cooperative design highly; solo games with cosmetic multiplayer score low',
+    '',
+    'B3 Motor (max 20): handEyeCoord, fineMotor, reactionTime, physicalActivity',
+    '  physicalActivity=5 only for VR/motion games',
+    '',
+    '### Risks (R1–R4) — scale 0–3 per item',
+    'R1 Dopamine manipulation (max 30): variableRewards, streakMechanics, lossAversion, fomoEvents, stoppingBarriers, notifications, nearMiss, infinitePlay, escalatingCommitment, variableRewardFreq',
+    'R2 Monetization (max 24): spendingCeiling, payToWin, currencyObfuscation, spendingPrompts, childTargeting, adPressure, subscriptionPressure, socialSpending',
+    'R3 Social risk (max 18): socialObligation, competitiveToxicity, strangerRisk, socialComparison, identitySelfWorth, privacyRisk',
+    'R4 Content (max 15): violenceLevel, sexualContent, language, substanceRef, fearHorror',
+    '',
+    '### Representation (REP) — higher = better (0–3 each)',
+    'repGenderBalance, repEthnicDiversity',
+    '',
+    '### Propaganda (PROP)',
+    'propagandaLevel: 0=neutral, 1=mild, 2=notable, 3=heavy',
+    'propagandaNotes: brief description if level≥1',
+    '',
+    '### Bechdel Test',
+    'result: pass/fail/na',
+    'notes: one sentence explanation',
+    '',
+    '## CALIBRATION EXAMPLES',
+    'Minecraft: B1=38, B2=16, B3=6 | R1=4, R2=2, R3=4 → curascore 75, 120 min/day',
+    'Fortnite: B1=19, B2=10, B3=13 | R1=18, R2=13, R3=11 → curascore 42, 30 min/day',
+    'Brawl Stars: B1=14, B2=9, B3=11 | R1=23, R2=18, R3=12 → curascore 30, 15 min/day',
+    '',
+    '## GAME TO REVIEW',
+    `Title: ${g.title}`,
+    `Developer: ${g.developer ?? 'Unknown'}`,
+    `Publisher: ${g.publisher ?? 'Unknown'}`,
+    `Description: ${g.description ?? 'Not available'}`,
+    `Genres: ${(g.genres as string[])?.join(', ') || 'Unknown'}`,
+    `Platforms: ${(g.platforms as string[])?.join(', ') || 'Unknown'}`,
+    `ESRB Rating: ${g.esrbRating ?? 'Not rated'}`,
+    `Metacritic: ${g.metacriticScore ?? 'N/A'}`,
+    `Base price: ${price}`,
+    `Microtransactions: ${g.hasMicrotransactions ? 'Yes' : 'No'}`,
+    `Loot boxes: ${g.hasLootBoxes ? 'Yes' : 'No'}`,
+    `Battle pass: ${g.hasBattlePass ? 'Yes' : 'No'}`,
+    `Subscription: ${g.hasSubscription ? 'Yes' : 'No'}`,
+    `Requires internet: ${g.requiresInternet ?? 'Unknown'}`,
+    `Stranger chat: ${chat}`,
+    bundledOnlineBlock,
+    'Score this game accurately. Calibrate against the examples above. Call submit_game_review with your scores.',
+  ].join('\n')
 }
 
 // ─── Gemini caller ────────────────────────────────────────────────────────────
@@ -402,6 +414,7 @@ export async function GET(req: NextRequest) {
           hasStrangerChat:    games.hasStrangerChat,
           chatModeration:     games.chatModeration,
           needsRescore:       games.needsRescore,
+          bundledOnlineNote:  games.bundledOnlineNote,
         },
         gameScores: { id: gameScores.id },
       })

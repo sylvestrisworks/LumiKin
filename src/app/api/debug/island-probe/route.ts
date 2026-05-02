@@ -129,12 +129,25 @@ export async function GET(req: NextRequest) {
     results.push({ name: 'epic-token', url: '-', status: 'no creds in env' })
   }
 
-  // 5. fortnite.gg public probe (no auth)
-  results.push(await probe(
-    'fortnite.gg /island',
+  // 5. fortnite.gg URL variants (Cloudflare lets Vercel through; just need right path)
+  const fnggUrls = [
     `https://fortnite.gg/island?code=${encodeURIComponent(code)}`,
-    { 'User-Agent': FB_BOT_UA },
-  ))
+    `https://fortnite.gg/creative-island?island=${encodeURIComponent(code)}`,
+    `https://fortnite.gg/creative/${encodeURIComponent(code)}`,
+    `https://fortnite.gg/play/${encodeURIComponent(code)}`,
+    `https://fortnite.gg/maps/${encodeURIComponent(code)}`,
+    `https://fortnite.gg/c/${encodeURIComponent(code)}`,
+    `https://fortnite.gg/api/island?code=${encodeURIComponent(code)}`,
+    `https://fortnite.gg/api/v1/island/${encodeURIComponent(code)}`,
+    `https://fortnite.gg/?island=${encodeURIComponent(code)}`,
+  ]
+  for (const url of fnggUrls) {
+    results.push(await probe(
+      `fortnite.gg ${url.split('//')[1].split('?')[0].split('fortnite.gg')[1] || '/'}`,
+      url,
+      { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' },
+    ))
+  }
 
   return NextResponse.json({ code, hasEpicToken: !!token, results })
 }

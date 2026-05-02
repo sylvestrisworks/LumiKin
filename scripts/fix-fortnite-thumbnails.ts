@@ -68,30 +68,51 @@ function extractImageUrl(raw: unknown): string | null {
 
 // ─── Island thumbnail lookup ──────────────────────────────────────────────────
 
+// Set to a small number to dump full responses for the first N codes — helps
+// diagnose why individual island lookups don't return image data.
+let debugRemaining = 3
+
 async function fetchIslandThumb(islandCode: string, token: string): Promise<string | null> {
   const headers = { Authorization: `Bearer ${token}`, 'User-Agent': FORTNITE_UA }
+  const debug = debugRemaining > 0
+  if (debug) debugRemaining--
 
   // Try 1: direct mnemonic path
   try {
-    const res = await fetch(`${LINKS_BASE}/${encodeURIComponent(islandCode)}`, {
-      headers, signal: AbortSignal.timeout(8_000),
-    })
+    const url = `${LINKS_BASE}/${encodeURIComponent(islandCode)}`
+    const res = await fetch(url, { headers, signal: AbortSignal.timeout(8_000) })
+    if (debug) console.log(`  [debug ${islandCode}] direct: ${res.status} ${res.headers.get('content-type') ?? ''}`)
     if (res.ok) {
-      const img = extractImageUrl(await res.json())
-      if (img) return img
+      const body = await res.text()
+      if (debug) console.log(`  [debug ${islandCode}] direct body (first 800): ${body.slice(0, 800)}`)
+      try {
+        const img = extractImageUrl(JSON.parse(body))
+        if (img) return img
+      } catch { /* not JSON */ }
+    } else if (debug) {
+      const body = await res.text()
+      console.log(`  [debug ${islandCode}] direct error body: ${body.slice(0, 300)}`)
     }
-  } catch { /* DNS or network — expected on non-Linux hosts */ }
+  } catch (e) {
+    if (debug) console.log(`  [debug ${islandCode}] direct threw: ${(e as Error).message}`)
+  }
 
-  // Try 2: category query (same endpoint, different call style)
+  // Try 2: category query
   try {
-    const res = await fetch(`${LINKS_BASE}?category=${encodeURIComponent(islandCode)}&start=0&count=1`, {
-      headers, signal: AbortSignal.timeout(8_000),
-    })
+    const url = `${LINKS_BASE}?category=${encodeURIComponent(islandCode)}&start=0&count=1`
+    const res = await fetch(url, { headers, signal: AbortSignal.timeout(8_000) })
+    if (debug) console.log(`  [debug ${islandCode}] category: ${res.status}`)
     if (res.ok) {
-      const img = extractImageUrl(await res.json())
-      if (img) return img
+      const body = await res.text()
+      if (debug) console.log(`  [debug ${islandCode}] category body (first 800): ${body.slice(0, 800)}`)
+      try {
+        const img = extractImageUrl(JSON.parse(body))
+        if (img) return img
+      } catch { /* not JSON */ }
     }
-  } catch { /* fall through */ }
+  } catch (e) {
+    if (debug) console.log(`  [debug ${islandCode}] category threw: ${(e as Error).message}`)
+  }
 
   return null
 }

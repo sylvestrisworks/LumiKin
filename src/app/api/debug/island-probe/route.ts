@@ -76,7 +76,9 @@ export async function GET(req: NextRequest) {
 
   const code = req.nextUrl.searchParams.get('code') ?? '2778-3253-4171'
   const token = await getEpicToken()
-  const epicHeaders = token ? { Authorization: `Bearer ${token}`, 'User-Agent': FORTNITE_UA } : {}
+  const epicHeaders: Record<string, string> = token
+    ? { Authorization: `Bearer ${token}`, 'User-Agent': FORTNITE_UA }
+    : {}
 
   const results: ProbeResult[] = []
 

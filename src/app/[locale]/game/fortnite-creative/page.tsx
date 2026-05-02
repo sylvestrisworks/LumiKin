@@ -132,10 +132,8 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
     monetizationScore:         score?.monetizationScore ?? null,
   }))
 
-  // Only show maps that have a thumbnail — no-image cards look broken
-  const visibleMaps = maps.filter(e => e.thumbnailUrl)
-  const scored   = visibleMaps.filter(e => e.curascore != null)
-  const unscored = visibleMaps.filter(e => e.curascore == null)
+  const scored   = maps.filter(e => e.curascore != null)
+  const unscored = maps.filter(e => e.curascore == null)
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">

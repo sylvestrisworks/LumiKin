@@ -868,5 +868,33 @@
     "typeOutdated": "Betyget är inaktuellt",
     "typeMissing": "Information saknas",
     "typeOther": "Något annat"
+  },
+  "platform": {
+    "badge": "Plattform",
+    "rated": "betygsatt",
+    "browseAll": "Bläddra alla →",
+    "noGames": "Inga betygsatta spel för den här plattformen ännu. Kolla tillbaka snart.",
+    "topRated": "Topprankade",
+    "safest": "Säkraste valen",
+    "forKids": "Bäst för yngre barn",
+    "coop": "Bra kooperativt spel",
+    "recent": "Nyligen betygsatt",
+    "lowestRated": "Lägst betyg",
+    "scoreDistribution": "Poängfördelning",
+    "scoredSuffix": "betygsatta",
+    "metaTitle": "{name}-spel för barn — LumiKin",
+    "metaDescription": "Utforska {count} betygsatta {name}-spel för barn. Genomsnittligt LumiScore {avg}/100. Hitta säkra {name}-val för din familj på LumiKin.",
+    "desc_playstation": "LumiKin safety scores for PlayStation 4 and PlayStation 5 games.",
+    "desc_xbox": "LumiKin safety scores for Xbox One, Xbox Series S and Series X games.",
+    "desc_nintendo_switch": "LumiKin safety scores for Nintendo Switch games.",
+    "desc_ios": "LumiKin safety scores for iPhone and iPad games.",
+    "desc_android": "LumiKin safety scores for Android games.",
+    "desc_pc": "LumiKin safety scores for PC games on Steam, Epic Games, and more.",
+    "editorial_playstation": "PlayStation 4 and PS5 span everything from calm puzzle games to intense online multiplayer. Many great titles are available through PS Plus, but the subscription pressure and online exposure varies widely across the catalogue. LumiKin scores make it easy to find which PlayStation games are genuinely worth your child's time — and which ones come with hidden costs or engagement traps.",
+    "editorial_xbox": "Xbox One and Xbox Series S|X are home to hundreds of titles available through Xbox Game Pass, making it one of the most accessible platforms for families. LumiKin scores help you navigate the catalog quickly — sorting by safest picks or family co-op highlights lets you build a trusted game list without playing every title yourself.",
+    "editorial_nintendo_switch": "Nintendo Switch has one of the most family-friendly first-party libraries of any console, with beloved franchises like Mario, Zelda, and Pokémon consistently earning high benefit scores. The platform is also easy to manage with built-in parental controls and screen time limits. LumiKin scores help you find the standout third-party games worth adding to your collection.",
+    "editorial_ios": "The App Store labels many games \"free\", but the real cost is often attention, in-app purchases, or intrusive ads. iOS games range from genuinely educational apps to highly optimized engagement loops. LumiKin scores flag monetization pressure and dopamine-trap mechanics so you can tell the difference before downloading.",
+    "editorial_android": "Android gaming spans high-quality ports, indie gems, and heavily monetized free-to-play titles — often hard to tell apart from the Play Store listing alone. Google's content ratings cover subject matter, not design patterns. LumiKin scores go deeper, surfacing which games are built for benefit and which are built for maximum session length.",
+    "editorial_pc": "PC gaming offers the widest catalogue of any platform, from calm educational puzzlers to massive online worlds. Steam family controls and library sharing features help, but the sheer volume makes curation difficult. LumiKin scores sort the catalogue by benefit-to-risk ratio so you can build a quality family library without trial and error."
   }
 }

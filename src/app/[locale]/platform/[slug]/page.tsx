@@ -3,6 +3,7 @@ export const revalidate = 3600
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { eq, and, desc, asc, isNotNull, lte, gte, inArray, sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { games, gameScores, platformExperiences, experienceScores } from '@/lib/db/schema'
@@ -32,14 +33,14 @@ const UGC_ICON_BG: Record<string, string> = {
 }
 
 // ─── Traditional platform config ──────────────────────────────────────────────
+// description and editorial text live in messages/*/platform namespace
 type PlatformConfig = {
   name: string
-  keyword: string       // matched against games.platforms JSON via ILIKE
-  browseKey: string     // matches PLATFORM_KEYWORDS key in browse/page.tsx
-  accent: string        // Tailwind gradient for hero
-  iconBg: string        // Tailwind bg+ring for icon
-  description: string   // short description for meta fallback
-  editorial: string     // longer crawlable paragraph shown on the page
+  keyword: string     // matched against games.platforms JSON via ILIKE
+  browseKey: string   // matches PLATFORM_KEYWORDS key in browse/page.tsx
+  accent: string      // Tailwind gradient for hero
+  iconBg: string      // Tailwind bg+ring for icon
+  msgKey: string      // key suffix used in messages: desc_{msgKey}, editorial_{msgKey}
 }
 
 const TRADITIONAL_PLATFORMS: Record<string, PlatformConfig> = {
@@ -49,8 +50,7 @@ const TRADITIONAL_PLATFORMS: Record<string, PlatformConfig> = {
     browseKey: 'PlayStation',
     accent: 'from-blue-950/95 via-blue-900/70 to-slate-900/20',
     iconBg: 'bg-blue-700 ring-blue-400/40',
-    description: 'LumiKin safety scores for PlayStation 4 and PlayStation 5 games.',
-    editorial: 'PlayStation 4 and PS5 span everything from calm puzzle games to intense online multiplayer. Many great titles are available through PS Plus, but the subscription pressure and online exposure varies widely across the catalogue. LumiKin scores make it easy to find which PlayStation games are genuinely worth your child\'s time — and which ones come with hidden costs or engagement traps.',
+    msgKey: 'playstation',
   },
   xbox: {
     name: 'Xbox',
@@ -58,8 +58,7 @@ const TRADITIONAL_PLATFORMS: Record<string, PlatformConfig> = {
     browseKey: 'Xbox',
     accent: 'from-green-950/95 via-green-900/70 to-slate-900/20',
     iconBg: 'bg-green-700 ring-green-400/40',
-    description: 'LumiKin safety scores for Xbox One, Xbox Series S and Series X games.',
-    editorial: 'Xbox One and Xbox Series S|X are home to hundreds of titles available through Xbox Game Pass, making it one of the most accessible platforms for families. LumiKin scores help you navigate the catalog quickly — sorting by safest picks or family co-op highlights lets you build a trusted game list without playing every title yourself.',
+    msgKey: 'xbox',
   },
   'nintendo-switch': {
     name: 'Nintendo Switch',
@@ -67,8 +66,7 @@ const TRADITIONAL_PLATFORMS: Record<string, PlatformConfig> = {
     browseKey: 'Switch',
     accent: 'from-red-950/95 via-red-900/70 to-slate-900/20',
     iconBg: 'bg-red-600 ring-red-400/40',
-    description: 'LumiKin safety scores for Nintendo Switch games.',
-    editorial: 'Nintendo Switch has one of the most family-friendly first-party libraries of any console, with beloved franchises like Mario, Zelda, and Pokémon consistently earning high benefit scores. The platform is also easy to manage with built-in parental controls and screen time limits. LumiKin scores help you find the standout third-party games worth adding to your collection.',
+    msgKey: 'nintendo_switch',
   },
   ios: {
     name: 'iOS',
@@ -76,8 +74,7 @@ const TRADITIONAL_PLATFORMS: Record<string, PlatformConfig> = {
     browseKey: 'iOS',
     accent: 'from-sky-950/95 via-sky-900/70 to-slate-900/20',
     iconBg: 'bg-sky-600 ring-sky-400/40',
-    description: 'LumiKin safety scores for iPhone and iPad games.',
-    editorial: 'The App Store labels many games "free", but the real cost is often attention, in-app purchases, or intrusive ads. iOS games range from genuinely educational apps to highly optimized engagement loops. LumiKin scores flag monetization pressure and dopamine-trap mechanics so you can tell the difference before downloading.',
+    msgKey: 'ios',
   },
   android: {
     name: 'Android',
@@ -85,8 +82,7 @@ const TRADITIONAL_PLATFORMS: Record<string, PlatformConfig> = {
     browseKey: 'Android',
     accent: 'from-emerald-950/95 via-emerald-900/70 to-slate-900/20',
     iconBg: 'bg-emerald-600 ring-emerald-400/40',
-    description: 'LumiKin safety scores for Android games.',
-    editorial: 'Android gaming spans high-quality ports, indie gems, and heavily monetized free-to-play titles — often hard to tell apart from the Play Store listing alone. Google\'s content ratings cover subject matter, not design patterns. LumiKin scores go deeper, surfacing which games are built for benefit and which are built for maximum session length.',
+    msgKey: 'android',
   },
   pc: {
     name: 'PC',
@@ -94,8 +90,7 @@ const TRADITIONAL_PLATFORMS: Record<string, PlatformConfig> = {
     browseKey: 'PC',
     accent: 'from-violet-950/95 via-violet-900/70 to-slate-900/20',
     iconBg: 'bg-violet-700 ring-violet-400/40',
-    description: 'LumiKin safety scores for PC games on Steam, Epic Games, and more.',
-    editorial: 'PC gaming offers the widest catalogue of any platform, from calm educational puzzlers to massive online worlds. Steam family controls and library sharing features help, but the sheer volume makes curation difficult. LumiKin scores sort the catalogue by benefit-to-risk ratio so you can build a quality family library without trial and error.',
+    msgKey: 'pc',
   },
 }
 
@@ -129,7 +124,7 @@ function toGameSummary(r: any): GameSummary {
   }
 }
 
-// ─── Stats helper (shared by metadata + page) ────────────────────────────────
+// ─── Stats helper ─────────────────────────────────────────────────────────────
 async function fetchPlatformStats(keyword: string) {
   const platformFilter = sql`${games.platforms}::text ILIKE ${'%' + keyword + '%'}`
   const [row] = await db
@@ -151,24 +146,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const traditional = TRADITIONAL_PLATFORMS[slug]
   if (traditional) {
+    const t = await getTranslations({ locale, namespace: 'platform' })
     const { count, avgScore } = await fetchPlatformStats(traditional.keyword)
     const description = count > 0 && avgScore != null
-      ? `Browse ${count} rated ${traditional.name} games for kids. Average LumiScore ${avgScore}/100. Find safe ${traditional.name} picks for your family on LumiKin.`
-      : traditional.description
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ? t('metaDescription' as any, { count, name: traditional.name, avg: avgScore })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      : t(`desc_${traditional.msgKey}` as any)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const title = t('metaTitle' as any, { name: traditional.name })
     const ogImage = `/api/og/platform/${slug}`
     return {
-      title: `${traditional.name} Games for Kids — LumiKin`,
+      title,
       description,
       alternates: { canonical: `/${locale}/platform/${slug}` },
       openGraph: {
-        title: `${traditional.name} Games — LumiKin`,
+        title,
         description,
         type: 'website',
         images: [{ url: ogImage, width: 1200, height: 630 }],
       },
       twitter: {
         card: 'summary_large_image',
-        title: `${traditional.name} Games — LumiKin`,
+        title,
         description,
         images: [ogImage],
       },
@@ -256,18 +256,12 @@ async function TraditionalPlatformPage({
   locale: string
   config: PlatformConfig
 }) {
-  const platformFilter = sql`${games.platforms}::text ILIKE ${'%' + config.keyword + '%'}`
-  const base = and(isNotNull(gameScores.curascore), platformFilter)
+  const pf = sql`${games.platforms}::text ILIKE ${'%' + config.keyword + '%'}`
+  const base = and(isNotNull(gameScores.curascore), pf)
 
-  const [
-    [statsRow],
-    bucketRows,
-    topRated,
-    safest,
-    forKids,
-    coop,
-    recent,
-  ] = await Promise.all([
+  const [t, [statsRow], bucketRows, topRated, safest, forKids, coop, recent] = await Promise.all([
+    getTranslations({ locale, namespace: 'platform' }),
+
     db.select({
       count:    sql<number>`count(${gameScores.id})::int`,
       avgScore: sql<number>`round(avg(${gameScores.curascore}))::int`,
@@ -320,7 +314,7 @@ async function TraditionalPlatformPage({
       .where(base)
       .orderBy(desc(gameScores.calculatedAt))
       .limit(12),
-  ])
+  ] as const)
 
   const scoredCount = Number(statsRow?.count ?? 0)
   const avgScore    = statsRow?.avgScore ?? null
@@ -328,25 +322,36 @@ async function TraditionalPlatformPage({
   const b           = `/${locale}/browse?platforms=${config.browseKey}`
 
   const carouselRows = [
-    { id: 'top',    title: 'Top Rated',          iconName: 'topscore', browseHref: `${b}&sort=curascore`,    games: topRated.map(toGameSummary) },
-    { id: 'safest', title: 'Safest Picks',        iconName: 'family',   browseHref: `${b}&sort=safest`,       games: safest.map(toGameSummary)   },
-    { id: 'kids',   title: 'Best for Young Kids', iconName: 'beginner', browseHref: `${b}&age=E10`,           games: forKids.map(toGameSummary)  },
-    { id: 'coop',   title: 'Great Co-op',         iconName: 'family',   browseHref: `${b}&benefits=teamwork`, games: coop.map(toGameSummary)     },
-    { id: 'recent', title: 'Recently Scored',     iconName: 'new',      browseHref: `${b}&sort=newest`,       games: recent.map(toGameSummary)   },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { id: 'top',    title: t('topRated' as any),  iconName: 'topscore', browseHref: `${b}&sort=curascore`,    games: topRated.map(toGameSummary) },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { id: 'safest', title: t('safest' as any),    iconName: 'family',   browseHref: `${b}&sort=safest`,       games: safest.map(toGameSummary)   },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { id: 'kids',   title: t('forKids' as any),   iconName: 'beginner', browseHref: `${b}&age=E10`,           games: forKids.map(toGameSummary)  },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { id: 'coop',   title: t('coop' as any),      iconName: 'family',   browseHref: `${b}&benefits=teamwork`, games: coop.map(toGameSummary)     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { id: 'recent', title: t('recent' as any),    iconName: 'new',      browseHref: `${b}&sort=newest`,       games: recent.map(toGameSummary)   },
   ].filter(r => r.games.length >= 3)
 
   // JSON-LD: CollectionPage + ItemList of top games
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const metaTitle = t('metaTitle' as any, { name: config.name })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const descText  = t(`desc_${config.msgKey}` as any)
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: `${config.name} Games for Kids — LumiKin`,
-    description: config.description,
+    name: metaTitle,
+    description: descText,
     url: `${SITE_URL}/${locale}/platform/${slug}`,
     mainEntity: {
       '@type': 'ItemList',
-      name: `Top Rated ${config.name} Games`,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      name: `${t('topRated' as any)} — ${config.name}`,
       numberOfItems: Math.min(topRated.length, 10),
-      itemListElement: topRated.slice(0, 10).map((r, i) => ({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      itemListElement: (topRated as any[]).slice(0, 10).map((r, i) => ({
         '@type': 'ListItem',
         position: i + 1,
         name: r.title,
@@ -374,8 +379,9 @@ async function TraditionalPlatformPage({
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 <span className="text-[11px] font-semibold bg-white/10 text-white/70 border border-white/20 px-2 py-0.5 rounded-full tracking-wide uppercase">
-                  Platform
+                  {t('badge' as any)}
                 </span>
                 {avgScore != null && (
                   <span className="text-[11px] font-bold bg-white/10 border border-white/20 text-white/80 px-2 py-0.5 rounded-full">
@@ -384,17 +390,19 @@ async function TraditionalPlatformPage({
                 )}
               </div>
               <h1 className="text-2xl font-bold text-white">{config.name}</h1>
-              <p className="text-sm text-white/70 mt-1">{config.description}</p>
+              <p className="text-sm text-white/70 mt-1">{descText}</p>
               <div className="flex items-center gap-3 mt-3 flex-wrap">
                 <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
                   <span className="text-base font-bold text-white">{scoredCount}</span>
-                  <span className="text-xs text-white/50 ml-1">rated</span>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  <span className="text-xs text-white/50 ml-1">{t('rated' as any)}</span>
                 </div>
                 <Link
                   href={`/${locale}/browse?platforms=${config.browseKey}`}
                   className="text-xs font-semibold text-white/80 hover:text-white border border-white/20 hover:border-white/40 bg-white/10 hover:bg-white/15 px-3 py-1.5 rounded-xl transition-colors"
                 >
-                  Browse all →
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {t('browseAll' as any)}
                 </Link>
               </div>
             </div>
@@ -402,18 +410,29 @@ async function TraditionalPlatformPage({
         </div>
 
         {/* Score distribution */}
-        {scoredCount > 0 && <PlatformScoreHistogram buckets={buckets} />}
+        {scoredCount > 0 && (
+          <PlatformScoreHistogram
+            buckets={buckets}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            scoreDistributionLabel={t('scoreDistribution' as any)}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            scoredSuffix={t('scoredSuffix' as any)}
+          />
+        )}
 
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {scoredCount === 0 && (
           <div className="text-center py-16 text-slate-400 dark:text-slate-500">
-            No scored games yet for this platform. Check back soon.
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {t('noGames' as any)}
           </div>
         )}
 
         {/* Editorial intro — crawlable context for search engines */}
         {scoredCount > 0 && (
           <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            {config.editorial}
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {t(`editorial_${config.msgKey}` as any)}
           </p>
         )}
 
@@ -438,7 +457,7 @@ async function TraditionalPlatformPage({
   )
 }
 
-// ─── UGC platform page (unchanged logic) ─────────────────────────────────────
+// ─── UGC platform page ────────────────────────────────────────────────────────
 export default async function PlatformHubPage({ params }: Props) {
   const { locale, slug } = await params
 
@@ -449,6 +468,7 @@ export default async function PlatformHubPage({ params }: Props) {
   }
 
   // UGC platform (Roblox, Fortnite Creative, etc.)
+  const t = await getTranslations({ locale, namespace: 'platform' })
   const dbSlug = SLUG_ALIASES[slug] ?? slug
 
   const [
@@ -563,7 +583,8 @@ export default async function PlatformHubPage({ params }: Props) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                 <span className="text-[11px] font-semibold bg-white/10 text-white/70 border border-white/20 px-2 py-0.5 rounded-full tracking-wide uppercase">
-                  Platform
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {t('badge' as any)}
                 </span>
                 {avgScore != null && (
                   <span className="text-[11px] font-bold bg-white/10 border border-white/20 text-white/80 px-2 py-0.5 rounded-full">
@@ -578,7 +599,8 @@ export default async function PlatformHubPage({ params }: Props) {
               <div className="flex items-center gap-2 mt-3 flex-wrap">
                 <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
                   <span className="text-base font-bold text-white">{scoredCount}</span>
-                  <span className="text-xs text-white/50 ml-1">rated</span>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  <span className="text-xs text-white/50 ml-1">{t('rated' as any)}</span>
                 </div>
                 {platform.esrbRating && (
                   <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
@@ -597,7 +619,13 @@ export default async function PlatformHubPage({ params }: Props) {
 
         {/* Score distribution histogram */}
         {scoredCount > 0 && (
-          <PlatformScoreHistogram buckets={buckets} />
+          <PlatformScoreHistogram
+            buckets={buckets}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            scoreDistributionLabel={t('scoreDistribution' as any)}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            scoredSuffix={t('scoredSuffix' as any)}
+          />
         )}
 
         {scoredCount === 0 && (
@@ -610,7 +638,8 @@ export default async function PlatformHubPage({ params }: Props) {
         {topExperiences.length > 0 && (
           <section>
             <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
-              Top Rated
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('topRated' as any)}
             </h2>
             <ExperienceGrid
               experiences={topExperiences}
@@ -624,7 +653,8 @@ export default async function PlatformHubPage({ params }: Props) {
         {bottomExperiences.length > 0 && scoredCount >= 4 && (
           <section>
             <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
-              Lowest Rated
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('lowestRated' as any)}
             </h2>
             <ExperienceGrid
               experiences={bottomExperiences}
@@ -638,7 +668,8 @@ export default async function PlatformHubPage({ params }: Props) {
         {recentExperiences.length > 0 && (
           <section>
             <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
-              Recently Scored
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('recent' as any)}
             </h2>
             <ExperienceGrid
               experiences={recentExperiences}

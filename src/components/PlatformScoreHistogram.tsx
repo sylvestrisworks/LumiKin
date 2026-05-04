@@ -16,7 +16,15 @@ const BUCKET_COLORS = [
 
 const BUCKET_STARTS = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
 
-export default function PlatformScoreHistogram({ buckets }: { buckets: HistogramBucket[] }) {
+export default function PlatformScoreHistogram({
+  buckets,
+  scoreDistributionLabel = 'Score Distribution',
+  scoredSuffix = 'scored',
+}: {
+  buckets: HistogramBucket[]
+  scoreDistributionLabel?: string
+  scoredSuffix?: string
+}) {
   const map = new Map(buckets.map(b => [b.bucket, b.count]))
   const counts = BUCKET_STARTS.map(start => map.get(start) ?? 0)
   const maxCount = Math.max(...counts, 1)
@@ -26,9 +34,9 @@ export default function PlatformScoreHistogram({ buckets }: { buckets: Histogram
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 px-4 pt-4 pb-3">
       <div className="flex items-baseline justify-between mb-4">
         <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-          Score Distribution
+          {scoreDistributionLabel}
         </h2>
-        <span className="text-xs text-slate-400 dark:text-slate-500">{total} scored</span>
+        <span className="text-xs text-slate-400 dark:text-slate-500">{total} {scoredSuffix}</span>
       </div>
 
       {/* Bars */}

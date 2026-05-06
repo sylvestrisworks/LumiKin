@@ -16,9 +16,12 @@ export const authConfig = {
         password: { label: 'Password', type: 'password' },
       },
       authorize(credentials) {
+        const expectedEmail    = process.env.REVIEWER_EMAIL
+        const expectedPassword = process.env.REVIEWER_PASSWORD
+        if (!expectedEmail || !expectedPassword) return null
         if (
-          credentials?.email    === process.env.REVIEWER_EMAIL &&
-          credentials?.password === process.env.REVIEWER_PASSWORD
+          credentials?.email    === expectedEmail &&
+          credentials?.password === expectedPassword
         ) {
           return { id: '1', name: 'Reviewer', email: String(credentials.email) }
         }

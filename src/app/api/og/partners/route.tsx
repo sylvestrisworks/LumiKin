@@ -1,8 +1,13 @@
 import { ImageResponse } from 'next/og'
+import { NextResponse } from 'next/server'
+import { rateLimit, getIp } from '@/lib/rate-limit'
 
 export const runtime = 'edge'
 
-export async function GET() {
+export async function GET(req: Request) {
+  if (!rateLimit(`og-partners:${getIp(req)}`, 60, 60_000)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
   return new ImageResponse(
     (
       <div

@@ -68,6 +68,12 @@ export default async function PipelinePage() {
   const session = await auth()
   if (!session?.user) redirect('/login')
 
+  // Authorization: only the configured reviewer email may view operational data
+  const reviewerEmail = process.env.REVIEWER_EMAIL
+  if (!reviewerEmail || session.user.email !== reviewerEmail) {
+    redirect('/')
+  }
+
   // Last 10 runs per job
   const allRuns = await db
     .select()

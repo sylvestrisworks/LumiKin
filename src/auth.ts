@@ -32,14 +32,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       authorize(credentials) {
-        const expectedEmail    = process.env.REVIEWER_EMAIL    ?? ''
-        const expectedPassword = process.env.REVIEWER_PASSWORD ?? ''
-        const givenEmail       = String(credentials?.email    ?? '')
-        const givenPassword    = String(credentials?.password ?? '')
+        const expectedEmail    = process.env.REVIEWER_EMAIL
+        const expectedPassword = process.env.REVIEWER_PASSWORD
+        // Refuse all credential logins if either secret is unset — otherwise
+        // an empty submission would compare equal to an empty default and
+        // grant Reviewer access. Never authenticate against empty secrets.
+        if (!expectedEmail || !expectedPassword) {
+          console.error('[auth] REVIEWER_EMAIL or REVIEWER_PASSWORD not set — refusing credential login')
+          return null
+        }
+        const givenEmail    = String(credentials?.email    ?? '')
+        const givenPassword = String(credentials?.password ?? '')
         const safeCompare = (a: string, b: string) => {
           const ab = Buffer.from(a)
           const bb = Buffer.from(b)
-          return ab.length === bb.length && timingSafeEqual(ab, bb)
+          return ab.length === bb.length && ab.length > 0 && timingSafeEqual(ab, bb)
         }
         if (safeCompare(givenEmail, expectedEmail) && safeCompare(givenPassword, expectedPassword)) {
           return { id: '1', name: 'Reviewer', email: givenEmail }

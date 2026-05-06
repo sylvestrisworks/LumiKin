@@ -1,7 +1,15 @@
 import { ImageResponse } from 'next/og'
+import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import { rateLimit, getIp } from '@/lib/rate-limit'
+
+// OG image generation is expensive — bound it per IP to prevent
+// cost-amplification abuse. SEO crawlers fetch each card once.
+const OG_RATE_LIMIT      = 60       // requests
+const OG_RATE_WINDOW_MS  = 60_000   // per minute
+const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]{0,99}$/
 
 function curascoreColor(score: number) {
   if (score >= 70) return '#059669' // emerald
@@ -19,10 +27,17 @@ function timeLabel(mins: number | null) {
 }
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ slug: string }> },
 ) {
+  if (!rateLimit(`og-game:${getIp(req)}`, OG_RATE_LIMIT, OG_RATE_WINDOW_MS)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const { slug } = await params
+  if (!SLUG_PATTERN.test(slug)) {
+    return NextResponse.json({ error: 'Invalid slug' }, { status: 400 })
+  }
 
   let row: {
     title: string | null

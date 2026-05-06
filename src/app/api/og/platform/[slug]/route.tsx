@@ -1,7 +1,9 @@
 import { ImageResponse } from 'next/og'
+import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
 import { and, eq, isNotNull, sql } from 'drizzle-orm'
+import { rateLimit, getIp } from '@/lib/rate-limit'
 
 type Config = {
   name: string
@@ -25,9 +27,13 @@ const FALLBACK = (
 )
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ slug: string }> },
 ) {
+  if (!rateLimit(`og-platform:${getIp(req)}`, 60, 60_000)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const { slug } = await params
   const config = PLATFORMS[slug]
   if (!config) return new ImageResponse(FALLBACK, { width: 1200, height: 630 })

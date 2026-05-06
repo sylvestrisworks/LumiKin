@@ -46,12 +46,26 @@ export function rateLimit(key: string, limit: number, windowMs: number): boolean
   return true
 }
 
-/** Extract best-effort client IP from a Next.js request */
+/**
+ * Extract best-effort client IP from a Next.js request.
+ *
+ * On Vercel the actual client IP is in `x-real-ip`, and the platform appends
+ * the real IP to `x-forwarded-for` (so the rightmost entry is trusted, not the
+ * leftmost). Reading XFF[0] would let an attacker rotate spoofed values via a
+ * forged `X-Forwarded-For` header to bypass per-IP rate limits.
+ *
+ * Order of preference: x-real-ip > rightmost x-forwarded-for > 'unknown'.
+ */
 export function getIp(req: Request): string {
   const headers = (req as { headers: Headers }).headers
-  return (
-    headers.get('x-forwarded-for')?.split(',')[0].trim() ??
-    headers.get('x-real-ip') ??
-    'unknown'
-  )
+  const realIp = headers.get('x-real-ip')?.trim()
+  if (realIp) return realIp
+
+  const xff = headers.get('x-forwarded-for')
+  if (xff) {
+    const parts = xff.split(',').map(s => s.trim()).filter(Boolean)
+    const last = parts[parts.length - 1]
+    if (last) return last
+  }
+  return 'unknown'
 }

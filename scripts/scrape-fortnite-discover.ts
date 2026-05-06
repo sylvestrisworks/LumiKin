@@ -48,13 +48,11 @@ import { chromium, type Page } from 'playwright'
 const CDP_URL = process.env.CDP_URL ?? 'http://localhost:9222'
 const sql = postgres(process.env.DATABASE_URL!, { ssl: 'require' })
 
-// Discovery surfaces to sweep. fortnite.com lazy-loads carousels per section,
-// so visiting several maximises coverage. Add more if you find them.
+// Discovery surfaces to sweep. The homepage hosts the main Creative carousels;
+// /discover and /discover/* are 404 in the current site. Add more URLs here if
+// you find category-specific pages with extra islands.
 const SURFACES = [
-  'https://www.fortnite.com/discover',
-  'https://www.fortnite.com/discover/popular',
-  'https://www.fortnite.com/discover/new',
-  'https://www.fortnite.com/discover/recommended',
+  'https://www.fortnite.com/',
 ]
 
 type Island = {
@@ -94,31 +92,47 @@ async function autoScroll(page: Page): Promise<void> {
 }
 
 // Pulls everything resembling an island anchor from the rendered DOM.
+// Matches both anchor styles fortnite.com renders:
+//   /creative/island-codes/{code}      ← community island cards
+//   /@{creator}/{code}                  ← already-resolved canonical URL
 async function extractIslands(page: Page, source: string): Promise<Island[]> {
   const raw = await page.evaluate(() => {
-    const ISLAND_RE = /\/@([^/?#]+)\/(\d{4}-\d{4}-\d{4})/
-    const out: { code: string; creator: string; href: string; thumbnailUrl: string | null; title: string | null }[] = []
+    const CODE_RE    = /\/creative\/island-codes\/(\d{4}-\d{4}-\d{4})/
+    const AT_CODE_RE = /\/@([^/?#]+)\/(\d{4}-\d{4}-\d{4})/
+
+    const out: { code: string; creator: string | null; href: string; thumbnailUrl: string | null; title: string | null }[] = []
     const seen = new Set<string>()
 
     for (const a of Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href]'))) {
-      const m = a.href.match(ISLAND_RE)
-      if (!m) continue
-      const [, creator, code] = m
+      let code: string | null = null
+      let creator: string | null = null
+
+      const m1 = a.href.match(AT_CODE_RE)
+      if (m1) { creator = m1[1]; code = m1[2] }
+      else {
+        const m2 = a.href.match(CODE_RE)
+        if (m2) code = m2[1]
+      }
+      if (!code) continue
       if (seen.has(code)) continue
       seen.add(code)
 
-      // Walk up to find the card root, then grab thumbnail + title from it.
-      let scope: Element = a
-      for (let i = 0; i < 4 && scope.parentElement; i++) {
-        if (scope.querySelector('img')) break
-        scope = scope.parentElement
-      }
+      // Title sits inside the anchor itself: <a>…<span>Title</span></a>
+      const title = (a.textContent ?? '').trim() || a.getAttribute('aria-label')?.trim() || null
 
-      const img = scope.querySelector<HTMLImageElement>('img')
+      // Walk up to the island-card root for thumbnail discovery.
+      let scope: Element = a
+      while (scope.parentElement && !(scope as HTMLElement).getAttribute?.('data-testid')) {
+        scope = scope.parentElement
+        if (scope === document.body) break
+      }
+      const card = (scope as HTMLElement).getAttribute('data-testid') === 'island-card'
+        ? scope : a.closest('[data-testid="island-card"]') ?? a.parentElement ?? a
+
+      const img = card.querySelector<HTMLImageElement>('img')
       let thumb: string | null = null
       if (img) {
         thumb = img.currentSrc || img.src || img.getAttribute('data-src') || null
-        // Prefer srcset highest-resolution if available
         const srcset = img.getAttribute('srcset')
         if (srcset) {
           const parts = srcset.split(',').map(s => s.trim().split(/\s+/))
@@ -126,9 +140,6 @@ async function extractIslands(page: Page, source: string): Promise<Island[]> {
           if (parts[0]?.[0]?.startsWith('http')) thumb = parts[0][0]
         }
       }
-
-      const titleEl = scope.querySelector('h1,h2,h3,h4,[class*="title" i],[class*="name" i]')
-      const title = titleEl?.textContent?.trim() || a.getAttribute('aria-label')?.trim() || null
 
       out.push({ code, creator, href: a.href, thumbnailUrl: thumb, title })
     }
@@ -152,6 +163,10 @@ async function main() {
 
   const page = await ctx.newPage()
   page.setDefaultNavigationTimeout(45_000)
+  // tsx/esbuild injects __name() calls when serializing closures to the browser
+  // (for class/function name preservation). Stub it in the page context so the
+  // injected helper resolves to a no-op.
+  await page.addInitScript(() => { (globalThis as { __name?: <T>(fn: T) => T }).__name = (fn) => fn })
 
   const found = new Map<string, Island>()
 
@@ -197,28 +212,37 @@ async function main() {
   }
 
   // Existing rows keyed by place_id
-  const existing = await sql<{ id: number; place_id: string; thumbnail_url: string | null; creator_name: string | null }[]>`
-    SELECT id, place_id, thumbnail_url, creator_name
+  const existing = await sql<{ id: number; place_id: string; title: string; thumbnail_url: string | null; creator_name: string | null }[]>`
+    SELECT id, place_id, title, thumbnail_url, creator_name
     FROM platform_experiences
     WHERE platform_id = ${platform.id} AND place_id IS NOT NULL
   `
   const byCode = new Map(existing.map(r => [r.place_id, r]))
 
-  let inserted = 0, updatedThumb = 0, updatedCreator = 0, skipped = 0
+  let inserted = 0, updatedThumb = 0, updatedCreator = 0, updatedTitle = 0, skipped = 0
 
   for (const i of found.values()) {
     const row = byCode.get(i.code)
     if (row) {
-      const updates: { thumbnailUrl?: string; creatorName?: string; title?: string } = {}
+      let touched = false
       if (i.thumbnailUrl && (!row.thumbnail_url || row.thumbnail_url.includes('fortnitemaps.com'))) {
         await sql`UPDATE platform_experiences SET thumbnail_url = ${i.thumbnailUrl}, updated_at = NOW() WHERE id = ${row.id}`
         updatedThumb++
+        touched = true
       }
       if (i.creator && !row.creator_name) {
         await sql`UPDATE platform_experiences SET creator_name = ${i.creator}, updated_at = NOW() WHERE id = ${row.id}`
         updatedCreator++
+        touched = true
       }
-      if (!Object.keys(updates).length) skipped++
+      // Overwrite placeholder titles (`Fortnite Creative {code}`) once we have a real one.
+      const placeholderTitle = `Fortnite Creative ${i.code}`
+      if (i.title && row.title === placeholderTitle && i.title !== placeholderTitle) {
+        await sql`UPDATE platform_experiences SET title = ${i.title}, updated_at = NOW() WHERE id = ${row.id}`
+        updatedTitle++
+        touched = true
+      }
+      if (!touched) skipped++
     } else {
       // Insert with a slug derived from title (fall back to creator-code)
       let slug = slugify(i.title ?? `${i.creator ?? 'fortnite'}-${i.code}`)
@@ -244,6 +268,7 @@ async function main() {
   console.log(`\n── DB writes ───────────────────────────────`)
   console.log(`  new islands inserted: ${inserted}`)
   console.log(`  thumbnails updated:   ${updatedThumb}`)
+  console.log(`  titles updated:       ${updatedTitle}`)
   console.log(`  creators backfilled:  ${updatedCreator}`)
   console.log(`  unchanged:            ${skipped}`)
 

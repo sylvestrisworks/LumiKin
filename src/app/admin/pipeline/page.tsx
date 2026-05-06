@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
+import { deleteGame } from './actions'
 import { db } from '@/lib/db'
 import { cronRuns, games, gameScores, gameTranslations, platformExperiences, experienceScores } from '@/lib/db/schema'
 import { desc, eq, isNull, isNotNull, sql, and, lte } from 'drizzle-orm'
@@ -64,7 +65,12 @@ const STALENESS_BADGE = {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default async function PipelinePage() {
+export default async function PipelinePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ deleted?: string; error?: string }>
+}) {
+  const { deleted, error } = await searchParams
   const session = await auth()
   if (!session?.user) redirect('/login')
 
@@ -166,6 +172,13 @@ export default async function PipelinePage() {
           </div>
         </section>
 
+        {/* Status banner */}
+        {(deleted || error) && (
+          <div className={`rounded-lg px-4 py-2 text-sm ${deleted ? 'bg-green-900/40 text-green-300 border border-green-800' : 'bg-red-900/40 text-red-300 border border-red-800'}`}>
+            {deleted ? `Deleted: ${deleted}` : `Error: ${error}`}
+          </div>
+        )}
+
         {/* Jobs */}
         <section>
           <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">Jobs</h2>
@@ -223,6 +236,25 @@ export default async function PipelinePage() {
               </tbody>
             </table>
           </div>
+        </section>
+
+        {/* Manage */}
+        <section>
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">Manage</h2>
+          <form action={deleteGame} className="flex gap-2 items-center">
+            <input
+              name="slug"
+              placeholder="game-slug"
+              required
+              className="bg-gray-900 border border-gray-700 rounded px-3 py-1.5 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:border-red-600 w-64"
+            />
+            <button
+              type="submit"
+              className="px-3 py-1.5 text-sm bg-red-900/50 hover:bg-red-800/70 border border-red-700 text-red-300 rounded transition-colors"
+            >
+              Delete game
+            </button>
+          </form>
         </section>
 
       </div>

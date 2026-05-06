@@ -118,7 +118,10 @@ export async function GET(req: NextRequest) {
       }
 
       const candidates = listResponse.results.filter(c =>
-        c.esrb_rating?.slug !== 'adults-only' && !existingRawgIds.has(c.id)
+        c.esrb_rating?.slug !== 'adults-only'
+        && !existingRawgIds.has(c.id)
+        && (c.platforms?.length ?? 0) > 0
+        && (c.genres?.length ?? 0) > 0
       )
 
       skipped.push(...listResponse.results

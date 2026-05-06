@@ -15,6 +15,7 @@ import { db } from '@/lib/db'
 import { epicConnections, epicLibrary, games, userGames } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { logCronRun } from '@/lib/cron-logger'
+import { decryptToken, encryptToken } from '@/lib/token-crypto'
 
 export const maxDuration = 300
 
@@ -35,7 +36,18 @@ type CatalogItem = {
 }
 
 async function refreshToken(conn: typeof epicConnections.$inferSelect): Promise<string | null> {
-  if (conn.expiresAt > new Date(Date.now() + 60_000)) return conn.accessToken
+  // Stored tokens are encrypted (legacy plaintext rows decrypt to themselves).
+  let plainAccess: string
+  let plainRefresh: string
+  try {
+    plainAccess  = decryptToken(conn.accessToken)
+    plainRefresh = decryptToken(conn.refreshToken)
+  } catch (err) {
+    console.error('[sync-epic-library] Failed to decrypt tokens for connection', conn.id, err)
+    return null
+  }
+
+  if (conn.expiresAt > new Date(Date.now() + 60_000)) return plainAccess
 
   const clientId     = process.env.EPIC_CLIENT_ID!
   const clientSecret = process.env.EPIC_CLIENT_SECRET!
@@ -45,14 +57,14 @@ async function refreshToken(conn: typeof epicConnections.$inferSelect): Promise<
     const res = await fetch(TOKEN_URL, {
       method: 'POST',
       headers: { Authorization: `Basic ${creds}`, 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: conn.refreshToken }),
+      body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: plainRefresh }),
     })
     if (!res.ok) return null
 
     const data = await res.json() as { access_token: string; refresh_token: string; expires_in: number }
     await db.update(epicConnections).set({
-      accessToken:  data.access_token,
-      refreshToken: data.refresh_token,
+      accessToken:  encryptToken(data.access_token),
+      refreshToken: encryptToken(data.refresh_token),
       expiresAt:    new Date(Date.now() + data.expires_in * 1000),
     }).where(eq(epicConnections.id, conn.id))
 

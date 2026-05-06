@@ -7,6 +7,7 @@ import {
   parseRedirectUrl, exchangeCode, getAccessToken,
   getNaId, getDevices,
 } from '@/lib/nintendo/api'
+import { encryptToken } from '@/lib/token-crypto'
 
 export async function POST(req: NextRequest) {
   const session = await auth()
@@ -36,12 +37,15 @@ export async function POST(req: NextRequest) {
       nickname = devices[0]?.label ?? null
     } catch { /* nickname is optional */ }
 
+    // Encrypt the long-lived Nintendo session token before storing
+    const encSessionToken = encryptToken(sessionToken)
+
     // Upsert connection — replace if same user reconnects
     await db.insert(nintendoConnections).values({
-      userId: session.user.id, naId, nickname, imageUrl, sessionToken,
+      userId: session.user.id, naId, nickname, imageUrl, sessionToken: encSessionToken,
     }).onConflictDoUpdate({
       target: nintendoConnections.userId,
-      set:    { naId, nickname, imageUrl, sessionToken, lastSyncedAt: null },
+      set:    { naId, nickname, imageUrl, sessionToken: encSessionToken, lastSyncedAt: null },
     })
 
     console.log(`[nintendo/connect] User ${session.user.id} connected naId ${naId}`)

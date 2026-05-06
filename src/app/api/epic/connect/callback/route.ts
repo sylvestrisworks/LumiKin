@@ -3,6 +3,7 @@ import { auth } from '@/auth'
 import { db } from '@/lib/db'
 import { epicConnections } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import { encryptToken } from '@/lib/token-crypto'
 
 const TOKEN_URL = 'https://account-public-service-prod.ol.epicgames.com/account/api/oauth/token'
 const ACCOUNT_URL = 'https://account-public-service-prod.ol.epicgames.com/account/api/public/account'
@@ -68,6 +69,11 @@ export async function GET(req: NextRequest) {
 
     const expiresAt = new Date(Date.now() + tokens.expires_in * 1000)
 
+    // Encrypt OAuth tokens before persisting — they are long-lived bearer
+    // credentials and must not sit in the DB as plaintext.
+    const encAccessToken  = encryptToken(tokens.access_token)
+    const encRefreshToken = encryptToken(tokens.refresh_token)
+
     // Upsert connection
     await db
       .insert(epicConnections)
@@ -75,8 +81,8 @@ export async function GET(req: NextRequest) {
         userId:        session.user.id,
         epicAccountId: tokens.account_id,
         displayName:   profile.displayName ?? null,
-        accessToken:   tokens.access_token,
-        refreshToken:  tokens.refresh_token,
+        accessToken:   encAccessToken,
+        refreshToken:  encRefreshToken,
         expiresAt,
       })
       .onConflictDoUpdate({
@@ -84,8 +90,8 @@ export async function GET(req: NextRequest) {
         set: {
           epicAccountId: tokens.account_id,
           displayName:   profile.displayName ?? null,
-          accessToken:   tokens.access_token,
-          refreshToken:  tokens.refresh_token,
+          accessToken:   encAccessToken,
+          refreshToken:  encRefreshToken,
           expiresAt,
         },
       })

@@ -364,7 +364,9 @@ async function TraditionalPlatformPage({
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        // Escape script-context-breaking sequences. Game titles in itemListElement
+        // come from third-party APIs and could in principle contain "</script>".
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
       />
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
 

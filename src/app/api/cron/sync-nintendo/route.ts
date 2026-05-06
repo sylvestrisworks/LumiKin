@@ -20,6 +20,7 @@ import {
   getAccessToken, getNaId, getDevices,
   getDailySummaries, aggregatePlayTime,
 } from '@/lib/nintendo/api'
+import { decryptToken } from '@/lib/token-crypto'
 
 export const maxDuration = 60
 
@@ -47,7 +48,17 @@ export async function GET(req: NextRequest) {
     try {
       await sleep(200)
 
-      const { accessToken, idToken } = await getAccessToken(conn.sessionToken)
+      // Decrypt stored session token (legacy plaintext rows decrypt to themselves)
+      let plainSessionToken: string
+      try {
+        plainSessionToken = decryptToken(conn.sessionToken)
+      } catch (decryptErr) {
+        console.error(`[sync-nintendo] Failed to decrypt session token for naId ${conn.naId}:`, decryptErr)
+        errors.push({ naId: conn.naId, message: 'Token decrypt failed' })
+        continue
+      }
+
+      const { accessToken, idToken } = await getAccessToken(plainSessionToken)
       const freshNaId = getNaId(accessToken)
       // Capture JWT header+payload to diagnose token type issues
       try {

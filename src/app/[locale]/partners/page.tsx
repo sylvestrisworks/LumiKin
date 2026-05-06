@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
-import { fetchSiteStats } from '@/lib/stats'
+import { fetchSiteStats, fetchRecentScores } from '@/lib/stats'
 import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import CoverageStrip from './_components/CoverageStrip'
 import ContactForm from './_components/ContactForm'
 import ApiSampleBlock from './_components/ApiSampleBlock'
+import RecentlyScored from './_components/RecentlyScored'
 import PlausibleGoal from '@/components/PlausibleGoal'
 
 export const revalidate = 3600
@@ -90,7 +91,7 @@ const WHO_CARDS = [
 
 export default async function PartnersPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
-  const stats = await fetchSiteStats()
+  const [stats, recentScores] = await Promise.all([fetchSiteStats(), fetchRecentScores()])
 
   return (
     <div className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
@@ -135,6 +136,9 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
 
       {/* ── Live coverage strip ───────────────────────────────────────────────── */}
       <CoverageStrip stats={stats} />
+
+      {/* ── Recently scored ──────────────────────────────────────────────────── */}
+      <RecentlyScored scores={recentScores.recent_scores} locale={locale} />
 
       {/* ── Who this is for ───────────────────────────────────────────────────── */}
       <section className="max-w-5xl mx-auto px-6 py-20">

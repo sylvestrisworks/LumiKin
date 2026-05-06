@@ -2,10 +2,9 @@ export const revalidate = 300
 
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { fetchSiteStats, fetchRecentScores } from '@/lib/stats'
+import { fetchSiteStats } from '@/lib/stats'
 import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import CoverageStrip from './partners/_components/CoverageStrip'
-import RecentlyScored from './_components/RecentlyScored'
 
 // Old homepage catalog params — redirect to /browse
 const CATALOG_PARAMS = ['age', 'platform', 'platforms', 'sort', 'genres', 'benefits', 'risk']
@@ -51,7 +50,7 @@ export default async function HomePage({ params, searchParams }: Props) {
     redirect(`/${locale}/browse?${qs.toString()}`)
   }
 
-  const [stats, recentScores] = await Promise.all([fetchSiteStats(), fetchRecentScores()])
+  const stats = await fetchSiteStats()
 
   return (
     <div className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
@@ -72,9 +71,6 @@ export default async function HomePage({ params, searchParams }: Props) {
 
       {/* ── Live stats strip ─────────────────────────────────────────────────── */}
       <CoverageStrip stats={stats} />
-
-      {/* ── Recently scored ──────────────────────────────────────────────────── */}
-      <RecentlyScored scores={recentScores.recent_scores} locale={locale} />
 
       {/* ── Three paths ──────────────────────────────────────────────────────── */}
       <section className="border-t border-zinc-200 dark:border-zinc-800">

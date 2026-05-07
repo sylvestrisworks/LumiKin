@@ -24,11 +24,9 @@ export const maxDuration = 300
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const MAX_PER_RUN = 10
-const DELAY_MS    = 200
+const MAX_PER_RUN = 40
+const CONCURRENCY = 4
 const BUDGET_MS   = 240_000
-
-const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 
 // ─── Tool schema ──────────────────────────────────────────────────────────────
 
@@ -401,29 +399,33 @@ export async function GET(req: NextRequest) {
     const errors:    string[] = []
     const startedAt = Date.now()
 
-    for (const { exp, platformSlug } of pending) {
+    const evaluateOne = async (exp: ExperienceRow, platformSlug: string): Promise<string> => {
+      console.log(`[review-experiences] Evaluating: ${exp.title} [${platformSlug}]`)
+      const result    = await callGemini(buildPrompt(exp, platformSlug))
+      const curascore = await saveScore(exp, result)
+      if (exp.needsRescore) {
+        await db.update(platformExperiences).set({ needsRescore: false }).where(eq(platformExperiences.id, exp.id))
+      }
+      console.log(`[review-experiences] ${exp.title} → curascore ${curascore}${exp.needsRescore ? ' (rescore)' : ''}`)
+      return exp.slug
+    }
+
+    for (let i = 0; i < pending.length; i += CONCURRENCY) {
       if (Date.now() - startedAt > BUDGET_MS) {
         console.log('[review-experiences] Budget reached — stopping early')
         break
       }
-      await sleep(DELAY_MS)
-
-      try {
-        console.log(`[review-experiences] Evaluating: ${exp.title} [${platformSlug}]`)
-        const result    = await callGemini(buildPrompt(exp, platformSlug))
-        const curascore = await saveScore(exp, result)
-
-        // Clear rescore flag if it was set
-        if (exp.needsRescore) {
-          await db.update(platformExperiences).set({ needsRescore: false }).where(eq(platformExperiences.id, exp.id))
+      const chunk = pending.slice(i, i + CONCURRENCY)
+      const results = await Promise.allSettled(chunk.map(({ exp, platformSlug }) => evaluateOne(exp, platformSlug)))
+      results.forEach((r, j) => {
+        const slug = chunk[j].exp.slug
+        if (r.status === 'fulfilled') {
+          evaluated.push(r.value)
+        } else {
+          console.error(`[review-experiences] Failed ${slug}:`, r.reason)
+          errors.push(slug)
         }
-
-        evaluated.push(exp.slug)
-        console.log(`[review-experiences] ${exp.title} → curascore ${curascore}${exp.needsRescore ? ' (rescore)' : ''}`)
-      } catch (err) {
-        console.error(`[review-experiences] Failed ${exp.slug}:`, err)
-        errors.push(exp.slug)
-      }
+      })
     }
 
     await logCronRun('review-experiences', runStartedAt, {

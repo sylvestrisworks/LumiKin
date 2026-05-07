@@ -68,7 +68,7 @@ export async function GET(
     console.error('[og/game] DB error:', err)
     return new ImageResponse(
       (<div style={{ display: 'flex', width: '1200px', height: '630px', background: '#0f172a', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: 'white', fontSize: '48px', fontWeight: 700 }}>LumiKin</div>
+        <div style={{ display: 'flex', color: 'white', fontSize: '48px', fontWeight: 700 }}>LumiKin</div>
       </div>),
       { width: 1200, height: 630 },
     )
@@ -133,7 +133,7 @@ export async function GET(
             position: 'absolute', inset: 0,
             background: 'linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.7) 100%)',
             display: 'flex',
-          }} />
+          }}></div>
 
           {/* Content */}
           <div style={{
@@ -148,6 +148,7 @@ export async function GET(
             {/* Top: branding */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{
+                display: 'flex',
                 background: '#6366f1',
                 borderRadius: '10px',
                 padding: '6px 14px',
@@ -158,7 +159,7 @@ export async function GET(
               }}>
                 LumiKin
               </div>
-              <div style={{ color: '#94a3b8', fontSize: '16px' }}>for parents</div>
+              <div style={{ display: 'flex', color: '#94a3b8', fontSize: '16px' }}>for parents</div>
             </div>
 
             {/* Middle: title + meta */}
@@ -188,6 +189,7 @@ export async function GET(
                 </div>
               )}
               <div style={{
+                display: 'flex',
                 color: 'white',
                 fontSize: title.length > 30 ? '52px' : '64px',
                 fontWeight: 800,
@@ -204,6 +206,7 @@ export async function GET(
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <div style={{
+                      display: 'flex',
                       fontSize: '88px',
                       fontWeight: 900,
                       color: curascoreColor(curascore),
@@ -211,7 +214,7 @@ export async function GET(
                     }}>
                       {curascore}
                     </div>
-                    <div style={{ color: '#64748b', fontSize: '16px', letterSpacing: '2px', textTransform: 'uppercase' }}>
+                    <div style={{ display: 'flex', color: '#64748b', fontSize: '16px', letterSpacing: '2px', textTransform: 'uppercase' }}>
                       LumiScore
                     </div>
                   </div>
@@ -225,16 +228,16 @@ export async function GET(
                       flexDirection: 'column',
                       alignItems: 'center',
                     }}>
-                      <div style={{ fontSize: '28px', fontWeight: 800, color: timeFg }}>{timeLabel(timeMins)}</div>
-                      <div style={{ fontSize: '13px', color: timeFg, opacity: 0.7, marginTop: '2px' }}>recommended</div>
+                      <div style={{ display: 'flex', fontSize: '28px', fontWeight: 800, color: timeFg }}>{timeLabel(timeMins)}</div>
+                      <div style={{ display: 'flex', fontSize: '13px', color: timeFg, opacity: 0.7, marginTop: '2px' }}>recommended</div>
                     </div>
                   )}
                 </div>
               ) : (
-                <div style={{ color: '#475569', fontSize: '24px' }}>Not yet scored</div>
+                <div style={{ display: 'flex', color: '#475569', fontSize: '24px' }}>Not yet scored</div>
               )}
 
-              <div style={{ color: '#334155', fontSize: '15px' }}>lumikin.org</div>
+              <div style={{ display: 'flex', color: '#334155', fontSize: '15px' }}>lumikin.org</div>
             </div>
           </div>
         </div>
@@ -245,7 +248,7 @@ export async function GET(
     console.error('[og/game] ImageResponse error:', err)
     return new ImageResponse(
       (<div style={{ display: 'flex', width: '1200px', height: '630px', background: '#0f172a', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: 'white', fontSize: '48px', fontWeight: 700 }}>LumiKin</div>
+        <div style={{ display: 'flex', color: 'white', fontSize: '48px', fontWeight: 700 }}>LumiKin</div>
       </div>),
       { width: 1200, height: 630 },
     )

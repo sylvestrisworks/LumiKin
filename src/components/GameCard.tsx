@@ -572,6 +572,7 @@ type Tab = 'benefits' | 'risks' | 'scores'
 
 export default function GameCard({ game, scores, review, darkPatterns, compliance }: GameCardProps) {
   const t      = useTranslations('gameCard')
+  const tDP    = useTranslations('darkPatterns')
   const locale = useLocale()
   const [activeTab, setActiveTab] = useState<Tab>('benefits')
 
@@ -715,7 +716,7 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
               <div className="flex flex-wrap gap-2">
                 {highFlags.map(p => (
                   <span key={p.patternId} className="text-xs font-semibold bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700 px-2.5 py-1 rounded-full">
-                    {t(`dp${p.patternId.slice(2)}Label` as Parameters<typeof t>[0])}
+                    {tDP(`dp${p.patternId.slice(2)}Label` as Parameters<typeof tDP>[0])}
                   </span>
                 ))}
               </div>

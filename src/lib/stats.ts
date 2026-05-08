@@ -162,6 +162,22 @@ export const fetchSiteStats = unstable_cache(
   { revalidate: 3600 },
 )
 
+// Lightweight live counter for hero/marquee surfaces.
+// Cached for 5 min (matches typical page-level ISR) so it reflects newly scored games quickly.
+async function computeGamesScoredCount(): Promise<number> {
+  const r = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(gameScores)
+    .where(isNotNull(gameScores.curascore))
+  return Number(r[0]?.count ?? 0)
+}
+
+export const fetchGamesScoredCount = unstable_cache(
+  computeGamesScoredCount,
+  ['games-scored-count'],
+  { revalidate: 300 },
+)
+
 async function computeRecentScores(): Promise<RecentScores> {
   const [recentRows, recentUgcRows] = await Promise.all([
     db.select({

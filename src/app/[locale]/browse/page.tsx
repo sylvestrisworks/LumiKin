@@ -10,7 +10,7 @@ import { db } from '@/lib/db'
 import { games, gameScores, childProfiles, platformExperiences, experienceScores } from '@/lib/db/schema'
 import BrowseFilters, { ViewToggle, type ActiveFilters } from '@/components/BrowseFilters'
 import GameCompactCard from '@/components/GameCompactCard'
-import BrowseSearch from '@/components/BrowseSearch'
+import SearchBar from '@/components/SearchBar'
 import CarouselRow from '@/components/CarouselRow'
 import RobloxCarouselRow from '@/components/RobloxCarouselRow'
 import FortniteCarouselRow from '@/components/FortniteCarouselRow'
@@ -616,7 +616,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
         {/* ── Search bar — always visible ────────────────────────────────── */}
         <div className="mb-4 sm:mb-6">
           <Suspense>
-            <BrowseSearch initialValue={filters.q ?? ''} />
+            <SearchBar />
           </Suspense>
         </div>
 

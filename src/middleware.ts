@@ -32,9 +32,11 @@ const buckets = new Map<string, { count: number; resetAt: number }>()
 
 function compactIfNeeded(now: number) {
   if (buckets.size <= MAX_BUCKETS) return
-  for (const [ip, b] of buckets) {
+  // forEach instead of for..of — tsconfig has no `target` so TS defaults to ES3
+  // and rejects direct Map iteration. forEach works under any target.
+  buckets.forEach((b, ip) => {
     if (b.resetAt < now) buckets.delete(ip)
-  }
+  })
 }
 
 function allowRequest(ip: string): boolean {

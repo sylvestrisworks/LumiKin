@@ -13,6 +13,9 @@ import {
 const jsonbPassthrough = <T>() => customType<{ data: T; driverData: T }>({
   dataType: () => 'jsonb',
   toDriver: (val: T) => val,
+  // Guard against legacy double-encoded rows (stored as JSONB string instead of array/object).
+  // postgres.js parses true JSONB automatically; this only fires for the string-wrapped legacy data.
+  fromDriver: (val: unknown) => (typeof val === 'string' ? JSON.parse(val) as T : val as T),
 })
 
 // ============================================

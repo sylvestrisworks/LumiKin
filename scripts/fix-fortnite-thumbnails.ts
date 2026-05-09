@@ -76,7 +76,11 @@ async function main() {
     JOIN games g ON g.id = pe.platform_id
     WHERE g.slug = 'fortnite-creative'
       AND pe.place_id IS NOT NULL
-      AND (pe.thumbnail_url IS NULL OR pe.thumbnail_url LIKE '%fortnitemaps.com%')
+      AND (
+        pe.thumbnail_url IS NULL
+        OR pe.thumbnail_url LIKE '%fortnitemaps.com%'
+        OR pe.thumbnail_url LIKE '%epic-games-badge%'
+      )
     ORDER BY pe.id
   `
   console.log(`${rows.length} maps need thumbnails`)

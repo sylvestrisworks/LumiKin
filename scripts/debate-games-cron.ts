@@ -87,10 +87,10 @@ R2 Monetization (0–3 each): ${R2_FIELDS.join(', ')}
 R3 Social risk (0–3 each): ${R3_FIELDS.join(', ')}
 
 CALIBRATION:
-Zelda BotW:  B1=42, B2=18, B3=10 | R1=2,  R2=0,  R3=2  → curascore 82
-Minecraft:   B1=38, B2=16, B3=6  | R1=4,  R2=2,  R3=4  → curascore 75
-Fortnite:    B1=19, B2=10, B3=13 | R1=18, R2=13, R3=11 → curascore 42
-Brawl Stars: B1=14, B2=9,  B3=11 | R1=23, R2=18, R3=12 → curascore 30`
+Zelda BotW:  B1=42, B2=18, B3=10 | R1=2,  R2=0,  R3=2  → LumiScore 82
+Minecraft:   B1=38, B2=16, B3=6  | R1=4,  R2=2,  R3=4  → LumiScore 75
+Fortnite:    B1=19, B2=10, B3=13 | R1=18, R2=13, R3=11 → LumiScore 42
+Brawl Stars: B1=14, B2=9,  B3=11 | R1=23, R2=18, R3=12 → LumiScore 30`
 }
 
 function gameBlock(g: GameRow, currentCurascore: number, metacritic: number): string {
@@ -102,7 +102,7 @@ function gameBlock(g: GameRow, currentCurascore: number, metacritic: number): st
 Genres: ${(g.genres as string[])?.join(', ') || 'Unknown'}
 Platforms: ${(g.platforms as string[])?.join(', ') || 'Unknown'}
 Description: ${g.description ?? 'Not available'}
-Metacritic: ${metacritic}   LumiKin curascore: ${currentCurascore}
+Metacritic: ${metacritic}   LumiKin LumiScore: ${currentCurascore}
 ${gapNote}
 Microtransactions: ${g.hasMicrotransactions ? 'Yes' : 'No'}  Loot boxes: ${g.hasLootBoxes ? 'Yes' : 'No'}  Battle pass: ${g.hasBattlePass ? 'Yes' : 'No'}
 Stranger chat: ${g.hasStrangerChat ? 'Yes' : 'No'}`
@@ -206,7 +206,7 @@ async function runDebate(
     `CRITIC:\n${scoresBlock(r2crit.scores)}\nReasoning: ${r2crit.reasoning}`,
     `=== Final (40% advocate / 60% critic) ===`,
     `${scoresBlock(finalScores)}`,
-    `Curascore: ${curascore}  BDS: ${bds.toFixed(3)}  RIS: ${ris.toFixed(3)}`,
+    `LumiScore: ${curascore}  BDS: ${bds.toFixed(3)}  RIS: ${ris.toFixed(3)}`,
   ].join('\n\n')
 
   if (Math.abs(swing) > MAX_AUTO_SWING) {

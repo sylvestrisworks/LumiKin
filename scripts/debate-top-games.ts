@@ -182,9 +182,9 @@ Risks (0–3 each):
   (3=core mechanic, 2=significant, 1=mild, 0=not present — be strict on 0s for risky items)
 
 ## CALIBRATION ANCHORS
-Minecraft (vanilla): B1=38, B2=16, B3=6 | R1=4, R2=2, R3=4 → Curascore 75, 120 min/day
-Fortnite: B1=19, B2=10, B3=13 | R1=18, R2=13, R3=11 → Curascore 42, 30 min/day
-Brawl Stars: B1=14, B2=9, B3=11 | R1=23, R2=18, R3=12 → Curascore 30, 15 min/day
+Minecraft (vanilla): B1=38, B2=16, B3=6 | R1=4, R2=2, R3=4 → LumiScore 75, 120 min/day
+Fortnite: B1=19, B2=10, B3=13 | R1=18, R2=13, R3=11 → LumiScore 42, 30 min/day
+Brawl Stars: B1=14, B2=9, B3=11 | R1=23, R2=18, R3=12 → LumiScore 30, 15 min/day
 
 ## GAME BEING AUDITED
 
@@ -198,7 +198,7 @@ Base price: ${game.basePrice === 0 ? 'Free-to-play' : game.basePrice != null ? `
 Microtransactions: ${game.hasMicrotransactions ? 'Yes' : 'No'} | Loot boxes: ${game.hasLootBoxes ? 'Yes' : 'No'} | Battle pass: ${game.hasBattlePass ? 'Yes' : 'No'}
 Stranger chat: ${game.hasStrangerChat ? `Yes (${game.chatModeration ?? 'unknown moderation'})` : 'No'}
 
-## EXISTING SCORES TO DEBATE (current Curascore: ${currentScore.curascore}, ${currentScore.timeRecommendationMinutes} min/day)
+## EXISTING SCORES TO DEBATE (current LumiScore: ${currentScore.curascore}, ${currentScore.timeRecommendationMinutes} min/day)
 
 ${b1}
 ${b2}

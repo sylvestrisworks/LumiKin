@@ -1,12 +1,13 @@
 import Link from 'next/link'
 import { eq, and, isNotNull, inArray, sql } from 'drizzle-orm'
+import { getTranslations } from 'next-intl/server'
 import { db } from '@/lib/db'
-import { games, gameScores } from '@/lib/db/schema'
-import { curascoreBg, esrbToAge, ageBadgeColor } from '@/lib/ui'
+import { games, gameScores, reviews } from '@/lib/db/schema'
+import { curascoreBg, curascoreText, esrbToAge, ageBadgeColor } from '@/lib/ui'
 
 const SHORTLIST = [
-  'minecraft',
   'stardew-valley',
+  'minecraft',
   'the-legend-of-zelda-breath-of-the-wild',
   'mario-kart-8-deluxe',
   'roblox',
@@ -25,13 +26,25 @@ type Row = {
   slug: string
   title: string
   developer: string | null
-  genres: unknown
   esrbRating: string | null
   backgroundImage: string | null
+
   curascore: number | null
-  timeRecommendationMinutes: number | null
   bds: number | null
+  ris: number | null
+  cognitiveScore: number | null
+  socialEmotionalScore: number | null
+  motorScore: number | null
+  dopamineRisk: number | null
+  monetizationRisk: number | null
+  socialRisk: number | null
+
+  timeRecommendationMinutes: number | null
+  timeRecommendationReasoning: string | null
+  executiveSummary: string | null
   topBenefits: unknown
+  parentTip: string | null
+  parentTipBenefits: string | null
 }
 
 async function fetchFeatured(): Promise<Row | null> {
@@ -52,121 +65,302 @@ async function fetchFeatured(): Promise<Row | null> {
 
   const rows = await db
     .select({
-      slug:                      games.slug,
-      title:                     games.title,
-      developer:                 games.developer,
-      genres:                    games.genres,
-      esrbRating:                games.esrbRating,
-      backgroundImage:           games.backgroundImage,
-      curascore:                 gameScores.curascore,
-      timeRecommendationMinutes: gameScores.timeRecommendationMinutes,
-      bds:                       gameScores.bds,
-      topBenefits:               gameScores.topBenefits,
+      slug:                        games.slug,
+      title:                       games.title,
+      developer:                   games.developer,
+      esrbRating:                  games.esrbRating,
+      backgroundImage:             games.backgroundImage,
+
+      curascore:                   gameScores.curascore,
+      bds:                         gameScores.bds,
+      ris:                         gameScores.ris,
+      cognitiveScore:              gameScores.cognitiveScore,
+      socialEmotionalScore:        gameScores.socialEmotionalScore,
+      motorScore:                  gameScores.motorScore,
+      dopamineRisk:                gameScores.dopamineRisk,
+      monetizationRisk:            gameScores.monetizationRisk,
+      socialRisk:                  gameScores.socialRisk,
+
+      timeRecommendationMinutes:   gameScores.timeRecommendationMinutes,
+      timeRecommendationReasoning: gameScores.timeRecommendationReasoning,
+      executiveSummary:            gameScores.executiveSummary,
+      topBenefits:                 gameScores.topBenefits,
+
+      parentTip:                   reviews.parentTip,
+      parentTipBenefits:           reviews.parentTipBenefits,
     })
     .from(games)
     .innerJoin(gameScores, eq(gameScores.gameId, games.id))
-    .where(and(inArray(games.slug, SHORTLIST), isNotNull(gameScores.curascore)))
+    .innerJoin(reviews,    eq(reviews.id, gameScores.reviewId))
+    .where(and(
+      inArray(games.slug, SHORTLIST),
+      isNotNull(gameScores.curascore),
+      isNotNull(gameScores.executiveSummary),
+    ))
     .orderBy(ordered)
     .limit(1)
 
   return (rows[0] as Row) ?? null
 }
 
+// ─── Inline bar row ──────────────────────────────────────────────────────────
+
+function MeterRow({
+  label, value, max, tone, title,
+}: {
+  label: string
+  value: number | null
+  max: number
+  tone: 'benefit' | 'risk'
+  title?: string
+}) {
+  const v = value ?? 0
+  const pct = Math.max(0, Math.min(100, (v / max) * 100))
+  const bar =
+    tone === 'benefit'
+      ? 'bg-emerald-500 dark:bg-emerald-400'
+      : 'bg-rose-500 dark:bg-rose-400'
+  return (
+    <div className="space-y-1" title={title}>
+      <div className="flex items-baseline justify-between gap-2 text-xs">
+        <span className="text-slate-600 dark:text-slate-300">{label}</span>
+        <span className="font-semibold tabular-nums text-slate-900 dark:text-slate-100">
+          {v.toFixed(1)}
+          <span className="text-slate-400 dark:text-slate-500 font-normal">/{max}</span>
+        </span>
+      </div>
+      <div
+        role="meter"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(pct)}
+        aria-label={label}
+        className="h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden"
+      >
+        <div className={`h-full ${bar} rounded-full`} style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  )
+}
+
+// ─── Component ───────────────────────────────────────────────────────────────
+
 export default async function FeaturedGame({ locale }: { locale: string }) {
-  const game = await fetchFeatured()
+  const [game, t] = await Promise.all([fetchFeatured(), getTranslations('home')])
   if (!game) return null
 
   const benefits = Array.isArray(game.topBenefits)
     ? (game.topBenefits as Array<{ skill: string }>).slice(0, 3).map(b => b.skill)
     : []
 
+  const bdsPct = game.bds != null ? Math.round(game.bds * 100) : null
+  const risPct = game.ris != null ? Math.round(game.ris * 100) : null
+  const tip = game.parentTipBenefits ?? game.parentTip
+
   return (
     <section className="border-y border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
       <div className="max-w-5xl mx-auto px-6 py-14">
-        <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-6">
-          Here&rsquo;s what a LumiKin rating looks like
+        <div className="flex items-baseline justify-between flex-wrap gap-x-4 gap-y-1 mb-2">
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+            {t('featuredEyebrow')}
+          </p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            {t.rich('featuredToday', {
+              title: game.title,
+              highlight: (chunks) => <span className="font-semibold text-slate-700 dark:text-slate-200">{chunks}</span>,
+            })}
+          </p>
+        </div>
+        <p className="text-slate-600 dark:text-slate-300 max-w-2xl mb-8">
+          {t('featuredIntro')}
         </p>
 
         <Link
           href={`/${locale}/game/${game.slug}`}
-          className="group flex flex-col sm:flex-row gap-6 bg-white dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-md hover:border-slate-400 dark:hover:border-slate-600 transition-all"
+          className="group block rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 overflow-hidden hover:border-slate-400 dark:hover:border-slate-600 hover:shadow-md transition-all"
         >
-          <div className="relative w-full sm:w-64 h-44 sm:h-auto shrink-0 bg-slate-100 dark:bg-slate-900">
-            {game.backgroundImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={game.backgroundImage}
-                alt=""
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <span className="text-2xl font-black text-slate-300 dark:text-slate-700">
-                  {game.title.slice(0, 2).toUpperCase()}
-                </span>
-              </div>
-            )}
-            {game.curascore != null && (
-              <div className={`absolute top-3 right-3 ${curascoreBg(game.curascore)} text-white text-sm font-black px-2.5 py-1 rounded-full`}>
-                {game.curascore}
-              </div>
-            )}
-            {game.esrbRating && (
-              <div className={`absolute bottom-3 left-3 ${ageBadgeColor(game.esrbRating)} text-white text-xs font-black px-2 py-1 rounded-full leading-none`}>
-                {esrbToAge(game.esrbRating)}
-              </div>
-            )}
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-12">
 
-          <div className="flex-1 px-5 sm:pl-0 sm:pr-6 pb-5 sm:py-5 flex flex-col gap-3">
-            <div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 leading-tight group-hover:underline underline-offset-4">
-                {game.title}
-              </h3>
-              {game.developer && (
-                <p className="text-sm text-slate-600 dark:text-slate-300 mt-0.5">{game.developer}</p>
-              )}
+            {/* ① The game ─────────────────────────────────────────────────── */}
+            <div className="md:col-span-4 md:border-r border-b md:border-b-0 border-slate-200 dark:border-slate-800">
+              <div className="relative aspect-[16/9] md:aspect-[4/3] bg-slate-100 dark:bg-slate-900">
+                {game.backgroundImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={game.backgroundImage}
+                    alt=""
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="text-3xl font-black text-slate-300 dark:text-slate-700">
+                      {game.title.slice(0, 2).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                {game.esrbRating && (
+                  <div className={`absolute top-3 left-3 ${ageBadgeColor(game.esrbRating)} text-white text-xs font-black px-2 py-1 rounded-full leading-none`}>
+                    {esrbToAge(game.esrbRating)}
+                  </div>
+                )}
+              </div>
+
+              <div className="p-5">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2">
+                  ① {t('featuredStep1')}
+                </div>
+
+                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 leading-tight">
+                  {game.title}
+                </h3>
+                {game.developer && (
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{game.developer}</p>
+                )}
+
+                {game.curascore != null && (
+                  <div className="mt-4 flex items-center gap-3">
+                    <div className={`${curascoreBg(game.curascore)} text-white text-lg font-black w-12 h-12 rounded-full flex items-center justify-center shrink-0`}>
+                      {game.curascore}
+                    </div>
+                    <div className="leading-tight">
+                      <div className={`text-sm font-bold ${curascoreText(game.curascore)}`}>{t('featuredLumiScore')}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">{t('featuredLumiScoreSub')}</div>
+                    </div>
+                  </div>
+                )}
+
+                {game.executiveSummary && (
+                  <p className="mt-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    {game.executiveSummary}
+                  </p>
+                )}
+              </div>
             </div>
 
-            <dl className="grid grid-cols-3 gap-4 text-sm">
-              <div>
-                <dt className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">LumiScore</dt>
-                <dd className="font-black text-lg text-slate-900 dark:text-slate-100 tabular-nums">
-                  {game.curascore != null ? <>{game.curascore}<span className="text-sm font-bold text-slate-500 dark:text-slate-400">/100</span></> : '—'}
-                </dd>
+            {/* ② What we found ────────────────────────────────────────────── */}
+            <div className="md:col-span-5 p-5 md:border-r border-b md:border-b-0 border-slate-200 dark:border-slate-800">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">
+                ② {t('featuredStep2')}
               </div>
-              <div>
-                <dt
-                  className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400"
-                  title="Recommended daily play time"
-                >
-                  Per day
-                </dt>
-                <dd className="font-black text-lg text-slate-900 dark:text-slate-100 tabular-nums">
-                  {game.timeRecommendationMinutes != null ? <>{game.timeRecommendationMinutes}<span className="text-sm font-bold text-slate-500 dark:text-slate-400"> min</span></> : '—'}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Benefits</dt>
-                <dd className="font-black text-lg text-slate-900 dark:text-slate-100 tabular-nums">
-                  {game.bds != null ? <>{Math.round(game.bds * 100)}<span className="text-sm font-bold text-slate-500 dark:text-slate-400">/100</span></> : '—'}
-                </dd>
-              </div>
-            </dl>
 
-            {benefits.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-1">
-                {benefits.map(b => (
-                  <span key={b} className="text-xs px-2 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                    {b}
-                  </span>
-                ))}
+              {/* Benefits block */}
+              <div className="flex items-baseline justify-between mb-2">
+                <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400">{t('featuredBenefits')}</span>
+                <span className="text-sm font-black tabular-nums text-slate-900 dark:text-slate-100">
+                  {bdsPct != null ? bdsPct : '—'}<span className="text-xs font-bold text-slate-400 dark:text-slate-500">/100</span>
+                </span>
               </div>
-            )}
+              <div className="space-y-2">
+                <MeterRow
+                  label={t('featuredMeterCognitive')}
+                  value={game.cognitiveScore != null ? game.cognitiveScore * 5 : null}
+                  max={5}
+                  tone="benefit"
+                  title={t('featuredMeterCognitiveTitle')}
+                />
+                <MeterRow
+                  label={t('featuredMeterSocial')}
+                  value={game.socialEmotionalScore != null ? game.socialEmotionalScore * 5 : null}
+                  max={5}
+                  tone="benefit"
+                  title={t('featuredMeterSocialTitle')}
+                />
+                <MeterRow
+                  label={t('featuredMeterMotor')}
+                  value={game.motorScore != null ? game.motorScore * 5 : null}
+                  max={5}
+                  tone="benefit"
+                  title={t('featuredMeterMotorTitle')}
+                />
+              </div>
 
-            <span className="text-sm font-semibold text-slate-900 dark:text-slate-100 mt-auto">
-              See the full rating →
-            </span>
+              {benefits.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {benefits.map(b => (
+                    <span
+                      key={b}
+                      className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+                    >
+                      {b}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <div className="my-4 border-t border-slate-200 dark:border-slate-800" />
+
+              {/* Risks block */}
+              <div className="flex items-baseline justify-between mb-2">
+                <span className="text-sm font-bold text-rose-700 dark:text-rose-400">{t('featuredRisks')}</span>
+                <span className="text-sm font-black tabular-nums text-slate-900 dark:text-slate-100">
+                  {risPct != null ? risPct : '—'}<span className="text-xs font-bold text-slate-400 dark:text-slate-500">/100</span>
+                </span>
+              </div>
+              <div className="space-y-2">
+                <MeterRow
+                  label={t('featuredMeterDopamine')}
+                  value={game.dopamineRisk != null ? game.dopamineRisk * 3 : null}
+                  max={3}
+                  tone="risk"
+                  title={t('featuredMeterDopamineTitle')}
+                />
+                <MeterRow
+                  label={t('featuredMeterMonetization')}
+                  value={game.monetizationRisk != null ? game.monetizationRisk * 3 : null}
+                  max={3}
+                  tone="risk"
+                  title={t('featuredMeterMonetizationTitle')}
+                />
+                <MeterRow
+                  label={t('featuredMeterSocialRisk')}
+                  value={game.socialRisk != null ? game.socialRisk * 3 : null}
+                  max={3}
+                  tone="risk"
+                  title={t('featuredMeterSocialRiskTitle')}
+                />
+              </div>
+            </div>
+
+            {/* ③ What we suggest ──────────────────────────────────────────── */}
+            <div className="md:col-span-3 p-5 flex flex-col">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">
+                ③ {t('featuredStep3')}
+              </div>
+
+              <div className="flex items-baseline gap-1">
+                <span className="text-3xl font-black tabular-nums text-slate-900 dark:text-slate-100">
+                  {game.timeRecommendationMinutes ?? '—'}
+                </span>
+                <span className="text-sm font-bold text-slate-500 dark:text-slate-400">{t('featuredMin')}</span>
+              </div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 -mt-0.5">
+                {t('featuredPerDay')}
+              </div>
+
+              {game.timeRecommendationReasoning && (
+                <p className="mt-3 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                  <span className="font-semibold text-slate-700 dark:text-slate-200">{t('featuredWhy')} </span>
+                  {game.timeRecommendationReasoning}
+                </p>
+              )}
+
+              {tip && (
+                <>
+                  <div className="my-4 border-t border-slate-200 dark:border-slate-800" />
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-1">
+                    {t('featuredParentTip')}
+                  </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    {tip}
+                  </p>
+                </>
+              )}
+
+              <span className="mt-auto pt-4 text-sm font-semibold text-slate-900 dark:text-slate-100 group-hover:underline underline-offset-4">
+                {t('featuredCta')}
+              </span>
+            </div>
+
           </div>
         </Link>
       </div>

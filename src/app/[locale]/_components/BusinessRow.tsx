@@ -1,28 +1,21 @@
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 
 type Props = {
   locale: string
 }
 
-const ITEMS = [
-  {
-    audience: 'For partners',
-    body: 'Child-safety ratings API for parental control vendors, ISPs, and platforms.',
-    slug: 'partners',
-  },
-  {
-    audience: 'For journalists',
-    body: 'Coverage stats, methodology, press kit, and contact info.',
-    slug: 'press',
-  },
-]
-
-export default function BusinessRow({ locale }: Props) {
+export default async function BusinessRow({ locale }: Props) {
+  const t = await getTranslations('home')
+  const items = [
+    { audience: t('businessPartnersAudience'), body: t('businessPartnersBody'), slug: 'partners' },
+    { audience: t('businessPressAudience'),    body: t('businessPressBody'),    slug: 'press'    },
+  ]
   return (
     <section className="border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40">
       <div className="max-w-5xl mx-auto px-6 py-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {ITEMS.map(({ audience, body, slug }) => (
+          {items.map(({ audience, body, slug }) => (
             <Link
               key={slug}
               href={`/${locale}/${slug}`}

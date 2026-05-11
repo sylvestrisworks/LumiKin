@@ -1,35 +1,23 @@
 import { Sparkles, Clock, ClipboardCheck, type LucideIcon } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 
-const TILES: { icon: LucideIcon; title: string; body: string }[] = [
-  {
-    icon: Sparkles,
-    title: 'Benefits first, not warnings',
-    body:
-      'We’re a gaming-positive site. Every rating leads with what a game actually builds — problem solving, teamwork, creativity — before any risks.',
-  },
-  {
-    icon: Clock,
-    title: 'A healthy time per session',
-    body:
-      'Each game gets a recommended session length, derived from how the game is built — not a generic screen-time rule.',
-  },
-  {
-    icon: ClipboardCheck,
-    title: 'Evidence, not vibes',
-    body:
-      'Scores come from a public rubric covering 60 sub-dimensions. You can read exactly why a game got the rating it did.',
-  },
-]
+const TILE_ICONS: LucideIcon[] = [Sparkles, Clock, ClipboardCheck]
 
-export default function ParentValueTiles() {
+export default async function ParentValueTiles() {
+  const t = await getTranslations('home')
+  const tiles = [
+    { icon: TILE_ICONS[0], title: t('tile1Title'), body: t('tile1Body') },
+    { icon: TILE_ICONS[1], title: t('tile2Title'), body: t('tile2Body') },
+    { icon: TILE_ICONS[2], title: t('tile3Title'), body: t('tile3Body') },
+  ]
   return (
     <section className="border-t border-slate-200 dark:border-slate-800">
       <div className="max-w-5xl mx-auto px-6 py-16">
         <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-8">
-          What you’ll see
+          {t('tilesHeading')}
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {TILES.map(({ icon: Icon, title, body }) => (
+          {tiles.map(({ icon: Icon, title, body }) => (
             <div key={title} className="rounded-xl border border-slate-200 dark:border-slate-800 p-6">
               <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4">
                 <Icon className="w-5 h-5" aria-hidden />

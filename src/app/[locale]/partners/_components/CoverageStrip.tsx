@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import type { SiteStats } from '@/lib/stats'
 
 type Props = {
@@ -5,23 +6,28 @@ type Props = {
   variant?: 'partner' | 'parent'
 }
 
-export default function CoverageStrip({ stats, variant = 'partner' }: Props) {
+export default async function CoverageStrip({ stats, variant = 'partner' }: Props) {
   const totalTitles = stats.total_games_scored + stats.total_ugc_experiences_scored
   const platformCount = stats.platforms.length
   const languageCount = stats.languages.length
 
-  const items = variant === 'parent'
-    ? [
-        { value: totalTitles.toLocaleString('en'), label: 'Games rated' },
-        { value: stats.scored_last_7_days.toLocaleString('en'), label: 'Rated this week' },
-        { value: platformCount.toLocaleString('en'), label: 'Platforms covered' },
-      ]
-    : [
-        { value: totalTitles.toLocaleString('en'), label: 'Titles scored' },
-        { value: stats.scored_last_7_days.toLocaleString('en'), label: 'Scored last 7 days' },
-        { value: platformCount.toLocaleString('en'), label: 'Platforms covered' },
-        { value: languageCount.toLocaleString('en'), label: 'Languages' },
-      ]
+  let items: { value: string; label: string }[]
+
+  if (variant === 'parent') {
+    const t = await getTranslations('home')
+    items = [
+      { value: totalTitles.toLocaleString('en'),               label: t('coverageGamesRated') },
+      { value: stats.scored_last_7_days.toLocaleString('en'),  label: t('coverageRatedThisWeek') },
+      { value: platformCount.toLocaleString('en'),             label: t('coveragePlatforms') },
+    ]
+  } else {
+    items = [
+      { value: totalTitles.toLocaleString('en'),               label: 'Titles scored' },
+      { value: stats.scored_last_7_days.toLocaleString('en'),  label: 'Scored last 7 days' },
+      { value: platformCount.toLocaleString('en'),             label: 'Platforms covered' },
+      { value: languageCount.toLocaleString('en'),             label: 'Languages' },
+    ]
+  }
 
   const gridCols = items.length === 3 ? 'grid-cols-3 md:grid-cols-3' : 'grid-cols-2 md:grid-cols-4'
 

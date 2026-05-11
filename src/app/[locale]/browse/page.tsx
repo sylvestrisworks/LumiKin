@@ -624,19 +624,24 @@ export default async function BrowsePage({ params, searchParams }: Props) {
         {isShelfMode ? (
           <div className="max-w-6xl mx-auto overflow-x-hidden">
 
-            {/* Heading + pickers */}
+            {/* Pickers + child affordance */}
             <div className="space-y-3 text-center mb-6">
-              <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-                {t('title')}
-              </h1>
+              {!uid && (
+                <Link
+                  href={`/${locale}/account`}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-sm font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors"
+                >
+                  Tell us about your kid for personal recs
+                  <span aria-hidden>→</span>
+                </Link>
+              )}
               <Suspense>
                 <AgePicker current={filters.age} />
               </Suspense>
               <Suspense>
                 <PlatformPicker current={filters.platforms} />
               </Suspense>
-              <p className="text-xs text-slate-400 dark:text-slate-500">
-                {t('byAgePrompt')}{' '}
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 <Link href={`/${locale}/age`} className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium">
                   {t('byAgeLink')}
                 </Link>
@@ -820,21 +825,17 @@ export default async function BrowsePage({ params, searchParams }: Props) {
             ) : (
               /* ── List view ──────────────────────────────────────────────── */
               <ol className="divide-y divide-slate-100 dark:divide-slate-700/50">
-                {rows.map((row, i) => {
+                {rows.map(row => {
                   const score    = row.curascore
                   const badgeCls = score == null
                     ? 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
                     : `${curascoreBg(score)} text-white`
-                  const rank = (currentPage - 1) * PAGE_SIZE + i + 1
                   return (
                     <li key={row.slug}>
                       <Link
                         href={`/${locale}/game/${row.slug}`}
                         className="flex items-center gap-3 sm:gap-4 py-2.5 sm:py-3 px-1 sm:px-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-slate-700/60 hover:translate-x-0.5 transition-all group"
                       >
-                        <span className="w-6 sm:w-7 text-right text-xs sm:text-sm font-semibold text-slate-400 dark:text-slate-500 shrink-0 group-hover:text-indigo-400 dark:group-hover:text-indigo-400 transition-colors">
-                          {rank}
-                        </span>
                         <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden shrink-0 bg-indigo-100 dark:bg-indigo-900/40">
                           {row.backgroundImage ? (
                             // eslint-disable-next-line @next/next/no-img-element

@@ -870,8 +870,8 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                             {row.timeRecommendationMinutes} {tg('minDay')}
                           </span>
                         )}
-                        <span className={`w-9 sm:w-10 text-center text-xs font-black px-1.5 sm:px-2 py-1 rounded-full shrink-0 ${badgeCls}`}>
-                          {score ?? '—'}
+                        <span className={`text-center text-xs font-black px-1.5 sm:px-2 py-1 rounded-full shrink-0 ${badgeCls}`}>
+                          {score != null ? <>{score}<span className="text-[9px] font-bold opacity-70">/100</span></> : '—'}
                         </span>
                       </Link>
                     </li>

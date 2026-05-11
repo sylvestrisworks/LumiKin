@@ -51,25 +51,25 @@ export default function ApiSampleBlock() {
   }
 
   return (
-    <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-      <div className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-4 py-2.5 flex items-center gap-2">
-        <span className="text-xs font-mono font-semibold text-zinc-500 dark:text-zinc-400 flex-1">Request</span>
+    <div className="rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
+      <div className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-4 py-2.5 flex items-center gap-2">
+        <span className="text-xs font-mono font-semibold text-slate-500 dark:text-slate-400 flex-1">Request</span>
         <button
           onClick={handleCopy}
-          className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors px-2 py-0.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700"
+          className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors px-2 py-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700"
           aria-label="Copy request to clipboard"
         >
           {copied ? 'Copied!' : 'Copy'}
         </button>
       </div>
-      <pre className="px-5 py-4 text-sm font-mono text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-950 overflow-x-auto leading-relaxed">
+      <pre className="px-5 py-4 text-sm font-mono text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-950 overflow-x-auto leading-relaxed">
         <code>{SAMPLE_REQUEST}</code>
       </pre>
-      <div className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-4 py-2.5 flex items-center gap-2">
-        <span className="text-xs font-mono font-semibold text-zinc-500 dark:text-zinc-400">Response</span>
-        <span className="text-xs text-zinc-400 dark:text-zinc-600">200 OK</span>
+      <div className="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-4 py-2.5 flex items-center gap-2">
+        <span className="text-xs font-mono font-semibold text-slate-500 dark:text-slate-400">Response</span>
+        <span className="text-xs text-slate-400 dark:text-slate-600">200 OK</span>
       </div>
-      <pre className="px-5 py-4 text-sm font-mono text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-950 overflow-x-auto leading-relaxed">
+      <pre className="px-5 py-4 text-sm font-mono text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-950 overflow-x-auto leading-relaxed">
         <code>{SAMPLE_RESPONSE}</code>
       </pre>
     </div>

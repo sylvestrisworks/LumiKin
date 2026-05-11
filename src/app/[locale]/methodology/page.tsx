@@ -46,35 +46,35 @@ export default async function MethodologyPage({
   const pdfPath = entry.pdfAvailable ? `/lumikin-methodology-v${entry.version}.pdf` : null
 
   return (
-    <div className={`${lora.variable} bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100`}>
+    <div className={`${lora.variable} bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100`}>
       <PlausibleScrollDepth goal="methodology_deep_read" threshold={50} />
       <VersionBanner version={entry} locale={locale} />
 
       <div className="max-w-5xl mx-auto px-6 py-12">
 
         {/* ── Document header (screen) ─────────────────────────────────────── */}
-        <div className="mb-12 pb-8 border-b border-zinc-200 dark:border-zinc-800 print:hidden">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-3">
+        <div className="mb-12 pb-8 border-b border-slate-200 dark:border-slate-800 print:hidden">
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">
             LumiKin · Scoring Methodology
           </p>
-          <h1 className="text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-100">
+          <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-slate-100">
             Methodology
           </h1>
-          <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400">
+          <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
             <span>Version {entry.version}</span>
-            <span className="text-zinc-300 dark:text-zinc-700">·</span>
+            <span className="text-slate-300 dark:text-slate-700">·</span>
             <span>Published {publishedDate}</span>
-            <span className="text-zinc-300 dark:text-zinc-700">·</span>
-            <a href="#changelog" className="underline underline-offset-2 hover:no-underline hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">
+            <span className="text-slate-300 dark:text-slate-700">·</span>
+            <a href="#changelog" className="underline underline-offset-2 hover:no-underline hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
               Changelog
             </a>
             {pdfPath && (
               <>
-                <span className="text-zinc-300 dark:text-zinc-700">·</span>
+                <span className="text-slate-300 dark:text-slate-700">·</span>
                 <a
                   href={pdfPath}
                   download
-                  className="underline underline-offset-2 hover:no-underline hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+                  className="underline underline-offset-2 hover:no-underline hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
                 >
                   Download PDF
                 </a>

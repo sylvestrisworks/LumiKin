@@ -34,7 +34,7 @@ const PALETTE = [
   { name: 'Indigo',      hex: '#4f46e5', textClass: 'text-white', usage: 'Logo mark, primary links, CTAs'    },
   { name: 'Violet',      hex: '#7c3aed', textClass: 'text-white', usage: 'Gradient end, accent highlights'   },
   { name: 'Slate Dark',  hex: '#0f172a', textClass: 'text-white', usage: 'Wordmark, body text on light bg'   },
-  { name: 'White',       hex: '#ffffff', textClass: 'text-zinc-800', usage: 'Page background, light surfaces' },
+  { name: 'White',       hex: '#ffffff', textClass: 'text-slate-800', usage: 'Page background, light surfaces' },
   { name: 'Zinc 950',    hex: '#09090b', textClass: 'text-white', usage: 'Dark-mode background'              },
 ]
 
@@ -101,75 +101,75 @@ export default async function PressPage({ params }: Props) {
   ]
 
   return (
-    <div className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+    <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <PlausibleGoal goal="press_kit_view" />
 
       {/* ── Hero ─────────────────────────────────────────────────────────────── */}
       <section className="max-w-5xl mx-auto px-6 pt-20 pb-16">
-        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-6">
+        <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-6">
           Press Kit
         </p>
         <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight max-w-3xl">
           Everything you need to write about LumiKin.
         </h1>
-        <p className="mt-6 text-lg text-zinc-500 dark:text-zinc-400 max-w-2xl leading-relaxed">
+        <p className="mt-6 text-lg text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
           Brand assets, coverage stats, copy-ready descriptions, and a direct contact. No PR agency, no waiting.
         </p>
       </section>
 
       {/* ── About LumiKin ────────────────────────────────────────────────────── */}
-      <section className="border-t border-zinc-200 dark:border-zinc-800">
+      <section className="border-t border-slate-200 dark:border-slate-800">
         <div className="max-w-5xl mx-auto px-6 py-16">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-8">
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-8">
             About LumiKin
           </p>
-          <blockquote className="text-xl sm:text-2xl font-medium leading-relaxed text-zinc-800 dark:text-zinc-100 max-w-3xl border-l-4 border-indigo-500 pl-6">
+          <blockquote className="text-xl sm:text-2xl font-medium leading-relaxed text-slate-800 dark:text-slate-100 max-w-3xl border-l-4 border-indigo-500 pl-6">
             {ONE_PARAGRAPH}
           </blockquote>
-          <p className="mt-6 text-sm text-zinc-400 dark:text-zinc-500">
+          <p className="mt-6 text-sm text-slate-400 dark:text-slate-500">
             This paragraph may be reproduced in full without attribution.
           </p>
         </div>
       </section>
 
       {/* ── At a glance ──────────────────────────────────────────────────────── */}
-      <section className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
+      <section className="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
         <div className="max-w-5xl mx-auto px-6 py-16">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-10">
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-10">
             At a glance
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-10 gap-x-6 sm:divide-x sm:divide-zinc-200 sm:dark:divide-zinc-700">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-10 gap-x-6 sm:divide-x sm:divide-slate-200 sm:dark:divide-slate-700">
             {AT_A_GLANCE.map(({ label, value }, i) => (
               <div key={label} className={i % 4 !== 0 ? 'sm:pl-8' : ''}>
-                <p className="text-3xl font-black tabular-nums text-zinc-900 dark:text-zinc-100 leading-none">
+                <p className="text-3xl font-black tabular-nums text-slate-900 dark:text-slate-100 leading-none">
                   {value}
                 </p>
-                <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mt-2">
+                <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mt-2">
                   {label}
                 </p>
               </div>
             ))}
           </div>
-          <p className="mt-10 text-xs text-zinc-400 dark:text-zinc-500">
+          <p className="mt-10 text-xs text-slate-400 dark:text-slate-500">
             Coverage stats update hourly. All other values are as of the date of publication.
           </p>
         </div>
       </section>
 
       {/* ── Quotable facts ───────────────────────────────────────────────────── */}
-      <section className="border-t border-zinc-200 dark:border-zinc-800">
+      <section className="border-t border-slate-200 dark:border-slate-800">
         <div className="max-w-5xl mx-auto px-6 py-16">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-10">
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-10">
             Quotable facts
           </p>
           <ol className="space-y-8">
             {QUOTABLE_FACTS.map(({ fact, source, sourceLabel }, i) => (
               <li key={i} className="flex gap-5">
-                <span className="text-2xl font-black text-zinc-200 dark:text-zinc-700 shrink-0 w-6 text-right leading-tight">
+                <span className="text-2xl font-black text-slate-200 dark:text-slate-700 shrink-0 w-6 text-right leading-tight">
                   {i + 1}
                 </span>
                 <div className="min-w-0">
-                  <p className="text-base sm:text-lg font-medium text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                  <p className="text-base sm:text-lg font-medium text-slate-800 dark:text-slate-200 leading-relaxed">
                     {fact}
                   </p>
                   {source && sourceLabel && (
@@ -183,7 +183,7 @@ export default async function PressPage({ params }: Props) {
                     </a>
                   )}
                   {!source && (
-                    <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500 italic">
+                    <p className="mt-1 text-xs text-slate-400 dark:text-slate-500 italic">
                       Source link to be added
                     </p>
                   )}
@@ -195,24 +195,24 @@ export default async function PressPage({ params }: Props) {
       </section>
 
       {/* ── Brand assets ─────────────────────────────────────────────────────── */}
-      <section className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
+      <section className="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
         <div className="max-w-5xl mx-auto px-6 py-16 space-y-16">
 
           {/* Logos */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-8">
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-8">
               Logos
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
 
               {/* Light wordmark */}
-              <div className="rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+              <div className="rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
                 <div className="bg-white flex items-center justify-center px-8 py-10">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/lumikin-logo.svg" alt="LumiKin logo" height={48} style={{ height: 48, width: 'auto' }} />
                 </div>
-                <div className="border-t border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 px-4 py-3 flex items-center justify-between">
-                  <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Wordmark — light</span>
+                <div className="border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 flex items-center justify-between">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Wordmark — light</span>
                   <a
                     href="/lumikin-logo.svg"
                     download
@@ -224,13 +224,13 @@ export default async function PressPage({ params }: Props) {
               </div>
 
               {/* Dark wordmark */}
-              <div className="rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden">
-                <div className="bg-zinc-950 flex items-center justify-center px-8 py-10">
+              <div className="rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div className="bg-slate-950 flex items-center justify-center px-8 py-10">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/lumikin-logo-dark.svg" alt="LumiKin logo (dark)" height={48} style={{ height: 48, width: 'auto' }} />
                 </div>
-                <div className="border-t border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 px-4 py-3 flex items-center justify-between">
-                  <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Wordmark — dark</span>
+                <div className="border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 flex items-center justify-between">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Wordmark — dark</span>
                   <a
                     href="/lumikin-logo-dark.svg"
                     download
@@ -242,13 +242,13 @@ export default async function PressPage({ params }: Props) {
               </div>
 
               {/* Icon */}
-              <div className="rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+              <div className="rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
                 <div className="bg-white flex items-center justify-center px-8 py-10">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/lumikin-icon.svg" alt="LumiKin icon" height={48} style={{ height: 48, width: 'auto' }} />
                 </div>
-                <div className="border-t border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 px-4 py-3 flex items-center justify-between">
-                  <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Spark mark (icon)</span>
+                <div className="border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 flex items-center justify-between">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Spark mark (icon)</span>
                   <a
                     href="/lumikin-icon.svg"
                     download
@@ -260,28 +260,28 @@ export default async function PressPage({ params }: Props) {
               </div>
 
             </div>
-            <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-500">
+            <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
               PNG versions available on request. Do not modify the logo or recolour the spark mark gradient.
             </p>
           </div>
 
           {/* Colour palette */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-8">
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-8">
               Colour palette
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
               {PALETTE.map(({ name, hex, textClass, usage }) => (
-                <div key={hex} className="rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
+                <div key={hex} className="rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
                   <div
                     className="h-20 flex items-end px-3 pb-2"
                     style={{ backgroundColor: hex }}
                   >
                     <span className={`text-xs font-black font-mono ${textClass}`}>{hex}</span>
                   </div>
-                  <div className="px-3 py-2.5 bg-white dark:bg-zinc-950">
-                    <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">{name}</p>
-                    <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5 leading-tight">{usage}</p>
+                  <div className="px-3 py-2.5 bg-white dark:bg-slate-950">
+                    <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">{name}</p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 leading-tight">{usage}</p>
                   </div>
                 </div>
               ))}
@@ -290,28 +290,28 @@ export default async function PressPage({ params }: Props) {
 
           {/* Copy-ready descriptions */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-8">
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-8">
               Copy-ready descriptions
             </p>
             <div className="space-y-6">
               <div>
-                <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-2">One line</p>
-                <div className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-4 py-3">
-                  <p className="text-sm text-zinc-800 dark:text-zinc-200 select-all leading-relaxed">
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">One line</p>
+                <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3">
+                  <p className="text-sm text-slate-800 dark:text-slate-200 select-all leading-relaxed">
                     {ONE_LINE}
                   </p>
                 </div>
               </div>
               <div>
-                <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-2">One paragraph</p>
-                <div className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-4 py-4">
-                  <p className="text-sm text-zinc-800 dark:text-zinc-200 select-all leading-relaxed">
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">One paragraph</p>
+                <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-4">
+                  <p className="text-sm text-slate-800 dark:text-slate-200 select-all leading-relaxed">
                     {ONE_PARAGRAPH}
                   </p>
                 </div>
               </div>
             </div>
-            <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-500">
+            <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
               Click to select. Both descriptions may be reproduced without attribution.
             </p>
           </div>
@@ -320,12 +320,12 @@ export default async function PressPage({ params }: Props) {
       </section>
 
       {/* ── Methodology ───────────────────────────────────────────────────────── */}
-      <section className="border-t border-zinc-200 dark:border-zinc-800">
+      <section className="border-t border-slate-200 dark:border-slate-800">
         <div className="max-w-5xl mx-auto px-6 py-16">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-8">
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-8">
             Methodology
           </p>
-          <p className="text-zinc-600 dark:text-zinc-300 max-w-2xl leading-relaxed mb-8">
+          <p className="text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed mb-8">
             LumiKin scores are produced against the LumiKin rubric, a structured framework covering
             developmental benefits (BDS) and design risks (RIS). Every score carries a methodology version
             identifier. The full rubric is publicly available.
@@ -333,14 +333,14 @@ export default async function PressPage({ params }: Props) {
           <div className="flex flex-wrap gap-4">
             <Link
               href={`/${locale}/methodology`}
-              className="inline-flex items-center rounded-md bg-zinc-900 dark:bg-zinc-100 px-5 py-2.5 text-sm font-semibold text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 transition-colors"
+              className="inline-flex items-center rounded-md bg-slate-900 dark:bg-slate-100 px-5 py-2.5 text-sm font-semibold text-white dark:text-slate-900 hover:bg-slate-700 dark:hover:bg-slate-300 transition-colors"
             >
               Read methodology v{CURRENT_METHODOLOGY_VERSION} →
             </Link>
             <a
               href={`/lumikin-methodology-v${CURRENT_METHODOLOGY_VERSION}.pdf`}
               download
-              className="inline-flex items-center rounded-md border border-zinc-200 dark:border-zinc-700 px-5 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
+              className="inline-flex items-center rounded-md border border-slate-200 dark:border-slate-700 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
             >
               Download PDF ↓
             </a>
@@ -349,24 +349,24 @@ export default async function PressPage({ params }: Props) {
       </section>
 
       {/* ── Feeds ────────────────────────────────────────────────────────────── */}
-      <section className="border-t border-zinc-200 dark:border-zinc-800">
+      <section className="border-t border-slate-200 dark:border-slate-800">
         <div className="max-w-5xl mx-auto px-6 py-16">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-8">
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-8">
             Live feeds
           </p>
-          <p className="text-zinc-600 dark:text-zinc-300 text-sm max-w-lg mb-8 leading-relaxed">
+          <p className="text-slate-600 dark:text-slate-300 text-sm max-w-lg mb-8 leading-relaxed">
             Subscribe to the 50 most recently scored games. Updates within an hour of new scores landing.
           </p>
           <div className="flex flex-wrap gap-4">
             <a
               href="/feed.xml"
-              className="inline-flex items-center gap-2 rounded-md border border-zinc-200 dark:border-zinc-700 px-5 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
+              className="inline-flex items-center gap-2 rounded-md border border-slate-200 dark:border-slate-700 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
             >
               RSS feed ↗
             </a>
             <a
               href="/feed.json"
-              className="inline-flex items-center gap-2 rounded-md border border-zinc-200 dark:border-zinc-700 px-5 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
+              className="inline-flex items-center gap-2 rounded-md border border-slate-200 dark:border-slate-700 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
             >
               JSON Feed ↗
             </a>
@@ -375,18 +375,18 @@ export default async function PressPage({ params }: Props) {
       </section>
 
       {/* ── Press contact ────────────────────────────────────────────────────── */}
-      <section className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
+      <section className="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
         <div className="max-w-5xl mx-auto px-6 py-16">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-8">
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-8">
             Press contact
           </p>
           <div className="max-w-sm space-y-4">
             <div>
-              <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-1">Name</p>
-              <p className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{FOUNDER_NAME}, Founder</p>
+              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Name</p>
+              <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">{FOUNDER_NAME}, Founder</p>
             </div>
             <div>
-              <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-1">Email</p>
+              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Email</p>
               <a
                 href={`mailto:${PRESS_EMAIL}`}
                 className="text-lg font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
@@ -395,12 +395,12 @@ export default async function PressPage({ params }: Props) {
               </a>
             </div>
             <div>
-              <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-1">Response time</p>
-              <p className="text-base text-zinc-700 dark:text-zinc-300">{RESPONSE_TIME}</p>
+              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Response time</p>
+              <p className="text-base text-slate-700 dark:text-slate-300">{RESPONSE_TIME}</p>
             </div>
             <div>
-              <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-1">What to include</p>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">What to include</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
                 Publication name, story angle, and deadline. We prioritise requests with a specific publish date.
               </p>
             </div>

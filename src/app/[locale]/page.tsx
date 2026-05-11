@@ -36,14 +36,14 @@ export default async function HomePage({ params, searchParams }: Props) {
   ])
 
   return (
-    <div className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+    <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
 
       {/* ── Hero (parent-first) ──────────────────────────────────────────────── */}
       <section className="max-w-5xl mx-auto px-6 pt-20 pb-14">
         <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight max-w-3xl">
           Know what your kid is actually playing.
         </h1>
-        <p className="mt-6 text-lg text-zinc-600 dark:text-zinc-300 max-w-2xl leading-relaxed">
+        <p className="mt-6 text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
           Search {gamesScored.toLocaleString('en')} games. See the benefits, the risks,
           and a healthy time per session. Free for parents.
         </p>
@@ -70,9 +70,9 @@ export default async function HomePage({ params, searchParams }: Props) {
       <FeaturedGame locale={locale} />
 
       {/* ── Or browse by (demoted secondary entries) ─────────────────────────── */}
-      <section className="border-t border-zinc-200 dark:border-zinc-800">
+      <section className="border-t border-slate-200 dark:border-slate-800">
         <div className="max-w-5xl mx-auto px-6 py-8 flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span className="text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mr-1">
+          <span className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mr-1">
             Or browse by
           </span>
           {[
@@ -83,7 +83,7 @@ export default async function HomePage({ params, searchParams }: Props) {
             <Link
               key={href}
               href={href}
-              className="text-sm px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 hover:border-indigo-300 dark:hover:border-indigo-700 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+              className="text-sm px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:border-indigo-300 dark:hover:border-indigo-700 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
             >
               {label}
             </Link>
@@ -98,23 +98,23 @@ export default async function HomePage({ params, searchParams }: Props) {
       <CoverageStrip stats={stats} variant="parent" />
 
       {/* ── Methodology (compressed) ─────────────────────────────────────────── */}
-      <section className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+      <section className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
         <div className="max-w-5xl mx-auto px-6 py-14">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-6">
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-6">
             How scores work
           </p>
-          <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed max-w-2xl">
+          <p className="text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
             Every game is scored on developmental benefits and design risks across 60 sub-dimensions
             from a public rubric. The two scores combine into a recommended session length —
             from 15 minutes to two hours — that reflects how the game is built, not a generic limit.
           </p>
 
           <details className="mt-5 max-w-2xl group">
-            <summary className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 cursor-pointer list-none flex items-center gap-2">
+            <summary className="text-sm font-semibold text-slate-900 dark:text-slate-100 cursor-pointer list-none flex items-center gap-2">
               <span className="group-open:rotate-90 transition-transform inline-block">›</span>
               The full breakdown
             </summary>
-            <div className="mt-4 space-y-4 text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
+            <div className="mt-4 space-y-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
               <p>
                 Benefits cover ten cognitive dimensions (problem solving, spatial awareness,
                 strategic thinking, creativity, and more), six social-emotional dimensions
@@ -133,14 +133,14 @@ export default async function HomePage({ params, searchParams }: Props) {
           <div className="mt-8 flex flex-wrap gap-6">
             <Link
               href={`/${locale}/methodology`}
-              className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 underline underline-offset-4 hover:no-underline"
+              className="text-sm font-semibold text-slate-900 dark:text-slate-100 underline underline-offset-4 hover:no-underline"
             >
               Read the full methodology →
             </Link>
             <a
               href={`/lumikin-methodology-v${CURRENT_METHODOLOGY_VERSION}.pdf`}
               download
-              className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 underline underline-offset-4 hover:no-underline"
+              className="text-sm font-semibold text-slate-900 dark:text-slate-100 underline underline-offset-4 hover:no-underline"
             >
               Download PDF →
             </a>

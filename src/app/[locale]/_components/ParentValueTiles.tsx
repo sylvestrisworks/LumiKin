@@ -23,19 +23,19 @@ const TILES: { icon: LucideIcon; title: string; body: string }[] = [
 
 export default function ParentValueTiles() {
   return (
-    <section className="border-t border-zinc-200 dark:border-zinc-800">
+    <section className="border-t border-slate-200 dark:border-slate-800">
       <div className="max-w-5xl mx-auto px-6 py-16">
-        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-8">
+        <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-8">
           What you’ll see
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {TILES.map(({ icon: Icon, title, body }) => (
-            <div key={title} className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-6">
+            <div key={title} className="rounded-xl border border-slate-200 dark:border-slate-800 p-6">
               <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4">
                 <Icon className="w-5 h-5" aria-hidden />
               </div>
-              <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-2">{title}</h3>
-              <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">{body}</p>
+              <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">{title}</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{body}</p>
             </div>
           ))}
         </div>

@@ -81,17 +81,17 @@ export default async function FeaturedGame({ locale }: { locale: string }) {
     : []
 
   return (
-    <section className="border-y border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
+    <section className="border-y border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
       <div className="max-w-5xl mx-auto px-6 py-14">
-        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-6">
+        <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-6">
           Here&rsquo;s what a LumiKin rating looks like
         </p>
 
         <Link
           href={`/${locale}/game/${game.slug}`}
-          className="group flex flex-col sm:flex-row gap-6 bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:shadow-md hover:border-zinc-400 dark:hover:border-zinc-600 transition-all"
+          className="group flex flex-col sm:flex-row gap-6 bg-white dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-md hover:border-slate-400 dark:hover:border-slate-600 transition-all"
         >
-          <div className="relative w-full sm:w-64 h-44 sm:h-auto shrink-0 bg-zinc-100 dark:bg-zinc-900">
+          <div className="relative w-full sm:w-64 h-44 sm:h-auto shrink-0 bg-slate-100 dark:bg-slate-900">
             {game.backgroundImage ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -101,7 +101,7 @@ export default async function FeaturedGame({ locale }: { locale: string }) {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <span className="text-2xl font-black text-zinc-300 dark:text-zinc-700">
+                <span className="text-2xl font-black text-slate-300 dark:text-slate-700">
                   {game.title.slice(0, 2).toUpperCase()}
                 </span>
               </div>
@@ -120,36 +120,36 @@ export default async function FeaturedGame({ locale }: { locale: string }) {
 
           <div className="flex-1 px-5 sm:pl-0 sm:pr-6 pb-5 sm:py-5 flex flex-col gap-3">
             <div>
-              <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 leading-tight group-hover:underline underline-offset-4">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 leading-tight group-hover:underline underline-offset-4">
                 {game.title}
               </h3>
               {game.developer && (
-                <p className="text-sm text-zinc-600 dark:text-zinc-300 mt-0.5">{game.developer}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-300 mt-0.5">{game.developer}</p>
               )}
             </div>
 
             <dl className="grid grid-cols-3 gap-4 text-sm">
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">LumiScore</dt>
-                <dd className="font-black text-lg text-zinc-900 dark:text-zinc-100 tabular-nums">
-                  {game.curascore != null ? <>{game.curascore}<span className="text-sm font-bold text-zinc-500 dark:text-zinc-400">/100</span></> : '—'}
+                <dt className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">LumiScore</dt>
+                <dd className="font-black text-lg text-slate-900 dark:text-slate-100 tabular-nums">
+                  {game.curascore != null ? <>{game.curascore}<span className="text-sm font-bold text-slate-500 dark:text-slate-400">/100</span></> : '—'}
                 </dd>
               </div>
               <div>
                 <dt
-                  className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
-                  title="Recommended length per session — not a daily limit"
+                  className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+                  title="Recommended daily play time"
                 >
-                  Per session
+                  Per day
                 </dt>
-                <dd className="font-black text-lg text-zinc-900 dark:text-zinc-100 tabular-nums">
-                  {game.timeRecommendationMinutes != null ? <>{game.timeRecommendationMinutes}<span className="text-sm font-bold text-zinc-500 dark:text-zinc-400"> min</span></> : '—'}
+                <dd className="font-black text-lg text-slate-900 dark:text-slate-100 tabular-nums">
+                  {game.timeRecommendationMinutes != null ? <>{game.timeRecommendationMinutes}<span className="text-sm font-bold text-slate-500 dark:text-slate-400"> min</span></> : '—'}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Benefits</dt>
-                <dd className="font-black text-lg text-zinc-900 dark:text-zinc-100 tabular-nums">
-                  {game.bds != null ? <>{Math.round(game.bds * 100)}<span className="text-sm font-bold text-zinc-500 dark:text-zinc-400">/100</span></> : '—'}
+                <dt className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Benefits</dt>
+                <dd className="font-black text-lg text-slate-900 dark:text-slate-100 tabular-nums">
+                  {game.bds != null ? <>{Math.round(game.bds * 100)}<span className="text-sm font-bold text-slate-500 dark:text-slate-400">/100</span></> : '—'}
                 </dd>
               </div>
             </dl>
@@ -164,7 +164,7 @@ export default async function FeaturedGame({ locale }: { locale: string }) {
               </div>
             )}
 
-            <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mt-auto">
+            <span className="text-sm font-semibold text-slate-900 dark:text-slate-100 mt-auto">
               See the full rating →
             </span>
           </div>

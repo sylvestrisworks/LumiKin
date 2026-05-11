@@ -33,8 +33,8 @@ export default function ContactForm() {
 
   if (state === 'success') {
     return (
-      <div className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 p-8">
-        <p className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+      <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-8">
+        <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">
           Thanks — I'll be in touch within two business days.
         </p>
       </div>
@@ -42,9 +42,9 @@ export default function ContactForm() {
   }
 
   const inputClass =
-    'rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100'
+    'rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100'
   const labelClass =
-    'text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400'
+    'text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400'
 
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -113,7 +113,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={state === 'submitting'}
-          className="inline-flex items-center gap-2 rounded-md bg-zinc-900 dark:bg-zinc-100 px-6 py-3 text-sm font-semibold text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 disabled:opacity-50 transition-colors"
+          className="inline-flex items-center gap-2 rounded-md bg-slate-900 dark:bg-slate-100 px-6 py-3 text-sm font-semibold text-white dark:text-slate-900 hover:bg-slate-700 dark:hover:bg-slate-300 disabled:opacity-50 transition-colors"
         >
           {state === 'submitting' ? 'Sending…' : 'Get in touch'}
         </button>

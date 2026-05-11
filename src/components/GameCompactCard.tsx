@@ -36,7 +36,7 @@ export default function GameCompactCard({ game }: Props) {
         {/* LumiScore chip — top right */}
         {game.curascore != null && (
           <div className={`absolute top-1.5 right-1.5 ${curascoreBg(game.curascore)} text-white text-xs font-black px-1.5 py-0.5 rounded-full`}>
-            {game.curascore}
+            {game.curascore}<span className="text-[9px] font-bold opacity-70">/100</span>
           </div>
         )}
 

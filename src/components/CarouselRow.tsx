@@ -49,7 +49,7 @@ function CarouselTile({ game }: { game: GameSummary }) {
         {game.curascore != null && (
           <span className={`absolute top-1.5 right-1.5 ${curascoreBg(game.curascore)} text-white text-xs font-black px-2 py-1 rounded-lg leading-none tabular-nums`}
             title="LumiScore — developmental benefit vs. design risk">
-            {game.curascore}
+            {game.curascore}<span className="text-[9px] font-bold opacity-70">/100</span>
           </span>
         )}
 

@@ -26,10 +26,10 @@ export default function BusinessRow({ locale }: Props) {
             <Link
               key={slug}
               href={`/${locale}/${slug}`}
-              className="group flex items-center justify-between gap-4 rounded-lg border border-zinc-200 dark:border-zinc-800 px-5 py-4 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
+              className="group flex items-center justify-between gap-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-5 py-4 hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-sm transition-all"
             >
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">
+                <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-1">
                   {audience}
                 </p>
                 <p className="text-sm text-zinc-600 dark:text-zinc-300">{body}</p>

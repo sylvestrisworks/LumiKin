@@ -83,7 +83,7 @@ export default async function FeaturedGame({ locale }: { locale: string }) {
   return (
     <section className="border-y border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
       <div className="max-w-5xl mx-auto px-6 py-14">
-        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-6">
+        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-6">
           Here&rsquo;s what a LumiKin rating looks like
         </p>
 
@@ -124,32 +124,32 @@ export default async function FeaturedGame({ locale }: { locale: string }) {
                 {game.title}
               </h3>
               {game.developer && (
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">{game.developer}</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-300 mt-0.5">{game.developer}</p>
               )}
             </div>
 
             <dl className="grid grid-cols-3 gap-4 text-sm">
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">LumiScore</dt>
+                <dt className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">LumiScore</dt>
                 <dd className="font-black text-lg text-zinc-900 dark:text-zinc-100 tabular-nums">
-                  {game.curascore != null ? <>{game.curascore}<span className="text-sm font-bold text-zinc-400 dark:text-zinc-500">/100</span></> : '—'}
+                  {game.curascore != null ? <>{game.curascore}<span className="text-sm font-bold text-zinc-500 dark:text-zinc-400">/100</span></> : '—'}
                 </dd>
               </div>
               <div>
                 <dt
-                  className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500"
+                  className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
                   title="Recommended length per session — not a daily limit"
                 >
                   Per session
                 </dt>
                 <dd className="font-black text-lg text-zinc-900 dark:text-zinc-100 tabular-nums">
-                  {game.timeRecommendationMinutes != null ? <>{game.timeRecommendationMinutes}<span className="text-sm font-bold text-zinc-400 dark:text-zinc-500"> min</span></> : '—'}
+                  {game.timeRecommendationMinutes != null ? <>{game.timeRecommendationMinutes}<span className="text-sm font-bold text-zinc-500 dark:text-zinc-400"> min</span></> : '—'}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Benefits</dt>
+                <dt className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Benefits</dt>
                 <dd className="font-black text-lg text-zinc-900 dark:text-zinc-100 tabular-nums">
-                  {game.bds != null ? <>{Math.round(game.bds * 100)}<span className="text-sm font-bold text-zinc-400 dark:text-zinc-500">/100</span></> : '—'}
+                  {game.bds != null ? <>{Math.round(game.bds * 100)}<span className="text-sm font-bold text-zinc-500 dark:text-zinc-400">/100</span></> : '—'}
                 </dd>
               </div>
             </dl>

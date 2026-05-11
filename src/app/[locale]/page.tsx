@@ -40,51 +40,56 @@ export default async function HomePage({ params, searchParams }: Props) {
 
       {/* ── Hero (parent-first) ──────────────────────────────────────────────── */}
       <section className="max-w-5xl mx-auto px-6 pt-20 pb-14">
-        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-6">
-          LumiKin
-        </p>
         <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight max-w-3xl">
           Know what your kid is actually playing.
         </h1>
-        <p className="mt-6 text-lg text-zinc-500 dark:text-zinc-400 max-w-2xl leading-relaxed">
+        <p className="mt-6 text-lg text-zinc-600 dark:text-zinc-300 max-w-2xl leading-relaxed">
           Search {gamesScored.toLocaleString('en')} games. See the benefits, the risks,
           and a healthy time per session. Free for parents.
         </p>
 
-        <div className="mt-8 max-w-xl">
+        <div className="mt-8 max-w-xl relative">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -inset-4 -z-10 rounded-3xl blur-2xl bg-indigo-300/40 dark:bg-indigo-500/20"
+          />
           <SearchBar placeholder="Search a game your kid plays…" />
         </div>
 
-        <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+        <div className="mt-5">
           <Link
             href={`/${locale}/browse`}
-            className="font-semibold text-zinc-900 dark:text-zinc-100 underline underline-offset-4 hover:no-underline"
+            className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 underline underline-offset-4 hover:no-underline"
           >
             Browse all games →
-          </Link>
-          <Link
-            href={`/${locale}/age`}
-            className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
-          >
-            Browse by age
-          </Link>
-          <Link
-            href={`/${locale}/platform/roblox`}
-            className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
-          >
-            Roblox experiences
-          </Link>
-          <Link
-            href={`/${locale}/platform/fortnite`}
-            className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
-          >
-            Fortnite Creative
           </Link>
         </div>
       </section>
 
       {/* ── Featured game (show, don't tell) ─────────────────────────────────── */}
       <FeaturedGame locale={locale} />
+
+      {/* ── Or browse by (demoted secondary entries) ─────────────────────────── */}
+      <section className="border-t border-zinc-200 dark:border-zinc-800">
+        <div className="max-w-5xl mx-auto px-6 py-8 flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span className="text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mr-1">
+            Or browse by
+          </span>
+          {[
+            { label: 'Age', href: `/${locale}/age` },
+            { label: 'Roblox experiences', href: `/${locale}/platform/roblox` },
+            { label: 'Fortnite Creative', href: `/${locale}/platform/fortnite` },
+          ].map(({ label, href }) => (
+            <Link
+              key={href}
+              href={href}
+              className="text-sm px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 hover:border-indigo-300 dark:hover:border-indigo-700 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {/* ── What you'll see ──────────────────────────────────────────────────── */}
       <ParentValueTiles />
@@ -93,9 +98,9 @@ export default async function HomePage({ params, searchParams }: Props) {
       <CoverageStrip stats={stats} variant="parent" />
 
       {/* ── Methodology (compressed) ─────────────────────────────────────────── */}
-      <section className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
+      <section className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
         <div className="max-w-5xl mx-auto px-6 py-14">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-6">
+          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-6">
             How scores work
           </p>
           <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed max-w-2xl">

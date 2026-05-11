@@ -7,29 +7,13 @@ import type { GameSummary } from '@/types/game'
 import { curascoreBg, esrbToAge, ageBadgeColor } from '@/lib/ui'
 import Icon, { type IconName } from '@/components/Icon'
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-const FOURTEEN_DAYS_MS = 14 * 24 * 60 * 60 * 1000
-
-function recentLabel(iso: string | null | undefined): string | null {
-  if (!iso) return null
-  const diff = Date.now() - new Date(iso).getTime()
-  if (diff >= FOURTEEN_DAYS_MS) return null
-  const hrs  = Math.floor(diff / 3_600_000)
-  if (hrs < 1)  return 'just now'
-  if (hrs < 24) return `${hrs}h ago`
-  return `${Math.floor(hrs / 24)}d ago`
-}
-
 // ─── Tile ─────────────────────────────────────────────────────────────────────
 
 function CarouselTile({ game }: { game: GameSummary }) {
-  const scoredLabel = recentLabel(game.calculatedAt)
-
   return (
-    <Link href={`/game/${game.slug}`} className="group/tile shrink-0 w-44 sm:w-52 snap-start">
+    <Link href={`/game/${game.slug}`} className="group/tile shrink-0 w-48 sm:w-56 snap-start">
       {/* Image */}
-      <div className="relative w-full h-28 sm:h-32 rounded-xl overflow-hidden bg-indigo-100 dark:bg-indigo-900/40">
+      <div className="relative w-full h-32 sm:h-36 rounded-xl overflow-hidden bg-indigo-100 dark:bg-indigo-900/40">
         {game.backgroundImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -75,17 +59,12 @@ function CarouselTile({ game }: { game: GameSummary }) {
       </div>
 
       {/* Title */}
-      <p className="mt-2 text-xs font-semibold text-slate-800 dark:text-slate-100 truncate group-hover/tile:text-indigo-700 dark:group-hover/tile:text-indigo-400 transition-colors leading-tight">
+      <p className="mt-2 text-sm font-semibold text-slate-800 dark:text-slate-100 truncate group-hover/tile:text-indigo-700 dark:group-hover/tile:text-indigo-400 transition-colors leading-tight">
         {game.title}
       </p>
-      <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
+      <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
         {game.genres[0] ?? game.developer ?? ''}
       </p>
-      {scoredLabel && (
-        <p className="text-[9px] text-teal-600 dark:text-teal-400 font-semibold mt-0.5 leading-none">
-          Scored {scoredLabel}
-        </p>
-      )}
     </Link>
   )
 }
@@ -116,9 +95,10 @@ type Props = {
   browseHref: string
   games: GameSummary[]
   index: number
+  featured?: boolean
 }
 
-export default function CarouselRow({ iconName, title, browseHref, games, index }: Props) {
+export default function CarouselRow({ iconName, title, browseHref, games, index, featured = false }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const t = useTranslations('carousel')
 
@@ -127,10 +107,10 @@ export default function CarouselRow({ iconName, title, browseHref, games, index 
   }
 
   return (
-    <section className={index > 0 ? 'pt-10' : ''}>
+    <section className={index > 0 ? 'pt-12' : ''}>
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <Icon name={iconName as IconName} size={20} aria-hidden="true" />
+        <h2 className={`${featured ? 'text-lg sm:text-xl' : 'text-base'} font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2`}>
+          <Icon name={iconName as IconName} size={featured ? 22 : 20} aria-hidden="true" />
           <span>{title}</span>
         </h2>
         <Link

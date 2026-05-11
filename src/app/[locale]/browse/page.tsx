@@ -635,6 +635,54 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                   <span aria-hidden>→</span>
                 </Link>
               )}
+              {uid && profiles.length === 0 && (
+                <Link
+                  href={`/${locale}/account`}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-sm font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors"
+                >
+                  Add your first kid for personal recs
+                  <span aria-hidden>→</span>
+                </Link>
+              )}
+              {uid && profiles.length > 0 && (
+                <div className="flex items-center gap-2 flex-wrap justify-center">
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{t('forChild')}</span>
+                  <a
+                    href={`/${locale}/browse?${new URLSearchParams(
+                      Object.entries(sp as Record<string, string>)
+                        .filter(([k]) => k !== 'child' && k !== 'page')
+                    ).toString()}`}
+                    className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                      !selectedChild
+                        ? 'bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900'
+                        : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-500'
+                    }`}
+                  >
+                    {t('forEveryone')}
+                  </a>
+                  {profiles.map(p => {
+                    const age = calcAge(p.birthDate, p.birthYear)
+                    const params = new URLSearchParams(
+                      Object.entries(sp as Record<string, string>)
+                        .filter(([k]) => k !== 'child' && k !== 'page')
+                    )
+                    params.set('child', String(p.id))
+                    return (
+                      <a
+                        key={p.id}
+                        href={`/${locale}/browse?${params.toString()}`}
+                        className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                          selectedChild?.id === p.id
+                            ? 'bg-indigo-600 text-white'
+                            : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400'
+                        }`}
+                      >
+                        {p.name} <span className="opacity-70">({age})</span>
+                      </a>
+                    )
+                  })}
+                </div>
+              )}
               <Suspense>
                 <AgePicker current={filters.age} />
               </Suspense>
@@ -670,6 +718,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                     title={row.title}
                     browseHref={row.browseHref}
                     games={row.games}
+                    featured={i === 0}
                   />
                 ))}
               </div>

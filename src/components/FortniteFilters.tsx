@@ -66,7 +66,7 @@ export default function FortniteFilters({ active, total }: { active: FortniteFil
           ref={inputRef}
           type="search"
           defaultValue={active.q}
-          placeholder="Search Fortnite Creative maps…"
+          placeholder={t('searchPlaceholder')}
           className="w-full pl-10 pr-20 py-2.5 text-sm rounded-xl
             border border-slate-200 dark:border-slate-600
             bg-white dark:bg-slate-800
@@ -78,7 +78,7 @@ export default function FortniteFilters({ active, total }: { active: FortniteFil
           type="submit"
           className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition-colors"
         >
-          Search
+          {t('searchButton')}
         </button>
       </form>
 
@@ -117,7 +117,7 @@ export default function FortniteFilters({ active, total }: { active: FortniteFil
 
       {/* Result count */}
       <p className="text-xs text-slate-400 dark:text-slate-500">
-        {total} map{total !== 1 ? 's' : ''}{active.q ? ` matching "${active.q}"` : ''}
+        {t('resultCount', { count: total })}{active.q ? t('resultMatching', { query: active.q }) : ''}
       </p>
     </div>
   )

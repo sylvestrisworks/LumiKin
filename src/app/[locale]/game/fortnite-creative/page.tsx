@@ -15,32 +15,36 @@ import type { ExperienceSummary } from '@/components/ExperienceCard'
 // 'fortnite' is the reviewed/scored game — BR is not a separate scored entry
 const FORTNITE_MODE_SLUGS = ['fortnite', 'lego-fortnite', 'fortnite-festival', 'fortnite-rocket-racing'] as const
 
-const MODE_META: Record<string, { initial: string; tagline: string; iconBg: string; iconText: string; hoverBorder: string }> = {
+const MODE_META: Record<string, { initial: string; taglineKey: string; iconBg: string; iconText: string; hoverBorder: string }> = {
   'fortnite': {
-    initial: 'BR', tagline: '100-player battle royale',
+    initial: 'BR', taglineKey: 'modeBrTagline',
     iconBg: 'bg-orange-100 dark:bg-orange-900/40', iconText: 'text-orange-600 dark:text-orange-400',
     hoverBorder: 'hover:border-orange-400 dark:hover:border-orange-600',
   },
   'lego-fortnite': {
-    initial: 'LF', tagline: 'Family survival & crafting',
+    initial: 'LF', taglineKey: 'modeLegoTagline',
     iconBg: 'bg-yellow-100 dark:bg-yellow-900/40', iconText: 'text-yellow-700 dark:text-yellow-400',
     hoverBorder: 'hover:border-yellow-400 dark:hover:border-yellow-600',
   },
   'fortnite-festival': {
-    initial: '♪', tagline: 'Rhythm game by Harmonix',
+    initial: '♪', taglineKey: 'modeFestivalTagline',
     iconBg: 'bg-purple-100 dark:bg-purple-900/40', iconText: 'text-purple-600 dark:text-purple-400',
     hoverBorder: 'hover:border-purple-400 dark:hover:border-purple-600',
   },
   'fortnite-rocket-racing': {
-    initial: 'RR', tagline: 'Arcade racing by Psyonix',
+    initial: 'RR', taglineKey: 'modeRocketRacingTagline',
     iconBg: 'bg-cyan-100 dark:bg-cyan-900/40', iconText: 'text-cyan-700 dark:text-cyan-400',
     hoverBorder: 'hover:border-cyan-400 dark:hover:border-cyan-600',
   },
 }
 
-export const metadata: Metadata = {
-  title: 'Fortnite Creative Map Guide — LumiKin',
-  description: 'LumiKin ratings for popular Fortnite Creative maps. Find safe, fun maps for your child with scores for stranger risk, monetization pressure, and more.',
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'fortnite' })
+  return {
+    title: t('metaTitle'),
+    description: t('metaDescription'),
+  }
 }
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> }
@@ -158,16 +162,16 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="text-[11px] font-semibold bg-blue-500/25 text-blue-200 border border-blue-400/30 px-2 py-0.5 rounded-full tracking-wide uppercase">Platform</span>
+                <span className="text-[11px] font-semibold bg-blue-500/25 text-blue-200 border border-blue-400/30 px-2 py-0.5 rounded-full tracking-wide uppercase">{t('platformBadge')}</span>
                 {platformScore?.curascore != null && (
                   <span className={`text-[11px] font-bold bg-white/10 border border-white/20 px-2 py-0.5 rounded-full ${curascoreText(platformScore.curascore)}`}>
                     LumiScore {platformScore.curascore}
                   </span>
                 )}
               </div>
-              <h1 className="text-2xl font-bold text-white">Fortnite Creative</h1>
+              <h1 className="text-2xl font-bold text-white">{t('title')}</h1>
               <p className="text-sm text-white/75 mt-1 line-clamp-2">
-                Player-built maps across every genre — safety and quality vary widely. Browse our ratings to find the best fits.
+                {t('platformTagline')}
               </p>
               <div className="flex items-center gap-2 mt-3 flex-wrap">
                 <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
@@ -177,11 +181,10 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
                 {platformScore?.timeRecommendationLabel && (
                   <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
                     <span className="text-sm font-semibold text-white">{platformScore.timeRecommendationLabel}</span>
-                    <span className="text-xs text-white/50 ml-1">recommended</span>
                   </div>
                 )}
                 <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
-                  <span className="text-xs text-white/60">Free to play</span>
+                  <span className="text-xs text-white/60">{t('freeToPlay')}</span>
                 </div>
               </div>
             </div>
@@ -192,7 +195,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
         {orderedModes.length > 0 && (
           <section>
             <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
-              Fortnite Game Modes
+              {t('gameModesHeader')}
             </h2>
             <div className="flex items-stretch gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:pb-0 sm:snap-none">
               {orderedModes.map(mode => {
@@ -220,7 +223,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
                     {/* Content */}
                     <div className="p-3 flex flex-col flex-1">
                       <div className="text-sm font-semibold text-slate-800 dark:text-white leading-tight">{mode.title}</div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-tight line-clamp-1">{meta.tagline}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-tight line-clamp-1">{t(meta.taglineKey)}</div>
                       <div className="flex items-center gap-1.5 mt-auto pt-2 flex-wrap">
                         {mode.esrbRating && (
                           <span className="text-[10px] bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded font-medium">
@@ -228,7 +231,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
                           </span>
                         )}
                         <span className="text-[10px] bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded font-medium">
-                          Free
+                          {t('freeBadge')}
                         </span>
                         {mode.curascore != null && (
                           <span className={`text-[10px] font-bold ${curascoreText(mode.curascore)}`}>
@@ -262,7 +265,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
             </div>
           ) : (
             <div className="text-center py-16 text-slate-400">
-              No maps match your filters.
+              {t('noMapsFiltered')}
             </div>
           )
         ) : (
@@ -299,7 +302,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
 
             {maps.length === 0 && (
               <div className="text-center py-16 text-slate-400">
-                No maps indexed yet. Check back soon.
+                {t('noMapsYet')}
               </div>
             )}
           </>

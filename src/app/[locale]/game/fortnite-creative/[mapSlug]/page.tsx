@@ -18,10 +18,10 @@ function pct(v: number | null, max = 1) { return `${Math.round(((v ?? 0) / max) 
 
 function getVerdict(score: number | null) {
   const s = score ?? 0
-  if (s >= 70) return { label: 'GREAT',   color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/30',  ring: '#10b981' }
-  if (s >= 50) return { label: 'GOOD',    color: 'text-teal-600 dark:text-teal-400',       bg: 'bg-teal-50 dark:bg-teal-900/30',        ring: '#14b8a6' }
-  if (s >= 35) return { label: 'CAUTION', color: 'text-amber-600 dark:text-amber-400',     bg: 'bg-amber-50 dark:bg-amber-900/30',      ring: '#f59e0b' }
-  return              { label: 'AVOID',   color: 'text-red-600 dark:text-red-400',         bg: 'bg-red-50 dark:bg-red-900/30',          ring: '#ef4444' }
+  if (s >= 70) return { labelKey: 'verdictGreat',   color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/30',  ring: '#10b981' }
+  if (s >= 50) return { labelKey: 'verdictGood',    color: 'text-teal-600 dark:text-teal-400',       bg: 'bg-teal-50 dark:bg-teal-900/30',        ring: '#14b8a6' }
+  if (s >= 35) return { labelKey: 'verdictCaution', color: 'text-amber-600 dark:text-amber-400',     bg: 'bg-amber-50 dark:bg-amber-900/30',      ring: '#f59e0b' }
+  return              { labelKey: 'verdictAvoid',   color: 'text-red-600 dark:text-red-400',         bg: 'bg-red-50 dark:bg-red-900/30',          ring: '#ef4444' }
 }
 
 function benefitBarColor(v: number, max = 3) {
@@ -40,9 +40,9 @@ function riskBarColor(v: number, max = 3) {
 
 function riskLevel(v: number, max = 3) {
   const f = v / max
-  if (f < 0.34) return { label: 'Low',      cls: 'bg-yellow-100 dark:bg-yellow-900/50 border border-yellow-300 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200' }
-  if (f < 0.67) return { label: 'Moderate', cls: 'bg-orange-100 dark:bg-orange-900/50 border border-orange-300 dark:border-orange-600 text-orange-800 dark:text-orange-200' }
-  return               { label: 'High',     cls: 'bg-red-100 dark:bg-red-900/50 border border-red-300 dark:border-red-600 text-red-800 dark:text-red-200' }
+  if (f < 0.34) return { labelKey: 'riskLow',      cls: 'bg-yellow-100 dark:bg-yellow-900/50 border border-yellow-300 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200' }
+  if (f < 0.67) return { labelKey: 'riskModerate', cls: 'bg-orange-100 dark:bg-orange-900/50 border border-orange-300 dark:border-orange-600 text-orange-800 dark:text-orange-200' }
+  return               { labelKey: 'riskHigh',     cls: 'bg-red-100 dark:bg-red-900/50 border border-red-300 dark:border-red-600 text-red-800 dark:text-red-200' }
 }
 
 // ─── Horseshoe ring ───────────────────────────────────────────────────────────
@@ -89,14 +89,14 @@ function BenefitBar({ label, value, max = 3 }: { label: string; value: number | 
 
 // ─── RiskMeter ────────────────────────────────────────────────────────────────
 
-function RiskMeter({ label, value, max = 3 }: { label: string; value: number | null; max?: number }) {
+function RiskMeter({ label, levelLabel, value, max = 3 }: { label: string; levelLabel: string; value: number | null; max?: number }) {
   const v = value ?? 0
   const level = riskLevel(v, max)
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</span>
-        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full shrink-0 ${level.cls}`}>{level.label}</span>
+        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full shrink-0 ${level.cls}`}>{levelLabel}</span>
       </div>
       <div className="bg-slate-100 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
         <div className={`h-full rounded-full transition-all ${riskBarColor(v, max)}`} style={{ width: pct(v, max) }} />
@@ -118,7 +118,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .limit(1)
     .catch(() => [])
 
-  if (!exp) return { title: 'Map not found — LumiKin' }
+  if (!exp) {
+    const t = await getTranslations({ locale, namespace: 'fortnite' })
+    return { title: t('mapNotFound') }
+  }
 
   const title = `${exp.title} (Fortnite Creative) — Safe for kids? | LumiKin`
   const desc = exp.description
@@ -186,6 +189,7 @@ export default async function FortniteMapPage({ params }: Props) {
   ])
 
   const verdict = score?.curascore != null ? getVerdict(score.curascore) : null
+  const riskLabelFor = (v: number | null) => t(riskLevel(v ?? 0).labelKey)
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
@@ -194,7 +198,7 @@ export default async function FortniteMapPage({ params }: Props) {
         {/* Breadcrumb */}
         <nav className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
           <Link href={`/${locale}/game/fortnite-creative`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-            Fortnite Creative
+            {t('breadcrumbHub')}
           </Link>
           <span>/</span>
           <span className="text-slate-600 dark:text-slate-300 truncate">{exp.title}</span>
@@ -212,7 +216,7 @@ export default async function FortniteMapPage({ params }: Props) {
               {score?.curascore != null && verdict && (
                 <div className="shrink-0 -mt-1">
                   <HorseshoeRing score={score.curascore} ring={verdict.ring} />
-                  <p className={`text-center text-sm font-black -mt-3 ${verdict.color}`}>{verdict.label}</p>
+                  <p className={`text-center text-sm font-black -mt-3 ${verdict.color}`}>{t(verdict.labelKey)}</p>
                 </div>
               )}
 
@@ -248,9 +252,9 @@ export default async function FortniteMapPage({ params }: Props) {
                     score.timeRecommendationColor === 'amber'  ? 'bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400' :
                                                                  'bg-red-50 border-red-200 text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400'
                   }`}>
-                    <span>Recommended: {score.timeRecommendationLabel}</span>
+                    <span>{t('recommendedPrefix', { label: score.timeRecommendationLabel })}</span>
                     {score.recommendedMinAge != null && (
-                      <span className="text-xs font-normal opacity-70">· Age {score.recommendedMinAge}+</span>
+                      <span className="text-xs font-normal opacity-70">· {t('ageSuffix', { age: score.recommendedMinAge })}</span>
                     )}
                   </div>
                 )}
@@ -308,12 +312,12 @@ export default async function FortniteMapPage({ params }: Props) {
             </h2>
 
             <div className="space-y-4">
-              <RiskMeter label={t('dopamineTraps')} value={score.dopamineTrapScore} />
-              <RiskMeter label={t('toxicity')}      value={score.toxicityScore} />
-              <RiskMeter label={t('ugcRisk')}       value={score.ugcContentRisk} />
-              <RiskMeter label={t('strangerRisk')}  value={score.strangerRisk} />
-              <RiskMeter label={t('monetization')}  value={score.monetizationScore} />
-              <RiskMeter label={t('privacyRisk')}   value={score.privacyRisk} />
+              <RiskMeter label={t('dopamineTraps')} levelLabel={riskLabelFor(score.dopamineTrapScore)} value={score.dopamineTrapScore} />
+              <RiskMeter label={t('toxicity')}      levelLabel={riskLabelFor(score.toxicityScore)}     value={score.toxicityScore} />
+              <RiskMeter label={t('ugcRisk')}       levelLabel={riskLabelFor(score.ugcContentRisk)}    value={score.ugcContentRisk} />
+              <RiskMeter label={t('strangerRisk')}  levelLabel={riskLabelFor(score.strangerRisk)}      value={score.strangerRisk} />
+              <RiskMeter label={t('monetization')}  levelLabel={riskLabelFor(score.monetizationScore)} value={score.monetizationScore} />
+              <RiskMeter label={t('privacyRisk')}   levelLabel={riskLabelFor(score.privacyRisk)}       value={score.privacyRisk} />
             </div>
 
             {score.risksNarrative && (
@@ -328,9 +332,7 @@ export default async function FortniteMapPage({ params }: Props) {
         {/* ── Scoring method note (Fix 8) ────────────────────────────────────── */}
         {score && (
           <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed px-1">
-            This experience is scored on 9 dimensions adapted from the {RUBRIC_DIMENSION_COUNT}-dimension LumiKin rubric.
-            Risk category weights match the rubric (Dopamine 45%, Monetization 30%, Social 25%);
-            per-category sub-items are aggregated into a single score.
+            {t('scoringNote', { count: RUBRIC_DIMENSION_COUNT })}
           </p>
         )}
 
@@ -355,18 +357,18 @@ export default async function FortniteMapPage({ params }: Props) {
           <summary className="flex items-center justify-between gap-2 cursor-pointer list-none select-none py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
             <span className="flex items-center gap-1.5">
               <span className="text-blue-400">ℹ</span>
-              Fortnite parent guide
+              {t('parentGuideTitle')}
             </span>
             <span className="transition-transform group-open/panel:rotate-180 text-slate-300 dark:text-slate-600">▾</span>
           </summary>
           <div className="mt-2 rounded-xl border border-blue-100 dark:border-blue-900/40 bg-blue-50/60 dark:bg-blue-950/30 px-4 py-3 text-xs text-slate-600 dark:text-slate-400 space-y-2.5 leading-relaxed">
-            <p className="font-semibold text-slate-700 dark:text-slate-300 text-[11px] uppercase tracking-wide">Bottom line first</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">Fortnite Battle Royale has unfiltered voice chat with strangers enabled by default.</strong> Go to Epic Games account settings → Parental Controls and disable voice chat, or set it to friends-only, before your child plays any online mode.</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">Fortnite is five different games in one launcher.</strong> Battle Royale, LEGO Fortnite, Festival, Rocket Racing, and Creative each have different age-appropriateness and risk profiles. Your child may start in LEGO Fortnite and drift into Battle Royale — check which modes they're actually playing.</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">V-Bucks are the shared currency across all modes.</strong> The Battle Pass, cosmetic bundles, and in-map purchases all use V-Bucks. Many Creative maps surface V-Buck spending prompts. Set spending limits in Epic Games account settings or use a prepaid card with a fixed balance.</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">Creative map content can change after our rating.</strong> Each map is rated by our AI at a point in time — creators can update maps. We recommend periodically checking which maps your child plays and watching a few minutes of gameplay with them.</p>
+            <p className="font-semibold text-slate-700 dark:text-slate-300 text-[11px] uppercase tracking-wide">{t('parentGuideBottomLine')}</p>
+            <p>{t.rich('parentGuidePara1', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
+            <p>{t.rich('parentGuidePara2', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
+            <p>{t.rich('parentGuidePara3', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
+            <p>{t.rich('parentGuidePara4', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
             <p className="pt-0.5 border-t border-blue-100 dark:border-blue-900/40 text-slate-500 dark:text-slate-400">
-              <strong className="text-slate-600 dark:text-slate-300">Action:</strong> Epic Games account → Parental Controls → set a PIN, disable voice chat, and cap monthly V-Buck spending. Takes under 5 minutes and significantly reduces risk across all Fortnite modes.
+              {t.rich('parentGuideAction', { strong: (chunks) => <strong className="text-slate-600 dark:text-slate-300">{chunks}</strong> })}
             </p>
           </div>
         </details>

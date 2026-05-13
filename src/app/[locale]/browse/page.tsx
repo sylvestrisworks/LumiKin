@@ -112,13 +112,6 @@ function toCarouselGame(r: any): GameSummary {
   }
 }
 
-const SHELF_ESRB: Record<string, string[]> = {
-  E:   ['E'],
-  E10: ['E', 'E10+'],
-  T:   ['E', 'E10+', 'T'],
-  M:   ['E', 'E10+', 'T', 'M'],
-}
-
 // Map a child's age (years) → the most appropriate ESRB tier for shelf filtering.
 function ageToEsrbTier(age: number): 'E' | 'E10' | 'T' | 'M' {
   if (age < 7)  return 'E'
@@ -136,7 +129,7 @@ async function getCarouselRows(platforms: string[], age: string | undefined, loc
     ? or(...platforms.map(p => sql`${games.platforms}::text ILIKE ${'%' + escapeIlike(p) + '%'}`))
     : undefined
 
-  const ratings = age ? (SHELF_ESRB[age] ?? ['E', 'E10+', 'T']) : null
+  const ratings = age ? (ESRB_FOR_AGE[age] ?? ['E', 'E10+', 'T']) : null
   const ageFilter: SQL = age && ratings
     ? inArray(games.esrbRating, ratings)
     : or(isNull(games.esrbRating), inArray(games.esrbRating, ['E', 'E10+', 'T', 'M']))!

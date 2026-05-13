@@ -317,25 +317,19 @@ export default async function GamePage({ params }: Props) {
   const uid = (session?.user as any)?.id ?? session?.user?.email ?? null
   let initialOwned = false
   let initialWishlisted = false
-  let recommendedMinAge: number | null = null
   let userProfiles: { id: number; name: string; birthYear: number; birthDate: string | null }[] = []
 
   if (uid && game.id) {
-    const [entries, scoreRow, profileRows] = await Promise.all([
+    const [entries, profileRows] = await Promise.all([
       db.select({ listType: userGames.listType })
         .from(userGames)
         .where(and(eq(userGames.userId, uid), eq(userGames.gameId, game.id))),
-      db.select({ recommendedMinAge: gameScores.recommendedMinAge })
-        .from(gameScores)
-        .where(eq(gameScores.gameId, game.id))
-        .limit(1),
       db.select({ id: childProfiles.id, name: childProfiles.name, birthYear: childProfiles.birthYear, birthDate: childProfiles.birthDate })
         .from(childProfiles)
         .where(eq(childProfiles.userId, uid)),
     ])
     initialOwned      = entries.some(e => e.listType === 'owned')
     initialWishlisted = entries.some(e => e.listType === 'wishlist')
-    recommendedMinAge = scoreRow[0]?.recommendedMinAge ?? null
     userProfiles      = profileRows
   }
 

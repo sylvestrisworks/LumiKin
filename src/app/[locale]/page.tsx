@@ -3,7 +3,7 @@ export const revalidate = 300
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import { fetchSiteStats, fetchGamesScoredCount } from '@/lib/stats'
+import { fetchSiteStats } from '@/lib/stats'
 import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import CoverageStrip from './partners/_components/CoverageStrip'
 import SearchBar from '@/components/SearchBar'
@@ -31,9 +31,8 @@ export default async function HomePage({ params, searchParams }: Props) {
     redirect(`/${locale}/browse?${qs.toString()}`)
   }
 
-  const [stats, gamesScored, t] = await Promise.all([
+  const [stats, t] = await Promise.all([
     fetchSiteStats(),
-    fetchGamesScoredCount(),
     getTranslations('home'),
   ])
 
@@ -46,7 +45,7 @@ export default async function HomePage({ params, searchParams }: Props) {
           {t('h1')}
         </h1>
         <p className="mt-6 text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-          {t('subhead', { count: gamesScored })}
+          {t('subhead', { count: stats.total_games_scored })}
         </p>
 
         <div className="mt-8 max-w-xl relative">

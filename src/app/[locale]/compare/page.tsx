@@ -845,13 +845,14 @@ async function loadGame(slug: string): Promise<GameCardProps | null> {
 
 // ─── Main compare page ────────────────────────────────────────────────────────
 
+const isValidSlug = (s: string | null): s is string =>
+  s !== null && /^[a-zA-Z0-9_-]+$/.test(s) && s.length <= 200
+
 function ComparePageInner() {
   const t            = useTranslations('compare')
   const locale       = useLocale()
   const router       = useRouter()
   const searchParams = useSearchParams()
-  const isValidSlug = (s: string | null): s is string =>
-    s !== null && /^[a-zA-Z0-9_-]+$/.test(s) && s.length <= 200
 
   const [gameA, setGameA] = useState<GameCardProps | null>(null)
   const [gameB, setGameB] = useState<GameCardProps | null>(null)

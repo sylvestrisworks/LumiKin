@@ -556,6 +556,7 @@
     "sharePrompt": "Partager un conseil avec d'autres parents",
     "signIn": "Se connecter",
     "signInPrompt": "pour laisser un conseil ou voter.",
+    "signInToView": "pour voir les conseils des parents, laisser un conseil ou voter.",
     "typePraise": "Éloge",
     "typeTip": "Conseil",
     "typeWarning": "Avertissement",

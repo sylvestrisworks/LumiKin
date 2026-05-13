@@ -13,6 +13,22 @@ type Props = {
 export default async function ParentTips({ gameId, uid }: Props) {
   const t = await getTranslations('parentTips')
 
+  if (!uid) {
+    return (
+      <div className="mt-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4 space-y-3">
+        <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+          {t('heading')}
+        </h2>
+        <div className="bg-slate-50 dark:bg-slate-700/40 border border-slate-100 dark:border-slate-700 rounded-xl px-4 py-3 flex items-start gap-2">
+          <span aria-hidden className="text-slate-400 dark:text-slate-500">🔒</span>
+          <p className="text-sm text-slate-600 dark:text-slate-300 leading-snug">
+            <a href="/login" className="text-indigo-600 hover:underline font-medium">{t('signIn')}</a>{' '}{t('signInToView')}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   const tips = await db
     .select({
       id:         gameTips.id,
@@ -29,7 +45,7 @@ export default async function ParentTips({ gameId, uid }: Props) {
     .orderBy(desc(count(gameTipVotes.id)), desc(gameTips.createdAt))
 
   const userVotedIds = new Set<number>()
-  if (uid && tips.length > 0) {
+  if (tips.length > 0) {
     const votes = await db
       .select({ tipId: gameTipVotes.tipId })
       .from(gameTipVotes)
@@ -57,17 +73,11 @@ export default async function ParentTips({ gameId, uid }: Props) {
             return (
               <li key={tip.id} className="flex gap-3">
                 <div className="pt-0.5 shrink-0">
-                  {uid ? (
-                    <TipVoteButton
-                      tipId={tip.id}
-                      initialCount={Number(tip.voteCount)}
-                      initialVoted={userVotedIds.has(tip.id)}
-                    />
-                  ) : (
-                    <div className="flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500 px-2.5 py-1">
-                      ▲ {Number(tip.voteCount) > 0 && Number(tip.voteCount)}
-                    </div>
-                  )}
+                  <TipVoteButton
+                    tipId={tip.id}
+                    initialCount={Number(tip.voteCount)}
+                    initialVoted={userVotedIds.has(tip.id)}
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
@@ -92,18 +102,10 @@ export default async function ParentTips({ gameId, uid }: Props) {
         </div>
       )}
 
-      {uid && (
-        <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{t('sharePrompt')}</p>
-          <TipForm gameId={gameId} />
-        </div>
-      )}
-
-      {!uid && (
-        <p className="text-xs text-slate-400 dark:text-slate-500 pt-1 border-t border-slate-100 dark:border-slate-700">
-          <a href="/login" className="text-indigo-600 hover:underline">{t('signIn')}</a>{' '}{t('signInPrompt')}
-        </p>
-      )}
+      <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{t('sharePrompt')}</p>
+        <TipForm gameId={gameId} />
+      </div>
     </div>
   )
 }

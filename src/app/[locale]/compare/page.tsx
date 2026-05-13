@@ -923,7 +923,17 @@ function ComparePageInner() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <main className="max-w-2xl mx-auto px-4 py-6 space-y-5">
+      <main className="max-w-2xl lg:max-w-4xl mx-auto px-4 py-6 space-y-5">
+
+        {/* Heading */}
+        <header>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-slate-100">
+            {t('title')}
+          </h1>
+          <p className="mt-1.5 text-sm text-slate-600 dark:text-slate-300 max-w-2xl">
+            {t('subtitle')}
+          </p>
+        </header>
 
         {/* Pickers */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

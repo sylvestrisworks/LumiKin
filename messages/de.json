@@ -111,7 +111,20 @@
     "businessPartnersAudience": "Für Partner",
     "businessPartnersBody": "Kindersicherheits-Bewertungs-API für Anbieter von Kindersicherungen, ISPs und Plattformen.",
     "businessPressAudience": "Für Journalisten",
-    "businessPressBody": "Abdeckungsstatistiken, Methodik, Pressekit und Kontaktdaten."
+    "businessPressBody": "Abdeckungsstatistiken, Methodik, Pressekit und Kontaktdaten.",
+    "librarySellEyebrow": "Kostenloses Konto",
+    "librarySellHeading": "Behalte im Blick, was dein Kind tatsächlich spielt.",
+    "librarySellSubhead": "Registriere dich kostenlos, um eine Bibliothek pro Kind anzulegen, aus Steam zu importieren und informiert zu bleiben, wenn sich eine Bewertung ändert.",
+    "librarySellTile1Title": "Eine Bibliothek pro Kind",
+    "librarySellTile1Body": "Füge die Spiele hinzu, die jedes Kind besitzt oder sich wünscht, und sieh die Bewertungen gefiltert nach Alter, Plattformen und Schwerpunktfähigkeiten.",
+    "librarySellTile2Title": "Aus Steam importieren",
+    "librarySellTile2Body": "Hol dir eine ganze Steam-Bibliothek mit einem Klick – keine manuelle Eingabe. Epic und Nintendo folgen als Nächstes.",
+    "librarySellTile3Title": "Benachrichtigungen bei Score-Änderungen",
+    "librarySellTile3Body": "Erhalte einen Hinweis, wenn ein Spiel, das deine Familie spielt, neu bewertet wird – nach einem Update, einer neuen Monetarisierungsebene oder einer neuen Prüfung.",
+    "librarySellTile4Title": "Kinderprofile",
+    "librarySellTile4Body": "Ein Konto, ein Profil pro Kind. Jedes erhält sein eigenes Alter, seine Plattformen und seinen Fähigkeitsschwerpunkt – und seine eigene Bibliotheksansicht.",
+    "librarySellCta": "Kostenloses Konto erstellen →",
+    "librarySellReassure": "Für Eltern immer kostenlos. Keine Karte erforderlich."
   },
   "age": {
     "earlyYears": "Frühe Jahre",

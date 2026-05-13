@@ -111,7 +111,20 @@
     "businessPartnersAudience": "För partners",
     "businessPartnersBody": "API för barnsäkerhetsbedömningar för leverantörer av föräldrakontroll, internetleverantörer och plattformar.",
     "businessPressAudience": "För journalister",
-    "businessPressBody": "Täckningsstatistik, metodik, presskit och kontaktuppgifter."
+    "businessPressBody": "Täckningsstatistik, metodik, presskit och kontaktuppgifter.",
+    "librarySellEyebrow": "Gratis konto",
+    "librarySellHeading": "Håll koll på vad ditt barn faktiskt spelar.",
+    "librarySellSubhead": "Skapa ett gratis konto för att bygga ett bibliotek per barn, importera från Steam och få veta när ett spel ombedöms.",
+    "librarySellTile1Title": "Ett bibliotek per barn",
+    "librarySellTile1Body": "Lägg till spelen varje barn äger eller önskar sig, och se betygen filtrerade efter ålder, plattformar och fokusfärdigheter.",
+    "librarySellTile2Title": "Importera från Steam",
+    "librarySellTile2Body": "Hämta hela Steam-biblioteket med ett klick – ingen manuell inmatning. Epic och Nintendo kommer snart.",
+    "librarySellTile3Title": "Notiser när betyg ändras",
+    "librarySellTile3Body": "Få en heads-up när ett spel familjen spelar ombedöms – efter en uppdatering, ett nytt monetiseringslager eller en ny granskning.",
+    "librarySellTile4Title": "Barnprofiler",
+    "librarySellTile4Body": "Ett konto, en profil per barn. Var och en får sin egen ålder, plattformar och färdighetsfokus – och sin egen bibliotek-vy.",
+    "librarySellCta": "Skapa ett gratis konto →",
+    "librarySellReassure": "Alltid gratis för föräldrar. Inget kort krävs."
   },
   "age": {
     "earlyYears": "Lågstadiet",

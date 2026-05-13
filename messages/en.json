@@ -78,7 +78,20 @@
     "businessPartnersAudience": "For partners",
     "businessPartnersBody": "Child-safety ratings API for parental control vendors, ISPs, and platforms.",
     "businessPressAudience": "For journalists",
-    "businessPressBody": "Coverage stats, methodology, press kit, and contact info."
+    "businessPressBody": "Coverage stats, methodology, press kit, and contact info.",
+    "librarySellEyebrow": "Free account",
+    "librarySellHeading": "Track what your kid actually plays.",
+    "librarySellSubhead": "Sign up free to build a per-child library, sync from Steam, and stay in the loop when a game's rating changes.",
+    "librarySellTile1Title": "A library per kid",
+    "librarySellTile1Body": "Add the games each child owns or wants, and see ratings filtered to their age, platforms, and focus skills.",
+    "librarySellTile2Title": "Import from Steam",
+    "librarySellTile2Body": "Pull a whole Steam library in one click — no manual entry. Epic and Nintendo coming next.",
+    "librarySellTile3Title": "Score-change alerts",
+    "librarySellTile3Body": "Get a heads-up when a game your family plays gets re-rated — after an update, a new monetization layer, or a fresh review.",
+    "librarySellTile4Title": "Child profiles",
+    "librarySellTile4Body": "One account, one profile per kid. Each gets their own age, platforms, and skill focus — and their own library view.",
+    "librarySellCta": "Create a free account →",
+    "librarySellReassure": "Free forever for parents. No card required."
   },
   "age": {
     "earlyYears": "Early Years",

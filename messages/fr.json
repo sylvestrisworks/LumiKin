@@ -111,7 +111,20 @@
     "businessPartnersAudience": "Pour les partenaires",
     "businessPartnersBody": "API d'évaluations de sécurité enfant pour les fournisseurs de contrôle parental, FAI et plateformes.",
     "businessPressAudience": "Pour les journalistes",
-    "businessPressBody": "Statistiques de couverture, méthodologie, kit presse et coordonnées."
+    "businessPressBody": "Statistiques de couverture, méthodologie, kit presse et coordonnées.",
+    "librarySellEyebrow": "Compte gratuit",
+    "librarySellHeading": "Suivez ce à quoi votre enfant joue vraiment.",
+    "librarySellSubhead": "Inscrivez-vous gratuitement pour créer une bibliothèque par enfant, importer depuis Steam et être averti quand l'évaluation d'un jeu change.",
+    "librarySellTile1Title": "Une bibliothèque par enfant",
+    "librarySellTile1Body": "Ajoutez les jeux que chaque enfant possède ou souhaite, et voyez les évaluations filtrées selon son âge, ses plateformes et ses compétences clés.",
+    "librarySellTile2Title": "Importer depuis Steam",
+    "librarySellTile2Body": "Récupérez toute une bibliothèque Steam en un clic — aucune saisie manuelle. Epic et Nintendo arrivent ensuite.",
+    "librarySellTile3Title": "Alertes de changement de score",
+    "librarySellTile3Body": "Recevez un avertissement quand un jeu auquel votre famille joue est réévalué — après une mise à jour, une nouvelle couche de monétisation ou une nouvelle revue.",
+    "librarySellTile4Title": "Profils enfants",
+    "librarySellTile4Body": "Un compte, un profil par enfant. Chacun a son âge, ses plateformes et son axe de compétences — et sa propre vue bibliothèque.",
+    "librarySellCta": "Créer un compte gratuit →",
+    "librarySellReassure": "Toujours gratuit pour les parents. Sans carte bancaire."
   },
   "age": {
     "earlyYears": "Premières années",

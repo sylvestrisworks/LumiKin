@@ -205,10 +205,11 @@ async function fetchGameData(slug: string): Promise<GameCardProps | null> {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params
 
-  let game: { title: string; description: string | null; backgroundImage: string | null; esrbRating: string | null; genres: unknown } | undefined
+  let game: { id: number; title: string; description: string | null; backgroundImage: string | null; esrbRating: string | null; genres: unknown } | undefined
   try {
     ;[game] = await db
       .select({
+        id: games.id,
         title: games.title,
         description: games.description,
         backgroundImage: games.backgroundImage,
@@ -224,13 +225,38 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!game) return { title: 'Game not found — LumiKin' }
 
-  const title = `${game.title} — Is it good for kids? | LumiKin`
-  const desc = game.description
-    ? game.description.slice(0, 155) + (game.description.length > 155 ? '…' : '')
-    : `LumiKin rates ${game.title} for parents — benefits, risks, addictive design patterns, and a recommended daily screen time.`
+  const t = await getTranslations({ locale, namespace: 'game' })
 
-  const ogImage = `/api/og/game/${slug}`
+  // For non-EN locales, prefer the translated benefitsNarrative so each locale
+  // ships a distinct meta description. Falls back to the localized template
+  // when no translation row exists yet. EN keeps the source game.description.
+  let localizedDesc: string | null = null
+  if (locale !== 'en') {
+    try {
+      const [tx] = await db
+        .select({ benefitsNarrative: gameTranslations.benefitsNarrative })
+        .from(gameTranslations)
+        .where(and(eq(gameTranslations.gameId, game.id), eq(gameTranslations.locale, locale)))
+        .limit(1)
+      if (tx?.benefitsNarrative && tx.benefitsNarrative.length > 10) {
+        localizedDesc = tx.benefitsNarrative
+      }
+    } catch {
+      // game_translations missing — fall back below
+    }
+  }
+
+  const rawDesc =
+      localizedDesc
+    ?? (locale === 'en' ? game.description : null)
+    ?? t('metaDescFallback', { title: game.title })
+
+  const title = t('metaTitle', { title: game.title })
+  const desc  = rawDesc.length > 155 ? rawDesc.slice(0, 155) + '…' : rawDesc
+
+  const ogImage   = `/api/og/game/${slug}`
   const canonical = `/${locale}/game/${slug}`
+  const ogAlt     = t('ogAlt', { title: game.title })
 
   return {
     title,
@@ -250,7 +276,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description: desc,
       url: canonical,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: `${game.title} — LumiKin rating` }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: ogAlt }],
       type: 'website',
     },
     twitter: {

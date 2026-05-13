@@ -7,6 +7,7 @@ import { db } from '@/lib/db'
 import { games, gameScores, reviews, darkPatterns, complianceStatus, userGames, childProfiles, gameTranslations } from '@/lib/db/schema'
 import GameCard from '@/components/GameCard'
 import { RelatedGameCard } from '@/components/RelatedGameCard'
+import { GitCompareArrows } from 'lucide-react'
 import { fetchRelatedGames } from '@/lib/related-games'
 import LibraryButton from '@/components/LibraryButton'
 import ParentTips from '@/components/ParentTips'
@@ -265,10 +266,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function GamePage({ params }: Props) {
   const { slug } = await params
-  const [data, session, t, locale] = await Promise.all([
+  const [data, session, t, tGC, locale] = await Promise.all([
     fetchGameData(slug),
     auth(),
     getTranslations('game'),
+    getTranslations('gameCard'),
     getLocale(),
   ])
   if (!data) notFound()
@@ -433,7 +435,7 @@ export default async function GamePage({ params }: Props) {
             {/* ── Right rail: supporting actions + context ───────────────────── */}
             <aside className="mt-6 lg:mt-0 lg:col-span-4 space-y-4">
 
-              {/* Library / Wishlist + Share */}
+              {/* Library / Wishlist + Compare + Share */}
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 {uid && game.id ? (
                   <LibraryButton
@@ -442,7 +444,16 @@ export default async function GamePage({ params }: Props) {
                     initialWishlisted={initialWishlisted}
                   />
                 ) : <div />}
-                <ShareButton title={game.title} />
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`/${locale}/compare?a=${game.slug}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600 hover:text-indigo-700 dark:hover:text-indigo-400 transition-colors"
+                  >
+                    <GitCompareArrows size={15} strokeWidth={2.5} aria-hidden />
+                    {tGC('compareThis')}
+                  </a>
+                  <ShareButton title={game.title} />
+                </div>
               </div>
 
               {/* Parent Tips */}

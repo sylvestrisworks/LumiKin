@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import Link from 'next/link'
-import { Lightbulb, Sparkles, Zap, Clock, User, GitCompareArrows, AlertTriangle } from 'lucide-react'
+import { Lightbulb, Sparkles, Zap, Clock, User, AlertTriangle } from 'lucide-react'
 import type { DarkPattern, GameCardProps, SerializedReview, SerializedScores } from '@/types/game'
 import { calcAge } from '@/lib/age'
 import { Tooltip } from './Tooltip'
@@ -569,8 +569,6 @@ function FullScoresTab({ scores, review, t, metaLine }: { scores: SerializedScor
 
 // ─── Main GameCard — Bento Box layout ─────────────────────────────────────────
 
-type Tab = 'benefits' | 'risks' | 'scores'
-
 type GameCardLocalProps = GameCardProps & {
   userProfiles?: Array<{ id: number; name: string; birthYear: number; birthDate: string | null }>
 }
@@ -580,20 +578,12 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
   const tDP    = useTranslations('darkPatterns')
   const tGame  = useTranslations('game')
   const locale = useLocale()
-  const [activeTab, setActiveTab] = useState<Tab>('benefits')
 
   const gradient = placeholderGradient(game.title)
   const abbr = game.title.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('')
   const hasReview = scores !== null
   const risk    = hasReview ? riskLevel(scores.ris)   : null
   const bdsVerd = hasReview ? bdsVerdict(scores.bds)  : null
-
-  const tabClass = (tab: Tab) =>
-    `px-4 py-2.5 text-sm font-semibold tracking-tight transition-colors rounded-xl ${
-      activeTab === tab
-        ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm'
-        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-    }`
 
   return (
     <div className="bg-gray-50 dark:bg-slate-800/50 rounded-3xl p-5 space-y-4">
@@ -740,44 +730,7 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
         )
       })()}
 
-      {/* ── 2b. VITALS STRIP — flags / cost / stranger chat ──────────────────────── */}
-      {hasReview && (() => {
-        const highFlags = darkPatterns.filter(p => p.severity === 'high')
-        const hasCost   = review?.estimatedMonthlyCostLow != null
-        const hasChat   = game.hasStrangerChat
-        if (!highFlags.length && !hasCost && !hasChat) return null
-        return (
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-3xl px-5 py-4 space-y-3">
-            <p className="text-xs font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">{t('headsUp')}</p>
-            {highFlags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {highFlags.map(p => (
-                  <span key={p.patternId} className="text-xs font-semibold bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700 px-2.5 py-1 rounded-full">
-                    {tDP(`dp${p.patternId.slice(2)}Label` as Parameters<typeof tDP>[0])}
-                  </span>
-                ))}
-              </div>
-            )}
-            <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-xs font-semibold text-amber-900 dark:text-amber-300">
-              {hasCost && (
-                <span>
-                  💸 {t('monthlyCost')}:{' '}
-                  {review!.estimatedMonthlyCostLow === 0 && review!.estimatedMonthlyCostHigh === 0
-                    ? t('free')
-                    : review!.estimatedMonthlyCostHigh != null
-                    ? `$${review!.estimatedMonthlyCostLow}–$${review!.estimatedMonthlyCostHigh}/mo`
-                    : `$${review!.estimatedMonthlyCostLow}/mo`}
-                </span>
-              )}
-              {hasChat && (
-                <span>💬 {t('strangerChatEnabled')}</span>
-              )}
-            </div>
-          </div>
-        )
-      })()}
-
-      {/* ── 3. TWO PILLARS ─────────────────────────────────────────────────────── */}
+      {/* ── 2b. SCORE BREAKDOWN — growth + risk pillars ──────────────────────────── */}
       {hasReview && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
@@ -818,6 +771,43 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
           </div>
         </div>
       )}
+
+      {/* ── 2c. VITALS STRIP — flags / cost / stranger chat ──────────────────────── */}
+      {hasReview && (() => {
+        const highFlags = darkPatterns.filter(p => p.severity === 'high')
+        const hasCost   = review?.estimatedMonthlyCostLow != null
+        const hasChat   = game.hasStrangerChat
+        if (!highFlags.length && !hasCost && !hasChat) return null
+        return (
+          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-3xl px-5 py-4 space-y-3">
+            <p className="text-xs font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">{t('headsUp')}</p>
+            {highFlags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {highFlags.map(p => (
+                  <span key={p.patternId} className="text-xs font-semibold bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700 px-2.5 py-1 rounded-full">
+                    {tDP(`dp${p.patternId.slice(2)}Label` as Parameters<typeof tDP>[0])}
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-xs font-semibold text-amber-900 dark:text-amber-300">
+              {hasCost && (
+                <span>
+                  💸 {t('monthlyCost')}:{' '}
+                  {review!.estimatedMonthlyCostLow === 0 && review!.estimatedMonthlyCostHigh === 0
+                    ? t('free')
+                    : review!.estimatedMonthlyCostHigh != null
+                    ? `$${review!.estimatedMonthlyCostLow}–$${review!.estimatedMonthlyCostHigh}/mo`
+                    : `$${review!.estimatedMonthlyCostLow}/mo`}
+                </span>
+              )}
+              {hasChat && (
+                <span>💬 {t('strangerChatEnabled')}</span>
+              )}
+            </div>
+          </div>
+        )
+      })()}
 
       {/* ── 4. PARENT TIP ──────────────────────────────────────────────────────── */}
       {review?.parentTip && (
@@ -869,46 +859,52 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
         </div>
       )}
 
-      {/* ── 6. DETAIL TABS ─────────────────────────────────────────────────────── */}
+      {/* ── 6. BENEFITS + RISKS — exposed sections, Full Scores collapsed ──────── */}
       <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm overflow-hidden border border-slate-100 dark:border-slate-700">
-        <div className="p-2 bg-gray-100 dark:bg-slate-700 m-3 rounded-2xl flex gap-1" role="tablist">
-          {(['benefits', 'risks', 'scores'] as Tab[]).map((tab) => (
-            <button key={tab} className={`flex-1 ${tabClass(tab)}`} onClick={() => setActiveTab(tab)} role="tab" aria-selected={activeTab === tab}>
-              {tab === 'benefits'
-              ? t('tabBenefits')
-              : tab === 'risks'
-              ? t('tabRisks')
-              : <><span className="hidden sm:inline">{t('tabFullScores')}</span><span className="sm:hidden">{t('tabScores')}</span></>}
-            </button>
-          ))}
-        </div>
+        {!hasReview ? (
+          <div className="text-center py-10 px-5">
+            <p className="text-slate-400 dark:text-slate-500 text-sm">{t('scoringPending')}</p>
+          </div>
+        ) : (
+          <>
+            <section className="px-5 py-5">
+              <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">
+                {t('tabBenefits')}
+              </h2>
+              <BenefitsTab scores={scores} review={review} t={t} />
+            </section>
 
-        <div className="px-5 pb-5 min-h-48">
-          {!hasReview ? (
-            <div className="text-center py-8">
-              <p className="text-slate-400 dark:text-slate-500 text-sm">{t('scoringPending')}</p>
-            </div>
-          ) : activeTab === 'benefits' ? (
-            <BenefitsTab scores={scores} review={review} t={t} />
-          ) : activeTab === 'risks' ? (
-            <RisksTab scores={scores} game={game} review={review} darkPatterns={darkPatterns} t={t} />
-          ) : (
-            <FullScoresTab
-              scores={scores}
-              review={review}
-              t={t}
-              metaLine={scores?.calculatedAt ? (
-                <ScoreMetaLine
-                  calculatedAt={scores.calculatedAt}
-                  methodologyVersion={scores.methodologyVersion}
-                  scoringMethod={scores.scoringMethod}
-                  updatedAt={game.updatedAt}
-                  locale={locale}
+            <section className="border-t border-slate-100 dark:border-slate-700 px-5 py-5">
+              <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">
+                {t('tabRisks')}
+              </h2>
+              <RisksTab scores={scores} game={game} review={review} darkPatterns={darkPatterns} t={t} />
+            </section>
+
+            <details className="border-t border-slate-100 dark:border-slate-700 group">
+              <summary className="px-5 py-4 cursor-pointer list-none flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
+                <span className="group-open:rotate-90 transition-transform inline-block" aria-hidden>›</span>
+                {t('tabFullScores')}
+              </summary>
+              <div className="px-5 pb-5">
+                <FullScoresTab
+                  scores={scores}
+                  review={review}
+                  t={t}
+                  metaLine={scores?.calculatedAt ? (
+                    <ScoreMetaLine
+                      calculatedAt={scores.calculatedAt}
+                      methodologyVersion={scores.methodologyVersion}
+                      scoringMethod={scores.scoringMethod}
+                      updatedAt={game.updatedAt}
+                      locale={locale}
+                    />
+                  ) : undefined}
                 />
-              ) : undefined}
-            />
-          )}
-        </div>
+              </div>
+            </details>
+          </>
+        )}
 
         <div className="border-t border-gray-100 dark:border-slate-700 px-5 py-3 flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-400 dark:text-slate-500">
           <span>
@@ -954,15 +950,6 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
 
       {/* ── 8. COMPLIANCE ──────────────────────────────────────────────────────── */}
       <ComplianceBadges compliance={compliance} />
-
-      {/* ── 9. COMPARE CTA ─────────────────────────────────────────────────────── */}
-      <Link
-        href={`/${locale}/compare?a=${game.slug}`}
-        className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 text-sm font-semibold hover:border-indigo-300 dark:hover:border-indigo-600 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
-      >
-        <GitCompareArrows size={15} strokeWidth={2.5} />
-        {t('compareThis')}
-      </Link>
 
     </div>
   )

@@ -84,7 +84,34 @@
     "featuredPerDay": "pro Tag",
     "featuredWhy": "Warum:",
     "featuredParentTip": "Tipp für Eltern",
-    "featuredCta": "Vollständige Bewertung ansehen →"
+    "featuredCta": "Vollständige Bewertung ansehen →",
+    "h1": "Wisse, was dein Kind wirklich spielt.",
+    "subhead": "Durchsuche {count} Spiele. Sieh die Vorteile, die Risiken und eine gesunde Zeit pro Sitzung. Kostenlos für Eltern.",
+    "browseByLabel": "Oder durchstöbern nach",
+    "browseByAge": "Alter",
+    "browseByRoblox": "Roblox-Erlebnisse",
+    "browseByFortnite": "Fortnite Creative",
+    "tilesHeading": "Was dich erwartet",
+    "tile1Title": "Vorteile zuerst, keine Warnungen",
+    "tile1Body": "Wir sind eine spielpositive Seite. Jede Bewertung beginnt mit dem, was ein Spiel tatsächlich aufbaut — Problemlösung, Teamarbeit, Kreativität — bevor irgendwelche Risiken kommen.",
+    "tile2Title": "Eine gesunde Zeit pro Sitzung",
+    "tile2Body": "Jedes Spiel erhält eine empfohlene Sitzungsdauer, abgeleitet aus dem Aufbau des Spiels — keine generische Bildschirmzeitregel.",
+    "tile3Title": "Belege, kein Bauchgefühl",
+    "tile3Body": "Die Bewertungen stammen aus einer öffentlichen Rubrik mit 60 Unterdimensionen. Du kannst genau nachlesen, warum ein Spiel die Bewertung bekommen hat.",
+    "coverageGamesRated": "Bewertete Spiele",
+    "coverageRatedThisWeek": "Diese Woche bewertet",
+    "coveragePlatforms": "Abgedeckte Plattformen",
+    "methodologyEyebrow": "Wie die Bewertungen funktionieren",
+    "methodologyIntro": "Jedes Spiel wird auf Entwicklungsvorteile und Designrisiken über 60 Unterdimensionen aus einer öffentlichen Rubrik bewertet. Die beiden Werte ergeben eine empfohlene Sitzungsdauer — von 15 Minuten bis zu zwei Stunden — die widerspiegelt, wie das Spiel aufgebaut ist, und keine generische Grenze.",
+    "methodologyDetailsSummary": "Die vollständige Aufschlüsselung",
+    "methodologyDetailsBenefits": "Vorteile umfassen zehn kognitive Dimensionen (Problemlösung, räumliches Bewusstsein, strategisches Denken, Kreativität und mehr), sechs sozial-emotionale Dimensionen (Teamarbeit, Kommunikation, Empathie, ethisches Denken) und vier motorische Dimensionen — gewichtet zu einem <bds>Benefits Development Score (BDS)</bds>.",
+    "methodologyDetailsRisks": "Risiken werden in den Bereichen Dopamin-Manipulationsdesign (<variable>variable Belohnungen</variable>, <streaks>Streaks</streaks>, <fomo>FOMO-Auslöser</fomo>), Monetarisierungsdruck (<paytowin>Pay-to-Win</paytowin>, <currency>Währungsverschleierung</currency>, Kinder als Zielgruppe) und soziales Risiko (Fremdkontakt, toxischer Wettbewerb, Identitätsdruck) bewertet — kombiniert zu einem <ris>Risk Influence Score (RIS)</ris>.",
+    "methodologyReadFull": "Vollständige Methodik lesen →",
+    "methodologyDownloadPdf": "PDF herunterladen →",
+    "businessPartnersAudience": "Für Partner",
+    "businessPartnersBody": "Kindersicherheits-Bewertungs-API für Anbieter von Kindersicherungen, ISPs und Plattformen.",
+    "businessPressAudience": "Für Journalisten",
+    "businessPressBody": "Abdeckungsstatistiken, Methodik, Pressekit und Kontaktdaten."
   },
   "age": {
     "earlyYears": "Frühe Jahre",
@@ -841,7 +868,10 @@
     "recommendedAge": "Empfohlenes Alter {age}+",
     "similarGames": "Ähnliche Spiele",
     "navHome": "Start",
-    "navBrowse": "Entdecken"
+    "navBrowse": "Entdecken",
+    "metaTitle": "{title} — Gut für Kinder? | LumiKin",
+    "metaDescFallback": "LumiKin bewertet {title} für Eltern — Vorteile, Risiken, suchterzeugende Designmuster und empfohlene tägliche Bildschirmzeit.",
+    "ogAlt": "{title} — LumiKin-Bewertung"
   },
   "importModal": {
     "title": "Steam-Bibliothek importieren",
@@ -973,5 +1003,14 @@
     "switchAge": "Or browse a different age",
     "ageLink": "Age {age}",
     "backToAges": "All ages"
+  },
+  "glossary": {
+    "variableRewards": "Belohnungen mit einem unvorhersehbaren Zeitplan — mal gibt es einen großen Drop, mal nichts. Dieselbe Mechanik wie bei Spielautomaten; sie hält Spieler länger eingebunden als feste Belohnungen.",
+    "streaks": "Mechaniken, die aufeinanderfolgende Spieltage zählen. Ein Tag Pause beendet die Streak und vernichtet den Fortschritt — das setzt Kinder unter Druck einzuloggen, selbst wenn sie keine Lust haben.",
+    "fomo": "Fear of Missing Out (Angst, etwas zu verpassen). Zeitlich begrenzte Events, saisonale Items oder einmalige Belohnungen, die Spieler dafür bestrafen, gerade nicht zu spielen.",
+    "payToWin": "Wenn das Ausgeben echter Geldes einen spürbaren Spielvorteil bringt — bessere Ausrüstung, schnellerer Fortschritt oder Siege, die Gratis-Spieler nicht erreichen können.",
+    "currencyObfuscation": "Die Verwendung von Spielwährungen (Gems, V-Bucks, Robux) statt Euro, sodass schwer zu erkennen ist, was etwas in echtem Geld tatsächlich kostet.",
+    "bds": "Benefits Development Score: eine Bewertung von 0–100, die kognitive, sozial-emotionale und motorische Vorteile des Spiels kombiniert.",
+    "ris": "Risk Influence Score: eine Bewertung von 0–100, die Dopamindruck, Monetarisierungsdruck und soziales Risiko im Spieldesign kombiniert."
   }
 }

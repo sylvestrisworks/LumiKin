@@ -84,7 +84,34 @@
     "featuredPerDay": "per dag",
     "featuredWhy": "Varför:",
     "featuredParentTip": "Föräldratips",
-    "featuredCta": "Se hela bedömningen →"
+    "featuredCta": "Se hela bedömningen →",
+    "h1": "Vet vad ditt barn faktiskt spelar.",
+    "subhead": "Sök bland {count} spel. Se fördelarna, riskerna och en hälsosam tid per session. Gratis för föräldrar.",
+    "browseByLabel": "Eller bläddra efter",
+    "browseByAge": "Ålder",
+    "browseByRoblox": "Roblox-upplevelser",
+    "browseByFortnite": "Fortnite Creative",
+    "tilesHeading": "Vad du får se",
+    "tile1Title": "Fördelar först, inte varningar",
+    "tile1Body": "Vi är en spelpositiv sajt. Varje bedömning börjar med vad spelet faktiskt bygger upp — problemlösning, samarbete, kreativitet — innan några risker.",
+    "tile2Title": "En hälsosam tid per session",
+    "tile2Body": "Varje spel får en rekommenderad sessionslängd, utifrån hur spelet är byggt — inte en generisk skärmtidsregel.",
+    "tile3Title": "Bevis, inte känslor",
+    "tile3Body": "Poängen kommer från en offentlig rubrik som täcker 60 underdimensioner. Du kan läsa exakt varför ett spel fick sin bedömning.",
+    "coverageGamesRated": "Bedömda spel",
+    "coverageRatedThisWeek": "Bedömda denna vecka",
+    "coveragePlatforms": "Plattformar som täcks",
+    "methodologyEyebrow": "Så fungerar poängen",
+    "methodologyIntro": "Varje spel poängsätts på utvecklingsfördelar och designrisker över 60 underdimensioner från en offentlig rubrik. De två poängen kombineras till en rekommenderad sessionslängd — från 15 minuter till två timmar — som speglar hur spelet är byggt, inte en generisk gräns.",
+    "methodologyDetailsSummary": "Hela uppdelningen",
+    "methodologyDetailsBenefits": "Fördelar täcker tio kognitiva dimensioner (problemlösning, rumslig förmåga, strategiskt tänkande, kreativitet med mera), sex socioemotionella dimensioner (samarbete, kommunikation, empati, etiskt resonemang) och fyra motoriska dimensioner — viktade till en <bds>Benefits Development Score (BDS)</bds>.",
+    "methodologyDetailsRisks": "Risker poängsätts inom dopamin-manipulerande design (<variable>variabla belöningar</variable>, <streaks>streaks</streaks>, <fomo>FOMO-triggers</fomo>), monetiseringspress (<paytowin>pay-to-win</paytowin>, <currency>valutaobfuskering</currency>, barnriktning) och social risk (interaktion med främlingar, toxisk konkurrens, identitetspress) — kombinerade till en <ris>Risk Influence Score (RIS)</ris>.",
+    "methodologyReadFull": "Läs hela metodiken →",
+    "methodologyDownloadPdf": "Ladda ner PDF →",
+    "businessPartnersAudience": "För partners",
+    "businessPartnersBody": "API för barnsäkerhetsbedömningar för leverantörer av föräldrakontroll, internetleverantörer och plattformar.",
+    "businessPressAudience": "För journalister",
+    "businessPressBody": "Täckningsstatistik, metodik, presskit och kontaktuppgifter."
   },
   "age": {
     "earlyYears": "Lågstadiet",
@@ -841,7 +868,10 @@
     "recommendedAge": "Rekommenderad ålder {age}+",
     "similarGames": "Liknande spel",
     "navHome": "Hem",
-    "navBrowse": "Utforska"
+    "navBrowse": "Utforska",
+    "metaTitle": "{title} — Är det bra för barn? | LumiKin",
+    "metaDescFallback": "LumiKin bedömer {title} för föräldrar — fördelar, risker, beroendeframkallande designmönster och rekommenderad daglig skärmtid.",
+    "ogAlt": "{title} — LumiKin-bedömning"
   },
   "importModal": {
     "title": "Importera Steam-bibliotek",
@@ -973,5 +1003,14 @@
     "switchAge": "Or browse a different age",
     "ageLink": "Age {age}",
     "backToAges": "All ages"
+  },
+  "glossary": {
+    "variableRewards": "Belöningar som ges enligt ett oförutsägbart schema — ibland får du en bra drop, ibland ingenting. Samma mekanik som driver enarmade banditer; håller spelaren engagerad längre än fasta belöningar.",
+    "streaks": "Mekanik som räknar sammanhängande speldagar i rad. Att hoppa över en dag bryter streaken och förlorar progression, vilket pressar barn att logga in även när de inte vill.",
+    "fomo": "Fear of Missing Out (rädsla att missa något). Tidsbegränsade event, säsongsbundna föremål eller engångsbelöningar som straffar spelaren för att inte spela just nu.",
+    "payToWin": "När det att betala riktiga pengar ger en konkret fördel i spelet — bättre utrustning, snabbare progression eller segrar som gratisspelare inte kan matcha.",
+    "currencyObfuscation": "Att använda spelvalutor (gems, V-Bucks, Robux) i stället för kronor, så att det blir svårt att se vad något egentligen kostar i riktiga pengar.",
+    "bds": "Benefits Development Score: en bedömning 0–100 som kombinerar kognitiva, socioemotionella och motoriska fördelar spelet erbjuder.",
+    "ris": "Risk Influence Score: en bedömning 0–100 som kombinerar dopaminpress, monetiseringspress och social risk i spelets design."
   }
 }

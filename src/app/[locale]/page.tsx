@@ -10,6 +10,7 @@ import SearchBar from '@/components/SearchBar'
 import FeaturedGame from './_components/FeaturedGame'
 import ParentValueTiles from './_components/ParentValueTiles'
 import BusinessRow from './_components/BusinessRow'
+import { Term } from '@/components/Term'
 
 // Old homepage catalog params — redirect to /browse
 const CATALOG_PARAMS = ['age', 'platform', 'platforms', 'sort', 'genres', 'benefits', 'risk']
@@ -31,10 +32,21 @@ export default async function HomePage({ params, searchParams }: Props) {
     redirect(`/${locale}/browse?${qs.toString()}`)
   }
 
-  const [stats, t] = await Promise.all([
+  const [stats, t, tg] = await Promise.all([
     fetchSiteStats(),
     getTranslations('home'),
+    getTranslations('glossary'),
   ])
+
+  const termTags = {
+    bds:       (c: React.ReactNode) => <Term def={tg('bds')}>{c}</Term>,
+    ris:       (c: React.ReactNode) => <Term def={tg('ris')}>{c}</Term>,
+    variable:  (c: React.ReactNode) => <Term def={tg('variableRewards')}>{c}</Term>,
+    streaks:   (c: React.ReactNode) => <Term def={tg('streaks')}>{c}</Term>,
+    fomo:      (c: React.ReactNode) => <Term def={tg('fomo')}>{c}</Term>,
+    paytowin:  (c: React.ReactNode) => <Term def={tg('payToWin')}>{c}</Term>,
+    currency:  (c: React.ReactNode) => <Term def={tg('currencyObfuscation')}>{c}</Term>,
+  }
 
   return (
     <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
@@ -113,8 +125,8 @@ export default async function HomePage({ params, searchParams }: Props) {
               {t('methodologyDetailsSummary')}
             </summary>
             <div className="mt-4 space-y-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              <p>{t('methodologyDetailsBenefits')}</p>
-              <p>{t('methodologyDetailsRisks')}</p>
+              <p>{t.rich('methodologyDetailsBenefits', termTags)}</p>
+              <p>{t.rich('methodologyDetailsRisks', termTags)}</p>
             </div>
           </details>
 

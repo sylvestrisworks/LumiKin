@@ -71,8 +71,8 @@
     "methodologyEyebrow": "How scores work",
     "methodologyIntro": "Every game is scored on developmental benefits and design risks across 60 sub-dimensions from a public rubric. The two scores combine into a recommended session length — from 15 minutes to two hours — that reflects how the game is built, not a generic limit.",
     "methodologyDetailsSummary": "The full breakdown",
-    "methodologyDetailsBenefits": "Benefits cover ten cognitive dimensions (problem solving, spatial awareness, strategic thinking, creativity, and more), six social-emotional dimensions (teamwork, communication, empathy, ethical reasoning), and four motor dimensions — weighted into a Benefits Development Score (BDS).",
-    "methodologyDetailsRisks": "Risks are scored across dopamine manipulation design (variable rewards, streaks, FOMO triggers), monetization pressure (pay-to-win, currency obfuscation, child-targeting), and social risk (stranger interaction, toxic competition, identity pressure) — combined into a Risk Influence Score (RIS).",
+    "methodologyDetailsBenefits": "Benefits cover ten cognitive dimensions (problem solving, spatial awareness, strategic thinking, creativity, and more), six social-emotional dimensions (teamwork, communication, empathy, ethical reasoning), and four motor dimensions — weighted into a <bds>Benefits Development Score (BDS)</bds>.",
+    "methodologyDetailsRisks": "Risks are scored across dopamine manipulation design (<variable>variable rewards</variable>, <streaks>streaks</streaks>, <fomo>FOMO triggers</fomo>), monetization pressure (<paytowin>pay-to-win</paytowin>, <currency>currency obfuscation</currency>, child-targeting), and social risk (stranger interaction, toxic competition, identity pressure) — combined into a <ris>Risk Influence Score (RIS)</ris>.",
     "methodologyReadFull": "Read the full methodology →",
     "methodologyDownloadPdf": "Download PDF →",
     "businessPartnersAudience": "For partners",
@@ -835,7 +835,10 @@
     "recommendedAge": "Recommended age {age}+",
     "similarGames": "Similar games",
     "navHome": "Home",
-    "navBrowse": "Browse"
+    "navBrowse": "Browse",
+    "metaTitle": "{title} — Is it good for kids? | LumiKin",
+    "metaDescFallback": "LumiKin rates {title} for parents — benefits, risks, addictive design patterns, and a recommended daily screen time.",
+    "ogAlt": "{title} — LumiKin rating"
   },
   "importModal": {
     "title": "Import Steam Library",
@@ -967,5 +970,14 @@
     "switchAge": "Or browse a different age",
     "ageLink": "Age {age}",
     "backToAges": "All ages"
+  },
+  "glossary": {
+    "variableRewards": "Rewards given on an unpredictable schedule — sometimes you get a great drop, sometimes nothing. The same mechanic that powers slot machines; it keeps players engaged longer than fixed rewards.",
+    "streaks": "Mechanics that track consecutive days of play. Skipping a day breaks the streak and forfeits progress, which pressures kids to log in even when they don’t want to.",
+    "fomo": "Fear of Missing Out. Limited-time events, seasonal items, or one-off rewards that punish players for not playing right now.",
+    "payToWin": "When spending real money gives a meaningful gameplay advantage — better gear, faster progression, or wins that free players can’t match.",
+    "currencyObfuscation": "Using in-game currencies (gems, V-Bucks, Robux) instead of dollars, so it’s hard to tell how much something actually costs in real money.",
+    "bds": "Benefits Development Score: a 0–100 rating combining cognitive, social-emotional, and motor benefits the game offers.",
+    "ris": "Risk Influence Score: a 0–100 rating combining dopamine pressure, monetization pressure, and social risk in the game’s design."
   }
 }

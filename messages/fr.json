@@ -84,7 +84,34 @@
     "featuredPerDay": "par jour",
     "featuredWhy": "Pourquoi :",
     "featuredParentTip": "Conseil aux parents",
-    "featuredCta": "Voir la note complète →"
+    "featuredCta": "Voir la note complète →",
+    "h1": "Sache ce que ton enfant joue vraiment.",
+    "subhead": "Recherche parmi {count} jeux. Vois les bénéfices, les risques et un temps sain par session. Gratuit pour les parents.",
+    "browseByLabel": "Ou parcourir par",
+    "browseByAge": "Âge",
+    "browseByRoblox": "Expériences Roblox",
+    "browseByFortnite": "Fortnite Creative",
+    "tilesHeading": "Ce que tu verras",
+    "tile1Title": "Bénéfices d'abord, pas d'avertissements",
+    "tile1Body": "Nous sommes un site pro-gaming. Chaque évaluation commence par ce qu'un jeu construit réellement — résolution de problèmes, travail d'équipe, créativité — avant tout risque.",
+    "tile2Title": "Un temps sain par session",
+    "tile2Body": "Chaque jeu reçoit une durée de session recommandée, dérivée de la façon dont le jeu est conçu — pas une règle générique de temps d'écran.",
+    "tile3Title": "Des preuves, pas des impressions",
+    "tile3Body": "Les scores proviennent d'une grille publique couvrant 60 sous-dimensions. Tu peux lire exactement pourquoi un jeu a obtenu son évaluation.",
+    "coverageGamesRated": "Jeux évalués",
+    "coverageRatedThisWeek": "Évalués cette semaine",
+    "coveragePlatforms": "Plateformes couvertes",
+    "methodologyEyebrow": "Comment fonctionnent les scores",
+    "methodologyIntro": "Chaque jeu est noté sur les bénéfices développementaux et les risques de conception à travers 60 sous-dimensions d'une grille publique. Les deux scores se combinent en une durée de session recommandée — de 15 minutes à deux heures — qui reflète la façon dont le jeu est conçu, pas une limite générique.",
+    "methodologyDetailsSummary": "Le détail complet",
+    "methodologyDetailsBenefits": "Les bénéfices couvrent dix dimensions cognitives (résolution de problèmes, conscience spatiale, pensée stratégique, créativité et plus), six dimensions socio-émotionnelles (travail d'équipe, communication, empathie, raisonnement éthique) et quatre dimensions motrices — pondérées en un <bds>Benefits Development Score (BDS)</bds>.",
+    "methodologyDetailsRisks": "Les risques sont notés sur le design de manipulation dopaminergique (<variable>récompenses variables</variable>, <streaks>séries</streaks>, <fomo>déclencheurs FOMO</fomo>), la pression de monétisation (<paytowin>pay-to-win</paytowin>, <currency>obscurcissement des monnaies</currency>, ciblage des enfants) et le risque social (interaction avec des inconnus, compétition toxique, pression identitaire) — combinés en un <ris>Risk Influence Score (RIS)</ris>.",
+    "methodologyReadFull": "Lire la méthodologie complète →",
+    "methodologyDownloadPdf": "Télécharger le PDF →",
+    "businessPartnersAudience": "Pour les partenaires",
+    "businessPartnersBody": "API d'évaluations de sécurité enfant pour les fournisseurs de contrôle parental, FAI et plateformes.",
+    "businessPressAudience": "Pour les journalistes",
+    "businessPressBody": "Statistiques de couverture, méthodologie, kit presse et coordonnées."
   },
   "age": {
     "earlyYears": "Premières années",
@@ -841,7 +868,10 @@
     "recommendedAge": "Âge recommandé {age}+",
     "similarGames": "Jeux similaires",
     "navHome": "Accueil",
-    "navBrowse": "Explorer"
+    "navBrowse": "Explorer",
+    "metaTitle": "{title} — Convient-il aux enfants ? | LumiKin",
+    "metaDescFallback": "LumiKin évalue {title} pour les parents — bénéfices, risques, mécaniques addictives et temps d'écran quotidien recommandé.",
+    "ogAlt": "{title} — évaluation LumiKin"
   },
   "importModal": {
     "title": "Importer la bibliothèque Steam",
@@ -973,5 +1003,14 @@
     "switchAge": "Or browse a different age",
     "ageLink": "Age {age}",
     "backToAges": "All ages"
+  },
+  "glossary": {
+    "variableRewards": "Récompenses données selon un calendrier imprévisible — parfois un super drop, parfois rien. La même mécanique qui anime les machines à sous ; elle retient les joueurs plus longtemps que des récompenses fixes.",
+    "streaks": "Mécaniques qui comptent les jours de jeu consécutifs. Sauter un jour casse la série et fait perdre la progression, ce qui pousse les enfants à se connecter même quand ils n'en ont pas envie.",
+    "fomo": "Fear of Missing Out (peur de manquer quelque chose). Événements limités, objets saisonniers ou récompenses uniques qui punissent les joueurs de ne pas jouer maintenant.",
+    "payToWin": "Quand dépenser de l'argent réel donne un avantage réel en jeu — meilleur équipement, progression plus rapide ou victoires inaccessibles aux joueurs gratuits.",
+    "currencyObfuscation": "Utiliser des monnaies en jeu (gemmes, V-Bucks, Robux) au lieu d'euros, pour qu'il soit difficile de savoir combien quelque chose coûte vraiment en argent réel.",
+    "bds": "Benefits Development Score : une note de 0 à 100 combinant les bénéfices cognitifs, socio-émotionnels et moteurs du jeu.",
+    "ris": "Risk Influence Score : une note de 0 à 100 combinant la pression dopaminergique, la pression de monétisation et le risque social dans la conception du jeu."
   }
 }

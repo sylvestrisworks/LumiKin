@@ -16,7 +16,7 @@ export default async function CoverageStrip({ stats, variant = 'partner' }: Prop
   if (variant === 'parent') {
     const t = await getTranslations('home')
     items = [
-      { value: totalTitles.toLocaleString('en'),               label: t('coverageGamesRated') },
+      { value: stats.total_games_scored.toLocaleString('en'),  label: t('coverageGamesRated') },
       { value: stats.scored_last_7_days.toLocaleString('en'),  label: t('coverageRatedThisWeek') },
       { value: platformCount.toLocaleString('en'),             label: t('coveragePlatforms') },
     ]

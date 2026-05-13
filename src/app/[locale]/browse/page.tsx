@@ -119,6 +119,14 @@ const SHELF_ESRB: Record<string, string[]> = {
   M:   ['E', 'E10+', 'T', 'M'],
 }
 
+// Map a child's age (years) → the most appropriate ESRB tier for shelf filtering.
+function ageToEsrbTier(age: number): 'E' | 'E10' | 'T' | 'M' {
+  if (age < 7)  return 'E'
+  if (age < 12) return 'E10'
+  if (age < 17) return 'T'
+  return 'M'
+}
+
 function escapeIlike(s: string): string {
   return s.replace(/[\\%_]/g, ch => '\\' + ch)
 }
@@ -549,6 +557,14 @@ export default async function BrowsePage({ params, searchParams }: Props) {
 
   const ugcPlatforms = await ugcPlatformsPromise
 
+  // Effective shelf-mode filters — URL filters win; otherwise fall back to selected child's profile
+  const shelfAge: string | undefined =
+    filters.age ?? (selectedChild ? ageToEsrbTier(selectedChild.age) : undefined)
+  const shelfPlatforms: string[] =
+    filters.platforms.length > 0
+      ? filters.platforms
+      : (selectedChild?.platforms ?? [])
+
   if (isShelfMode) {
     const [robloxRow, fortniteRow] = await Promise.all([
       db.select({ id: games.id }).from(games).where(eq(games.slug, 'roblox')).limit(1).then(r => r[0] ?? null),
@@ -570,7 +586,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
     }
 
     ;[carousels, robloxExperiences, fortniteExperiences] = await Promise.all([
-      getCarouselRows(filters.platforms, filters.age, locale),
+      getCarouselRows(shelfPlatforms, shelfAge, locale),
       robloxRow
         ? db.select(expSelect).from(platformExperiences)
             .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
@@ -684,10 +700,10 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                 </div>
               )}
               <Suspense>
-                <AgePicker current={filters.age} />
+                <AgePicker current={shelfAge} />
               </Suspense>
               <Suspense>
-                <PlatformPicker current={filters.platforms} />
+                <PlatformPicker current={shelfPlatforms} />
               </Suspense>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 <Link href={`/${locale}/age`} className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium">

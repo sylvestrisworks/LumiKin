@@ -811,14 +811,14 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
 
       {/* ── 4. PARENT TIP ──────────────────────────────────────────────────────── */}
       {review?.parentTip && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-3xl p-5">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 border-l-4 border-l-blue-500 dark:border-l-blue-400 rounded-2xl p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 bg-blue-200 dark:bg-blue-800 rounded-xl flex items-center justify-center">
-              <Lightbulb size={16} className="text-blue-700 dark:text-blue-300" strokeWidth={2.5} />
+            <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/40 rounded-xl flex items-center justify-center">
+              <Lightbulb size={16} className="text-blue-600 dark:text-blue-400" strokeWidth={2.5} />
             </div>
-            <p className="text-xs font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">{t('parentProTip')}</p>
+            <h3 className="text-xs font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">{t('parentProTip')}</h3>
           </div>
-          <p className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">{review.parentTip}</p>
+          <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">{review.parentTip}</p>
         </div>
       )}
 
@@ -928,20 +928,20 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
 
       {/* ── 7. DEBATE TRANSCRIPT ───────────────────────────────────────────────── */}
       {scores?.debateTranscript && (
-        <details className="group bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-800 rounded-2xl overflow-hidden">
+        <details className="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm">
           <summary className="flex items-center justify-between px-5 py-4 cursor-pointer list-none select-none">
             <div className="flex items-center gap-2">
-              <span className="text-violet-600 dark:text-violet-400">⚖️</span>
-              <span className="text-sm font-semibold text-violet-800 dark:text-violet-300">{t('debateTitle')}</span>
+              <span aria-hidden>⚖️</span>
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{t('debateTitle')}</span>
             </div>
-            <span className="text-xs text-violet-500 dark:text-violet-400 group-open:hidden">{t('debateShow')}</span>
-            <span className="text-xs text-violet-500 dark:text-violet-400 hidden group-open:inline">{t('debateHide')}</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 group-open:hidden">{t('debateShow')}</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 hidden group-open:inline">{t('debateHide')}</span>
           </summary>
           <div className="px-5 pb-5 pt-1">
-            <p className="text-xs text-violet-600 dark:text-violet-400 mb-3 leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">
               {t('debateDescription', { rounds: scores.debateRounds ?? 0 })}
             </p>
-            <pre className="text-xs text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 border border-violet-100 dark:border-violet-800 rounded-xl p-4 overflow-x-auto whitespace-pre-wrap leading-relaxed font-mono">
+            <pre className="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 overflow-x-auto whitespace-pre-wrap leading-relaxed font-mono">
               {scores.debateTranscript}
             </pre>
           </div>

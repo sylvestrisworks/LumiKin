@@ -13,7 +13,6 @@ import ParentTips from '@/components/ParentTips'
 import ShareButton from '@/components/ShareButton'
 import PlausibleSearchReferrer from '@/components/PlausibleSearchReferrer'
 import { auth } from '@/auth'
-import { calcAge } from '@/lib/age'
 import { Suspense } from 'react'
 import { getTranslations, getLocale } from 'next-intl/server'
 import type { ComplianceBadge, DarkPattern, GameCardProps, SerializedGame, SerializedScores, SerializedReview } from '@/types/game'
@@ -409,108 +408,89 @@ export default async function GamePage({ params }: Props) {
       )}
 
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-        <main className="max-w-2xl mx-auto px-4 py-6">
+        <main className="max-w-2xl lg:max-w-5xl mx-auto px-4 py-6">
 
           {/* Breadcrumb */}
-          <nav className="mb-4 flex items-center gap-1.5 text-sm text-slate-400 dark:text-slate-500">
-            <a href={`/${locale}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+          <nav className="mb-4 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+            <a href={`/${locale}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
               {t('navHome')}
             </a>
-            <span>/</span>
-            <a href={`/${locale}/browse`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+            <span aria-hidden>/</span>
+            <a href={`/${locale}/browse`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
               {t('navBrowse')}
             </a>
-            <span>/</span>
-            <span className="text-slate-600 dark:text-slate-300 truncate">{data.game.title}</span>
+            <span aria-hidden>/</span>
+            <span className="text-slate-700 dark:text-slate-200 truncate">{data.game.title}</span>
           </nav>
 
-          <GameCard {...data} />
+          <div className="lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
 
-          {/* Library / Wishlist + Share */}
-          <div className="mt-4 flex items-center justify-between gap-3 flex-wrap">
-            {uid && game.id ? (
-              <LibraryButton
-                gameId={game.id}
-                initialOwned={initialOwned}
-                initialWishlisted={initialWishlisted}
-              />
-            ) : <div />}
-            <ShareButton title={game.title} />
-          </div>
-
-          {/* Per-child appropriateness banner */}
-          {userProfiles.length > 0 && (() => {
-            const minAge = recommendedMinAge ?? (game.esrbRating === 'M' ? 17 : game.esrbRating === 'T' ? 13 : game.esrbRating === 'E10+' ? 10 : 0)
-            const checks = userProfiles.map(p => ({
-              name: p.name,
-              age: calcAge(p.birthDate, p.birthYear),
-              ok: minAge === 0 || calcAge(p.birthDate, p.birthYear) >= minAge,
-            }))
-            const allOk = checks.every(c => c.ok)
-            const noneOk = checks.every(c => !c.ok)
-            return (
-              <div className={`mt-3 rounded-xl border px-4 py-3 text-sm ${
-                allOk  ? 'bg-emerald-50 border-emerald-200 text-emerald-800' :
-                noneOk ? 'bg-red-50 border-red-200 text-red-800' :
-                         'bg-amber-50 border-amber-200 text-amber-800'
-              }`}>
-                <div className="flex flex-wrap gap-x-4 gap-y-1">
-                  {checks.map(c => (
-                    <span key={c.name} className="flex items-center gap-1.5">
-                      <span>{c.ok ? '✓' : '✗'}</span>
-                      <span className="font-medium">{c.name}</span>
-                      <span className="opacity-60 text-xs">({c.age})</span>
-                    </span>
-                  ))}
-                  {minAge > 0 && <span className="opacity-60 text-xs ml-auto">{t('recommendedAge', { age: minAge })}</span>}
-                </div>
-              </div>
-            )
-          })()}
-
-          {/* Parent Tips */}
-          {game.id && (
-            <Suspense fallback={
-              <div className="mt-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
-                <div className="h-4 w-24 bg-slate-100 dark:bg-slate-700 rounded animate-pulse mb-3" />
-                <div className="space-y-2">
-                  <div className="h-3 bg-slate-100 dark:bg-slate-700 rounded animate-pulse" />
-                  <div className="h-3 w-3/4 bg-slate-100 dark:bg-slate-700 rounded animate-pulse" />
-                </div>
-              </div>
-            }>
-              <ParentTips gameId={game.id} uid={uid} />
-            </Suspense>
-          )}
-
-          {/* Description — first 2 sentences only, strips HTML tags */}
-          {game.description && (() => {
-            const plain = game.description!.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
-            const sentences = plain.match(/[^.!?]+[.!?]+/g) ?? []
-            const excerpt = sentences.slice(0, 2).join(' ').trim() || plain.slice(0, 220)
-            return (
-              <div className="mt-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
-                <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">
-                  {t('aboutThisGame')}
-                </h2>
-                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{excerpt}</p>
-              </div>
-            )
-          })()}
-
-          {/* Explore more */}
-          {relatedGames.length > 0 && (
-            <div className="mt-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
-              <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">
-                Explore more
-              </h2>
-              <div className="divide-y divide-slate-100 dark:divide-slate-700">
-                {relatedGames.map(g => (
-                  <RelatedGameCard key={g.slug} game={g} />
-                ))}
-              </div>
+            {/* ── Left column: the game card ─────────────────────────────────── */}
+            <div className="lg:col-span-8 min-w-0">
+              <GameCard {...data} userProfiles={userProfiles} />
             </div>
-          )}
+
+            {/* ── Right rail: supporting actions + context ───────────────────── */}
+            <aside className="mt-6 lg:mt-0 lg:col-span-4 space-y-4">
+
+              {/* Library / Wishlist + Share */}
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                {uid && game.id ? (
+                  <LibraryButton
+                    gameId={game.id}
+                    initialOwned={initialOwned}
+                    initialWishlisted={initialWishlisted}
+                  />
+                ) : <div />}
+                <ShareButton title={game.title} />
+              </div>
+
+              {/* Parent Tips */}
+              {game.id && (
+                <Suspense fallback={
+                  <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
+                    <div className="h-4 w-24 bg-slate-100 dark:bg-slate-700 rounded animate-pulse mb-3" />
+                    <div className="space-y-2">
+                      <div className="h-3 bg-slate-100 dark:bg-slate-700 rounded animate-pulse" />
+                      <div className="h-3 w-3/4 bg-slate-100 dark:bg-slate-700 rounded animate-pulse" />
+                    </div>
+                  </div>
+                }>
+                  <ParentTips gameId={game.id} uid={uid} />
+                </Suspense>
+              )}
+
+              {/* Description — first 2 sentences only, strips HTML tags */}
+              {game.description && (() => {
+                const plain = game.description!.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+                const sentences = plain.match(/[^.!?]+[.!?]+/g) ?? []
+                const excerpt = sentences.slice(0, 2).join(' ').trim() || plain.slice(0, 220)
+                return (
+                  <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
+                    <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">
+                      {t('aboutThisGame')}
+                    </h2>
+                    <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{excerpt}</p>
+                  </div>
+                )
+              })()}
+
+              {/* Explore more */}
+              {relatedGames.length > 0 && (
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
+                  <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">
+                    Explore more
+                  </h2>
+                  <div className="divide-y divide-slate-100 dark:divide-slate-700">
+                    {relatedGames.map(g => (
+                      <RelatedGameCard key={g.slug} game={g} />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </aside>
+
+          </div>
         </main>
       </div>
     </>

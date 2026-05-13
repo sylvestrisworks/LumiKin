@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import Link from 'next/link'
 import { Lightbulb, Sparkles, Zap, Clock, User, GitCompareArrows, AlertTriangle } from 'lucide-react'
 import type { DarkPattern, GameCardProps, SerializedReview, SerializedScores } from '@/types/game'
+import { calcAge } from '@/lib/age'
 import { Tooltip } from './Tooltip'
 import { esrbToAge, ageBadgeColor } from '@/lib/ui'
 import DarkPatternPills from './DarkPatternPills'
@@ -570,9 +571,14 @@ function FullScoresTab({ scores, review, t, metaLine }: { scores: SerializedScor
 
 type Tab = 'benefits' | 'risks' | 'scores'
 
-export default function GameCard({ game, scores, review, darkPatterns, compliance }: GameCardProps) {
+type GameCardLocalProps = GameCardProps & {
+  userProfiles?: Array<{ id: number; name: string; birthYear: number; birthDate: string | null }>
+}
+
+export default function GameCard({ game, scores, review, darkPatterns, compliance, userProfiles = [] }: GameCardLocalProps) {
   const t      = useTranslations('gameCard')
   const tDP    = useTranslations('darkPatterns')
+  const tGame  = useTranslations('game')
   const locale = useLocale()
   const [activeTab, setActiveTab] = useState<Tab>('benefits')
 
@@ -702,6 +708,37 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{t('ratingPendingSub')}</p>
         </div>
       )}
+
+      {/* ── 2a. PER-CHILD APPROPRIATENESS BANNER ───────────────────────────────── */}
+      {hasReview && userProfiles.length > 0 && (() => {
+        const minAge = scores.recommendedMinAge
+          ?? (game.esrbRating === 'M' ? 17 : game.esrbRating === 'T' ? 13 : game.esrbRating === 'E10+' ? 10 : 0)
+        const checks = userProfiles.map(p => ({
+          name: p.name,
+          age: calcAge(p.birthDate, p.birthYear),
+          ok: minAge === 0 || calcAge(p.birthDate, p.birthYear) >= minAge,
+        }))
+        const allOk = checks.every(c => c.ok)
+        const noneOk = checks.every(c => !c.ok)
+        return (
+          <div className={`rounded-xl border px-4 py-3 text-sm ${
+            allOk  ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200' :
+            noneOk ? 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200' :
+                     'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200'
+          }`}>
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              {checks.map(c => (
+                <span key={c.name} className="flex items-center gap-1.5">
+                  <span aria-hidden>{c.ok ? '✓' : '✗'}</span>
+                  <span className="font-medium">{c.name}</span>
+                  <span className="opacity-60 text-xs">({c.age})</span>
+                </span>
+              ))}
+              {minAge > 0 && <span className="opacity-60 text-xs ml-auto">{tGame('recommendedAge', { age: minAge })}</span>}
+            </div>
+          </div>
+        )
+      })()}
 
       {/* ── 2b. VITALS STRIP — flags / cost / stranger chat ──────────────────────── */}
       {hasReview && (() => {

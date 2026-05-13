@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import Link from 'next/link'
 import type { GameCardProps, GameSummary } from '@/types/game'
-import { esrbToAge, ageBadgeColor } from '@/lib/ui'
+import { esrbToAge, ageBadgeColor, curascoreBg } from '@/lib/ui'
 import Icon from '@/components/Icon'
 
 // ─── Dark pattern label keys ─────────────────────────────────────────────────
@@ -73,12 +73,13 @@ function monetTags(t: CompareT, g: GameCardProps): string[] {
 // ─── Game picker ──────────────────────────────────────────────────────────────
 
 function GamePicker({
-  label, selected, onSelect, onClear,
+  label, selected, onSelect, onClear, prefilling = false,
 }: {
   label: string
   selected: GameCardProps | null
   onSelect: (data: GameCardProps) => void
   onClear: () => void
+  prefilling?: boolean
 }) {
   const [query, setQuery]             = useState('')
   const [suggestions, setSuggestions] = useState<GameSummary[]>([])
@@ -155,6 +156,18 @@ function GamePicker({
     } finally { 
       setLoading(false) 
     }
+  }
+
+  if (prefilling && !selected) {
+    return (
+      <div className="flex items-center bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 animate-pulse" aria-busy="true" aria-label={label}>
+        <div className="w-10 h-10 rounded-lg bg-slate-200 dark:bg-slate-700 shrink-0" />
+        <div className="ml-3 flex-1 space-y-1.5">
+          <div className="h-4 w-3/4 bg-slate-200 dark:bg-slate-700 rounded" />
+          <div className="h-3 w-1/2 bg-slate-200 dark:bg-slate-700 rounded" />
+        </div>
+      </div>
+    )
   }
 
   if (selected) {
@@ -376,19 +389,26 @@ function TagsSection({ a, b }: { a: GameCardProps; b: GameCardProps }) {
           )}
 
           {(uniqueASkills.length > 0 || uniqueBSkills.length > 0) && (
-            <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-start">
-              <div className="flex flex-wrap gap-1 justify-end">
-                {uniqueASkills.length > 0
-                  ? uniqueASkills.map(s => <Tag key={s} label={s} color="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300" />)
-                  : <span className="text-[11px] text-slate-300 dark:text-slate-600 italic">—</span>}
+            <>
+              <div className="grid grid-cols-[1fr_auto_1fr] gap-2 mb-1">
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 text-right truncate">{aTitle}</p>
+                <div className="min-w-[70px]" />
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{bTitle}</p>
               </div>
-              <div className="text-[10px] text-slate-400 dark:text-slate-500 text-center self-center px-1 min-w-[70px]">{t('tagsOnly')}</div>
-              <div className="flex flex-wrap gap-1">
-                {uniqueBSkills.length > 0
-                  ? uniqueBSkills.map(s => <Tag key={s} label={s} color="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300" />)
-                  : <span className="text-[11px] text-slate-300 dark:text-slate-600 italic">—</span>}
+              <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-start">
+                <div className="flex flex-wrap gap-1 justify-end">
+                  {uniqueASkills.length > 0
+                    ? uniqueASkills.map(s => <Tag key={s} label={s} color="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300" />)
+                    : <span className="text-[11px] text-slate-300 dark:text-slate-600 italic">—</span>}
+                </div>
+                <div className="text-[10px] text-slate-400 dark:text-slate-500 text-center self-center px-1 min-w-[70px]">{t('tagsOnly')}</div>
+                <div className="flex flex-wrap gap-1">
+                  {uniqueBSkills.length > 0
+                    ? uniqueBSkills.map(s => <Tag key={s} label={s} color="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300" />)
+                    : <span className="text-[11px] text-slate-300 dark:text-slate-600 italic">—</span>}
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       )}
@@ -407,27 +427,26 @@ function TagsSection({ a, b }: { a: GameCardProps; b: GameCardProps }) {
           )}
 
           {(uniqueADP.length > 0 || uniqueBDP.length > 0) && (
-            <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-start">
-              <div className="flex flex-wrap gap-1 justify-end">
-                {uniqueADP.length > 0
-                  ? uniqueADP.map(p => <Tag key={p} label={DP_KEY[p] ? t(DP_KEY[p] as Parameters<CompareT>[0]) : p} color="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300" />)
-                  : <span className="text-[11px] text-slate-300 dark:text-slate-600 italic">—</span>}
+            <>
+              <div className="grid grid-cols-[1fr_auto_1fr] gap-2 mb-1">
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 text-right truncate">{aTitle}</p>
+                <div className="min-w-[70px]" />
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{bTitle}</p>
               </div>
-              <div className="text-[10px] text-slate-400 dark:text-slate-500 text-center self-center px-1 min-w-[70px]">{t('tagsOnly')}</div>
-              <div className="flex flex-wrap gap-1">
-                {uniqueBDP.length > 0
-                  ? uniqueBDP.map(p => <Tag key={p} label={DP_KEY[p] ? t(DP_KEY[p] as Parameters<CompareT>[0]) : p} color="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300" />)
-                  : <span className="text-[11px] text-slate-300 dark:text-slate-600 italic">—</span>}
+              <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-start">
+                <div className="flex flex-wrap gap-1 justify-end">
+                  {uniqueADP.length > 0
+                    ? uniqueADP.map(p => <Tag key={p} label={DP_KEY[p] ? t(DP_KEY[p] as Parameters<CompareT>[0]) : p} color="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300" />)
+                    : <span className="text-[11px] text-slate-300 dark:text-slate-600 italic">—</span>}
+                </div>
+                <div className="text-[10px] text-slate-400 dark:text-slate-500 text-center self-center px-1 min-w-[70px]">{t('tagsOnly')}</div>
+                <div className="flex flex-wrap gap-1">
+                  {uniqueBDP.length > 0
+                    ? uniqueBDP.map(p => <Tag key={p} label={DP_KEY[p] ? t(DP_KEY[p] as Parameters<CompareT>[0]) : p} color="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300" />)
+                    : <span className="text-[11px] text-slate-300 dark:text-slate-600 italic">—</span>}
+                </div>
               </div>
-            </div>
-          )}
-
-          {(uniqueADP.length > 0 || uniqueBDP.length > 0) && (
-            <div className="grid grid-cols-[1fr_auto_1fr] gap-2 mt-1">
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 text-right truncate">{aTitle}</p>
-              <div className="min-w-[70px]" />
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{bTitle}</p>
-            </div>
+            </>
           )}
         </div>
       )}
@@ -443,13 +462,6 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
 
   const aScore = a.scores
   const bScore = b.scores
-
-  const curaBg = (s: number | null) => {
-    if (s == null) return 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
-    if (s >= 70) return 'bg-emerald-500 text-white'
-    if (s >= 40) return 'bg-amber-400 text-white'
-    return 'bg-red-500 text-white'
-  }
 
   const timeBg = (c: string | null | undefined) =>
     c === 'green' ? 'bg-emerald-500 text-white'
@@ -477,11 +489,6 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
   const aFree = a.review?.estimatedMonthlyCostLow === 0 && a.review?.estimatedMonthlyCostHigh === 0
   const bFree = b.review?.estimatedMonthlyCostLow === 0 && b.review?.estimatedMonthlyCostHigh === 0
 
-  const aCura = aScore?.curascore ?? 0
-  const bCura = bScore?.curascore ?? 0
-  const gap   = Math.abs(aCura - bCura)
-  const winner = gap >= 5 ? (aCura > bCura ? a.game.title : b.game.title) : null
-
   const verdict = generateVerdict(t, a, b)
   const aMonetTags = monetTags(t, a)
   const bMonetTags = monetTags(t, b)
@@ -504,7 +511,7 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
               <p className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate leading-tight">{a.game.title}</p>
               <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                 {aScore?.curascore != null && (
-                  <span className={`text-xs font-black px-2 py-0.5 rounded-full ${curaBg(aScore.curascore)}`}>
+                  <span className={`text-xs font-black px-2 py-0.5 rounded-full ${curascoreBg(aScore.curascore)} text-white`}>
                     {aScore.curascore}
                   </span>
                 )}
@@ -534,7 +541,7 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
               <p className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate leading-tight">{b.game.title}</p>
               <div className="flex items-center gap-1.5 mt-1 flex-wrap sm:flex-row flex-row-reverse sm:justify-start justify-end">
                 {bScore?.curascore != null && (
-                  <span className={`text-xs font-black px-2 py-0.5 rounded-full ${curaBg(bScore.curascore)}`}>
+                  <span className={`text-xs font-black px-2 py-0.5 rounded-full ${curascoreBg(bScore.curascore)} text-white`}>
                     {bScore.curascore}
                   </span>
                 )}
@@ -580,8 +587,9 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
           label={t('scBasePrice')}
           aText={a.game.basePrice === 0 ? t('free') : a.game.basePrice != null ? `$${a.game.basePrice.toFixed(0)}` : '—'}
           bText={b.game.basePrice === 0 ? t('free') : b.game.basePrice != null ? `$${b.game.basePrice.toFixed(0)}` : '—'}
-          aGood={a.game.basePrice === 0}
-          bGood={b.game.basePrice === 0}
+          // Emerald only when "free" actually means free — no monthly costs hidden in microtransactions
+          aGood={a.game.basePrice === 0 && aFree}
+          bGood={b.game.basePrice === 0 && bFree}
         />
 
         <InfoRow
@@ -650,17 +658,6 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
 
       {/* ── Tags section ── */}
       <TagsSection a={a} b={b} />
-
-      {/* ── Verdict banner ── */}
-      {winner && (
-        <div className="border-t border-slate-100 dark:border-slate-700 bg-emerald-50 dark:bg-emerald-900/20 px-6 py-4 flex items-center gap-3">
-          <span className="text-emerald-600 dark:text-emerald-400 text-lg">✓</span>
-          <p className="text-sm text-emerald-800 dark:text-emerald-300">
-            <span className="font-bold">{winner}</span>
-            {' '}{t('scVerdictSub')}
-          </p>
-        </div>
-      )}
 
       {/* ── Full review links ── */}
       <div className="border-t border-slate-100 dark:border-slate-700 px-6 py-3 flex justify-between rounded-b-2xl">
@@ -853,30 +850,36 @@ function ComparePageInner() {
   const locale       = useLocale()
   const router       = useRouter()
   const searchParams = useSearchParams()
+  const isValidSlug = (s: string | null): s is string =>
+    s !== null && /^[a-zA-Z0-9_-]+$/.test(s) && s.length <= 200
+
   const [gameA, setGameA] = useState<GameCardProps | null>(null)
   const [gameB, setGameB] = useState<GameCardProps | null>(null)
+  // Pre-seed loading state from the URL so the picker shows a skeleton on first paint
+  // (rather than flashing an empty input before the fetch resolves).
+  const [loadingA, setLoadingA] = useState(() => isValidSlug(searchParams.get('a')))
+  const [loadingB, setLoadingB] = useState(() => isValidSlug(searchParams.get('b')))
   const [copied, setCopied] = useState(false)
   const initialised = useRef(false)
 
   useEffect(() => {
     if (initialised.current) return
     initialised.current = true
-    
+
     const slugA = searchParams.get('a')
     const slugB = searchParams.get('b')
-    
-    const isValidSlug = (s: string | null): s is string => 
-      s !== null && /^[a-zA-Z0-9_-]+$/.test(s) && s.length <= 200
-    
+
     if (isValidSlug(slugA)) {
-      loadGame(slugA).then(d => d && setGameA(d)).catch(err => {
-        console.error('Failed to load game A:', err)
-      })
+      loadGame(slugA)
+        .then(d => { if (d) setGameA(d) })
+        .catch(err => { console.error('Failed to load game A:', err) })
+        .finally(() => setLoadingA(false))
     }
     if (isValidSlug(slugB)) {
-      loadGame(slugB).then(d => d && setGameB(d)).catch(err => {
-        console.error('Failed to load game B:', err)
-      })
+      loadGame(slugB)
+        .then(d => { if (d) setGameB(d) })
+        .catch(err => { console.error('Failed to load game B:', err) })
+        .finally(() => setLoadingB(false))
     }
   }, [searchParams])
 
@@ -937,8 +940,8 @@ function ComparePageInner() {
 
         {/* Pickers */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <GamePicker label={t('gameA')} selected={gameA} onSelect={selectA} onClear={clearA} />
-          <GamePicker label={t('gameB')} selected={gameB} onSelect={selectB} onClear={clearB} />
+          <GamePicker label={t('gameA')} selected={gameA} onSelect={selectA} onClear={clearA} prefilling={loadingA} />
+          <GamePicker label={t('gameB')} selected={gameB} onSelect={selectB} onClear={clearB} prefilling={loadingB} />
         </div>
 
         {/* Copy link */}
@@ -956,18 +959,6 @@ function ComparePageInner() {
         {/* Empty state / popular pairs */}
         {!gameA && !gameB && (
           <PopularComparisons onSelectPair={selectPair} />
-        )}
-
-        {/* Single game */}
-        {(gameA && !gameB) && (
-          <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-xl px-5 py-4 text-sm text-indigo-700 dark:text-indigo-300 text-center">
-            {t('pickSecond')}
-          </div>
-        )}
-        {(!gameA && gameB) && (
-          <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-xl px-5 py-4 text-sm text-indigo-700 dark:text-indigo-300 text-center">
-            {t('pickFirst')}
-          </div>
         )}
 
         {/* Scorecard */}

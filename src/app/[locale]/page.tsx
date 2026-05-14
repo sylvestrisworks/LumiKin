@@ -9,6 +9,7 @@ import CoverageStrip from './partners/_components/CoverageStrip'
 import SearchBar from '@/components/SearchBar'
 import FeaturedGame from './_components/FeaturedGame'
 import ParentValueTiles from './_components/ParentValueTiles'
+import LibrarySell from './_components/LibrarySell'
 import BusinessRow from './_components/BusinessRow'
 import { Term } from '@/components/Term'
 
@@ -89,6 +90,7 @@ export default async function HomePage({ params, searchParams }: Props) {
           </span>
           {[
             { label: t('browseByAge'),      href: `/${locale}/age` },
+            { label: t('browseByPlatform'), href: `/${locale}/platform` },
             { label: t('browseByRoblox'),   href: `/${locale}/platform/roblox` },
             { label: t('browseByFortnite'), href: `/${locale}/platform/fortnite` },
           ].map(({ label, href }) => (
@@ -108,6 +110,9 @@ export default async function HomePage({ params, searchParams }: Props) {
 
       {/* ── Coverage / trust strip ───────────────────────────────────────────── */}
       <CoverageStrip stats={stats} variant="parent" />
+
+      {/* ── Library / free account pitch (logged-out only) ───────────────────── */}
+      <LibrarySell locale={locale} />
 
       {/* ── Methodology (compressed) ─────────────────────────────────────────── */}
       <section className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">

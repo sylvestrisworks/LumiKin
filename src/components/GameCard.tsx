@@ -582,6 +582,7 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
   const gradient = placeholderGradient(game.title)
   const abbr = game.title.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('')
   const hasReview = scores !== null
+  const [scoresView, setScoresView] = useState<'simplified' | 'full'>('simplified')
   const risk    = hasReview ? riskLevel(scores.ris)   : null
   const bdsVerd = hasReview ? bdsVerdict(scores.bds)  : null
 
@@ -859,7 +860,7 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
         </div>
       )}
 
-      {/* ── 6. BENEFITS + RISKS — exposed sections, Full Scores collapsed ──────── */}
+      {/* ── 6. BENEFITS + RISKS — tabbed: Simplified | Full Scores ───────────── */}
       <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm overflow-hidden border border-slate-100 dark:border-slate-700">
         {!hasReview ? (
           <div className="text-center py-10 px-5">
@@ -867,26 +868,53 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
           </div>
         ) : (
           <>
-            <section className="px-5 py-5">
-              <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">
-                {t('tabBenefits')}
-              </h2>
-              <BenefitsTab scores={scores} review={review} t={t} />
-            </section>
-
-            <section className="border-t border-slate-100 dark:border-slate-700 px-5 py-5">
-              <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">
-                {t('tabRisks')}
-              </h2>
-              <RisksTab scores={scores} game={game} review={review} darkPatterns={darkPatterns} t={t} />
-            </section>
-
-            <details className="border-t border-slate-100 dark:border-slate-700 group">
-              <summary className="px-5 py-4 cursor-pointer list-none flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
-                <span className="group-open:rotate-90 transition-transform inline-block" aria-hidden>›</span>
+            <div role="tablist" aria-label={t('tabFullScores')} className="flex border-b border-slate-100 dark:border-slate-700">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={scoresView === 'simplified'}
+                onClick={() => setScoresView('simplified')}
+                className={`flex-1 px-5 py-3 text-xs font-semibold uppercase tracking-widest transition-colors ${
+                  scoresView === 'simplified'
+                    ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-500 -mb-px'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                }`}
+              >
+                {t('tabSimplified')}
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={scoresView === 'full'}
+                onClick={() => setScoresView('full')}
+                className={`flex-1 px-5 py-3 text-xs font-semibold uppercase tracking-widest transition-colors ${
+                  scoresView === 'full'
+                    ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-500 -mb-px'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                }`}
+              >
                 {t('tabFullScores')}
-              </summary>
-              <div className="px-5 pb-5">
+              </button>
+            </div>
+
+            {scoresView === 'simplified' ? (
+              <>
+                <section className="px-5 py-5">
+                  <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">
+                    {t('tabBenefits')}
+                  </h2>
+                  <BenefitsTab scores={scores} review={review} t={t} />
+                </section>
+
+                <section className="border-t border-slate-100 dark:border-slate-700 px-5 py-5">
+                  <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">
+                    {t('tabRisks')}
+                  </h2>
+                  <RisksTab scores={scores} game={game} review={review} darkPatterns={darkPatterns} t={t} />
+                </section>
+              </>
+            ) : (
+              <div className="px-5 py-5">
                 <FullScoresTab
                   scores={scores}
                   review={review}
@@ -902,7 +930,7 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
                   ) : undefined}
                 />
               </div>
-            </details>
+            )}
           </>
         )}
 

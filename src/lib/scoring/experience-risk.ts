@@ -35,3 +35,86 @@ export function calculateExperienceBenefits(
   const bds = cognitive * 0.50 + socialEmotional * 0.30
   return { cognitive, socialEmotional, bds }
 }
+
+// ─── Score floors and confidence caps ─────────────────────────────────────────
+//
+// Title-only inputs lead the AI toward implausible extremes (all-zero risks,
+// max-creativity from a single word like "Studio"). These rules reflect the
+// floors already documented in the cron prompt's own calibration table:
+//   - All UGC sessions have at least mild dopamine pull → dopamine ≥ 1
+//   - Multiplayer-by-default platforms expose strangers unless the experience
+//     is verifiably solo-instance → stranger ≥ 1 unless solo-indicators match
+//   - Without a description, max creativity/learning (3) cannot be justified
+//     from a title alone → cap at 2
+
+export type DimensionalScores = {
+  dopamineTrapScore: number
+  toxicityScore:     number
+  ugcContentRisk:    number
+  strangerRisk:      number
+  monetizationScore: number
+  privacyRisk:       number
+  creativityScore:   number
+  socialScore:       number
+  learningScore:     number
+}
+
+// Words/phrases that signal a genuinely solo-instance experience where
+// strangerRisk=0 is plausible per the cron prompt's calibration.
+const SOLO_PATTERN = /\b(solo|1p|single[\s-]?player|aim[\s-]?(train(er|ing)?|course|map|practice)|deathrun|parkour|obby|obstacle\s*course|escape\s*room)\b/i
+
+const SHORT_DESC_THRESHOLD = 30
+
+export type FloorContext = {
+  title:        string | null | undefined
+  description:  string | null | undefined
+  genre:        string | null | undefined
+  platformSlug: string
+}
+
+export type AppliedFloor = {
+  dimension: keyof DimensionalScores
+  from:      number
+  to:        number
+  reason:    string
+}
+
+export function applyScoreFloors(
+  scores: DimensionalScores,
+  ctx: FloorContext,
+): { scores: DimensionalScores; applied: AppliedFloor[] } {
+  const isUgcPlatform = ctx.platformSlug === 'fortnite-creative' || ctx.platformSlug === 'roblox'
+  if (!isUgcPlatform) return { scores, applied: [] }
+
+  const applied: AppliedFloor[] = []
+  const out: DimensionalScores = { ...scores }
+
+  // Dopamine floor: session-based platforms always have some pull.
+  if (out.dopamineTrapScore < 1) {
+    applied.push({ dimension: 'dopamineTrapScore', from: out.dopamineTrapScore, to: 1, reason: 'UGC-platform session floor' })
+    out.dopamineTrapScore = 1
+  }
+
+  // Stranger floor: 0 is reserved for verifiably solo-instance maps.
+  const haystack = [ctx.title, ctx.description, ctx.genre].filter(Boolean).join(' ')
+  const looksSolo = SOLO_PATTERN.test(haystack)
+  if (out.strangerRisk < 1 && !looksSolo) {
+    applied.push({ dimension: 'strangerRisk', from: out.strangerRisk, to: 1, reason: 'no solo-instance signal in title/description/genre' })
+    out.strangerRisk = 1
+  }
+
+  // Low-confidence cap: title-only input cannot justify max creativity/learning.
+  const descLen = (ctx.description ?? '').trim().length
+  if (descLen < SHORT_DESC_THRESHOLD) {
+    if (out.creativityScore > 2) {
+      applied.push({ dimension: 'creativityScore', from: out.creativityScore, to: 2, reason: `description <${SHORT_DESC_THRESHOLD} chars — title-only confidence cap` })
+      out.creativityScore = 2
+    }
+    if (out.learningScore > 2) {
+      applied.push({ dimension: 'learningScore', from: out.learningScore, to: 2, reason: `description <${SHORT_DESC_THRESHOLD} chars — title-only confidence cap` })
+      out.learningScore = 2
+    }
+  }
+
+  return { scores: out, applied }
+}

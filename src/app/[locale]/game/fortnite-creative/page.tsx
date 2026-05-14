@@ -105,6 +105,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
   // Build filter conditions — only show maps for this platform
   const conditions: SQL[] = []
   if (fortnitePlatform) conditions.push(eq(platformExperiences.platformId, fortnitePlatform.id))
+  conditions.push(eq(platformExperiences.isPublic, true))
   if (filters.q)             conditions.push(ilike(platformExperiences.title, `%${filters.q}%`))
   if (filters.risk === 'low')    { conditions.push(isNotNull(experienceScores.id)); conditions.push(lte(experienceScores.riskScore, 0.33)) }
   if (filters.risk === 'medium') { conditions.push(isNotNull(experienceScores.id)); conditions.push(lte(experienceScores.riskScore, 0.66)) }

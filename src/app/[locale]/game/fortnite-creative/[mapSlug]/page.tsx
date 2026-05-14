@@ -168,7 +168,7 @@ export default async function FortniteMapPage({ params }: Props) {
     .limit(1)
     .catch(() => [])
 
-  if (!exp) notFound()
+  if (!exp || !exp.isPublic) notFound()
 
   const [[score], [parentPlatform]] = await Promise.all([
     db.select()

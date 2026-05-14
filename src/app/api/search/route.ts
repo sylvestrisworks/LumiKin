@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { eq, sql, desc, or } from 'drizzle-orm'
+import { eq, sql, desc, or, and } from 'drizzle-orm'
 import { rateLimit, getIp } from '@/lib/rate-limit'
 import { db } from '@/lib/db'
 import { games, gameScores, platformExperiences, experienceScores } from '@/lib/db/schema'
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
       db.select(expSelect)
         .from(platformExperiences)
         .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
-        .where(sql`${platformExperiences.title} ilike ${q + '%'}`)
+        .where(and(sql`${platformExperiences.title} ilike ${q + '%'}`, eq(platformExperiences.isPublic, true)))
         .orderBy(desc(experienceScores.curascore), desc(platformExperiences.activePlayers))
         .limit(3),
     ])
@@ -72,10 +72,13 @@ export async function GET(req: NextRequest) {
       .from(platformExperiences)
       .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
       .where(
-        or(
-          sql`word_similarity(${qNorm}, ${expTitleNorm}) > 0.2`,
-          sql`unaccent(${platformExperiences.title}) ilike ${`%${q}%`}`,
-          sql`unaccent(${platformExperiences.creatorName}) ilike ${`%${q}%`}`,
+        and(
+          or(
+            sql`word_similarity(${qNorm}, ${expTitleNorm}) > 0.2`,
+            sql`unaccent(${platformExperiences.title}) ilike ${`%${q}%`}`,
+            sql`unaccent(${platformExperiences.creatorName}) ilike ${`%${q}%`}`,
+          ),
+          eq(platformExperiences.isPublic, true),
         )
       )
       .orderBy(

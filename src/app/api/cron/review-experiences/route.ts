@@ -15,7 +15,7 @@ import { db } from '@/lib/db'
 import { platformExperiences, experienceScores, games } from '@/lib/db/schema'
 import { eq, isNull, or } from 'drizzle-orm'
 import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
-import { calculateExperienceRisk, calculateExperienceBenefits } from '@/lib/scoring/experience-risk'
+import { calculateExperienceRisk, calculateExperienceBenefits, applyScoreFloors } from '@/lib/scoring/experience-risk'
 import { deriveTimeRecommendation } from '@/lib/scoring/time'
 import { callGeminiTool } from '@/lib/vertex-ai'
 import { logCronRun } from '@/lib/cron-logger'
@@ -225,14 +225,31 @@ function callGemini(prompt: string): Promise<EvalInput> {
 
 // ─── Save to DB ───────────────────────────────────────────────────────────────
 
-async function saveScore(experience: ExperienceRow, eval_: EvalInput): Promise<number> {
-  // Fix 3: rubric-weighted risk and benefit composites
-  const risk    = calculateExperienceRisk(eval_.risks)
-  const benefit = calculateExperienceBenefits(
-    eval_.benefits.creativityScore,
-    eval_.benefits.socialScore,
-    eval_.benefits.learningScore,
+async function saveScore(experience: ExperienceRow, eval_: EvalInput, platformSlug: string): Promise<number> {
+  // Apply UGC score floors and low-confidence caps before computing composites.
+  // See applyScoreFloors() in experience-risk.ts for the rules and rationale.
+  const floored = applyScoreFloors(
+    {
+      dopamineTrapScore: eval_.risks.dopamineTrapScore,
+      toxicityScore:     eval_.risks.toxicityScore,
+      ugcContentRisk:    eval_.risks.ugcContentRisk,
+      strangerRisk:      eval_.risks.strangerRisk,
+      monetizationScore: eval_.risks.monetizationScore,
+      privacyRisk:       eval_.risks.privacyRisk,
+      creativityScore:   eval_.benefits.creativityScore,
+      socialScore:       eval_.benefits.socialScore,
+      learningScore:     eval_.benefits.learningScore,
+    },
+    { title: experience.title, description: experience.description, genre: experience.genre, platformSlug },
   )
+  for (const f of floored.applied) {
+    console.log(`[review-experiences] ${experience.slug} floor: ${f.dimension} ${f.from}→${f.to} (${f.reason})`)
+  }
+  const s = floored.scores
+
+  // Fix 3: rubric-weighted risk and benefit composites
+  const risk    = calculateExperienceRisk(s)
+  const benefit = calculateExperienceBenefits(s.creativityScore, s.socialScore, s.learningScore)
 
   // Fix 4: engine-derived time recommendation (same function as standalone games)
   const timeRec = deriveTimeRecommendation(risk.ris, benefit.bds, risk.contentRisk, null)
@@ -250,15 +267,15 @@ async function saveScore(experience: ExperienceRow, eval_: EvalInput): Promise<n
   const row = {
     experienceId:              experience.id,
     curascore,
-    dopamineTrapScore:         eval_.risks.dopamineTrapScore,
-    toxicityScore:             eval_.risks.toxicityScore,
-    ugcContentRisk:            eval_.risks.ugcContentRisk,
-    strangerRisk:              eval_.risks.strangerRisk,
-    monetizationScore:         eval_.risks.monetizationScore,
-    privacyRisk:               eval_.risks.privacyRisk,
-    creativityScore:           eval_.benefits.creativityScore,
-    socialScore:               eval_.benefits.socialScore,
-    learningScore:             eval_.benefits.learningScore,
+    dopamineTrapScore:         s.dopamineTrapScore,
+    toxicityScore:             s.toxicityScore,
+    ugcContentRisk:            s.ugcContentRisk,
+    strangerRisk:              s.strangerRisk,
+    monetizationScore:         s.monetizationScore,
+    privacyRisk:               s.privacyRisk,
+    creativityScore:           s.creativityScore,
+    socialScore:               s.socialScore,
+    learningScore:             s.learningScore,
     // Fix 3: rubric-mapped normalized sub-components
     dopamineRisk:              risk.dopamine,
     monetizationRisk:          risk.monetization,
@@ -308,32 +325,54 @@ const RESCORE_BATCH = 50
 
 async function rescoreExisting(): Promise<number> {
   const stale = await db
-    .select()
+    .select({
+      score:        experienceScores,
+      title:        platformExperiences.title,
+      description:  platformExperiences.description,
+      genre:        platformExperiences.genre,
+      platformSlug: games.slug,
+    })
     .from(experienceScores)
+    .innerJoin(platformExperiences, eq(platformExperiences.id, experienceScores.experienceId))
+    .innerJoin(games, eq(games.id, platformExperiences.platformId))
     .where(isNull(experienceScores.dopamineRisk))
     .limit(RESCORE_BATCH)
 
   let count = 0
-  for (const row of stale) {
-    const risk = calculateExperienceRisk({
-      dopamineTrapScore: row.dopamineTrapScore,
-      toxicityScore:     row.toxicityScore,
-      ugcContentRisk:    row.ugcContentRisk,
-      strangerRisk:      row.strangerRisk,
-      monetizationScore: row.monetizationScore,
-      privacyRisk:       row.privacyRisk,
-    })
-    const benefit = calculateExperienceBenefits(
-      row.creativityScore ?? 0,
-      row.socialScore     ?? 0,
-      row.learningScore   ?? 0,
+  for (const { score: row, title, description, genre, platformSlug } of stale) {
+    const floored = applyScoreFloors(
+      {
+        dopamineTrapScore: row.dopamineTrapScore ?? 0,
+        toxicityScore:     row.toxicityScore     ?? 0,
+        ugcContentRisk:    row.ugcContentRisk    ?? 0,
+        strangerRisk:      row.strangerRisk      ?? 0,
+        monetizationScore: row.monetizationScore ?? 0,
+        privacyRisk:       row.privacyRisk       ?? 0,
+        creativityScore:   row.creativityScore   ?? 0,
+        socialScore:       row.socialScore       ?? 0,
+        learningScore:     row.learningScore     ?? 0,
+      },
+      { title, description, genre, platformSlug },
     )
+    const s = floored.scores
+
+    const risk    = calculateExperienceRisk(s)
+    const benefit = calculateExperienceBenefits(s.creativityScore, s.socialScore, s.learningScore)
     const timeRec   = deriveTimeRecommendation(risk.ris, benefit.bds, risk.contentRisk, null)
     const safety    = 1 - risk.ris
     const denom     = benefit.bds + safety
     const curascore = denom > 0 ? Math.round((2 * benefit.bds * safety) / denom * 100) : 0
 
     await db.update(experienceScores).set({
+      dopamineTrapScore:          s.dopamineTrapScore,
+      toxicityScore:              s.toxicityScore,
+      ugcContentRisk:             s.ugcContentRisk,
+      strangerRisk:               s.strangerRisk,
+      monetizationScore:          s.monetizationScore,
+      privacyRisk:                s.privacyRisk,
+      creativityScore:            s.creativityScore,
+      socialScore:                s.socialScore,
+      learningScore:              s.learningScore,
       dopamineRisk:               risk.dopamine,
       monetizationRisk:           risk.monetization,
       socialRisk:                 risk.social,
@@ -402,7 +441,7 @@ export async function GET(req: NextRequest) {
     const evaluateOne = async (exp: ExperienceRow, platformSlug: string): Promise<string> => {
       console.log(`[review-experiences] Evaluating: ${exp.title} [${platformSlug}]`)
       const result    = await callGemini(buildPrompt(exp, platformSlug))
-      const curascore = await saveScore(exp, result)
+      const curascore = await saveScore(exp, result, platformSlug)
       if (exp.needsRescore) {
         await db.update(platformExperiences).set({ needsRescore: false }).where(eq(platformExperiences.id, exp.id))
       }

@@ -583,14 +583,14 @@ export default async function BrowsePage({ params, searchParams }: Props) {
       robloxRow
         ? db.select(expSelect).from(platformExperiences)
             .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
-            .where(eq(platformExperiences.platformId, robloxRow.id))
+            .where(and(eq(platformExperiences.platformId, robloxRow.id), eq(platformExperiences.isPublic, true)))
             .orderBy(desc(platformExperiences.activePlayers))
             .limit(8)
         : Promise.resolve([]),
       fortniteRow
         ? db.select(expSelect).from(platformExperiences)
             .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
-            .where(and(eq(platformExperiences.platformId, fortniteRow.id), isNotNull(platformExperiences.thumbnailUrl)))
+            .where(and(eq(platformExperiences.platformId, fortniteRow.id), isNotNull(platformExperiences.thumbnailUrl), eq(platformExperiences.isPublic, true)))
             .orderBy(desc(experienceScores.curascore))
             .limit(8)
         : Promise.resolve([]),

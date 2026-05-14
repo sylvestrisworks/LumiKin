@@ -90,7 +90,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .from(platformExperiences)
     .innerJoin(games, eq(games.id, platformExperiences.platformId))
     .innerJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
-    .where(and(eq(games.contentType, 'platform'), isNotNull(experienceScores.curascore)))
+    .where(and(eq(games.contentType, 'platform'), isNotNull(experienceScores.curascore), eq(platformExperiences.isPublic, true)))
     .orderBy(asc(platformExperiences.id))
 
   const ugcEntries: MetadataRoute.Sitemap = allUgc.flatMap((exp) =>

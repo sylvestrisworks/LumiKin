@@ -54,7 +54,7 @@ async function fetchUgcStats(dbSlug: string) {
     .from(experienceScores)
     .innerJoin(platformExperiences, eq(platformExperiences.id, experienceScores.experienceId))
     .innerJoin(games, eq(games.id, platformExperiences.platformId))
-    .where(and(eq(games.slug, dbSlug), isNotNull(experienceScores.curascore)))
+    .where(and(eq(games.slug, dbSlug), isNotNull(experienceScores.curascore), eq(platformExperiences.isPublic, true)))
   return { count: Number(row?.count ?? 0), avgScore: row?.avgScore ?? null }
 }
 

@@ -10,7 +10,10 @@ import { games, gameScores, platformExperiences, experienceScores } from '@/lib/
 import PlatformExperienceCard, { type PlatformExperienceSummary } from '@/components/PlatformExperienceCard'
 import PlatformScoreHistogram, { type HistogramBucket } from '@/components/PlatformScoreHistogram'
 import CarouselRow from '@/components/CarouselRow'
+import Icon, { type IconName } from '@/components/Icon'
+import { curascoreText } from '@/lib/ui'
 import type { GameSummary } from '@/types/game'
+import { Sparkles, Zap, Clock, Trophy, ShieldCheck, Gamepad2 } from 'lucide-react'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
 
@@ -31,6 +34,10 @@ const UGC_ICON_BG: Record<string, string> = {
   roblox:              'bg-red-600 ring-red-400/40',
   'fortnite-creative': 'bg-blue-600 ring-blue-400/40',
 }
+const UGC_ICON_NAME: Record<string, IconName> = {
+  roblox:              'roblox',
+  'fortnite-creative': 'fortnite',
+}
 
 // ─── Traditional platform config ──────────────────────────────────────────────
 // description and editorial text live in messages/*/platform namespace
@@ -40,6 +47,7 @@ type PlatformConfig = {
   browseKey: string   // matches PLATFORM_KEYWORDS key in browse/page.tsx
   accent: string      // Tailwind gradient for hero
   iconBg: string      // Tailwind bg+ring for icon
+  iconName: IconName  // brand logo
   msgKey: string      // key suffix used in messages: desc_{msgKey}, editorial_{msgKey}
 }
 
@@ -50,6 +58,7 @@ const TRADITIONAL_PLATFORMS: Record<string, PlatformConfig> = {
     browseKey: 'PlayStation',
     accent: 'from-blue-950/95 via-blue-900/70 to-slate-900/20',
     iconBg: 'bg-blue-700 ring-blue-400/40',
+    iconName: 'playstation',
     msgKey: 'playstation',
   },
   xbox: {
@@ -58,6 +67,7 @@ const TRADITIONAL_PLATFORMS: Record<string, PlatformConfig> = {
     browseKey: 'Xbox',
     accent: 'from-green-950/95 via-green-900/70 to-slate-900/20',
     iconBg: 'bg-green-700 ring-green-400/40',
+    iconName: 'xbox',
     msgKey: 'xbox',
   },
   'nintendo-switch': {
@@ -66,6 +76,7 @@ const TRADITIONAL_PLATFORMS: Record<string, PlatformConfig> = {
     browseKey: 'Switch',
     accent: 'from-red-950/95 via-red-900/70 to-slate-900/20',
     iconBg: 'bg-red-600 ring-red-400/40',
+    iconName: 'switch',
     msgKey: 'nintendo_switch',
   },
   ios: {
@@ -74,6 +85,7 @@ const TRADITIONAL_PLATFORMS: Record<string, PlatformConfig> = {
     browseKey: 'iOS',
     accent: 'from-sky-950/95 via-sky-900/70 to-slate-900/20',
     iconBg: 'bg-sky-600 ring-sky-400/40',
+    iconName: 'ios',
     msgKey: 'ios',
   },
   android: {
@@ -82,6 +94,7 @@ const TRADITIONAL_PLATFORMS: Record<string, PlatformConfig> = {
     browseKey: 'Android',
     accent: 'from-emerald-950/95 via-emerald-900/70 to-slate-900/20',
     iconBg: 'bg-emerald-600 ring-emerald-400/40',
+    iconName: 'android',
     msgKey: 'android',
   },
   pc: {
@@ -90,6 +103,7 @@ const TRADITIONAL_PLATFORMS: Record<string, PlatformConfig> = {
     browseKey: 'PC',
     accent: 'from-violet-950/95 via-violet-900/70 to-slate-900/20',
     iconBg: 'bg-violet-700 ring-violet-400/40',
+    iconName: 'pc',
     msgKey: 'pc',
   },
 }
@@ -263,8 +277,13 @@ async function TraditionalPlatformPage({
     getTranslations({ locale, namespace: 'platform' }),
 
     db.select({
-      count:    sql<number>`count(${gameScores.id})::int`,
-      avgScore: sql<number>`round(avg(${gameScores.curascore}))::int`,
+      count:        sql<number>`count(${gameScores.id})::int`,
+      avgScore:     sql<number>`round(avg(${gameScores.curascore}))::int`,
+      maxScore:     sql<number>`max(${gameScores.curascore})::int`,
+      avgBds:       sql<number>`avg(${gameScores.bds})`,
+      avgRis:       sql<number>`avg(${gameScores.ris})`,
+      avgTime:      sql<number>`round(avg(${gameScores.timeRecommendationMinutes}))::int`,
+      safestCount:  sql<number>`count(*) filter (where ${gameScores.ris} <= 0.25)::int`,
     })
       .from(games)
       .innerJoin(gameScores, eq(gameScores.gameId, games.id))
@@ -318,6 +337,12 @@ async function TraditionalPlatformPage({
 
   const scoredCount = Number(statsRow?.count ?? 0)
   const avgScore    = statsRow?.avgScore ?? null
+  const maxScore    = statsRow?.maxScore ?? null
+  const avgBds      = statsRow?.avgBds != null ? Number(statsRow.avgBds) : null
+  const avgRis      = statsRow?.avgRis != null ? Number(statsRow.avgRis) : null
+  const avgTime     = statsRow?.avgTime ?? null
+  const safestCount = Number(statsRow?.safestCount ?? 0)
+  const topGame     = topRated[0] ?? null
   const buckets     = bucketRows as HistogramBucket[]
   const b           = `/${locale}/browse?platforms=${config.browseKey}`
 
@@ -370,46 +395,147 @@ async function TraditionalPlatformPage({
       />
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
 
-        {/* Hero */}
-        <div className="relative rounded-2xl overflow-hidden border border-slate-700 shadow-lg bg-slate-900">
-          <div className={`absolute inset-0 bg-gradient-to-r ${config.accent}`} />
-          <div className="relative px-6 py-8 flex items-center gap-5">
-            <div className={`w-[72px] h-[72px] rounded-2xl ${config.iconBg} ring-2 flex items-center justify-center shrink-0 shadow-lg`}>
-              <span className="text-3xl font-black text-white select-none">
-                {config.name.slice(0, 2).toUpperCase()}
-              </span>
+        {/* Hero — platform banner */}
+        <div className="relative rounded-3xl overflow-hidden border border-slate-700 shadow-lg bg-slate-900">
+          <div className={`absolute inset-0 bg-gradient-to-br ${config.accent}`} />
+          <div className="relative px-6 py-7 flex items-center gap-5">
+            <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl ${config.iconBg} ring-2 flex items-center justify-center shrink-0 shadow-lg`}>
+              <Icon name={config.iconName} size={48} className="text-white" label={config.name} />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                <span className="text-[11px] font-semibold bg-white/10 text-white/70 border border-white/20 px-2 py-0.5 rounded-full tracking-wide uppercase">
-                  {t('badge' as any)}
-                </span>
-                {avgScore != null && (
-                  <span className="text-[11px] font-bold bg-white/10 border border-white/20 text-white/80 px-2 py-0.5 rounded-full">
-                    Avg LumiScore {avgScore}
-                  </span>
-                )}
-              </div>
-              <h1 className="text-2xl font-bold text-white">{config.name}</h1>
-              <p className="text-sm text-white/70 mt-1">{descText}</p>
-              <div className="flex items-center gap-3 mt-3 flex-wrap">
-                <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
-                  <span className="text-base font-bold text-white">{scoredCount}</span>
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  <span className="text-xs text-white/50 ml-1">{t('rated' as any)}</span>
-                </div>
-                <Link
-                  href={`/${locale}/browse?platforms=${config.browseKey}`}
-                  className="text-xs font-semibold text-white/80 hover:text-white border border-white/20 hover:border-white/40 bg-white/10 hover:bg-white/15 px-3 py-1.5 rounded-xl transition-colors"
-                >
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {t('browseAll' as any)}
-                </Link>
-              </div>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <span className="inline-block text-[11px] font-semibold bg-white/10 text-white/70 border border-white/20 px-2 py-0.5 rounded-full tracking-wide uppercase mb-1.5">
+                {t('badge' as any)}
+              </span>
+              <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">{config.name}</h1>
+              <p className="text-sm text-white/70 mt-1 line-clamp-2">{descText}</p>
             </div>
           </div>
         </div>
+
+        {/* Average LumiScore — circle hero */}
+        {avgScore != null && (
+          <div className="relative bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 px-6 pt-6 pb-6 text-center">
+            <Link
+              href={`/${locale}/browse?platforms=${config.browseKey}`}
+              className="absolute top-3 right-3 text-[11px] font-semibold text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 border border-slate-200 dark:border-slate-600 hover:border-indigo-400 rounded-full px-2.5 py-1 transition-colors"
+            >
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('browseAll' as any)}
+            </Link>
+
+            <p className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
+              Average LumiScore
+            </p>
+
+            <div
+              className={`leading-none font-bold tabular-nums ${curascoreText(avgScore)}`}
+              style={{ fontFamily: "Georgia, 'Iowan Old Style', serif", fontSize: 'clamp(64px, 14vw, 96px)' }}
+            >
+              {avgScore}
+            </div>
+
+            <p
+              className="text-sm text-slate-400 dark:text-slate-500 mt-2"
+              style={{ fontVariant: 'small-caps', letterSpacing: '0.06em' }}
+            >
+              out of 100
+            </p>
+
+            <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+              across <span className="font-bold text-slate-700 dark:text-slate-200">{scoredCount}</span> rated {config.name} games
+            </p>
+          </div>
+        )}
+
+        {/* Growth + Risk pillars */}
+        {scoredCount > 0 && avgBds != null && avgRis != null && (
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-green-50 dark:bg-green-900/20 rounded-3xl p-4 sm:p-5 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-green-200 dark:bg-green-800 rounded-xl flex items-center justify-center">
+                  <Sparkles size={16} className="text-green-700 dark:text-green-300" strokeWidth={2.5} />
+                </div>
+                <p className="text-xs font-black uppercase tracking-widest text-green-700 dark:text-green-400">Avg Growth</p>
+              </div>
+              <p className="text-3xl font-black tracking-tighter text-green-900 dark:text-green-200">
+                {Math.round(avgBds * 100)}
+                <span className="text-base font-bold text-green-600 dark:text-green-400">/100</span>
+              </p>
+              <p className="text-xs font-semibold text-green-700 dark:text-green-400">Benefit Density</p>
+            </div>
+            <div className="bg-orange-50 dark:bg-orange-900/20 rounded-3xl p-4 sm:p-5 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-orange-200 dark:bg-orange-800 rounded-xl flex items-center justify-center">
+                  <Zap size={16} className="text-orange-700 dark:text-orange-300" strokeWidth={2.5} />
+                </div>
+                <p className="text-xs font-black uppercase tracking-widest text-orange-700 dark:text-orange-400">Avg Risk</p>
+              </div>
+              <p className="text-3xl font-black tracking-tighter text-orange-900 dark:text-orange-200">
+                {Math.round(avgRis * 100)}
+                <span className="text-base font-bold text-orange-600 dark:text-orange-400">/100</span>
+              </p>
+              <p className="text-xs font-semibold text-orange-700 dark:text-orange-400">Engagement Hooks</p>
+            </div>
+          </div>
+        )}
+
+        {/* Stats strip */}
+        {scoredCount > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
+              <Gamepad2 size={16} className="mx-auto mb-1 text-slate-400 dark:text-slate-500" />
+              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{scoredCount}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Games rated</p>
+            </div>
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
+              <ShieldCheck size={16} className="mx-auto mb-1 text-emerald-500" />
+              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{safestCount}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Safest picks</p>
+            </div>
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
+              <Trophy size={16} className="mx-auto mb-1 text-amber-500" />
+              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{maxScore ?? '—'}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Top score</p>
+            </div>
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
+              <Clock size={16} className="mx-auto mb-1 text-blue-500" />
+              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{avgTime ?? '—'}<span className="text-xs font-bold">m</span></p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Avg time/day</p>
+            </div>
+          </div>
+        )}
+
+        {/* Top pick highlight */}
+        {topGame && topGame.curascore != null && (
+          <Link
+            href={`/${locale}/game/${topGame.slug}`}
+            className="block bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-amber-400 dark:hover:border-amber-500 rounded-2xl overflow-hidden transition-colors group"
+          >
+            <div className="flex items-center gap-3 p-3">
+              {topGame.backgroundImage ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={topGame.backgroundImage} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
+              ) : (
+                <div className="w-16 h-16 rounded-xl bg-slate-100 dark:bg-slate-700 shrink-0" />
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                  <Trophy size={11} strokeWidth={2.5} /> Highest-rated {config.name} pick
+                </p>
+                <p className="text-base font-bold text-slate-800 dark:text-slate-100 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  {topGame.title}
+                </p>
+                {topGame.developer && (
+                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{topGame.developer}</p>
+                )}
+              </div>
+              <div className={`shrink-0 text-2xl font-black tabular-nums ${curascoreText(topGame.curascore)}`} style={{ fontFamily: "Georgia, 'Iowan Old Style', serif" }}>
+                {topGame.curascore}
+              </div>
+            </div>
+          </Link>
+        )}
 
         {/* Score distribution */}
         {scoredCount > 0 && (
@@ -498,10 +624,13 @@ export default async function PlatformHubPage({ params }: Props) {
 
     db
       .select({
-        count:    sql<number>`count(${experienceScores.id})::int`,
-        avgScore: sql<number>`round(avg(${experienceScores.curascore}))::int`,
-        minScore: sql<number>`min(${experienceScores.curascore})`,
-        maxScore: sql<number>`max(${experienceScores.curascore})`,
+        count:        sql<number>`count(${experienceScores.id})::int`,
+        avgScore:     sql<number>`round(avg(${experienceScores.curascore}))::int`,
+        maxScore:     sql<number>`max(${experienceScores.curascore})::int`,
+        avgBds:       sql<number>`avg(${experienceScores.benefitScore})`,
+        avgRis:       sql<number>`avg(${experienceScores.riskScore})`,
+        avgTime:      sql<number>`round(avg(${experienceScores.timeRecommendationMinutes}))::int`,
+        safestCount:  sql<number>`count(*) filter (where ${experienceScores.riskScore} <= 0.25)::int`,
       })
       .from(experienceScores)
       .innerJoin(platformExperiences, eq(platformExperiences.id, experienceScores.experienceId))
@@ -556,18 +685,25 @@ export default async function PlatformHubPage({ params }: Props) {
   const bottomExperiences = bottomRows.map(r => toExperienceSummary(r.exp, r.score))
   const recentExperiences = recentRows.map(r => toExperienceSummary(r.exp, r.score))
 
-  const scoredCount = Number(statsRow?.count ?? 0)
-  const avgScore    = statsRow?.avgScore ?? null
-  const accent      = UGC_ACCENT[dbSlug] ?? 'from-slate-950/95 via-slate-900/70 to-slate-900/20'
-  const iconBg      = UGC_ICON_BG[dbSlug] ?? 'bg-indigo-600 ring-indigo-400/40'
-  const initials    = platform.title.slice(0, 2).toUpperCase()
+  const scoredCount  = Number(statsRow?.count ?? 0)
+  const avgScore     = statsRow?.avgScore ?? null
+  const maxScore     = statsRow?.maxScore ?? null
+  const avgBds       = statsRow?.avgBds != null ? Number(statsRow.avgBds) : null
+  const avgRis       = statsRow?.avgRis != null ? Number(statsRow.avgRis) : null
+  const avgTime      = statsRow?.avgTime ?? null
+  const safestCount  = Number(statsRow?.safestCount ?? 0)
+  const topExperience = topExperiences[0] ?? null
+  const accent       = UGC_ACCENT[dbSlug] ?? 'from-slate-950/95 via-slate-900/70 to-slate-900/20'
+  const iconBg       = UGC_ICON_BG[dbSlug] ?? 'bg-indigo-600 ring-indigo-400/40'
+  const iconName     = UGC_ICON_NAME[dbSlug] ?? null
+  const initials     = platform.title.slice(0, 2).toUpperCase()
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
 
         {/* Platform hero */}
-        <div className="relative rounded-2xl overflow-hidden border border-slate-700 shadow-lg bg-slate-900">
+        <div className="relative rounded-3xl overflow-hidden border border-slate-700 shadow-lg bg-slate-900">
           {platform.backgroundImage && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -576,48 +712,155 @@ export default async function PlatformHubPage({ params }: Props) {
               className="absolute inset-0 w-full h-full object-cover opacity-30"
             />
           )}
-          <div className={`absolute inset-0 bg-gradient-to-r ${accent}`} />
-          <div className="relative px-6 py-8 flex items-center gap-5">
-            <div className={`w-[72px] h-[72px] rounded-2xl ${iconBg} ring-2 flex items-center justify-center shrink-0 shadow-lg`}>
-              <span className="text-3xl font-black text-white select-none">{initials}</span>
+          <div className={`absolute inset-0 bg-gradient-to-br ${accent}`} />
+          <div className="relative px-6 py-7 flex items-center gap-5">
+            <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl ${iconBg} ring-2 flex items-center justify-center shrink-0 shadow-lg`}>
+              {iconName ? (
+                <Icon name={iconName} size={48} className="text-white" label={platform.title} />
+              ) : (
+                <span className="text-3xl font-black text-white select-none">{initials}</span>
+              )}
             </div>
 
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="text-[11px] font-semibold bg-white/10 text-white/70 border border-white/20 px-2 py-0.5 rounded-full tracking-wide uppercase">
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {t('badge' as any)}
-                </span>
-                {avgScore != null && (
-                  <span className="text-[11px] font-bold bg-white/10 border border-white/20 text-white/80 px-2 py-0.5 rounded-full">
-                    Avg LumiScore {avgScore}
-                  </span>
-                )}
-              </div>
-              <h1 className="text-2xl font-bold text-white">{platform.title}</h1>
+              <span className="inline-block text-[11px] font-semibold bg-white/10 text-white/70 border border-white/20 px-2 py-0.5 rounded-full tracking-wide uppercase mb-1.5">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {t('badge' as any)}
+              </span>
+              <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">{platform.title}</h1>
               {platform.description && (
                 <p className="text-sm text-white/70 mt-1 line-clamp-2">{platform.description}</p>
               )}
-              <div className="flex items-center gap-2 mt-3 flex-wrap">
-                <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
-                  <span className="text-base font-bold text-white">{scoredCount}</span>
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  <span className="text-xs text-white/50 ml-1">{t('rated' as any)}</span>
+              {(platform.esrbRating || platform.pegiRating) && (
+                <div className="flex items-center gap-2 mt-2">
+                  {platform.esrbRating && (
+                    <span className="text-[10px] font-bold bg-white/10 border border-white/15 text-white/70 px-2 py-0.5 rounded-full">
+                      ESRB {platform.esrbRating}
+                    </span>
+                  )}
+                  {platform.pegiRating && (
+                    <span className="text-[10px] font-bold bg-white/10 border border-white/15 text-white/70 px-2 py-0.5 rounded-full">
+                      PEGI {platform.pegiRating}
+                    </span>
+                  )}
                 </div>
-                {platform.esrbRating && (
-                  <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
-                    <span className="text-xs text-white/60">ESRB {platform.esrbRating}</span>
-                  </div>
-                )}
-                {platform.pegiRating && (
-                  <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
-                    <span className="text-xs text-white/60">PEGI {platform.pegiRating}</span>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </div>
         </div>
+
+        {/* Average LumiScore — circle hero */}
+        {avgScore != null && (
+          <div className="relative bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 px-6 pt-6 pb-6 text-center">
+            <p className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
+              Average LumiScore
+            </p>
+            <div
+              className={`leading-none font-bold tabular-nums ${curascoreText(avgScore)}`}
+              style={{ fontFamily: "Georgia, 'Iowan Old Style', serif", fontSize: 'clamp(64px, 14vw, 96px)' }}
+            >
+              {avgScore}
+            </div>
+            <p
+              className="text-sm text-slate-400 dark:text-slate-500 mt-2"
+              style={{ fontVariant: 'small-caps', letterSpacing: '0.06em' }}
+            >
+              out of 100
+            </p>
+            <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+              across <span className="font-bold text-slate-700 dark:text-slate-200">{scoredCount}</span> scored experiences
+            </p>
+          </div>
+        )}
+
+        {/* Growth + Risk pillars */}
+        {scoredCount > 0 && avgBds != null && avgRis != null && (
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-green-50 dark:bg-green-900/20 rounded-3xl p-4 sm:p-5 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-green-200 dark:bg-green-800 rounded-xl flex items-center justify-center">
+                  <Sparkles size={16} className="text-green-700 dark:text-green-300" strokeWidth={2.5} />
+                </div>
+                <p className="text-xs font-black uppercase tracking-widest text-green-700 dark:text-green-400">Avg Growth</p>
+              </div>
+              <p className="text-3xl font-black tracking-tighter text-green-900 dark:text-green-200">
+                {Math.round(avgBds * 100)}
+                <span className="text-base font-bold text-green-600 dark:text-green-400">/100</span>
+              </p>
+              <p className="text-xs font-semibold text-green-700 dark:text-green-400">Benefit Density</p>
+            </div>
+            <div className="bg-orange-50 dark:bg-orange-900/20 rounded-3xl p-4 sm:p-5 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-orange-200 dark:bg-orange-800 rounded-xl flex items-center justify-center">
+                  <Zap size={16} className="text-orange-700 dark:text-orange-300" strokeWidth={2.5} />
+                </div>
+                <p className="text-xs font-black uppercase tracking-widest text-orange-700 dark:text-orange-400">Avg Risk</p>
+              </div>
+              <p className="text-3xl font-black tracking-tighter text-orange-900 dark:text-orange-200">
+                {Math.round(avgRis * 100)}
+                <span className="text-base font-bold text-orange-600 dark:text-orange-400">/100</span>
+              </p>
+              <p className="text-xs font-semibold text-orange-700 dark:text-orange-400">Engagement Hooks</p>
+            </div>
+          </div>
+        )}
+
+        {/* Stats strip */}
+        {scoredCount > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
+              <Gamepad2 size={16} className="mx-auto mb-1 text-slate-400 dark:text-slate-500" />
+              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{scoredCount}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Experiences</p>
+            </div>
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
+              <ShieldCheck size={16} className="mx-auto mb-1 text-emerald-500" />
+              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{safestCount}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Safest picks</p>
+            </div>
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
+              <Trophy size={16} className="mx-auto mb-1 text-amber-500" />
+              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{maxScore ?? '—'}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Top score</p>
+            </div>
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
+              <Clock size={16} className="mx-auto mb-1 text-blue-500" />
+              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{avgTime ?? '—'}<span className="text-xs font-bold">m</span></p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Avg time/day</p>
+            </div>
+          </div>
+        )}
+
+        {/* Top pick highlight */}
+        {topExperience && topExperience.curascore != null && (
+          <Link
+            href={`/${locale}/game/${dbSlug}/${topExperience.slug}`}
+            className="block bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-amber-400 dark:hover:border-amber-500 rounded-2xl overflow-hidden transition-colors group"
+          >
+            <div className="flex items-center gap-3 p-3">
+              {topExperience.thumbnailUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={topExperience.thumbnailUrl} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
+              ) : (
+                <div className="w-16 h-16 rounded-xl bg-slate-100 dark:bg-slate-700 shrink-0" />
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                  <Trophy size={11} strokeWidth={2.5} /> Highest-rated {platform.title} experience
+                </p>
+                <p className="text-base font-bold text-slate-800 dark:text-slate-100 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  {topExperience.title}
+                </p>
+                {topExperience.creatorName && (
+                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{topExperience.creatorName}</p>
+                )}
+              </div>
+              <div className={`shrink-0 text-2xl font-black tabular-nums ${curascoreText(topExperience.curascore)}`} style={{ fontFamily: "Georgia, 'Iowan Old Style', serif" }}>
+                {topExperience.curascore}
+              </div>
+            </div>
+          </Link>
+        )}
 
         {/* Score distribution histogram */}
         {scoredCount > 0 && (

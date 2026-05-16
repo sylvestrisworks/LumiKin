@@ -171,6 +171,7 @@ async function bulkBackfill(opts: { limit: number; dryRun: boolean }) {
     FROM platform_experiences pe
     JOIN games g ON g.id = pe.platform_id
     WHERE g.slug = 'fortnite-creative'
+      AND pe.is_public = TRUE
       AND (pe.description IS NULL OR length(pe.description) < 20)
       AND pe.place_id ~ '^[0-9]{4}-[0-9]{4}-[0-9]{4}$'
     ORDER BY pe.id

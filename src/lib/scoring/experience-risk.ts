@@ -118,3 +118,53 @@ export function applyScoreFloors(
 
   return { scores: out, applied }
 }
+
+// ─── Input confidence ─────────────────────────────────────────────────────────
+//
+// Confidence (0–1) is "how much real data did we have to score from?" UGC
+// platforms list thousands of obscure maps with title-only metadata; floors
+// stop the AI from inventing extreme scores but cannot rescue confidence in
+// the result. When confidence is low we hide the curascore in the UI and
+// surface "not enough info yet" instead — honest absence over a wonky number.
+//
+// Fortnite Creative doesn't expose freeform descriptions, but the public
+// island page surfaces tagline, content descriptors, tags, age rating, and
+// active player count. Roblox exposes a real description + visit count via
+// its public API. The formula accepts narrative copy from either path so
+// both platforms can clear the threshold honestly.
+//
+// Weights (sum to 1.0):
+//   narrative copy (description OR tagline ≥ 30 chars)  0.35
+//   content descriptors (≥ 1, e.g. "Moderate Violence")  0.20
+//   popularity signal (visits OR active players > 0)     0.15
+//   age rating (PEGI / ESRB / USK / …)                   0.15
+//   tags (≥ 2)                                           0.10
+//   creator handle present                               0.05
+
+export type ConfidenceContext = {
+  description:        string | null | undefined
+  tagline:            string | null | undefined
+  contentDescriptors: string[] | null | undefined
+  tags:               string[] | null | undefined
+  ageRating:          string | null | undefined
+  visitCount:         number | null | undefined
+  activePlayers:      number | null | undefined
+  creatorName:        string | null | undefined
+}
+
+export const CONFIDENCE_THRESHOLD = 0.5
+
+export function computeInputConfidence(ctx: ConfidenceContext): number {
+  const narrativeLen = Math.max(
+    (ctx.description ?? '').trim().length,
+    (ctx.tagline ?? '').trim().length,
+  )
+  let c = 0
+  if (narrativeLen >= 30)                                                c += 0.35
+  if ((ctx.contentDescriptors ?? []).length >= 1)                        c += 0.20
+  if ((ctx.visitCount ?? 0) > 0 || (ctx.activePlayers ?? 0) > 0)         c += 0.15
+  if ((ctx.ageRating ?? '').trim().length > 0)                           c += 0.15
+  if ((ctx.tags ?? []).length >= 2)                                      c += 0.10
+  if ((ctx.creatorName ?? '').trim().length > 0)                         c += 0.05
+  return Math.round(c * 1000) / 1000
+}

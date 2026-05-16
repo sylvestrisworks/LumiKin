@@ -496,6 +496,15 @@ export const platformExperiences = pgTable('platform_experiences', {
   activePlayers: integer('active_players'),
   maxPlayers:    integer('max_players'),
 
+  // Structured metadata scraped from fortnite.com /creative/island-codes/{code}
+  // (Fortnite doesn't expose a real description; these are what the page
+  // actually surfaces and what gives the AI scorer enough signal to be honest.)
+  tagline:            text('tagline'),                                     // Creator's multi-line "About this island" copy
+  tags:               jsonbPassthrough<string[]>()('tags'),                // genre + creator-defined tags
+  contentDescriptors: jsonbPassthrough<string[]>()('content_descriptors'), // e.g. ["Moderate Violence","Users Interact"]
+  ageRating:          varchar('age_rating', { length: 16 }),               // e.g. "PEGI 12", "ESRB T"
+  creatorFollowers:   integer('creator_followers'),                        // Creator community follower count
+
   // Re-fetch cadence
   lastFetchedAt: timestamp('last_fetched_at'),
 
@@ -561,6 +570,11 @@ export const experienceScores = pgTable('experience_scores', {
 
   // AI curascore kept for monitoring; displayed value is formula-derived
   curascoreAiSuggested: integer('curascore_ai_suggested'),
+
+  // Input confidence (0–1): how much real data we had to score from.
+  // Below CONFIDENCE_THRESHOLD, display surfaces hide the score and show
+  // a "not enough info yet" pill instead of risking a wonky number.
+  inputConfidence: real('input_confidence'),
 
   // Methodology traceability
   methodologyVersion: varchar('methodology_version', { length: 10 }),

@@ -237,6 +237,7 @@ function toExperienceSummary(
     recommendedMinAge:         score?.recommendedMinAge ?? null,
     strangerRisk:              score?.strangerRisk ?? null,
     monetizationScore:         score?.monetizationScore ?? null,
+    inputConfidence:           score?.inputConfidence ?? null,
   }
 }
 

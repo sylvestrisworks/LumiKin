@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { curascoreBg } from '@/lib/ui'
+import { CONFIDENCE_THRESHOLD } from '@/lib/scoring/experience-risk'
 import type { ExperienceSummary } from '@/components/ExperienceCard'
 import Icon from '@/components/Icon'
 
@@ -19,8 +20,12 @@ function formatCount(n: number | null): string {
 
 function RobloxTile({ exp }: { exp: ExperienceSummary }) {
   const locale = useLocale()
+  const isPending = (exp.inputConfidence ?? 0) < CONFIDENCE_THRESHOLD
   return (
-    <Link href={`/${locale}/game/roblox/${exp.slug}`} className="group/tile shrink-0 w-36 sm:w-44 snap-start">
+    <Link
+      href={`/${locale}/game/roblox/${exp.slug}`}
+      className={`group/tile shrink-0 w-36 sm:w-44 snap-start ${isPending ? 'grayscale opacity-75 hover:opacity-100 hover:grayscale-0 transition-all' : ''}`}
+    >
       {/* Image */}
       <div className="relative w-full h-24 sm:h-28 rounded-xl overflow-hidden bg-red-100 dark:bg-red-900/40">
         {exp.thumbnailUrl ? (
@@ -38,8 +43,7 @@ function RobloxTile({ exp }: { exp: ExperienceSummary }) {
           </div>
         )}
 
-        {/* LumiScore badge — top right */}
-        {exp.curascore != null && (
+        {!isPending && exp.curascore != null && (
           <span
             className={`absolute top-1.5 right-1.5 ${curascoreBg(exp.curascore)} text-white text-[10px] font-black px-1.5 py-0.5 rounded-full leading-none`}
             title="LumiScore"
@@ -48,8 +52,7 @@ function RobloxTile({ exp }: { exp: ExperienceSummary }) {
           </span>
         )}
 
-        {/* Min age badge — bottom left */}
-        {exp.recommendedMinAge != null && (
+        {!isPending && exp.recommendedMinAge != null && (
           <span
             className="absolute bottom-1.5 left-1.5 bg-slate-700 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none"
             title={`Recommended age ${exp.recommendedMinAge}+`}
@@ -75,7 +78,7 @@ function RobloxTile({ exp }: { exp: ExperienceSummary }) {
         {exp.title}
       </p>
       <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
-        {exp.creatorName ?? ''}
+        {isPending ? 'Not enough info to rate' : (exp.creatorName ?? '')}
       </p>
     </Link>
   )

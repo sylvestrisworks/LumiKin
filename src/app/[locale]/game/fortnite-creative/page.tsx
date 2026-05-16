@@ -128,13 +128,14 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
     title:         exp.title,
     thumbnailUrl:  exp.thumbnailUrl,
     creatorName:   exp.creatorName,
-    activePlayers: null,
+    activePlayers: exp.activePlayers,
     visitCount:    null,
     curascore:     score?.curascore ?? null,
     timeRecommendationMinutes: score?.timeRecommendationMinutes ?? null,
     recommendedMinAge:         score?.recommendedMinAge ?? null,
     strangerRisk:              score?.strangerRisk ?? null,
     monetizationScore:         score?.monetizationScore ?? null,
+    inputConfidence:           score?.inputConfidence ?? null,
   }))
 
   const scored   = maps.filter(e => e.curascore != null)

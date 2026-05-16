@@ -576,6 +576,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
       recommendedMinAge:         experienceScores.recommendedMinAge,
       strangerRisk:              experienceScores.strangerRisk,
       monetizationScore:         experienceScores.monetizationScore,
+      inputConfidence:           experienceScores.inputConfidence,
     }
 
     ;[carousels, robloxExperiences, fortniteExperiences] = await Promise.all([

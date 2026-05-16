@@ -75,6 +75,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
     recommendedMinAge:         score?.recommendedMinAge ?? null,
     strangerRisk:              score?.strangerRisk ?? null,
     monetizationScore:         score?.monetizationScore ?? null,
+    inputConfidence:           score?.inputConfidence ?? null,
   }))
 
   const scored   = experiences.filter(e => e.curascore != null)

@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { getTranslations, getLocale } from 'next-intl/server'
 import UgcAttributionBlock from '@/components/UgcAttributionBlock'
 import { RUBRIC_DIMENSION_COUNT } from '@/lib/methodology'
+import { CONFIDENCE_THRESHOLD } from '@/lib/scoring/experience-risk'
 
 type Props = { params: Promise<{ locale: string; experienceSlug: string }> }
 
@@ -193,7 +194,10 @@ export default async function ExperiencePage({ params }: Props) {
       .catch(() => []),
   ])
 
-  const verdict = score?.curascore != null ? getVerdict(score.curascore) : null
+  // See fortnite-creative/[mapSlug]/page.tsx — same isPending gating.
+  const isPending = (score?.inputConfidence ?? 0) < CONFIDENCE_THRESHOLD
+  const displayScore = score && !isPending ? score : null
+  const verdict = displayScore?.curascore != null ? getVerdict(displayScore.curascore) : null
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
   const canonicalUrl = `${SITE_URL}/en/game/roblox/${exp.slug}`
@@ -221,15 +225,15 @@ export default async function ExperiencePage({ params }: Props) {
     ],
   }
 
-  const reviewBodyRaw = score?.summary
-    ?? (score?.curascore != null
-      ? `${exp.title} received a LumiScore of ${score.curascore}/100 on Roblox.${score.timeRecommendationLabel ? ` Recommended play time: ${score.timeRecommendationLabel}.` : ''}`
+  const reviewBodyRaw = displayScore?.summary
+    ?? (displayScore?.curascore != null
+      ? `${exp.title} received a LumiScore of ${displayScore.curascore}/100 on Roblox.${displayScore.timeRecommendationLabel ? ` Recommended play time: ${displayScore.timeRecommendationLabel}.` : ''}`
       : null)
   const reviewBody = reviewBodyRaw
     ? reviewBodyRaw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 500)
     : null
 
-  const reviewLd = score?.curascore != null ? {
+  const reviewLd = displayScore?.curascore != null ? {
     '@context': 'https://schema.org',
     '@type': 'Review',
     itemReviewed: {
@@ -246,12 +250,12 @@ export default async function ExperiencePage({ params }: Props) {
     },
     reviewRating: {
       '@type': 'Rating',
-      ratingValue: score.curascore,
+      ratingValue: displayScore.curascore,
       bestRating: 100,
       worstRating: 0,
     },
-    datePublished: score.calculatedAt ? score.calculatedAt.toISOString().slice(0, 10) : undefined,
-    dateModified: (exp.updatedAt ?? score.calculatedAt)?.toISOString().slice(0, 10),
+    datePublished: displayScore.calculatedAt ? displayScore.calculatedAt.toISOString().slice(0, 10) : undefined,
+    dateModified: (exp.updatedAt ?? displayScore.calculatedAt)?.toISOString().slice(0, 10),
     reviewBody: reviewBody ?? undefined,
     url: canonicalUrl,
   } : null
@@ -285,9 +289,9 @@ export default async function ExperiencePage({ params }: Props) {
           <div className="px-5 py-5">
             <div className="flex items-start gap-5">
               {/* Score ring */}
-              {score?.curascore != null && verdict && (
+              {displayScore?.curascore != null && verdict && (
                 <div className="shrink-0 -mt-1">
-                  <HorseshoeRing score={score.curascore} ring={verdict.ring} />
+                  <HorseshoeRing score={displayScore.curascore} ring={verdict.ring} />
                   <p className={`text-center text-sm font-black -mt-3 ${verdict.color}`}>{verdict.label}</p>
                 </div>
               )}
@@ -312,15 +316,15 @@ export default async function ExperiencePage({ params }: Props) {
                 </div>
 
                 {/* Time recommendation */}
-                {score?.timeRecommendationLabel && (
+                {displayScore?.timeRecommendationLabel && (
                   <div className={`mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-sm font-semibold ${
-                    score.timeRecommendationColor === 'green'  ? 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400' :
-                    score.timeRecommendationColor === 'amber'  ? 'bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400' :
-                                                                 'bg-red-50 border-red-200 text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400'
+                    displayScore.timeRecommendationColor === 'green'  ? 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400' :
+                    displayScore.timeRecommendationColor === 'amber'  ? 'bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400' :
+                                                                        'bg-red-50 border-red-200 text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400'
                   }`}>
-                    <span>Recommended: {score.timeRecommendationLabel}</span>
-                    {score.recommendedMinAge != null && (
-                      <span className="text-xs font-normal opacity-70">· Age {score.recommendedMinAge}+</span>
+                    <span>Recommended: {displayScore.timeRecommendationLabel}</span>
+                    {displayScore.recommendedMinAge != null && (
+                      <span className="text-xs font-normal opacity-70">· Age {displayScore.recommendedMinAge}+</span>
                     )}
                   </div>
                 )}
@@ -337,66 +341,66 @@ export default async function ExperiencePage({ params }: Props) {
             platformSlug={parentPlatform.slug}
             esrbRating={parentPlatform.esrbRating}
             pegiRating={parentPlatform.pegiRating}
-            curascore={score?.curascore ?? null}
+            curascore={displayScore?.curascore ?? null}
           />
         )}
 
         {/* ── Summary ────────────────────────────────────────────────────────── */}
-        {score?.summary && (
+        {displayScore?.summary && (
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
-            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed italic">"{score.summary}"</p>
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed italic">"{displayScore.summary}"</p>
           </div>
         )}
 
         {/* ── Benefits ───────────────────────────────────────────────────────── */}
-        {score && (
+        {displayScore && (
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-5 space-y-4">
             <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
               {t('whatChildDevelops')}
             </h2>
 
             <div className="space-y-3">
-              <BenefitBar label={t('creativity')}  value={score.creativityScore} />
-              <BenefitBar label={t('socialPlay')}  value={score.socialScore} />
-              <BenefitBar label={t('learning')}    value={score.learningScore} />
+              <BenefitBar label={t('creativity')}  value={displayScore.creativityScore} />
+              <BenefitBar label={t('socialPlay')}  value={displayScore.socialScore} />
+              <BenefitBar label={t('learning')}    value={displayScore.learningScore} />
             </div>
 
-            {score.benefitsNarrative && (
+            {displayScore.benefitsNarrative && (
               <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-4 mt-2">
                 <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300 mb-1">{t('whatChildDevelops')}</p>
-                <p className="text-sm text-emerald-900 dark:text-emerald-200 leading-relaxed">{score.benefitsNarrative}</p>
+                <p className="text-sm text-emerald-900 dark:text-emerald-200 leading-relaxed">{displayScore.benefitsNarrative}</p>
               </div>
             )}
           </div>
         )}
 
         {/* ── Risks ──────────────────────────────────────────────────────────── */}
-        {score && (
+        {displayScore && (
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-5 space-y-4">
             <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
               {t('watchOutFor')}
             </h2>
 
             <div className="space-y-4">
-              <RiskMeter label={t('dopamineTraps')} value={score.dopamineTrapScore} />
-              <RiskMeter label={t('toxicity')}      value={score.toxicityScore} />
-              <RiskMeter label={t('ugcRisk')}       value={score.ugcContentRisk} />
-              <RiskMeter label={t('strangerRisk')}  value={score.strangerRisk} />
-              <RiskMeter label={t('monetization')}  value={score.monetizationScore} />
-              <RiskMeter label={t('privacyRisk')}   value={score.privacyRisk} />
+              <RiskMeter label={t('dopamineTraps')} value={displayScore.dopamineTrapScore} />
+              <RiskMeter label={t('toxicity')}      value={displayScore.toxicityScore} />
+              <RiskMeter label={t('ugcRisk')}       value={displayScore.ugcContentRisk} />
+              <RiskMeter label={t('strangerRisk')}  value={displayScore.strangerRisk} />
+              <RiskMeter label={t('monetization')}  value={displayScore.monetizationScore} />
+              <RiskMeter label={t('privacyRisk')}   value={displayScore.privacyRisk} />
             </div>
 
-            {score.risksNarrative && (
+            {displayScore.risksNarrative && (
               <div className="bg-slate-50 dark:bg-slate-700/50 rounded-2xl p-4 mt-2">
                 <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">{t('watchOutFor')}</p>
-                <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{score.risksNarrative}</p>
+                <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{displayScore.risksNarrative}</p>
               </div>
             )}
           </div>
         )}
 
         {/* ── Scoring method note (Fix 8) ────────────────────────────────────── */}
-        {score && (
+        {displayScore && (
           <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed px-1">
             This experience is scored on 9 dimensions adapted from the {RUBRIC_DIMENSION_COUNT}-dimension LumiKin rubric.
             Risk category weights match the rubric (Dopamine 45%, Monetization 30%, Social 25%);
@@ -405,18 +409,24 @@ export default async function ExperiencePage({ params }: Props) {
         )}
 
         {/* ── Parent tip ─────────────────────────────────────────────────────── */}
-        {score?.parentTip && (
+        {displayScore?.parentTip && (
           <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl px-5 py-4">
             <p className="text-xs font-black uppercase tracking-widest text-blue-700 dark:text-blue-400 mb-1">{t('parentTip')}</p>
-            <p className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">{score.parentTip}</p>
+            <p className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">{displayScore.parentTip}</p>
           </div>
         )}
 
-        {/* ── No score yet ───────────────────────────────────────────────────── */}
-        {!score && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-8 text-center text-slate-400">
-            <p className="font-medium">{t('ratingInProgress')}</p>
-            <p className="text-xs mt-1">{t('ratingInProgressDesc')}</p>
+        {/* ── No score / pending ─────────────────────────────────────────────── */}
+        {!displayScore && (
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-8 text-center text-slate-500 dark:text-slate-400">
+            <p className="font-medium">
+              {isPending ? 'Not enough info to rate' : t('ratingInProgress')}
+            </p>
+            <p className="text-xs mt-1">
+              {isPending
+                ? "This experience doesn't yet have enough public info for us to rate it confidently. We'll update as more data arrives."
+                : t('ratingInProgressDesc')}
+            </p>
           </div>
         )}
 

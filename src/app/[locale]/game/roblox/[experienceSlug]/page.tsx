@@ -195,7 +195,77 @@ export default async function ExperiencePage({ params }: Props) {
 
   const verdict = score?.curascore != null ? getVerdict(score.curascore) : null
 
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
+  const canonicalUrl = `${SITE_URL}/en/game/roblox/${exp.slug}`
+
+  const videoGameLd = {
+    '@context': 'https://schema.org',
+    '@type': 'VideoGame',
+    name: exp.title,
+    description: exp.description ?? undefined,
+    publisher: exp.creatorName ? { '@type': 'Organization', name: exp.creatorName } : undefined,
+    gamePlatform: 'Roblox',
+    genre: exp.genre ?? undefined,
+    image: exp.thumbnailUrl ?? undefined,
+    url: canonicalUrl,
+  }
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home',   item: `${SITE_URL}/${locale}` },
+      { '@type': 'ListItem', position: 2, name: 'Browse', item: `${SITE_URL}/${locale}/browse` },
+      { '@type': 'ListItem', position: 3, name: 'Roblox', item: `${SITE_URL}/${locale}/game/roblox` },
+      { '@type': 'ListItem', position: 4, name: exp.title, item: canonicalUrl },
+    ],
+  }
+
+  const reviewBodyRaw = score?.summary
+    ?? (score?.curascore != null
+      ? `${exp.title} received a LumiScore of ${score.curascore}/100 on Roblox.${score.timeRecommendationLabel ? ` Recommended play time: ${score.timeRecommendationLabel}.` : ''}`
+      : null)
+  const reviewBody = reviewBodyRaw
+    ? reviewBodyRaw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 500)
+    : null
+
+  const reviewLd = score?.curascore != null ? {
+    '@context': 'https://schema.org',
+    '@type': 'Review',
+    itemReviewed: {
+      '@type': 'VideoGame',
+      name: exp.title,
+      gamePlatform: 'Roblox',
+      genre: exp.genre ?? undefined,
+      publisher: exp.creatorName ? { '@type': 'Organization', name: exp.creatorName } : undefined,
+    },
+    author: {
+      '@type': 'Organization',
+      name: 'LumiKin',
+      url: SITE_URL,
+    },
+    reviewRating: {
+      '@type': 'Rating',
+      ratingValue: score.curascore,
+      bestRating: 100,
+      worstRating: 0,
+    },
+    datePublished: score.calculatedAt ? score.calculatedAt.toISOString().slice(0, 10) : undefined,
+    dateModified: (exp.updatedAt ?? score.calculatedAt)?.toISOString().slice(0, 10),
+    reviewBody: reviewBody ?? undefined,
+    url: canonicalUrl,
+  } : null
+
+  const ldJson = (obj: unknown) =>
+    JSON.stringify(obj).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026')
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(videoGameLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(breadcrumbLd) }} />
+      {reviewLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(reviewLd) }} />
+      )}
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-4">
 
@@ -380,5 +450,6 @@ export default async function ExperiencePage({ params }: Props) {
 
       </main>
     </div>
+    </>
   )
 }

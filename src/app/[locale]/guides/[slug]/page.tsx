@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { getLocale } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { sanityClient } from '@/sanity/lib/client'
 import { guideBySlugQuery } from '@/sanity/lib/queries'
 import { urlFor } from '@/sanity/lib/image'
@@ -48,20 +48,49 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function GuidePage({ params }: Props) {
-  const [{ slug }, locale] = await Promise.all([params, getLocale()])
+  const [{ slug }, locale, tNav, tGuides] = await Promise.all([
+    params,
+    getLocale(),
+    getTranslations('game'),
+    getTranslations('guides'),
+  ])
   const guide = await sanityClient?.fetch(guideBySlugQuery, { slug }).catch(() => null) ?? null
   if (!guide) notFound()
 
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: tNav('navHome'),              item: `${SITE_URL}/${locale}` },
+      { '@type': 'ListItem', position: 2, name: tGuides('breadcrumbLearn'),   item: `${SITE_URL}/${locale}/learn` },
+      { '@type': 'ListItem', position: 3, name: tGuides('breadcrumbCurrent'), item: `${SITE_URL}/${locale}/guides` },
+      { '@type': 'ListItem', position: 4, name: guide.title,                  item: `${SITE_URL}/${locale}/guides/${slug}` },
+    ],
+  }
+
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
+      />
       <div className="max-w-2xl mx-auto px-4 py-10">
 
-        <nav className="text-xs text-slate-400 dark:text-slate-500 mb-6 flex items-center gap-1.5">
-          <Link href={`/${locale}/learn`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Learn</Link>
-          <span>/</span>
-          <Link href={`/${locale}/guides`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Guides</Link>
-          <span>/</span>
-          <span className="text-slate-600 dark:text-slate-300 truncate">{guide.title}</span>
+        <nav className="mb-6 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+          <Link href={`/${locale}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+            {tNav('navHome')}
+          </Link>
+          <span aria-hidden>/</span>
+          <Link href={`/${locale}/learn`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+            {tGuides('breadcrumbLearn')}
+          </Link>
+          <span aria-hidden>/</span>
+          <Link href={`/${locale}/guides`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+            {tGuides('breadcrumbCurrent')}
+          </Link>
+          <span aria-hidden>/</span>
+          <span className="text-slate-700 dark:text-slate-200 truncate">{guide.title}</span>
         </nav>
 
         {/* ── Meta ─────────────────────────────────────────────────────── */}

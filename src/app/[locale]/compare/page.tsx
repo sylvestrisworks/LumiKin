@@ -850,6 +850,7 @@ const isValidSlug = (s: string | null): s is string =>
 
 function ComparePageInner() {
   const t            = useTranslations('compare')
+  const tNav         = useTranslations('game')
   const locale       = useLocale()
   const router       = useRouter()
   const searchParams = useSearchParams()
@@ -925,9 +926,31 @@ function ComparePageInner() {
     ? ((gameA.scores?.ris ?? 0) >= (gameB.scores?.ris ?? 0) ? gameA : gameB)
     : null
 
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: tNav('navHome'), item: `${SITE_URL}/${locale}` },
+      { '@type': 'ListItem', position: 2, name: t('title'),      item: `${SITE_URL}/${locale}/compare` },
+    ],
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
+      />
       <main className="max-w-2xl lg:max-w-4xl mx-auto px-4 py-6 space-y-5">
+
+        <nav className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+          <Link href={`/${locale}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+            {tNav('navHome')}
+          </Link>
+          <span aria-hidden>/</span>
+          <span className="text-slate-700 dark:text-slate-200 truncate">{t('title')}</span>
+        </nav>
 
         {/* Heading */}
         <header>

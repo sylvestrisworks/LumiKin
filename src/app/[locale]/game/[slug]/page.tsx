@@ -362,6 +362,21 @@ export default async function GamePage({ params }: Props) {
   // JSON-LD structured data
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
 
+  // Pick a canonical platform parent for the breadcrumb. Order reflects
+  // mental-model strength for parents: consoles first, then PC, then mobile.
+  // Each entry maps a `games.platforms` string to a `/platform/[slug]` URL slug.
+  const PLATFORM_PARENT_PRIORITY: Array<{ match: string; slug: string; label: string }> = [
+    { match: 'PlayStation',     slug: 'playstation',     label: 'PlayStation' },
+    { match: 'Xbox',            slug: 'xbox',            label: 'Xbox' },
+    { match: 'Nintendo Switch', slug: 'nintendo-switch', label: 'Nintendo Switch' },
+    { match: 'PC',              slug: 'pc',              label: 'PC' },
+    { match: 'iOS',             slug: 'ios',             label: 'iOS' },
+    { match: 'Android',         slug: 'android',         label: 'Android' },
+  ]
+  const canonicalPlatform = PLATFORM_PARENT_PRIORITY.find(p =>
+    game.platforms.some(gp => gp === p.match || gp.includes(p.match)),
+  ) ?? null
+
   const videoGameLd = {
     '@context': 'https://schema.org',
     '@type': 'VideoGame',
@@ -387,6 +402,19 @@ export default async function GamePage({ params }: Props) {
   const reviewBody = reviewBodyRaw
     ? reviewBodyRaw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 500)
     : null
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: t('navHome'),   item: `${SITE_URL}/${locale}` },
+      { '@type': 'ListItem', position: 2, name: t('navBrowse'), item: `${SITE_URL}/${locale}/browse` },
+      ...(canonicalPlatform
+        ? [{ '@type': 'ListItem', position: 3, name: canonicalPlatform.label, item: `${SITE_URL}/${locale}/platform/${canonicalPlatform.slug}` }]
+        : []),
+      { '@type': 'ListItem', position: canonicalPlatform ? 4 : 3, name: game.title, item: `${SITE_URL}/${locale}/game/${game.slug}` },
+    ],
+  }
 
   const reviewLd = scores?.curascore != null ? {
     '@context': 'https://schema.org',
@@ -422,6 +450,10 @@ export default async function GamePage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(videoGameLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
+      />
       {reviewLd && (
         <script
           type="application/ld+json"
@@ -442,6 +474,17 @@ export default async function GamePage({ params }: Props) {
               {t('navBrowse')}
             </a>
             <span aria-hidden>/</span>
+            {canonicalPlatform && (
+              <>
+                <a
+                  href={`/${locale}/platform/${canonicalPlatform.slug}`}
+                  className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded"
+                >
+                  {canonicalPlatform.label}
+                </a>
+                <span aria-hidden>/</span>
+              </>
+            )}
             <span className="text-slate-700 dark:text-slate-200 truncate">{data.game.title}</span>
           </nav>
 

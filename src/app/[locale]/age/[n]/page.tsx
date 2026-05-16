@@ -109,7 +109,10 @@ export default async function AgePage({ params, searchParams }: Props) {
 
   const sp = await searchParams
   const strict = sp.strict === '1'
-  const t = await getTranslations({ locale, namespace: 'ageHub' })
+  const [t, tNav] = await Promise.all([
+    getTranslations({ locale, namespace: 'ageHub' }),
+    getTranslations({ locale, namespace: 'game' }),
+  ])
 
   const released = or(isNull(games.releaseDate), lte(games.releaseDate, new Date()))!
   const scored = isNotNull(gameScores.curascore)
@@ -143,14 +146,35 @@ export default async function AgePage({ params, searchParams }: Props) {
 
   const otherAges = [4, 6, 8, 10, 12, 14, 16].filter(a => a !== age)
 
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: tNav('navHome'),     item: `${SITE_URL}/${locale}` },
+      { '@type': 'ListItem', position: 2, name: t('indexTitle'),     item: `${SITE_URL}/${locale}/age` },
+      { '@type': 'ListItem', position: 3, name: t('ageLink', { age }), item: `${SITE_URL}/${locale}/age/${age}` },
+    ],
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
+      />
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
 
-        <nav className="mb-4 text-xs text-slate-400 dark:text-slate-500">
-          <Link href={`/${locale}/age`} className="hover:text-indigo-600 dark:hover:text-indigo-400">
-            ← {t('backToAges')}
+        <nav className="mb-4 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+          <Link href={`/${locale}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+            {tNav('navHome')}
           </Link>
+          <span aria-hidden>/</span>
+          <Link href={`/${locale}/age`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+            {t('indexTitle')}
+          </Link>
+          <span aria-hidden>/</span>
+          <span className="text-slate-700 dark:text-slate-200 truncate">{t('ageLink', { age })}</span>
         </nav>
 
         <header className="text-center mb-8">

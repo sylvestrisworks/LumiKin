@@ -260,6 +260,51 @@ function ExperienceGrid({
   )
 }
 
+// ─── Breadcrumb helper ────────────────────────────────────────────────────────
+function buildBreadcrumbLd(args: {
+  locale: string
+  slug: string
+  platformName: string
+  homeLabel: string
+  browseLabel: string
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: args.homeLabel,   item: `${SITE_URL}/${args.locale}` },
+      { '@type': 'ListItem', position: 2, name: args.browseLabel, item: `${SITE_URL}/${args.locale}/browse` },
+      { '@type': 'ListItem', position: 3, name: args.platformName, item: `${SITE_URL}/${args.locale}/platform/${args.slug}` },
+    ],
+  }
+}
+
+function BreadcrumbNav({
+  locale,
+  homeLabel,
+  browseLabel,
+  platformName,
+}: {
+  locale: string
+  homeLabel: string
+  browseLabel: string
+  platformName: string
+}) {
+  return (
+    <nav className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+      <a href={`/${locale}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+        {homeLabel}
+      </a>
+      <span aria-hidden>/</span>
+      <a href={`/${locale}/browse`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+        {browseLabel}
+      </a>
+      <span aria-hidden>/</span>
+      <span className="text-slate-700 dark:text-slate-200 truncate">{platformName}</span>
+    </nav>
+  )
+}
+
 // ─── Traditional platform page ────────────────────────────────────────────────
 async function TraditionalPlatformPage({
   slug,
@@ -273,8 +318,9 @@ async function TraditionalPlatformPage({
   const pf = sql`${games.platforms}::text ILIKE ${'%' + config.keyword + '%'}`
   const base = and(isNotNull(gameScores.curascore), pf)
 
-  const [t, [statsRow], bucketRows, topRated, safest, forKids, coop, recent] = await Promise.all([
+  const [t, tNav, [statsRow], bucketRows, topRated, safest, forKids, coop, recent] = await Promise.all([
     getTranslations({ locale, namespace: 'platform' }),
+    getTranslations({ locale, namespace: 'game' }),
 
     db.select({
       count:        sql<number>`count(${gameScores.id})::int`,
@@ -364,6 +410,16 @@ async function TraditionalPlatformPage({
   const metaTitle = t('metaTitle' as any, { name: config.name })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const descText  = t(`desc_${config.msgKey}` as any)
+  const breadcrumbLd = buildBreadcrumbLd({
+    locale,
+    slug,
+    platformName: config.name,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    homeLabel: tNav('navHome' as any),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    browseLabel: tNav('navBrowse' as any),
+  })
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
@@ -393,7 +449,20 @@ async function TraditionalPlatformPage({
         // come from third-party APIs and could in principle contain "</script>".
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
+      />
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+
+        <BreadcrumbNav
+          locale={locale}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          homeLabel={tNav('navHome' as any)}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          browseLabel={tNav('navBrowse' as any)}
+          platformName={config.name}
+        />
 
         {/* Hero — platform banner */}
         <div className="relative rounded-3xl overflow-hidden border border-slate-700 shadow-lg bg-slate-900">
@@ -596,7 +665,10 @@ export default async function PlatformHubPage({ params }: Props) {
   }
 
   // UGC platform (Roblox, Fortnite Creative, etc.)
-  const t = await getTranslations({ locale, namespace: 'platform' })
+  const [t, tNav] = await Promise.all([
+    getTranslations({ locale, namespace: 'platform' }),
+    getTranslations({ locale, namespace: 'game' }),
+  ])
   const dbSlug = SLUG_ALIASES[slug] ?? slug
 
   const [
@@ -698,9 +770,32 @@ export default async function PlatformHubPage({ params }: Props) {
   const iconName     = UGC_ICON_NAME[dbSlug] ?? null
   const initials     = platform.title.slice(0, 2).toUpperCase()
 
+  const breadcrumbLd = buildBreadcrumbLd({
+    locale,
+    slug,
+    platformName: platform.title,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    homeLabel: tNav('navHome' as any),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    browseLabel: tNav('navBrowse' as any),
+  })
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
+      />
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+
+        <BreadcrumbNav
+          locale={locale}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          homeLabel={tNav('navHome' as any)}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          browseLabel={tNav('navBrowse' as any)}
+          platformName={platform.title}
+        />
 
         {/* Platform hero */}
         <div className="relative rounded-3xl overflow-hidden border border-slate-700 shadow-lg bg-slate-900">

@@ -54,6 +54,23 @@ function formatCount(n: number | null): string {
   return String(n)
 }
 
+// Parent-facing verdict label for meta titles and FAQ answers. Kept separate
+// from getVerdict() (which returns all-caps UI labels) because meta copy needs
+// human-readable phrasing that competes for clicks in SERPs.
+function verdictLabel(score: number): string {
+  if (score >= 70) return 'Great for kids'
+  if (score >= 50) return 'Good with guidance'
+  if (score >= 35) return 'Use caution'
+  return 'Not recommended'
+}
+
+function verdictNarrative(score: number): string {
+  if (score >= 70) return 'It scores well on developmental benefits with manageable risks.'
+  if (score >= 50) return 'It offers solid benefits but needs parental guidance on the risks.'
+  if (score >= 35) return 'There are notable risks worth knowing before letting kids play.'
+  return 'Significant risks make this hard to recommend for younger players.'
+}
+
 // ─── Horseshoe ring (pure SVG — server-safe) ──────────────────────────────────
 
 function HorseshoeRing({ score, ring }: { score: number; ring: string }) {
@@ -121,7 +138,12 @@ const LOCALES = ['en', 'es', 'fr', 'sv', 'de'] as const
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { experienceSlug, locale } = await params
   const [exp] = await db
-    .select({ title: platformExperiences.title, description: platformExperiences.description, thumbnailUrl: platformExperiences.thumbnailUrl })
+    .select({
+      id: platformExperiences.id,
+      title: platformExperiences.title,
+      description: platformExperiences.description,
+      thumbnailUrl: platformExperiences.thumbnailUrl,
+    })
     .from(platformExperiences)
     .where(eq(platformExperiences.slug, experienceSlug))
     .limit(1)
@@ -129,10 +151,40 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!exp) return { title: 'Experience not found — LumiKin' }
 
-  const title = `${exp.title} on Roblox — Safe for kids? | LumiKin`
-  const desc = exp.description
-    ? exp.description.slice(0, 155) + (exp.description.length > 155 ? '…' : '')
-    : `LumiKin safety rating for ${exp.title} on Roblox — benefits, risks, and screen time guidance for parents.`
+  // Score lookup gates verdict-led title/desc. Mirrors the page-component
+  // confidence gate: low-confidence rows don't surface a number anywhere.
+  const [score] = await db
+    .select({
+      curascore: experienceScores.curascore,
+      recommendedMinAge: experienceScores.recommendedMinAge,
+      timeRecommendationLabel: experienceScores.timeRecommendationLabel,
+      inputConfidence: experienceScores.inputConfidence,
+    })
+    .from(experienceScores)
+    .where(eq(experienceScores.experienceId, exp.id))
+    .limit(1)
+    .catch(() => [])
+
+  const showVerdict = score?.curascore != null
+    && (score.inputConfidence ?? 0) >= CONFIDENCE_THRESHOLD
+
+  const title = showVerdict
+    ? `${exp.title} — ${verdictLabel(score!.curascore!)} · LumiScore ${score!.curascore}/100`
+    : `${exp.title} on Roblox — Safe for kids? | LumiKin`
+
+  const descParts = showVerdict
+    ? [
+        `LumiScore ${score!.curascore}/100`,
+        score!.recommendedMinAge != null ? `Age ${score!.recommendedMinAge}+` : null,
+        score!.timeRecommendationLabel ?? null,
+      ].filter(Boolean).join(' · ')
+    : null
+
+  const desc = descParts
+    ? `${descParts}. Parent verdict and risk breakdown for ${exp.title} on Roblox.`
+    : exp.description
+      ? exp.description.slice(0, 155) + (exp.description.length > 155 ? '…' : '')
+      : `LumiKin safety rating for ${exp.title} on Roblox — benefits, risks, and screen time guidance for parents.`
   const canonical = `/${locale}/game/roblox/${experienceSlug}`
 
   return {
@@ -260,6 +312,48 @@ export default async function ExperiencePage({ params }: Props) {
     url: canonicalUrl,
   } : null
 
+  // FAQ schema only emits on /en/* and when a score is displayable. Localized
+  // FAQ Q&A pairs are deferred to Phase E (translation audit) — shipping
+  // English copy on non-EN locales would pollute snippets.
+  const faqLd = locale === 'en' && displayScore?.curascore != null ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `Is ${exp.title} safe for kids?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `LumiKin gives ${exp.title} a LumiScore of ${displayScore.curascore}/100${displayScore.recommendedMinAge != null ? `, recommended for ages ${displayScore.recommendedMinAge} and up` : ''}. ${verdictNarrative(displayScore.curascore)}`,
+        },
+      },
+      ...(displayScore.recommendedMinAge != null ? [{
+        '@type': 'Question',
+        name: `What age is ${exp.title} appropriate for?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `LumiKin's rubric recommends a minimum age of ${displayScore.recommendedMinAge}+ for ${exp.title} on Roblox, based on content, social, and monetization risks.`,
+        },
+      }] : []),
+      ...(displayScore.timeRecommendationLabel ? [{
+        '@type': 'Question',
+        name: `How long should kids play ${exp.title}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `LumiKin's recommended play time for ${exp.title} is ${displayScore.timeRecommendationLabel}, calibrated to the experience's dopamine, social, and monetization profile.`,
+        },
+      }] : []),
+      ...(displayScore.risksNarrative ? [{
+        '@type': 'Question',
+        name: `What are the risks of ${exp.title} on Roblox?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: displayScore.risksNarrative.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 400),
+        },
+      }] : []),
+    ],
+  } : null
+
   const ldJson = (obj: unknown) =>
     JSON.stringify(obj).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026')
 
@@ -269,6 +363,9 @@ export default async function ExperiencePage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(breadcrumbLd) }} />
       {reviewLd && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(reviewLd) }} />
+      )}
+      {faqLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(faqLd) }} />
       )}
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-4">

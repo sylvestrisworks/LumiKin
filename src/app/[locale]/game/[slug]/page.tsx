@@ -387,9 +387,6 @@ export default async function GamePage({ params }: Props) {
     genre: game.genres.length > 0 ? game.genres : undefined,
     gamePlatform: game.platforms.length > 0 ? game.platforms : undefined,
     contentRating: game.esrbRating ?? undefined,
-    aggregateRating: game.metacriticScore
-      ? { '@type': 'AggregateRating', ratingValue: game.metacriticScore, bestRating: 100, ratingCount: 1 }
-      : undefined,
     image: game.backgroundImage ?? undefined,
     url: `${SITE_URL}/en/game/${game.slug}`,
   }
@@ -443,6 +440,55 @@ export default async function GamePage({ params }: Props) {
     url: `${SITE_URL}/en/game/${game.slug}`,
   } : null
 
+  // FAQ schema only emits on /en/* and when a LumiScore exists. Localized
+  // FAQ Q&A pairs are deferred to Phase E (translation audit).
+  const verdictText =
+      scores?.curascore == null                ? null
+    : scores.curascore >= 70                    ? 'It scores well on developmental benefits with manageable risks.'
+    : scores.curascore >= 50                    ? 'It offers solid benefits but needs parental guidance on the risks.'
+    : scores.curascore >= 35                    ? 'There are notable risks worth knowing before letting kids play.'
+    :                                             'Significant risks make this hard to recommend for younger players.'
+  const ageRatingLine = [game.esrbRating, game.pegiRating].filter(Boolean).join(' · ')
+
+  const faqLd = locale === 'en' && scores?.curascore != null ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `Is ${game.title} safe for kids?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `LumiKin gives ${game.title} a LumiScore of ${scores.curascore}/100${scores.recommendedMinAge != null ? `, recommended for ages ${scores.recommendedMinAge} and up` : ''}. ${verdictText}`,
+        },
+      },
+      ...(scores.recommendedMinAge != null ? [{
+        '@type': 'Question',
+        name: `What age is ${game.title} appropriate for?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `LumiKin's rubric recommends a minimum age of ${scores.recommendedMinAge}+ for ${game.title}${ageRatingLine ? ` (${ageRatingLine})` : ''}, based on benefits, risks, and content review.`,
+        },
+      }] : []),
+      ...(scores.timeRecommendationLabel ? [{
+        '@type': 'Question',
+        name: `How long should kids play ${game.title}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `LumiKin's recommended play time for ${game.title} is ${scores.timeRecommendationLabel}, calibrated to the game's dopamine, monetization, and social-pressure profile.`,
+        },
+      }] : []),
+      ...(data.review?.risksNarrative ? [{
+        '@type': 'Question',
+        name: `What are the main risks of ${game.title}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: data.review.risksNarrative.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 400),
+        },
+      }] : []),
+    ],
+  } : null
+
   return (
     <>
       <PlausibleSearchReferrer />
@@ -458,6 +504,12 @@ export default async function GamePage({ params }: Props) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
+        />
+      )}
+      {faqLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
         />
       )}
 

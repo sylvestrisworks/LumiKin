@@ -49,7 +49,29 @@ export default async function HomePage({ params, searchParams }: Props) {
     currency:  (c: React.ReactNode) => <Term def={tg('currencyObfuscation')}>{c}</Term>,
   }
 
+  // Organization + Brand JSON-LD. Registers "LumiKin" as a known entity and
+  // ties the "LumiScore" product term to the brand — fixes the GSC pattern
+  // where both branded queries underperform (lumikin 10% CTR at pos 1.75,
+  // lumiscore stranded at pos 18). Emitted on every locale homepage.
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
+  const organizationLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'LumiKin',
+    url: SITE_URL,
+    logo: `${SITE_URL}/lumikin-logo.svg`,
+    description: 'Parent safety ratings for video games and Roblox/Fortnite experiences. LumiScore is LumiKin’s 0–100 metric covering benefits, risks, and recommended screen time.',
+    brand: {
+      '@type': 'Brand',
+      name: 'LumiScore',
+    },
+  }
+  const ldJson = (obj: unknown) =>
+    JSON.stringify(obj).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026')
+
   return (
+    <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(organizationLd) }} />
     <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
 
       {/* ── Hero (parent-first) ──────────────────────────────────────────────── */}
@@ -157,5 +179,6 @@ export default async function HomePage({ params, searchParams }: Props) {
       <BusinessRow locale={locale} />
 
     </div>
+    </>
   )
 }

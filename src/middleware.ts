@@ -71,7 +71,26 @@ export default function middleware(req: NextRequest) {
     })
   }
 
-  return intlMiddleware(req)
+  const response = intlMiddleware(req)
+
+  // Promote next-intl's 307 locale-prefix redirects to 308 so Google fully
+  // consolidates ranking signal across /game/X (no locale) and /en/game/X
+  // (canonical). 307 is temporary and leaves Google indexing both variants;
+  // 308 is permanent and preserves the method (unlike 301). next-intl has
+  // no built-in option to change the status, so we rewrite at the boundary.
+  // Note: this does NOT touch the www→apex redirect, which is owned by
+  // Vercel platform config and must be fixed in the Vercel dashboard.
+  if (
+    response.status >= 300 && response.status < 400 &&
+    response.headers.get('location')
+  ) {
+    return new NextResponse(null, {
+      status: 308,
+      headers: response.headers,
+    })
+  }
+
+  return response
 }
 
 // Matcher already excludes /api, /_next, /_vercel, /admin, /studio, and any

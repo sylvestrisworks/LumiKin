@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { eq, and, isNotNull, inArray, sql } from 'drizzle-orm'
 import { getTranslations } from 'next-intl/server'
 import { db } from '@/lib/db'
-import { games, gameScores, reviews } from '@/lib/db/schema'
+import { games, gameScores, reviews, gameTranslations } from '@/lib/db/schema'
 import { curascoreBg, curascoreText, esrbToAge, ageBadgeColor } from '@/lib/ui'
 
 const SHORTLIST = [
@@ -23,6 +23,7 @@ function pickSlug(): string {
 }
 
 type Row = {
+  id: number
   slug: string
   title: string
   developer: string | null
@@ -47,7 +48,7 @@ type Row = {
   parentTipBenefits: string | null
 }
 
-async function fetchFeatured(): Promise<Row | null> {
+async function fetchFeatured(locale: string): Promise<Row | null> {
   const preferred = pickSlug()
 
   const seen = new Set<string>()
@@ -63,44 +64,99 @@ async function fetchFeatured(): Promise<Row | null> {
     )}
     ELSE 999 END`
 
-  const rows = await db
-    .select({
-      slug:                        games.slug,
-      title:                       games.title,
-      developer:                   games.developer,
-      esrbRating:                  games.esrbRating,
-      backgroundImage:             games.backgroundImage,
+  const selection = {
+    id:                          games.id,
+    slug:                        games.slug,
+    title:                       games.title,
+    developer:                   games.developer,
+    esrbRating:                  games.esrbRating,
+    backgroundImage:             games.backgroundImage,
 
-      curascore:                   gameScores.curascore,
-      bds:                         gameScores.bds,
-      ris:                         gameScores.ris,
-      cognitiveScore:              gameScores.cognitiveScore,
-      socialEmotionalScore:        gameScores.socialEmotionalScore,
-      motorScore:                  gameScores.motorScore,
-      dopamineRisk:                gameScores.dopamineRisk,
-      monetizationRisk:            gameScores.monetizationRisk,
-      socialRisk:                  gameScores.socialRisk,
+    curascore:                   gameScores.curascore,
+    bds:                         gameScores.bds,
+    ris:                         gameScores.ris,
+    cognitiveScore:              gameScores.cognitiveScore,
+    socialEmotionalScore:        gameScores.socialEmotionalScore,
+    motorScore:                  gameScores.motorScore,
+    dopamineRisk:                gameScores.dopamineRisk,
+    monetizationRisk:            gameScores.monetizationRisk,
+    socialRisk:                  gameScores.socialRisk,
 
-      timeRecommendationMinutes:   gameScores.timeRecommendationMinutes,
-      timeRecommendationReasoning: gameScores.timeRecommendationReasoning,
-      executiveSummary:            gameScores.executiveSummary,
-      topBenefits:                 gameScores.topBenefits,
+    timeRecommendationMinutes:   gameScores.timeRecommendationMinutes,
+    timeRecommendationReasoning: gameScores.timeRecommendationReasoning,
+    executiveSummary:            gameScores.executiveSummary,
+    topBenefits:                 gameScores.topBenefits,
 
-      parentTip:                   reviews.parentTip,
-      parentTipBenefits:           reviews.parentTipBenefits,
-    })
-    .from(games)
-    .innerJoin(gameScores, eq(gameScores.gameId, games.id))
-    .innerJoin(reviews,    eq(reviews.id, gameScores.reviewId))
-    .where(and(
-      inArray(games.slug, SHORTLIST),
-      isNotNull(gameScores.curascore),
-      isNotNull(gameScores.executiveSummary),
-    ))
-    .orderBy(ordered)
-    .limit(1)
+    parentTip:                   reviews.parentTip,
+    parentTipBenefits:           reviews.parentTipBenefits,
+  }
 
-  return (rows[0] as Row) ?? null
+  const baseWhere = and(
+    inArray(games.slug, SHORTLIST),
+    isNotNull(gameScores.curascore),
+    isNotNull(gameScores.executiveSummary),
+  )
+
+  // Prefer a shortlist game that already has a translation row for this locale,
+  // so the featured box renders fully localized rather than half-English.
+  const runQuery = (whereClause: typeof baseWhere) =>
+    db
+      .select(selection)
+      .from(games)
+      .innerJoin(gameScores, eq(gameScores.gameId, games.id))
+      .innerJoin(reviews,    eq(reviews.id, gameScores.reviewId))
+      .where(whereClause)
+      .orderBy(ordered)
+      .limit(1)
+
+  let rows: Awaited<ReturnType<typeof runQuery>> = []
+
+  if (locale !== 'en') {
+    try {
+      const translatedWhere = and(
+        baseWhere,
+        sql`EXISTS (
+          SELECT 1 FROM game_translations gt
+          WHERE gt.game_id = ${games.id}
+            AND gt.locale = ${locale}
+            AND gt.executive_summary IS NOT NULL
+        )`,
+      )
+      rows = await runQuery(translatedWhere)
+    } catch {
+      // game_translations not yet migrated — fall through to base query
+    }
+  }
+  if (rows.length === 0) {
+    rows = await runQuery(baseWhere)
+  }
+
+  const row = (rows[0] as Row) ?? null
+  if (!row) return null
+
+  // Overlay translated narrative fields when locale is not English
+  if (locale !== 'en') {
+    try {
+      const [tx] = await db
+        .select({
+          executiveSummary:  gameTranslations.executiveSummary,
+          parentTip:         gameTranslations.parentTip,
+          parentTipBenefits: gameTranslations.parentTipBenefits,
+        })
+        .from(gameTranslations)
+        .where(and(eq(gameTranslations.gameId, row.id), eq(gameTranslations.locale, locale)))
+        .limit(1)
+      if (tx) {
+        if (tx.executiveSummary)  row.executiveSummary  = tx.executiveSummary
+        if (tx.parentTip)         row.parentTip         = tx.parentTip
+        if (tx.parentTipBenefits) row.parentTipBenefits = tx.parentTipBenefits
+      }
+    } catch {
+      // game_translations table not yet migrated — skip silently
+    }
+  }
+
+  return row
 }
 
 // ─── Inline bar row ──────────────────────────────────────────────────────────
@@ -146,7 +202,7 @@ function MeterRow({
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default async function FeaturedGame({ locale }: { locale: string }) {
-  const [game, t] = await Promise.all([fetchFeatured(), getTranslations('home')])
+  const [game, t] = await Promise.all([fetchFeatured(locale), getTranslations('home')])
   if (!game) return null
 
   const benefits = Array.isArray(game.topBenefits)

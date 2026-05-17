@@ -772,7 +772,14 @@
     "recommended": "Empfohlen: {label}",
     "playingNow": "{count} spielen jetzt",
     "upToPlayers": "Bis zu {count}/Server",
-    "carouselTitle": "Beliebt auf Roblox"
+    "carouselTitle": "Beliebt auf Roblox",
+    "metaVerdictGreat": "Great for kids",
+    "metaVerdictGood": "Good with guidance",
+    "metaVerdictCaution": "Use caution",
+    "metaVerdictAvoid": "Not recommended",
+    "metaTitleVerdict": "{title} — {verdict} · LumiScore {score}/100",
+    "metaDescVerdict": "{parts}. Parent verdict and risk breakdown for {title} on Roblox.",
+    "metaAgeSuffix": "Age {age}+"
   },
   "fortnite": {
     "title": "Fortnite Creative",
@@ -843,7 +850,14 @@
     "parentGuidePara2": "<strong>Fortnite ist fünf verschiedene Spiele in einem Launcher.</strong> Battle Royale, LEGO Fortnite, Festival, Rocket Racing und Creative haben jeweils unterschiedliche Altersfreigaben und Risikoprofile. Ihr Kind könnte mit LEGO Fortnite anfangen und in Battle Royale abdriften — prüfen Sie, welche Modi es tatsächlich spielt.",
     "parentGuidePara3": "<strong>V-Bucks sind die gemeinsame Währung aller Modi.</strong> Der Battle Pass, Kosmetikpakete und In-Karten-Käufe nutzen alle V-Bucks. Viele Creative-Karten zeigen V-Bucks-Ausgabeaufforderungen an. Legen Sie in den Epic-Games-Kontoeinstellungen Ausgabegrenzen fest oder verwenden Sie eine Prepaid-Karte mit festem Guthaben.",
     "parentGuidePara4": "<strong>Der Inhalt von Creative-Karten kann sich nach unserer Bewertung ändern.</strong> Jede Karte wird zu einem bestimmten Zeitpunkt von unserer KI bewertet — Ersteller können Karten aktualisieren. Wir empfehlen, regelmäßig zu prüfen, welche Karten Ihr Kind spielt, und ein paar Minuten Spielgeschehen gemeinsam anzusehen.",
-    "parentGuideAction": "<strong>Aktion:</strong> Epic-Games-Konto → Elternaufsicht → PIN festlegen, Sprach-Chat deaktivieren und monatliche V-Bucks-Ausgaben begrenzen. Dauert unter 5 Minuten und reduziert das Risiko in allen Fortnite-Modi erheblich."
+    "parentGuideAction": "<strong>Aktion:</strong> Epic-Games-Konto → Elternaufsicht → PIN festlegen, Sprach-Chat deaktivieren und monatliche V-Bucks-Ausgaben begrenzen. Dauert unter 5 Minuten und reduziert das Risiko in allen Fortnite-Modi erheblich.",
+    "metaVerdictGreat": "Great for kids",
+    "metaVerdictGood": "Good with guidance",
+    "metaVerdictCaution": "Use caution",
+    "metaVerdictAvoid": "Not recommended",
+    "metaTitleVerdict": "{title} — {verdict} · LumiScore {score}/100",
+    "metaDescVerdict": "{parts}. Parent verdict and risk breakdown for {title} on Fortnite Creative.",
+    "metaAgeSuffix": "Age {age}+"
   },
   "profileManager": {
     "editProfile": "{name} bearbeiten",

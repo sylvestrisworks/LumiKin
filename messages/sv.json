@@ -772,7 +772,14 @@
     "recommended": "Rekommenderat: {label}",
     "playingNow": "{count} spelar nu",
     "upToPlayers": "Upp till {count}/server",
-    "carouselTitle": "Populärt på Roblox"
+    "carouselTitle": "Populärt på Roblox",
+    "metaVerdictGreat": "Bra för barn",
+    "metaVerdictGood": "Okej med vägledning",
+    "metaVerdictCaution": "Försiktighet krävs",
+    "metaVerdictAvoid": "Rekommenderas ej för barn",
+    "metaTitleVerdict": "Åldersgräns för {title} — {verdict} · LumiScore {score}/100",
+    "metaDescVerdict": "{parts}. Föräldraomdöme och riskanalys för {title} på Roblox.",
+    "metaAgeSuffix": "Åldersgräns {age}+"
   },
   "fortnite": {
     "title": "Fortnite Creative",
@@ -843,7 +850,14 @@
     "parentGuidePara2": "<strong>Fortnite är fem olika spel i samma launcher.</strong> Battle Royale, LEGO Fortnite, Festival, Rocket Racing och Creative har var sin åldersanpassning och riskprofil. Ditt barn kan börja i LEGO Fortnite och driva över i Battle Royale — kontrollera vilka lägen de faktiskt spelar.",
     "parentGuidePara3": "<strong>V-Bucks är den gemensamma valutan i alla lägen.</strong> Battle Pass, kosmetikpaket och köp inuti kartor använder alla V-Bucks. Många Creative-kartor visar V-Bucks-köpuppmaningar. Sätt utgiftsgränser i Epic Games-kontoinställningarna eller använd ett förbetalt kort med fast saldo.",
     "parentGuidePara4": "<strong>Innehållet i Creative-kartor kan ändras efter vårt betyg.</strong> Varje karta betygsätts av vår AI vid en viss tidpunkt — skapare kan uppdatera kartor. Vi rekommenderar att du regelbundet kollar vilka kartor ditt barn spelar och tittar på några minuters spel tillsammans.",
-    "parentGuideAction": "<strong>Åtgärd:</strong> Epic Games-konto → Föräldrakontroller → sätt en PIN-kod, stäng av röstchatten och sätt månadsgräns för V-Bucks-utgifter. Tar under 5 minuter och minskar risken markant i alla Fortnite-lägen."
+    "parentGuideAction": "<strong>Åtgärd:</strong> Epic Games-konto → Föräldrakontroller → sätt en PIN-kod, stäng av röstchatten och sätt månadsgräns för V-Bucks-utgifter. Tar under 5 minuter och minskar risken markant i alla Fortnite-lägen.",
+    "metaVerdictGreat": "Bra för barn",
+    "metaVerdictGood": "Okej med vägledning",
+    "metaVerdictCaution": "Försiktighet krävs",
+    "metaVerdictAvoid": "Rekommenderas ej för barn",
+    "metaTitleVerdict": "Åldersgräns för {title} — {verdict} · LumiScore {score}/100",
+    "metaDescVerdict": "{parts}. Föräldraomdöme och riskanalys för {title} på Fortnite Creative.",
+    "metaAgeSuffix": "Åldersgräns {age}+"
   },
   "profileManager": {
     "editProfile": "Redigera {name}",
@@ -885,8 +899,8 @@
     "similarGames": "Liknande spel",
     "navHome": "Hem",
     "navBrowse": "Utforska",
-    "metaTitle": "{title} — Är det bra för barn? | LumiKin",
-    "metaDescFallback": "LumiKin bedömer {title} för föräldrar — fördelar, risker, beroendeframkallande designmönster och rekommenderad daglig skärmtid.",
+    "metaTitle": "Åldersgräns för {title} — Är det bra för barn? | LumiKin",
+    "metaDescFallback": "Åldersgräns och säkerhetsbedömning för {title} — fördelar, risker och rekommenderad daglig skärmtid. LumiKin betygsätter spel för föräldrar.",
     "ogAlt": "{title} — LumiKin-bedömning"
   },
   "importModal": {

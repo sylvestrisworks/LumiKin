@@ -772,7 +772,14 @@
     "recommended": "Recomendado: {label}",
     "playingNow": "{count} jugando ahora",
     "upToPlayers": "Hasta {count}/servidor",
-    "carouselTitle": "Popular en Roblox"
+    "carouselTitle": "Popular en Roblox",
+    "metaVerdictGreat": "Great for kids",
+    "metaVerdictGood": "Good with guidance",
+    "metaVerdictCaution": "Use caution",
+    "metaVerdictAvoid": "Not recommended",
+    "metaTitleVerdict": "{title} — {verdict} · LumiScore {score}/100",
+    "metaDescVerdict": "{parts}. Parent verdict and risk breakdown for {title} on Roblox.",
+    "metaAgeSuffix": "Age {age}+"
   },
   "fortnite": {
     "title": "Fortnite Creative",
@@ -843,7 +850,14 @@
     "parentGuidePara2": "<strong>Fortnite son cinco juegos diferentes en un mismo lanzador.</strong> Battle Royale, LEGO Fortnite, Festival, Rocket Racing y Creative tienen edades recomendadas y perfiles de riesgo distintos. Tu hijo puede empezar en LEGO Fortnite y acabar en Battle Royale — comprueba a qué modos juega realmente.",
     "parentGuidePara3": "<strong>Los V-Bucks son la moneda compartida entre todos los modos.</strong> El Pase de Batalla, los paquetes cosméticos y las compras dentro de los mapas usan V-Bucks. Muchos mapas Creative muestran avisos de gasto de V-Bucks. Establece límites de gasto en la cuenta de Epic Games o utiliza una tarjeta prepago con saldo fijo.",
     "parentGuidePara4": "<strong>El contenido de los mapas Creative puede cambiar tras nuestra puntuación.</strong> Cada mapa lo evalúa nuestra IA en un momento concreto — los creadores pueden actualizar los mapas. Recomendamos revisar periódicamente a qué mapas juega tu hijo y ver con él unos minutos de juego.",
-    "parentGuideAction": "<strong>Acción:</strong> Cuenta de Epic Games → Controles parentales → establece un PIN, desactiva el chat de voz y limita el gasto mensual de V-Bucks. Lleva menos de 5 minutos y reduce notablemente el riesgo en todos los modos de Fortnite."
+    "parentGuideAction": "<strong>Acción:</strong> Cuenta de Epic Games → Controles parentales → establece un PIN, desactiva el chat de voz y limita el gasto mensual de V-Bucks. Lleva menos de 5 minutos y reduce notablemente el riesgo en todos los modos de Fortnite.",
+    "metaVerdictGreat": "Great for kids",
+    "metaVerdictGood": "Good with guidance",
+    "metaVerdictCaution": "Use caution",
+    "metaVerdictAvoid": "Not recommended",
+    "metaTitleVerdict": "{title} — {verdict} · LumiScore {score}/100",
+    "metaDescVerdict": "{parts}. Parent verdict and risk breakdown for {title} on Fortnite Creative.",
+    "metaAgeSuffix": "Age {age}+"
   },
   "profileManager": {
     "editProfile": "Editar {name}",

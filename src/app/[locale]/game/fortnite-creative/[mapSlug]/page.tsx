@@ -46,16 +46,9 @@ function riskLevel(v: number, max = 3) {
   return               { labelKey: 'riskHigh',     cls: 'bg-red-100 dark:bg-red-900/50 border border-red-300 dark:border-red-600 text-red-800 dark:text-red-200' }
 }
 
-// Parent-facing verdict label for meta titles and FAQ answers. Kept separate
-// from getVerdict() (which returns i18n labelKeys for UI) because meta copy
-// needs human-readable phrasing that competes for clicks in SERPs.
-function verdictLabel(score: number): string {
-  if (score >= 70) return 'Great for kids'
-  if (score >= 50) return 'Good with guidance'
-  if (score >= 35) return 'Use caution'
-  return 'Not recommended'
-}
-
+// Parent-facing verdict narrative for FAQ answers. Verdict *labels* live in
+// messages/<locale>.json (fortnite.metaVerdict*); FAQ is EN-only for now, so
+// these narratives stay inline.
 function verdictNarrative(score: number): string {
   if (score >= 70) return 'It scores well on developmental benefits with manageable risks.'
   if (score >= 50) return 'It offers solid benefits but needs parental guidance on the risks.'
@@ -161,23 +154,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const showVerdict = score?.curascore != null
     && (score.inputConfidence ?? 0) >= CONFIDENCE_THRESHOLD
 
-  const title = showVerdict
-    ? `${exp.title} — ${verdictLabel(score!.curascore!)} · LumiScore ${score!.curascore}/100`
-    : `${exp.title} (Fortnite Creative) — Safe for kids? | LumiKin`
+  // Localized verdict-led title/desc. See roblox/[experienceSlug]/page.tsx
+  // for the matching pattern.
+  const tMeta = await getTranslations({ locale, namespace: 'fortnite' })
 
-  const descParts = showVerdict
-    ? [
-        `LumiScore ${score!.curascore}/100`,
-        score!.recommendedMinAge != null ? `Age ${score!.recommendedMinAge}+` : null,
-        score!.timeRecommendationLabel ?? null,
-      ].filter(Boolean).join(' · ')
-    : null
+  let title: string
+  let desc: string
 
-  const desc = descParts
-    ? `${descParts}. Parent verdict and risk breakdown for ${exp.title} on Fortnite Creative.`
-    : exp.description
+  if (showVerdict) {
+    const verdictKey =
+        score!.curascore! >= 70 ? 'metaVerdictGreat'
+      : score!.curascore! >= 50 ? 'metaVerdictGood'
+      : score!.curascore! >= 35 ? 'metaVerdictCaution'
+      :                            'metaVerdictAvoid'
+    const verdict = tMeta(verdictKey)
+
+    const parts = [
+      `LumiScore ${score!.curascore}/100`,
+      score!.recommendedMinAge != null ? tMeta('metaAgeSuffix', { age: score!.recommendedMinAge }) : null,
+      score!.timeRecommendationLabel ?? null,
+    ].filter(Boolean).join(' · ')
+
+    title = tMeta('metaTitleVerdict', { title: exp.title, verdict, score: score!.curascore! })
+    desc  = tMeta('metaDescVerdict',  { parts, title: exp.title })
+  } else {
+    title = `${exp.title} (Fortnite Creative) — Safe for kids? | LumiKin`
+    desc = exp.description
       ? exp.description.slice(0, 155) + (exp.description.length > 155 ? '…' : '')
       : `LumiKin safety rating for ${exp.title} on Fortnite Creative — benefits, risks, and screen time guidance for parents.`
+  }
   const canonical = `/${locale}/game/fortnite-creative/${mapSlug}`
 
   return {

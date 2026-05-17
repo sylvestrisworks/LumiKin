@@ -739,7 +739,14 @@
     "recommended": "Recommended: {label}",
     "playingNow": "{count} playing now",
     "upToPlayers": "Up to {count}/server",
-    "carouselTitle": "Popular on Roblox"
+    "carouselTitle": "Popular on Roblox",
+    "metaVerdictGreat": "Great for kids",
+    "metaVerdictGood": "Good with guidance",
+    "metaVerdictCaution": "Use caution",
+    "metaVerdictAvoid": "Not recommended",
+    "metaTitleVerdict": "{title} — {verdict} · LumiScore {score}/100",
+    "metaDescVerdict": "{parts}. Parent verdict and risk breakdown for {title} on Roblox.",
+    "metaAgeSuffix": "Age {age}+"
   },
   "fortnite": {
     "title": "Fortnite Creative",
@@ -810,7 +817,14 @@
     "parentGuidePara2": "<strong>Fortnite is five different games in one launcher.</strong> Battle Royale, LEGO Fortnite, Festival, Rocket Racing, and Creative each have different age-appropriateness and risk profiles. Your child may start in LEGO Fortnite and drift into Battle Royale — check which modes they're actually playing.",
     "parentGuidePara3": "<strong>V-Bucks are the shared currency across all modes.</strong> The Battle Pass, cosmetic bundles, and in-map purchases all use V-Bucks. Many Creative maps surface V-Buck spending prompts. Set spending limits in Epic Games account settings or use a prepaid card with a fixed balance.",
     "parentGuidePara4": "<strong>Creative map content can change after our rating.</strong> Each map is rated by our AI at a point in time — creators can update maps. We recommend periodically checking which maps your child plays and watching a few minutes of gameplay with them.",
-    "parentGuideAction": "<strong>Action:</strong> Epic Games account → Parental Controls → set a PIN, disable voice chat, and cap monthly V-Buck spending. Takes under 5 minutes and significantly reduces risk across all Fortnite modes."
+    "parentGuideAction": "<strong>Action:</strong> Epic Games account → Parental Controls → set a PIN, disable voice chat, and cap monthly V-Buck spending. Takes under 5 minutes and significantly reduces risk across all Fortnite modes.",
+    "metaVerdictGreat": "Great for kids",
+    "metaVerdictGood": "Good with guidance",
+    "metaVerdictCaution": "Use caution",
+    "metaVerdictAvoid": "Not recommended",
+    "metaTitleVerdict": "{title} — {verdict} · LumiScore {score}/100",
+    "metaDescVerdict": "{parts}. Parent verdict and risk breakdown for {title} on Fortnite Creative.",
+    "metaAgeSuffix": "Age {age}+"
   },
   "profileManager": {
     "editProfile": "Edit {name}",

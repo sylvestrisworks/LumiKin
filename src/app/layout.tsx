@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   description:
     'Every LumiScore reveals the real impact of a game. We analyze skills built, habits formed, and recommend a daily screen time limit that actually makes sense.',
   openGraph: { siteName: 'LumiKin', type: 'website' },
+  verification: {
+    google: 'h3etRo5LhP-q7QJtek8xBuhKfzNOL3IUbKUzuopWrVs',
+  },
 }
 
 // Root layout — minimal shell. Locale-specific layout lives in [locale]/layout.tsx.

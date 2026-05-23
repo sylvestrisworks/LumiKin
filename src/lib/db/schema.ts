@@ -687,6 +687,13 @@ export const ingestCursor = pgTable('ingest_cursor', {
 // CONTENT TRANSLATIONS (auto-generated per locale)
 // ============================================
 
+export type TranslationIssue = {
+  rule: string            // e.g. 'empty_with_source', 'no_locale_diacritic', 'cross_locale_duplicate'
+  field: string           // which gameTranslations field tripped the rule
+  severity: number        // weight used in qualityScore aggregation
+  detail?: string         // optional human-readable snippet
+}
+
 export const gameTranslations = pgTable('game_translations', {
   id:                 serial('id').primaryKey(),
   gameId:             integer('game_id').references(() => games.id, { onDelete: 'cascade' }).notNull(),
@@ -698,8 +705,15 @@ export const gameTranslations = pgTable('game_translations', {
   parentTipBenefits:  text('parent_tip_benefits'),
   bechdelNotes:       text('bechdel_notes'),
   createdAt:          timestamp('created_at').defaultNow(),
+
+  // Quality audit — populated by scripts/audit-translations.ts (stage 1 = pure-code lint)
+  qualityScore:       integer('quality_score'),
+  qualityIssues:      jsonbPassthrough<TranslationIssue[]>()('quality_issues'),
+  needsRetranslate:   boolean('needs_retranslate').default(false),
+  auditedAt:          timestamp('audited_at'),
 }, (t) => ({
   uniqueGameLocale: uniqueIndex('game_translations_game_locale_idx').on(t.gameId, t.locale),
+  needsRetranslateIdx: index('game_translations_needs_retranslate_idx').on(t.needsRetranslate),
 }))
 
 // ============================================

@@ -109,7 +109,8 @@ export async function GET(req: Request) {
   let skipped = 0
   let errors = 0
 
-  // Fetch games that are missing at least one locale translation.
+  // Fetch games that need any translation work — either missing locales or
+  // existing rows flagged as needs_retranslate=true by scripts/audit-translations.ts.
   const pending = await db
     .select({
       gameId:           games.id,
@@ -122,26 +123,36 @@ export async function GET(req: Request) {
     .where(and(
       isNotNull(gameScores.curascore),
       sql`(
-        SELECT COUNT(*) FROM game_translations gt
-        WHERE gt.game_id = ${games.id}
-          AND gt.locale = ANY(ARRAY['sv','de','fr','es'])
-      ) < 4`
+        (SELECT COUNT(*) FROM game_translations gt
+           WHERE gt.game_id = ${games.id}
+             AND gt.locale = ANY(ARRAY['sv','de','fr','es'])) < 4
+        OR EXISTS (SELECT 1 FROM game_translations gt
+           WHERE gt.game_id = ${games.id}
+             AND gt.locale = ANY(ARRAY['sv','de','fr','es'])
+             AND gt.needs_retranslate = TRUE)
+      )`
     ))
     .orderBy(gameScores.curascore)
     .limit(MAX_GAMES_PER_RUN)
 
+  let retranslated = 0
+
   const processGame = async (row: typeof pending[number]) => {
-    const done = await db
-      .select({ locale: gameTranslations.locale })
+    const existing = await db
+      .select({ locale: gameTranslations.locale, needsRetranslate: gameTranslations.needsRetranslate })
       .from(gameTranslations)
       .where(and(
         eq(gameTranslations.gameId, row.gameId),
         sql`${gameTranslations.locale} = ANY(ARRAY['sv','de','fr','es'])`
       ))
-    const doneSet = new Set(done.map(r => r.locale))
-    const missing = LOCALES.filter(l => !doneSet.has(l))
+    const doneSet = new Set(existing.map(r => r.locale))
+    const missing: Locale[]     = LOCALES.filter(l => !doneSet.has(l))
+    const retranslate: Locale[] = existing
+      .filter(r => r.needsRetranslate && LOCALES.includes(r.locale as Locale))
+      .map(r => r.locale as Locale)
 
-    if (missing.length === 0) { skipped++; return }
+    const targets = Array.from(new Set([...missing, ...retranslate]))
+    if (targets.length === 0) { skipped++; return }
 
     let content: TranslatableContent = {
       executiveSummary:  row.executiveSummary,
@@ -169,30 +180,67 @@ export async function GET(req: Request) {
 
     const hasContent = Object.values(content).some(v => v && v.trim())
     if (!hasContent) {
+      // Reserve empty rows for the locales that are missing entirely; clear the
+      // flag on any existing retranslate rows since there's nothing to translate.
       await Promise.all(missing.map(locale =>
         db.insert(gameTranslations).values({ gameId: row.gameId, locale }).onConflictDoNothing()
       ))
-      skipped += missing.length
+      if (retranslate.length > 0) {
+        await db.update(gameTranslations)
+          .set({ needsRetranslate: false, auditedAt: new Date() })
+          .where(and(
+            eq(gameTranslations.gameId, row.gameId),
+            sql`${gameTranslations.locale} = ANY(${retranslate})`,
+          ))
+      }
+      skipped += targets.length
       return
     }
 
-    console.log(`[translate] ${row.slug} → ${missing.join(', ')}`)
-    const results = await translateToLocales(content, missing)
+    const label = [
+      missing.length     ? `new ${missing.join(',')}` : null,
+      retranslate.length ? `retry ${retranslate.join(',')}` : null,
+    ].filter(Boolean).join(' | ')
+    console.log(`[translate] ${row.slug} → ${label}`)
+    const results = await translateToLocales(content, targets)
 
-    for (const locale of missing) {
+    for (const locale of targets) {
       const result = results[locale]
       if (!result) { errors++; continue }
-      await db.insert(gameTranslations).values({
-        gameId:            row.gameId,
-        locale,
-        executiveSummary:  result.executiveSummary,
-        benefitsNarrative: result.benefitsNarrative,
-        risksNarrative:    result.risksNarrative,
-        parentTip:         result.parentTip,
-        parentTipBenefits: result.parentTipBenefits,
-        bechdelNotes:      result.bechdelNotes,
-      }).onConflictDoNothing()
-      translated++
+      const isRetranslate = retranslate.includes(locale)
+      if (isRetranslate) {
+        await db.update(gameTranslations)
+          .set({
+            executiveSummary:  result.executiveSummary,
+            benefitsNarrative: result.benefitsNarrative,
+            risksNarrative:    result.risksNarrative,
+            parentTip:         result.parentTip,
+            parentTipBenefits: result.parentTipBenefits,
+            bechdelNotes:      result.bechdelNotes,
+            // Clear audit state so the next audit pass re-scores against the new content.
+            needsRetranslate:  false,
+            qualityScore:      null,
+            qualityIssues:     null,
+            auditedAt:         null,
+          })
+          .where(and(
+            eq(gameTranslations.gameId, row.gameId),
+            eq(gameTranslations.locale, locale),
+          ))
+        retranslated++
+      } else {
+        await db.insert(gameTranslations).values({
+          gameId:            row.gameId,
+          locale,
+          executiveSummary:  result.executiveSummary,
+          benefitsNarrative: result.benefitsNarrative,
+          risksNarrative:    result.risksNarrative,
+          parentTip:         result.parentTip,
+          parentTipBenefits: result.parentTipBenefits,
+          bechdelNotes:      result.bechdelNotes,
+        }).onConflictDoNothing()
+        translated++
+      }
     }
   }
 
@@ -205,13 +253,15 @@ export async function GET(req: Request) {
   }
 
   await logCronRun('translate-content', runStartedAt, {
-    itemsProcessed: translated,
+    itemsProcessed: translated + retranslated,
     itemsSkipped:   skipped,
     errors,
+    meta:           { translated, retranslated },
   })
   return NextResponse.json({
     ok: true,
     translated,
+    retranslated,
     skipped,
     errors,
     elapsedMs: Date.now() - startedAt,

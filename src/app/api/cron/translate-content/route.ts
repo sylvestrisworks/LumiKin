@@ -40,6 +40,7 @@ type TranslationResult = TranslatableContent
 async function translateToLocales(
   content: TranslatableContent,
   locales: Locale[],
+  dntTerms: string[] = [],
 ): Promise<Partial<Record<Locale, TranslationResult>>> {
   const toTranslate: Partial<TranslatableContent> = {}
   for (const [k, v] of Object.entries(content)) {
@@ -50,14 +51,27 @@ async function translateToLocales(
   const localeList = locales.map(l => LANGUAGE_NAMES[l]).join(', ')
   const localeKeys = locales.map(l => `"${l}"`).join(', ')
 
-  const prompt = `Translate the following game review content from English into ${localeList}.
+  const dntBlock = dntTerms.length > 0
+    ? `\nDO NOT TRANSLATE these terms — they MUST appear verbatim in the translation if they appear in the source:\n${dntTerms.map(t => `  - ${t}`).join('\n')}\n`
+    : ''
 
-Rules:
+  const prompt = `You are translating game-review content from English into ${localeList} for parents. Faithfulness matters more than fluency — a less elegant but accurate translation beats a polished one that adds or drops information.
+
+FORMAT:
 - Return ONLY a valid JSON object with locale codes as top-level keys: ${localeKeys}
-- Each value is an object with the same keys as the input
-- Keep the parent-friendly, informative tone
-- Do NOT translate game titles, character names, brand names, or developer/publisher names — keep those exactly as-is
-- Do not add explanations or markdown — just the JSON object
+- Each value has the same keys as the input.
+- No explanations or markdown around the JSON — just the JSON object.
+
+CONTENT FIDELITY (most important):
+- Translate what is there. Do NOT add information, advice, examples, clarifications, or sentences that are not in the English source.
+- Do NOT summarize or compress. Translate every sentence in the source.
+- Each translated field's length should be roughly 80–130% of the source field length. If a field is hard to translate concisely, stay close to source length rather than shortening.
+- Keep the same number of sentences as the source (±1 is acceptable).
+- Do NOT invent facts about gameplay, ratings, mechanics, or risks that are not stated in the source.
+${dntBlock}
+TONE:
+- Parent-friendly and informative, never fear-based.
+- Match the source register — if the source is plain language, do not get fancy in the translation.
 
 Input:
 ${JSON.stringify(toTranslate, null, 2)}`
@@ -115,6 +129,9 @@ export async function GET(req: Request) {
     .select({
       gameId:           games.id,
       slug:             games.slug,
+      title:            games.title,
+      developer:        games.developer,
+      publisher:        games.publisher,
       executiveSummary: gameScores.executiveSummary,
       reviewId:         gameScores.reviewId,
     })
@@ -201,8 +218,11 @@ export async function GET(req: Request) {
       missing.length     ? `new ${missing.join(',')}` : null,
       retranslate.length ? `retry ${retranslate.join(',')}` : null,
     ].filter(Boolean).join(' | ')
+    const dntTerms = [row.title, row.developer, row.publisher]
+      .filter((s): s is string => !!s && s.trim().length > 0)
+
     console.log(`[translate] ${row.slug} → ${label}`)
-    const results = await translateToLocales(content, targets)
+    const results = await translateToLocales(content, targets, dntTerms)
 
     for (const locale of targets) {
       const result = results[locale]

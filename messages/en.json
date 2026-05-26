@@ -621,7 +621,11 @@
     "learnMore": "Learn more",
     "errorGameBody": "We couldn't load this game page. This is usually a temporary issue.",
     "tryAgain": "Try again",
-    "goHome": "Go home"
+    "goHome": "Go home",
+    "notEnoughInfo": "Not enough info to rate",
+    "minPerDay": "{n} min/day",
+    "strangerRisk": "Stranger risk",
+    "spendPressure": "Spend pressure"
   },
   "dashboard": {
     "title": "Family Dashboard",
@@ -770,7 +774,27 @@
     "metaVerdictAvoid": "Not recommended",
     "metaTitleVerdict": "{title} — {verdict} · LumiScore {score}/100",
     "metaDescVerdict": "{parts}. Parent verdict and risk breakdown for {title} on Roblox.",
-    "metaAgeSuffix": "Age {age}+"
+    "metaAgeSuffix": "Age {age}+",
+    "verdictGreat": "GREAT",
+    "verdictGood": "GOOD",
+    "verdictCaution": "CAUTION",
+    "verdictAvoid": "AVOID",
+    "riskLow": "Low",
+    "riskModerate": "Moderate",
+    "riskHigh": "High",
+    "byCreator": "by {creator}",
+    "experienceNotFound": "Experience not found — LumiKin",
+    "metaTitleFallback": "{title} on Roblox — Safe for kids? | LumiKin",
+    "metaDescFallback": "LumiKin safety rating for {title} on Roblox — benefits, risks, and screen time guidance for parents.",
+    "scoringNote": "This experience is scored on 9 dimensions adapted from the {count}-dimension LumiKin rubric. Risk category weights match the rubric (Dopamine 45%, Monetization 30%, Social 25%); per-category sub-items are aggregated into a single score.",
+    "lowConfidenceLong": "This experience doesn't yet have enough public info for us to rate it confidently. We'll update as more data arrives.",
+    "parentGuideTitle": "Roblox parent guide",
+    "parentGuideBottomLine": "Bottom line first",
+    "parentGuidePara1": "<strong>By default, Roblox allows unfiltered chat and friend requests from strangers.</strong> Enable Account Restrictions immediately — it takes 2 minutes and makes the platform significantly safer for children under 13.",
+    "parentGuidePara2": "<strong>Roblox is a platform of 40 million+ user-made games</strong>, not a single game. Quality, safety, and age-appropriateness vary dramatically between experiences. The LumiKin ratings above reflect individual experiences — the platform itself does not guarantee safety.",
+    "parentGuidePara3": "<strong>Robux is the in-game currency</strong> used across most popular experiences. Many games are designed around Robux spending — pay-to-win mechanics, exclusive cosmetics, and social comparison of avatar items are common. Set a clear spending policy before your child encounters the first purchase prompt.",
+    "parentGuidePara4": "<strong>The chat filter is imperfect.</strong> Children regularly find workarounds (number substitutions, deliberate misspellings). Monitor chat history periodically using the Parent PIN tools, and have an open conversation about what to do if someone says something uncomfortable.",
+    "parentGuideAction": "<strong>Action:</strong> Roblox settings → Privacy → Account Restrictions (ON). This restricts chat, friend requests, and game access to a pre-screened age-appropriate set. Set a Parent PIN to prevent your child from disabling it."
   },
   "fortnite": {
     "title": "Fortnite Creative",

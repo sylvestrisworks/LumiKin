@@ -718,6 +718,29 @@ export const gameTranslations = pgTable('game_translations', {
 }))
 
 // ============================================
+// EXPERIENCE TRANSLATIONS (auto-generated per locale, mirrors gameTranslations)
+// ============================================
+
+export const experienceTranslations = pgTable('experience_translations', {
+  id:                 serial('id').primaryKey(),
+  experienceId:       integer('experience_id').references(() => platformExperiences.id, { onDelete: 'cascade' }).notNull(),
+  locale:             varchar('locale', { length: 10 }).notNull(),
+  summary:            text('summary'),
+  benefitsNarrative:  text('benefits_narrative'),
+  risksNarrative:     text('risks_narrative'),
+  parentTip:          text('parent_tip'),
+  createdAt:          timestamp('created_at').defaultNow(),
+
+  qualityScore:       integer('quality_score'),
+  qualityIssues:      jsonbPassthrough<TranslationIssue[]>()('quality_issues'),
+  needsRetranslate:   boolean('needs_retranslate').default(false),
+  auditedAt:          timestamp('audited_at'),
+}, (t) => ({
+  uniqueExperienceLocale: uniqueIndex('experience_translations_experience_locale_idx').on(t.experienceId, t.locale),
+  needsRetranslateIdx:    index('experience_translations_needs_retranslate_idx').on(t.needsRetranslate),
+}))
+
+// ============================================
 // PIPELINE OBSERVABILITY
 // ============================================
 

@@ -30,7 +30,8 @@ function formatCount(n: number | null): string {
 }
 
 export default function ExperienceCard({ exp }: { exp: ExperienceSummary }) {
-  const t = useTranslations('roblox')
+  const t   = useTranslations('roblox')
+  const tc  = useTranslations('common')
   const locale = useLocale()
   const hasHighStrangerRisk = (exp.strangerRisk ?? 0) >= 2
   const hasHighMonetization = (exp.monetizationScore ?? 0) >= 2
@@ -103,13 +104,13 @@ export default function ExperienceCard({ exp }: { exp: ExperienceSummary }) {
         {isPending ? (
           <div className="mt-auto pt-1">
             <span className="text-xs italic text-slate-400 dark:text-slate-500">
-              Not enough info to rate
+              {tc('notEnoughInfo')}
             </span>
           </div>
         ) : exp.timeRecommendationMinutes != null && (
           <div className="mt-auto pt-1">
             <span className="text-xs text-slate-400 dark:text-slate-500">
-              {exp.timeRecommendationMinutes} min/day
+              {tc('minPerDay', { n: exp.timeRecommendationMinutes })}
             </span>
           </div>
         )}

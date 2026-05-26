@@ -632,7 +632,11 @@
     "learnMore": "Aprende más",
     "errorGameBody": "No pudimos cargar esta página del juego. Esto suele ser un problema temporal.",
     "tryAgain": "Intenta de nuevo",
-    "goHome": "Ir a inicio"
+    "goHome": "Ir a inicio",
+    "notEnoughInfo": "Poca información para calificar",
+    "minPerDay": "{n} min/día",
+    "strangerRisk": "Riesgo de extraños",
+    "spendPressure": "Presión de gasto"
   },
   "dashboard": {
     "title": "Panel familiar",
@@ -781,7 +785,27 @@
     "metaVerdictAvoid": "Not recommended",
     "metaTitleVerdict": "{title} — {verdict} · LumiScore {score}/100",
     "metaDescVerdict": "{parts}. Parent verdict and risk breakdown for {title} on Roblox.",
-    "metaAgeSuffix": "Age {age}+"
+    "metaAgeSuffix": "Age {age}+",
+    "verdictGreat": "GENIAL",
+    "verdictGood": "BUENO",
+    "verdictCaution": "PRECAUCIÓN",
+    "verdictAvoid": "EVITAR",
+    "riskLow": "Bajo",
+    "riskModerate": "Moderado",
+    "riskHigh": "Alto",
+    "byCreator": "por {creator}",
+    "experienceNotFound": "Experiencia no encontrada — LumiKin",
+    "metaTitleFallback": "{title} en Roblox — ¿Seguro para niños? | LumiKin",
+    "metaDescFallback": "Calificación de seguridad LumiKin para {title} en Roblox — beneficios, riesgos y guía de tiempo de pantalla para padres.",
+    "scoringNote": "Esta experiencia se califica en 9 dimensiones adaptadas de la rúbrica LumiKin de {count} dimensiones. Los pesos de la categoría de riesgo coinciden con la rúbrica (Dopamina 45%, Monetización 30%, Social 25%); los subelementos por categoría se agrupan en una sola puntuación.",
+    "lowConfidenceLong": "Esta experiencia aún no tiene suficiente información pública para que podamos calificarla con confianza. Actualizaremos a medida que lleguen más datos.",
+    "parentGuideTitle": "Guía para padres de Roblox",
+    "parentGuideBottomLine": "Lo más importante primero",
+    "parentGuidePara1": "<strong>Por defecto, Roblox permite chat sin filtro y solicitudes de amistad de extraños.</strong> Activa las Restricciones de Cuenta de inmediato — toma 2 minutos y hace que la plataforma sea mucho más segura para niños menores de 13 años.",
+    "parentGuidePara2": "<strong>Roblox es una plataforma con más de 40 millones de juegos creados por usuarios</strong>, no un solo juego. La calidad, seguridad y adecuación a la edad varían drásticamente entre experiencias. Las calificaciones de LumiKin anteriores reflejan experiencias individuales — la plataforma en sí no garantiza seguridad.",
+    "parentGuidePara3": "<strong>Robux es la moneda del juego</strong> usada en las experiencias más populares. Muchos juegos están diseñados para gastar Robux — las mecánicas de pagar para ganar, cosméticos exclusivos y la comparación social de ítems de avatares son comunes. Establece una política de gasto clara antes de que tu hijo encuentre el primer mensaje de compra.",
+    "parentGuidePara4": "<strong>El filtro de chat es imperfecto.</strong> Los niños regularmente encuentran formas de evitarlo (sustituciones de números, faltas de ortografía deliberadas). Monitorea el historial de chat periódicamente usando las herramientas del PIN Parental, y ten una conversación abierta sobre qué hacer si alguien dice algo incómodo.",
+    "parentGuideAction": "<strong>Acción:</strong> Configuración de Roblox → Privacidad → Restricciones de Cuenta (ACTIVADO). Esto restringe el chat, las solicitudes de amistad y el acceso a juegos a un conjunto preseleccionado y apropiado para la edad. Configura un PIN Parental para evitar que tu hijo lo desactive."
   },
   "fortnite": {
     "title": "Fortnite Creative",

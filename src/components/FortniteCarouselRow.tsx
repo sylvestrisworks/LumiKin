@@ -11,7 +11,8 @@ import Icon from '@/components/Icon'
 // ─── Tile ─────────────────────────────────────────────────────────────────────
 
 function FortniteTile({ exp }: { exp: ExperienceSummary }) {
-  const locale = useLocale()
+  const locale    = useLocale()
+  const tCommon   = useTranslations('common')
   const isPending = (exp.inputConfidence ?? 0) < CONFIDENCE_THRESHOLD
   return (
     <Link
@@ -59,7 +60,7 @@ function FortniteTile({ exp }: { exp: ExperienceSummary }) {
         {exp.title}
       </p>
       <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
-        {isPending ? 'Not enough info to rate' : (exp.creatorName ?? '')}
+        {isPending ? tCommon('notEnoughInfo') : (exp.creatorName ?? '')}
       </p>
     </Link>
   )

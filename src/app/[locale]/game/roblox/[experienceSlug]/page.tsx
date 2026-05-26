@@ -3,8 +3,8 @@ export const revalidate = 3600
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
-import { platformExperiences, experienceScores, games } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { platformExperiences, experienceScores, experienceTranslations, games } from '@/lib/db/schema'
+import { eq, and } from 'drizzle-orm'
 import Link from 'next/link'
 import { getTranslations, getLocale } from 'next-intl/server'
 import UgcAttributionBlock from '@/components/UgcAttributionBlock'
@@ -19,10 +19,10 @@ function pct(v: number | null, max = 1) { return `${Math.round(((v ?? 0) / max) 
 
 function getVerdict(score: number | null) {
   const s = score ?? 0
-  if (s >= 70) return { label: 'GREAT',   color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/30',  ring: '#10b981' }
-  if (s >= 50) return { label: 'GOOD',    color: 'text-teal-600 dark:text-teal-400',       bg: 'bg-teal-50 dark:bg-teal-900/30',        ring: '#14b8a6' }
-  if (s >= 35) return { label: 'CAUTION', color: 'text-amber-600 dark:text-amber-400',     bg: 'bg-amber-50 dark:bg-amber-900/30',      ring: '#f59e0b' }
-  return              { label: 'AVOID',   color: 'text-red-600 dark:text-red-400',         bg: 'bg-red-50 dark:bg-red-900/30',          ring: '#ef4444' }
+  if (s >= 70) return { labelKey: 'verdictGreat',   color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/30',  ring: '#10b981' }
+  if (s >= 50) return { labelKey: 'verdictGood',    color: 'text-teal-600 dark:text-teal-400',       bg: 'bg-teal-50 dark:bg-teal-900/30',        ring: '#14b8a6' }
+  if (s >= 35) return { labelKey: 'verdictCaution', color: 'text-amber-600 dark:text-amber-400',     bg: 'bg-amber-50 dark:bg-amber-900/30',      ring: '#f59e0b' }
+  return              { labelKey: 'verdictAvoid',   color: 'text-red-600 dark:text-red-400',         bg: 'bg-red-50 dark:bg-red-900/30',          ring: '#ef4444' }
 }
 
 function benefitBarColor(v: number, max = 3) {
@@ -41,9 +41,9 @@ function riskBarColor(v: number, max = 3) {
 
 function riskLevel(v: number, max = 3) {
   const f = v / max
-  if (f < 0.34) return { label: 'Low',      cls: 'bg-yellow-100 dark:bg-yellow-900/50 border border-yellow-300 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200' }
-  if (f < 0.67) return { label: 'Moderate', cls: 'bg-orange-100 dark:bg-orange-900/50 border border-orange-300 dark:border-orange-600 text-orange-800 dark:text-orange-200' }
-  return               { label: 'High',     cls: 'bg-red-100 dark:bg-red-900/50 border border-red-300 dark:border-red-600 text-red-800 dark:text-red-200' }
+  if (f < 0.34) return { labelKey: 'riskLow',      cls: 'bg-yellow-100 dark:bg-yellow-900/50 border border-yellow-300 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200' }
+  if (f < 0.67) return { labelKey: 'riskModerate', cls: 'bg-orange-100 dark:bg-orange-900/50 border border-orange-300 dark:border-orange-600 text-orange-800 dark:text-orange-200' }
+  return               { labelKey: 'riskHigh',     cls: 'bg-red-100 dark:bg-red-900/50 border border-red-300 dark:border-red-600 text-red-800 dark:text-red-200' }
 }
 
 function formatCount(n: number | null): string {
@@ -108,14 +108,14 @@ function BenefitBar({ label, value, max = 3 }: { label: string; value: number | 
 
 // ─── RiskMeter — risk (mirrors GameCard) ──────────────────────────────────────
 
-function RiskMeter({ label, value, max = 3 }: { label: string; value: number | null; max?: number }) {
+function RiskMeter({ label, levelLabel, value, max = 3 }: { label: string; levelLabel: string; value: number | null; max?: number }) {
   const v = value ?? 0
   const level = riskLevel(v, max)
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</span>
-        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full shrink-0 ${level.cls}`}>{level.label}</span>
+        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full shrink-0 ${level.cls}`}>{levelLabel}</span>
       </div>
       <div className="bg-slate-100 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
         <div className={`h-full rounded-full transition-all ${riskBarColor(v, max)}`} style={{ width: pct(v, max) }} />
@@ -142,7 +142,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .limit(1)
     .catch(() => [])
 
-  if (!exp) return { title: 'Experience not found — LumiKin' }
+  if (!exp) {
+    const tFallback = await getTranslations({ locale, namespace: 'roblox' })
+    return { title: tFallback('experienceNotFound') }
+  }
 
   // Score lookup gates verdict-led title/desc. Mirrors the page-component
   // confidence gate: low-confidence rows don't surface a number anywhere.
@@ -186,10 +189,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title = t('metaTitleVerdict', { title: exp.title, verdict, score: score!.curascore! })
     desc  = t('metaDescVerdict',  { parts, title: exp.title })
   } else {
-    title = `${exp.title} on Roblox — Safe for kids? | LumiKin`
+    title = t('metaTitleFallback', { title: exp.title })
     desc = exp.description
       ? exp.description.slice(0, 155) + (exp.description.length > 155 ? '…' : '')
-      : `LumiKin safety rating for ${exp.title} on Roblox — benefits, risks, and screen time guidance for parents.`
+      : t('metaDescFallback', { title: exp.title })
   }
   const canonical = `/${locale}/game/roblox/${experienceSlug}`
 
@@ -224,7 +227,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function ExperiencePage({ params }: Props) {
-  const [{ experienceSlug }, t, locale] = await Promise.all([params, getTranslations('roblox'), getLocale()])
+  const [{ experienceSlug }, t, tCommon, tGame, locale] = await Promise.all([
+    params,
+    getTranslations('roblox'),
+    getTranslations('common'),
+    getTranslations('game'),
+    getLocale(),
+  ])
+  const riskLabelFor = (v: number | null) => t(riskLevel(v ?? 0).labelKey as 'riskLow' | 'riskModerate' | 'riskHigh')
   const [exp] = await db
     .select()
     .from(platformExperiences)
@@ -254,8 +264,33 @@ export default async function ExperiencePage({ params }: Props) {
 
   // See fortnite-creative/[mapSlug]/page.tsx — same isPending gating.
   const isPending = (score?.inputConfidence ?? 0) < CONFIDENCE_THRESHOLD
-  const displayScore = score && !isPending ? score : null
+  let displayScore = score && !isPending ? score : null
   const verdict = displayScore?.curascore != null ? getVerdict(displayScore.curascore) : null
+
+  // Overlay localized narrative fields when locale is not English.
+  if (displayScore && locale !== 'en') {
+    try {
+      const [tx] = await db
+        .select()
+        .from(experienceTranslations)
+        .where(and(
+          eq(experienceTranslations.experienceId, exp.id),
+          eq(experienceTranslations.locale, locale),
+        ))
+        .limit(1)
+      if (tx) {
+        displayScore = {
+          ...displayScore,
+          summary:           tx.summary           ?? displayScore.summary,
+          benefitsNarrative: tx.benefitsNarrative ?? displayScore.benefitsNarrative,
+          risksNarrative:    tx.risksNarrative    ?? displayScore.risksNarrative,
+          parentTip:         tx.parentTip         ?? displayScore.parentTip,
+        }
+      }
+    } catch {
+      // experience_translations missing — skip
+    }
+  }
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
   const canonicalUrl = `${SITE_URL}/en/game/roblox/${exp.slug}`
@@ -276,10 +311,10 @@ export default async function ExperiencePage({ params }: Props) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home',   item: `${SITE_URL}/${locale}` },
-      { '@type': 'ListItem', position: 2, name: 'Browse', item: `${SITE_URL}/${locale}/browse` },
-      { '@type': 'ListItem', position: 3, name: 'Roblox', item: `${SITE_URL}/${locale}/game/roblox` },
-      { '@type': 'ListItem', position: 4, name: exp.title, item: canonicalUrl },
+      { '@type': 'ListItem', position: 1, name: tGame('navHome'),   item: `${SITE_URL}/${locale}` },
+      { '@type': 'ListItem', position: 2, name: tGame('navBrowse'), item: `${SITE_URL}/${locale}/browse` },
+      { '@type': 'ListItem', position: 3, name: t('title'),         item: `${SITE_URL}/${locale}/game/roblox` },
+      { '@type': 'ListItem', position: 4, name: exp.title,          item: canonicalUrl },
     ],
   }
 
@@ -378,7 +413,7 @@ export default async function ExperiencePage({ params }: Props) {
 
         {/* Breadcrumb */}
         <nav className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
-          <Link href={`/${locale}/game/roblox`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Roblox</Link>
+          <Link href={`/${locale}/game/roblox`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">{t('title')}</Link>
           <span>/</span>
           <span className="text-slate-600 dark:text-slate-300 truncate">{exp.title}</span>
         </nav>
@@ -395,14 +430,14 @@ export default async function ExperiencePage({ params }: Props) {
               {displayScore?.curascore != null && verdict && (
                 <div className="shrink-0 -mt-1">
                   <HorseshoeRing score={displayScore.curascore} ring={verdict.ring} />
-                  <p className={`text-center text-sm font-black -mt-3 ${verdict.color}`}>{verdict.label}</p>
+                  <p className={`text-center text-sm font-black -mt-3 ${verdict.color}`}>{t(verdict.labelKey as 'verdictGreat' | 'verdictGood' | 'verdictCaution' | 'verdictAvoid')}</p>
                 </div>
               )}
 
               <div className="flex-1 min-w-0 pt-1">
                 <h1 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">{exp.title}</h1>
                 {exp.creatorName && (
-                  <p className="text-sm text-slate-400 mt-0.5">by {exp.creatorName}</p>
+                  <p className="text-sm text-slate-400 mt-0.5">{t('byCreator', { creator: exp.creatorName })}</p>
                 )}
 
                 {/* Stats */}
@@ -410,12 +445,12 @@ export default async function ExperiencePage({ params }: Props) {
                   {exp.activePlayers != null && (
                     <span className="flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
-                      {formatCount(exp.activePlayers)} playing now
+                      {t('playingNow', { count: formatCount(exp.activePlayers) })}
                     </span>
                   )}
-                  {exp.visitCount != null && <span>{formatCount(exp.visitCount)} visits</span>}
+                  {exp.visitCount != null && <span>{t('visits', { count: formatCount(exp.visitCount) })}</span>}
                   {exp.genre && <span>{exp.genre}</span>}
-                  {exp.maxPlayers != null && <span>Up to {exp.maxPlayers}/server</span>}
+                  {exp.maxPlayers != null && <span>{t('upToPlayers', { count: exp.maxPlayers })}</span>}
                 </div>
 
                 {/* Time recommendation */}
@@ -425,9 +460,9 @@ export default async function ExperiencePage({ params }: Props) {
                     displayScore.timeRecommendationColor === 'amber'  ? 'bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400' :
                                                                         'bg-red-50 border-red-200 text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400'
                   }`}>
-                    <span>Recommended: {displayScore.timeRecommendationLabel}</span>
+                    <span>{t('recommended', { label: displayScore.timeRecommendationLabel })}</span>
                     {displayScore.recommendedMinAge != null && (
-                      <span className="text-xs font-normal opacity-70">· Age {displayScore.recommendedMinAge}+</span>
+                      <span className="text-xs font-normal opacity-70">· {t('age', { age: displayScore.recommendedMinAge })}</span>
                     )}
                   </div>
                 )}
@@ -485,12 +520,12 @@ export default async function ExperiencePage({ params }: Props) {
             </h2>
 
             <div className="space-y-4">
-              <RiskMeter label={t('dopamineTraps')} value={displayScore.dopamineTrapScore} />
-              <RiskMeter label={t('toxicity')}      value={displayScore.toxicityScore} />
-              <RiskMeter label={t('ugcRisk')}       value={displayScore.ugcContentRisk} />
-              <RiskMeter label={t('strangerRisk')}  value={displayScore.strangerRisk} />
-              <RiskMeter label={t('monetization')}  value={displayScore.monetizationScore} />
-              <RiskMeter label={t('privacyRisk')}   value={displayScore.privacyRisk} />
+              <RiskMeter label={t('dopamineTraps')} levelLabel={riskLabelFor(displayScore.dopamineTrapScore)} value={displayScore.dopamineTrapScore} />
+              <RiskMeter label={t('toxicity')}      levelLabel={riskLabelFor(displayScore.toxicityScore)}     value={displayScore.toxicityScore} />
+              <RiskMeter label={t('ugcRisk')}       levelLabel={riskLabelFor(displayScore.ugcContentRisk)}    value={displayScore.ugcContentRisk} />
+              <RiskMeter label={t('strangerRisk')}  levelLabel={riskLabelFor(displayScore.strangerRisk)}      value={displayScore.strangerRisk} />
+              <RiskMeter label={t('monetization')}  levelLabel={riskLabelFor(displayScore.monetizationScore)} value={displayScore.monetizationScore} />
+              <RiskMeter label={t('privacyRisk')}   levelLabel={riskLabelFor(displayScore.privacyRisk)}       value={displayScore.privacyRisk} />
             </div>
 
             {displayScore.risksNarrative && (
@@ -505,9 +540,7 @@ export default async function ExperiencePage({ params }: Props) {
         {/* ── Scoring method note (Fix 8) ────────────────────────────────────── */}
         {displayScore && (
           <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed px-1">
-            This experience is scored on 9 dimensions adapted from the {RUBRIC_DIMENSION_COUNT}-dimension LumiKin rubric.
-            Risk category weights match the rubric (Dopamine 45%, Monetization 30%, Social 25%);
-            per-category sub-items are aggregated into a single score.
+            {t('scoringNote', { count: RUBRIC_DIMENSION_COUNT })}
           </p>
         )}
 
@@ -523,12 +556,10 @@ export default async function ExperiencePage({ params }: Props) {
         {!displayScore && (
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-8 text-center text-slate-500 dark:text-slate-400">
             <p className="font-medium">
-              {isPending ? 'Not enough info to rate' : t('ratingInProgress')}
+              {isPending ? tCommon('notEnoughInfo') : t('ratingInProgress')}
             </p>
             <p className="text-xs mt-1">
-              {isPending
-                ? "This experience doesn't yet have enough public info for us to rate it confidently. We'll update as more data arrives."
-                : t('ratingInProgressDesc')}
+              {isPending ? t('lowConfidenceLong') : t('ratingInProgressDesc')}
             </p>
           </div>
         )}
@@ -538,18 +569,18 @@ export default async function ExperiencePage({ params }: Props) {
           <summary className="flex items-center justify-between gap-2 cursor-pointer list-none select-none py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
             <span className="flex items-center gap-1.5">
               <span className="text-red-400">ℹ</span>
-              Roblox parent guide
+              {t('parentGuideTitle')}
             </span>
             <span className="transition-transform group-open/panel:rotate-180 text-slate-300 dark:text-slate-600">▾</span>
           </summary>
           <div className="mt-2 rounded-xl border border-red-100 dark:border-red-900/40 bg-red-50/60 dark:bg-red-950/30 px-4 py-3 text-xs text-slate-600 dark:text-slate-400 space-y-2.5 leading-relaxed">
-            <p className="font-semibold text-slate-700 dark:text-slate-300 text-[11px] uppercase tracking-wide">Bottom line first</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">By default, Roblox allows unfiltered chat and friend requests from strangers.</strong> Enable Account Restrictions immediately — it takes 2 minutes and makes the platform significantly safer for children under 13.</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">Roblox is a platform of 40 million+ user-made games</strong>, not a single game. Quality, safety, and age-appropriateness vary dramatically between experiences. The LumiKin ratings above reflect individual experiences — the platform itself does not guarantee safety.</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">Robux is the in-game currency</strong> used across most popular experiences. Many games are designed around Robux spending — pay-to-win mechanics, exclusive cosmetics, and social comparison of avatar items are common. Set a clear spending policy before your child encounters the first purchase prompt.</p>
-            <p><strong className="text-slate-700 dark:text-slate-200">The chat filter is imperfect.</strong> Children regularly find workarounds (number substitutions, deliberate misspellings). Monitor chat history periodically using the Parent PIN tools, and have an open conversation about what to do if someone says something uncomfortable.</p>
+            <p className="font-semibold text-slate-700 dark:text-slate-300 text-[11px] uppercase tracking-wide">{t('parentGuideBottomLine')}</p>
+            <p>{t.rich('parentGuidePara1', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
+            <p>{t.rich('parentGuidePara2', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
+            <p>{t.rich('parentGuidePara3', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
+            <p>{t.rich('parentGuidePara4', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
             <p className="pt-0.5 border-t border-red-100 dark:border-red-900/40 text-slate-500 dark:text-slate-400">
-              <strong className="text-slate-600 dark:text-slate-300">Action:</strong> Roblox settings → Privacy → Account Restrictions (ON). This restricts chat, friend requests, and game access to a pre-screened age-appropriate set. Set a Parent PIN to prevent your child from disabling it.
+              {t.rich('parentGuideAction', { strong: (chunks) => <strong className="text-slate-600 dark:text-slate-300">{chunks}</strong> })}
             </p>
           </div>
         </details>

@@ -1,5 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { curascoreBg } from '@/lib/ui'
 import { CONFIDENCE_THRESHOLD } from '@/lib/scoring/experience-risk'
 
@@ -34,6 +37,7 @@ export default function PlatformExperienceCard({
   locale: string
   platformSlug: string
 }) {
+  const t = useTranslations('common')
   const hasHighStrangerRisk = (exp.strangerRisk ?? 0) >= 2
   const hasHighMonetization = (exp.monetizationScore ?? 0) >= 2
   const isPending = (exp.inputConfidence ?? 0) < CONFIDENCE_THRESHOLD
@@ -96,13 +100,13 @@ export default function PlatformExperienceCard({
         {isPending ? (
           <div className="mt-auto pt-1">
             <span className="text-xs italic text-slate-400 dark:text-slate-500">
-              Not enough info to rate
+              {t('notEnoughInfo')}
             </span>
           </div>
         ) : exp.timeRecommendationMinutes != null && (
           <div className="mt-auto pt-1">
             <span className="text-xs text-slate-400 dark:text-slate-500">
-              {exp.timeRecommendationMinutes} min/day
+              {t('minPerDay', { n: exp.timeRecommendationMinutes })}
             </span>
           </div>
         )}
@@ -110,10 +114,10 @@ export default function PlatformExperienceCard({
         {!isPending && (hasHighStrangerRisk || hasHighMonetization) && (
           <div className="flex flex-wrap gap-x-2 gap-y-0.5">
             {hasHighStrangerRisk && (
-              <span className="text-xs text-amber-600 dark:text-amber-400">Stranger risk</span>
+              <span className="text-xs text-amber-600 dark:text-amber-400">{t('strangerRisk')}</span>
             )}
             {hasHighMonetization && (
-              <span className="text-xs text-amber-600 dark:text-amber-400">Spend pressure</span>
+              <span className="text-xs text-amber-600 dark:text-amber-400">{t('spendPressure')}</span>
             )}
           </div>
         )}

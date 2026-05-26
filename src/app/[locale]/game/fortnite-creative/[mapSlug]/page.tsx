@@ -3,8 +3,8 @@ export const revalidate = 3600
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
-import { platformExperiences, experienceScores, games } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { platformExperiences, experienceScores, experienceTranslations, games } from '@/lib/db/schema'
+import { eq, and } from 'drizzle-orm'
 import Link from 'next/link'
 import { getTranslations, getLocale } from 'next-intl/server'
 import UgcAttributionBlock from '@/components/UgcAttributionBlock'
@@ -248,9 +248,34 @@ export default async function FortniteMapPage({ params }: Props) {
   // greyscale treatment on cards. We still render the page (title, thumb,
   // tagline) so parents see what the island is — just without a wonky number.
   const isPending = (score?.inputConfidence ?? 0) < CONFIDENCE_THRESHOLD
-  const displayScore = score && !isPending ? score : null
+  let displayScore = score && !isPending ? score : null
   const verdict = displayScore?.curascore != null ? getVerdict(displayScore.curascore) : null
   const riskLabelFor = (v: number | null) => t(riskLevel(v ?? 0).labelKey)
+
+  // Overlay localized narrative fields when locale is not English.
+  if (displayScore && locale !== 'en') {
+    try {
+      const [tx] = await db
+        .select()
+        .from(experienceTranslations)
+        .where(and(
+          eq(experienceTranslations.experienceId, exp.id),
+          eq(experienceTranslations.locale, locale),
+        ))
+        .limit(1)
+      if (tx) {
+        displayScore = {
+          ...displayScore,
+          summary:           tx.summary           ?? displayScore.summary,
+          benefitsNarrative: tx.benefitsNarrative ?? displayScore.benefitsNarrative,
+          risksNarrative:    tx.risksNarrative    ?? displayScore.risksNarrative,
+          parentTip:         tx.parentTip         ?? displayScore.parentTip,
+        }
+      }
+    } catch {
+      // experience_translations missing — skip
+    }
+  }
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
   const canonicalUrl = `${SITE_URL}/en/game/fortnite-creative/${exp.slug}`

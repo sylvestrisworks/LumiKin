@@ -139,17 +139,19 @@ async function fetchFeatured(locale: string): Promise<Row | null> {
     try {
       const [tx] = await db
         .select({
-          executiveSummary:  gameTranslations.executiveSummary,
-          parentTip:         gameTranslations.parentTip,
-          parentTipBenefits: gameTranslations.parentTipBenefits,
+          executiveSummary:            gameTranslations.executiveSummary,
+          parentTip:                   gameTranslations.parentTip,
+          parentTipBenefits:           gameTranslations.parentTipBenefits,
+          timeRecommendationReasoning: gameTranslations.timeRecommendationReasoning,
         })
         .from(gameTranslations)
         .where(and(eq(gameTranslations.gameId, row.id), eq(gameTranslations.locale, locale)))
         .limit(1)
       if (tx) {
-        if (tx.executiveSummary)  row.executiveSummary  = tx.executiveSummary
-        if (tx.parentTip)         row.parentTip         = tx.parentTip
-        if (tx.parentTipBenefits) row.parentTipBenefits = tx.parentTipBenefits
+        if (tx.executiveSummary)            row.executiveSummary            = tx.executiveSummary
+        if (tx.parentTip)                   row.parentTip                   = tx.parentTip
+        if (tx.parentTipBenefits)           row.parentTipBenefits           = tx.parentTipBenefits
+        if (tx.timeRecommendationReasoning) row.timeRecommendationReasoning = tx.timeRecommendationReasoning
       }
     } catch {
       // game_translations table not yet migrated — skip silently

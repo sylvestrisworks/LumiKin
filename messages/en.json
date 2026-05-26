@@ -517,7 +517,31 @@
     "bechdelTitle": "Bechdel Test",
     "bechdelTooltip": "The Bechdel Test checks whether a game has at least two named female characters who talk to each other about something other than a man. A simple measure of representation.",
     "bechdelPass": "Passes the test",
-    "bechdelFail": "Fails the test"
+    "bechdelFail": "Fails the test",
+    "bundledOnlineHeader": "Bundled online mode — additional risk",
+    "bundledOnlinePreamble": "The LumiScore above reflects the single-player campaign only."
+  },
+  "lumiScoreHero": {
+    "verdictGreatAge": "Great pick for ages {age}+ — low engagement risks",
+    "verdictGreatAny": "Great for most ages — low engagement risks",
+    "verdictGoodAge": "Appropriate for ages {age}+ with parental supervision",
+    "verdictGoodAny": "Appropriate for most ages with parental supervision",
+    "verdictCaution": "Use with parental oversight — some design risks present",
+    "verdictAvoid": "Not recommended for unsupervised play"
+  },
+  "scoreMeta": {
+    "scoredToday": "today",
+    "scoredDaysAgo": "{n, plural, one {# day ago} other {# days ago}}",
+    "scoredWeeksAgo": "{n, plural, one {# week ago} other {# weeks ago}}",
+    "scoredPrefix": "Scored {when}",
+    "methodologyVersion": "Methodology v{version}",
+    "methodFullRubricLabel": "{n}-dim rubric",
+    "methodFullRubricTooltip": "Scored across {n} dimensions by the standard LumiKin rubric.",
+    "methodUgcLabel": "UGC adapted",
+    "methodUgcTooltip": "Scored on 9 dimensions adapted from the standard rubric. Risk and benefit weights match; granularity is coarser.",
+    "methodHandLabel": "Hand-curated",
+    "methodHandTooltip": "Scored by an editor rather than the automated pipeline.",
+    "lastUpdated": "Last updated {when}"
   },
   "parentTips": {
     "heading": "Parent Tips",

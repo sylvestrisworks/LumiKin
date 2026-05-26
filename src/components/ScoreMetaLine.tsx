@@ -1,24 +1,8 @@
+'use client'
+
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { RUBRIC_DIMENSION_COUNT } from '@/lib/methodology'
-
-function relativeDate(iso: string): string {
-  const diffMs   = Date.now() - new Date(iso).getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays < 1)  return 'today'
-  if (diffDays < 7)  return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`
-  if (diffDays < 60) {
-    const weeks = Math.floor(diffDays / 7)
-    return `${weeks} week${weeks === 1 ? '' : 's'} ago`
-  }
-  return new Date(iso).toLocaleDateString('en', { month: 'short', year: 'numeric' })
-}
-
-const SCORING_METHOD_LABEL: Record<string, { label: string; tooltip: string }> = {
-  full_rubric:  { label: `${RUBRIC_DIMENSION_COUNT}-dim rubric`,  tooltip: `Scored across ${RUBRIC_DIMENSION_COUNT} dimensions by the standard LumiKin rubric.` },
-  ugc_adapted:  { label: 'UGC adapted',    tooltip: 'Scored on 9 dimensions adapted from the standard rubric. Risk and benefit weights match; granularity is coarser.' },
-  hand_curated: { label: 'Hand-curated',   tooltip: 'Scored by an editor rather than the automated pipeline.' },
-}
 
 type Props = {
   calculatedAt: string
@@ -29,13 +13,30 @@ type Props = {
 }
 
 export function ScoreMetaLine({ calculatedAt, methodologyVersion, scoringMethod, updatedAt, locale }: Props) {
-  const scoredLabel  = relativeDate(calculatedAt)
-  const updatedLabel = updatedAt ? relativeDate(updatedAt) : null
-  const method       = scoringMethod ? SCORING_METHOD_LABEL[scoringMethod] : null
+  const t = useTranslations('scoreMeta')
+
+  const relativeLabel = (iso: string): string => {
+    const diffDays = Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24))
+    if (diffDays < 1) return t('scoredToday')
+    if (diffDays < 7) return t('scoredDaysAgo',  { n: diffDays })
+    if (diffDays < 60) return t('scoredWeeksAgo', { n: Math.floor(diffDays / 7) })
+    return new Date(iso).toLocaleDateString(locale, { month: 'short', year: 'numeric' })
+  }
+
+  const methodFor = (method: string | null): { label: string; tooltip: string } | null => {
+    if (method === 'full_rubric')  return { label: t('methodFullRubricLabel', { n: RUBRIC_DIMENSION_COUNT }), tooltip: t('methodFullRubricTooltip', { n: RUBRIC_DIMENSION_COUNT }) }
+    if (method === 'ugc_adapted')  return { label: t('methodUgcLabel'),  tooltip: t('methodUgcTooltip')  }
+    if (method === 'hand_curated') return { label: t('methodHandLabel'), tooltip: t('methodHandTooltip') }
+    return null
+  }
+
+  const scoredLabel  = relativeLabel(calculatedAt)
+  const updatedLabel = updatedAt ? relativeLabel(updatedAt) : null
+  const method       = methodFor(scoringMethod)
 
   return (
     <p className="text-[13px] text-slate-400 dark:text-slate-500 text-center leading-relaxed">
-      Scored {scoredLabel}
+      {t('scoredPrefix', { when: scoredLabel })}
       {methodologyVersion && (
         <>
           {' · '}
@@ -43,7 +44,7 @@ export function ScoreMetaLine({ calculatedAt, methodologyVersion, scoringMethod,
             href={`/${locale}/methodology?version=${methodologyVersion}`}
             className="hover:text-slate-600 dark:hover:text-slate-300 underline underline-offset-2 decoration-slate-300 dark:decoration-slate-600 transition-colors"
           >
-            Methodology v{methodologyVersion}
+            {t('methodologyVersion', { version: methodologyVersion })}
           </Link>
         </>
       )}
@@ -59,7 +60,7 @@ export function ScoreMetaLine({ calculatedAt, methodologyVersion, scoringMethod,
         </>
       )}
       {updatedLabel && (
-        <>{' · '}Last updated {updatedLabel}</>
+        <>{' · '}{t('lastUpdated', { when: updatedLabel })}</>
       )}
     </p>
   )

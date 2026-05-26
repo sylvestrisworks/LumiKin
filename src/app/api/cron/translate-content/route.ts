@@ -31,6 +31,7 @@ type TranslatableContent = {
   parentTip:         string | null
   parentTipBenefits: string | null
   bechdelNotes:      string | null
+  timeRecommendationReasoning: string | null
 }
 
 type TranslationResult = TranslatableContent
@@ -90,12 +91,13 @@ ${JSON.stringify(toTranslate, null, 2)}`
       const r = parsed[locale]
       if (!r) continue
       out[locale] = {
-        executiveSummary:  r.executiveSummary  ?? null,
-        benefitsNarrative: r.benefitsNarrative ?? null,
-        risksNarrative:    r.risksNarrative    ?? null,
-        parentTip:         r.parentTip         ?? null,
-        parentTipBenefits: r.parentTipBenefits ?? null,
-        bechdelNotes:      r.bechdelNotes      ?? null,
+        executiveSummary:            r.executiveSummary  ?? null,
+        benefitsNarrative:           r.benefitsNarrative ?? null,
+        risksNarrative:              r.risksNarrative    ?? null,
+        parentTip:                   r.parentTip         ?? null,
+        parentTipBenefits:           r.parentTipBenefits ?? null,
+        bechdelNotes:                r.bechdelNotes      ?? null,
+        timeRecommendationReasoning: r.timeRecommendationReasoning ?? null,
       }
     }
     return out
@@ -127,13 +129,14 @@ export async function GET(req: Request) {
   // existing rows flagged as needs_retranslate=true by scripts/audit-translations.ts.
   const pending = await db
     .select({
-      gameId:           games.id,
-      slug:             games.slug,
-      title:            games.title,
-      developer:        games.developer,
-      publisher:        games.publisher,
-      executiveSummary: gameScores.executiveSummary,
-      reviewId:         gameScores.reviewId,
+      gameId:                       games.id,
+      slug:                         games.slug,
+      title:                        games.title,
+      developer:                    games.developer,
+      publisher:                    games.publisher,
+      executiveSummary:             gameScores.executiveSummary,
+      timeRecommendationReasoning:  gameScores.timeRecommendationReasoning,
+      reviewId:                     gameScores.reviewId,
     })
     .from(games)
     .innerJoin(gameScores, eq(gameScores.gameId, games.id))
@@ -172,12 +175,13 @@ export async function GET(req: Request) {
     if (targets.length === 0) { skipped++; return }
 
     let content: TranslatableContent = {
-      executiveSummary:  row.executiveSummary,
-      benefitsNarrative: null,
-      risksNarrative:    null,
-      parentTip:         null,
-      parentTipBenefits: null,
-      bechdelNotes:      null,
+      executiveSummary:            row.executiveSummary,
+      timeRecommendationReasoning: row.timeRecommendationReasoning,
+      benefitsNarrative:           null,
+      risksNarrative:              null,
+      parentTip:                   null,
+      parentTipBenefits:           null,
+      bechdelNotes:                null,
     }
 
     if (row.reviewId) {
@@ -231,12 +235,13 @@ export async function GET(req: Request) {
       if (isRetranslate) {
         await db.update(gameTranslations)
           .set({
-            executiveSummary:  result.executiveSummary,
-            benefitsNarrative: result.benefitsNarrative,
-            risksNarrative:    result.risksNarrative,
-            parentTip:         result.parentTip,
-            parentTipBenefits: result.parentTipBenefits,
-            bechdelNotes:      result.bechdelNotes,
+            executiveSummary:            result.executiveSummary,
+            benefitsNarrative:           result.benefitsNarrative,
+            risksNarrative:              result.risksNarrative,
+            parentTip:                   result.parentTip,
+            parentTipBenefits:           result.parentTipBenefits,
+            bechdelNotes:                result.bechdelNotes,
+            timeRecommendationReasoning: result.timeRecommendationReasoning,
             // Clear audit state so the next audit pass re-scores against the new content.
             needsRetranslate:  false,
             qualityScore:      null,
@@ -250,14 +255,15 @@ export async function GET(req: Request) {
         retranslated++
       } else {
         await db.insert(gameTranslations).values({
-          gameId:            row.gameId,
+          gameId:                      row.gameId,
           locale,
-          executiveSummary:  result.executiveSummary,
-          benefitsNarrative: result.benefitsNarrative,
-          risksNarrative:    result.risksNarrative,
-          parentTip:         result.parentTip,
-          parentTipBenefits: result.parentTipBenefits,
-          bechdelNotes:      result.bechdelNotes,
+          executiveSummary:            result.executiveSummary,
+          benefitsNarrative:           result.benefitsNarrative,
+          risksNarrative:              result.risksNarrative,
+          parentTip:                   result.parentTip,
+          parentTipBenefits:           result.parentTipBenefits,
+          bechdelNotes:                result.bechdelNotes,
+          timeRecommendationReasoning: result.timeRecommendationReasoning,
         }).onConflictDoNothing()
         translated++
       }

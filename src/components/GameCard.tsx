@@ -836,11 +836,11 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
           <div className="flex items-center gap-2">
             <AlertTriangle size={16} className="text-red-600 dark:text-red-400 shrink-0" strokeWidth={2.5} />
             <p className="text-xs font-black uppercase tracking-widest text-red-700 dark:text-red-400">
-              Bundled online mode — additional risk
+              {t('bundledOnlineHeader')}
             </p>
           </div>
           <p className="text-sm text-red-900 dark:text-red-200 leading-relaxed">
-            <strong>The LumiScore above reflects the single-player campaign only.</strong>{' '}
+            <strong>{t('bundledOnlinePreamble')}</strong>{' '}
             {game.bundledOnlineNote}
           </p>
         </div>

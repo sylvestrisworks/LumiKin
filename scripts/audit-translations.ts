@@ -54,6 +54,7 @@ const TRANSLATABLE_FIELDS = [
   'parentTip',
   'parentTipBenefits',
   'bechdelNotes',
+  'timeRecommendationReasoning',
 ] as const
 type Field = typeof TRANSLATABLE_FIELDS[number]
 
@@ -133,6 +134,7 @@ type SourceRow = {
   parentTip:         string | null
   parentTipBenefits: string | null
   bechdelNotes:      string | null
+  timeRecommendationReasoning: string | null
   title:             string | null
   developer:         string | null
   publisher:         string | null
@@ -145,16 +147,17 @@ async function loadSources(gameIds: number[]): Promise<Map<number, SourceRow>> {
   // games row gives us title + developer + publisher for the DNT rule.
   const rows = await db
     .select({
-      gameId:            gameScores.gameId,
-      executiveSummary:  gameScores.executiveSummary,
-      benefitsNarrative: reviews.benefitsNarrative,
-      risksNarrative:    reviews.risksNarrative,
-      parentTip:         reviews.parentTip,
-      parentTipBenefits: reviews.parentTipBenefits,
-      bechdelNotes:      reviews.bechdelNotes,
-      title:             games.title,
-      developer:         games.developer,
-      publisher:         games.publisher,
+      gameId:                       gameScores.gameId,
+      executiveSummary:             gameScores.executiveSummary,
+      timeRecommendationReasoning:  gameScores.timeRecommendationReasoning,
+      benefitsNarrative:            reviews.benefitsNarrative,
+      risksNarrative:               reviews.risksNarrative,
+      parentTip:                    reviews.parentTip,
+      parentTipBenefits:            reviews.parentTipBenefits,
+      bechdelNotes:                 reviews.bechdelNotes,
+      title:                        games.title,
+      developer:                    games.developer,
+      publisher:                    games.publisher,
     })
     .from(gameScores)
     .leftJoin(reviews, eq(reviews.id, gameScores.reviewId))
@@ -454,6 +457,7 @@ type TxRow = {
   parentTip:         string | null
   parentTipBenefits: string | null
   bechdelNotes:      string | null
+  timeRecommendationReasoning: string | null
 }
 
 async function main() {
@@ -470,15 +474,16 @@ async function main() {
   while (true) {
     const page = await db
       .select({
-        id:                gameTranslations.id,
-        gameId:            gameTranslations.gameId,
-        locale:            gameTranslations.locale,
-        executiveSummary:  gameTranslations.executiveSummary,
-        benefitsNarrative: gameTranslations.benefitsNarrative,
-        risksNarrative:    gameTranslations.risksNarrative,
-        parentTip:         gameTranslations.parentTip,
-        parentTipBenefits: gameTranslations.parentTipBenefits,
-        bechdelNotes:      gameTranslations.bechdelNotes,
+        id:                          gameTranslations.id,
+        gameId:                      gameTranslations.gameId,
+        locale:                      gameTranslations.locale,
+        executiveSummary:            gameTranslations.executiveSummary,
+        benefitsNarrative:           gameTranslations.benefitsNarrative,
+        risksNarrative:              gameTranslations.risksNarrative,
+        parentTip:                   gameTranslations.parentTip,
+        parentTipBenefits:           gameTranslations.parentTipBenefits,
+        bechdelNotes:                gameTranslations.bechdelNotes,
+        timeRecommendationReasoning: gameTranslations.timeRecommendationReasoning,
       })
       .from(gameTranslations)
       .where(and(

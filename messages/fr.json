@@ -550,7 +550,9 @@
     "bechdelTitle": "Test de Bechdel",
     "bechdelTooltip": "Le test de Bechdel vérifie si un jeu comporte au moins deux personnages féminins nommés qui se parlent d'autre chose qu'un homme. Une mesure simple de la représentation.",
     "bechdelPass": "Réussit le test",
-    "bechdelFail": "Échoue au test"
+    "bechdelFail": "Échoue au test",
+    "bundledOnlineHeader": "Mode en ligne inclus — risque additionnel",
+    "bundledOnlinePreamble": "Le LumiScore ci-dessus reflète uniquement la campagne solo."
   },
   "parentTips": {
     "heading": "Conseils parents",
@@ -1050,5 +1052,27 @@
     "currencyObfuscation": "Utiliser des monnaies en jeu (gemmes, V-Bucks, Robux) au lieu d'euros, pour qu'il soit difficile de savoir combien quelque chose coûte vraiment en argent réel.",
     "bds": "Benefits Development Score : une note de 0 à 100 combinant les bénéfices cognitifs, socio-émotionnels et moteurs du jeu.",
     "ris": "Risk Influence Score : une note de 0 à 100 combinant la pression dopaminergique, la pression de monétisation et le risque social dans la conception du jeu."
+  },
+  "lumiScoreHero": {
+    "verdictGreatAge": "Excellent choix pour les {age} ans et plus — faibles risques d'engagement",
+    "verdictGreatAny": "Excellent pour la plupart des âges — faibles risques d'engagement",
+    "verdictGoodAge": "Approprié dès {age} ans avec supervision parentale",
+    "verdictGoodAny": "Approprié pour la plupart des âges avec supervision parentale",
+    "verdictCaution": "À utiliser avec supervision parentale — certains risques de conception sont présents",
+    "verdictAvoid": "Non recommandé pour un jeu sans surveillance"
+  },
+  "scoreMeta": {
+    "scoredToday": "aujourd'hui",
+    "scoredDaysAgo": "il y a {n, plural, one {# jour} other {# jours}}",
+    "scoredWeeksAgo": "il y a {n, plural, one {# semaine} other {# semaines}}",
+    "scoredPrefix": "Évalué {when}",
+    "methodologyVersion": "Méthodologie v{version}",
+    "methodFullRubricLabel": "Grille à {n} dimensions",
+    "methodFullRubricTooltip": "Évalué selon {n} dimensions par la grille standard LumiKin.",
+    "methodUgcLabel": "Adapté UGC",
+    "methodUgcTooltip": "Évalué sur 9 dimensions adaptées de la grille standard. Les pondérations de risques et de bénéfices sont identiques ; la granularité est plus grossière.",
+    "methodHandLabel": "Évaluation manuelle",
+    "methodHandTooltip": "Évalué par un éditeur plutôt que par le processus automatisé.",
+    "lastUpdated": "Dernière mise à jour {when}"
   }
 }

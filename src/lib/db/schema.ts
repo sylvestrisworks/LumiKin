@@ -704,6 +704,7 @@ export const gameTranslations = pgTable('game_translations', {
   parentTip:          text('parent_tip'),
   parentTipBenefits:  text('parent_tip_benefits'),
   bechdelNotes:       text('bechdel_notes'),
+  timeRecommendationReasoning: text('time_rec_reasoning'),  // overlaid on gameScores.timeRecommendationReasoning
   createdAt:          timestamp('created_at').defaultNow(),
 
   // Quality audit — populated by scripts/audit-translations.ts (stage 1 = pure-code lint)

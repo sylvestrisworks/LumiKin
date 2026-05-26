@@ -550,7 +550,9 @@
     "bechdelTitle": "Bechdel-Test",
     "bechdelTooltip": "Der Bechdel-Test prüft, ob ein Spiel mindestens zwei benannte weibliche Figuren hat, die miteinander über etwas anderes als einen Mann sprechen. Ein einfaches Maß für Repräsentation.",
     "bechdelPass": "Besteht den Test",
-    "bechdelFail": "Besteht den Test nicht"
+    "bechdelFail": "Besteht den Test nicht",
+    "bundledOnlineHeader": "Online-Modus enthalten — zusätzliches Risiko",
+    "bundledOnlinePreamble": "Der LumiScore oben bezieht sich nur auf die Einzelspieler-Kampagne."
   },
   "parentTips": {
     "heading": "Elterntipps",
@@ -1050,5 +1052,27 @@
     "currencyObfuscation": "Die Verwendung von Spielwährungen (Gems, V-Bucks, Robux) statt Euro, sodass schwer zu erkennen ist, was etwas in echtem Geld tatsächlich kostet.",
     "bds": "Benefits Development Score: eine Bewertung von 0–100, die kognitive, sozial-emotionale und motorische Vorteile des Spiels kombiniert.",
     "ris": "Risk Influence Score: eine Bewertung von 0–100, die Dopamindruck, Monetarisierungsdruck und soziales Risiko im Spieldesign kombiniert."
+  },
+  "lumiScoreHero": {
+    "verdictGreatAge": "Super Wahl ab {age}+ — geringe Engagement-Risiken",
+    "verdictGreatAny": "Super für die meisten Altersgruppen — geringe Engagement-Risiken",
+    "verdictGoodAge": "Geeignet ab {age}+ mit elterlicher Aufsicht",
+    "verdictGoodAny": "Geeignet für die meisten Altersgruppen mit elterlicher Aufsicht",
+    "verdictCaution": "Mit elterlicher Aufsicht nutzen — es gibt Design-Risiken",
+    "verdictAvoid": "Nicht empfohlen für unbeaufsichtigtes Spielen"
+  },
+  "scoreMeta": {
+    "scoredToday": "heute",
+    "scoredDaysAgo": "vor {n, plural, one {# Tag} other {# Tagen}}",
+    "scoredWeeksAgo": "vor {n, plural, one {# Woche} other {# Wochen}}",
+    "scoredPrefix": "Bewertet {when}",
+    "methodologyVersion": "Methodik v{version}",
+    "methodFullRubricLabel": "{n}-D-Rubrik",
+    "methodFullRubricTooltip": "Bewertet nach {n} Dimensionen gemäß der Standard LumiKin-Rubrik.",
+    "methodUgcLabel": "UGC-adaptiert",
+    "methodUgcTooltip": "Bewertet nach 9 Dimensionen, die von der Standard-Rubrik abgeleitet wurden. Risiko- und Nutzen-Gewichtungen stimmen überein; die Granularität ist gröber.",
+    "methodHandLabel": "Manuell erstellt",
+    "methodHandTooltip": "Von einem Redakteur bewertet statt durch die automatische Pipeline.",
+    "lastUpdated": "Zuletzt aktualisiert {when}"
   }
 }

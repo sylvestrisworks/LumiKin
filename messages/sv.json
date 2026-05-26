@@ -550,7 +550,9 @@
     "bechdelTitle": "Bechdel-testet",
     "bechdelTooltip": "Bechdel-testet kontrollerar om spelet har minst två namngivna kvinnliga karaktärer som pratar med varandra om något annat än en man. Ett enkelt mått på representation.",
     "bechdelPass": "Klarar testet",
-    "bechdelFail": "Klarar inte testet"
+    "bechdelFail": "Klarar inte testet",
+    "bundledOnlineHeader": "Online-del, separat riskbedömning",
+    "bundledOnlinePreamble": "LumiScore-poängen ovan gäller enbart spelets enspelarläge."
   },
   "parentTips": {
     "heading": "Föräldratips",
@@ -1050,5 +1052,27 @@
     "currencyObfuscation": "Att använda spelvalutor (gems, V-Bucks, Robux) i stället för kronor, så att det blir svårt att se vad något egentligen kostar i riktiga pengar.",
     "bds": "Benefits Development Score: en bedömning 0–100 som kombinerar kognitiva, socioemotionella och motoriska fördelar spelet erbjuder.",
     "ris": "Risk Influence Score: en bedömning 0–100 som kombinerar dopaminpress, monetiseringspress och social risk i spelets design."
+  },
+  "lumiScoreHero": {
+    "verdictGreatAge": "Passar utmärkt för barn från {age} år – låg risk för att fastna",
+    "verdictGreatAny": "Passar de flesta åldrar – låg risk för att fastna",
+    "verdictGoodAge": "Passar från {age} år med en vuxen i närheten",
+    "verdictGoodAny": "Passar de flesta åldrar med en vuxen i närheten",
+    "verdictCaution": "Spela med en vuxen – det finns vissa designmässiga risker",
+    "verdictAvoid": "Rekommenderas inte att spela utan uppsikt"
+  },
+  "scoreMeta": {
+    "scoredToday": "idag",
+    "scoredDaysAgo": "för {n, plural, one {# dag} other {# dagar}} sedan",
+    "scoredWeeksAgo": "för {n, plural, one {# vecka} other {# veckor}} sedan",
+    "scoredPrefix": "Bedömd {when}",
+    "methodologyVersion": "Metod v{version}",
+    "methodFullRubricLabel": "{n}-dimensionell bedömning",
+    "methodFullRubricTooltip": "Bedömd utifrån {n} dimensioner med LumiKins standardiserade metodik.",
+    "methodUgcLabel": "Användargenererat innehåll anpassat",
+    "methodUgcTooltip": "Bedömd utifrån 9 dimensioner anpassade från standardmetodiken. Risk- och nyttovikter är desamma; granulariteten är grövre.",
+    "methodHandLabel": "Manuellt granskad",
+    "methodHandTooltip": "Bedömd av en redaktör, inte via det automatiserade systemet.",
+    "lastUpdated": "Senast uppdaterad {when}"
   }
 }

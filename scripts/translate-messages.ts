@@ -1,22 +1,27 @@
 /**
  * translate-messages.ts
  *
- * Translates messages/en.json into target languages using Gemini Flash.
+ * Translates messages/en.json into target languages using Vertex AI (Gemini Flash).
  * Only translates values — keys and ICU placeholders ({count}, <yellow>…</yellow>) are preserved.
  *
  * Usage:
- *   npx tsx scripts/translate-messages.ts                    # all languages
- *   npx tsx scripts/translate-messages.ts --lang es          # Spanish only
+ *   npx tsx scripts/translate-messages.ts --missing          # fill keys absent from locale files
+ *   npx tsx scripts/translate-messages.ts --lang es          # Spanish only (with --missing or --force)
  *   npx tsx scripts/translate-messages.ts --lang fr,sv,de    # multiple
- *   npx tsx scripts/translate-messages.ts --force            # overwrite existing files
+ *   npx tsx scripts/translate-messages.ts --force            # full overwrite (clobbers hand-tuning)
+ *
+ * Default is --missing — safer than --force. Use --force only when you want to
+ * regenerate everything from scratch.
  */
 
 import { config } from 'dotenv'
 import { resolve } from 'path'
+config({ path: resolve(process.cwd(), '.env.local') })
 config({ path: resolve(process.cwd(), '.env') })
 
 import fs from 'fs'
 import nodePath from 'path'
+import { callGeminiText } from '@/lib/vertex-ai'
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -42,6 +47,7 @@ const EN_FILE      = nodePath.join(MESSAGES_DIR, 'en.json')
 
 const args    = process.argv.slice(2)
 const force   = args.includes('--force')
+// --missing is the default; flag accepted but not required.
 const langIdx = args.indexOf('--lang')
 const langArg = args.find(a => a.startsWith('--lang='))?.split('=')[1]
          ?? (langIdx !== -1 ? args[langIdx + 1] : undefined)
@@ -112,33 +118,61 @@ ${JSON.stringify(strings, null, 2)}
 
 Output: localized JSON with the same keys, copy that sounds like it was written by a native speaker.`
 
-  // TODO: migrate to callGeminiText from @/lib/vertex-ai
-  throw new Error('translate-messages: Bedrock removed. Migrate to Vertex AI before running.')
+  const text = await callGeminiText(prompt)
+
+  // Be tolerant of code fences or pre-text — pull out the largest {...} block.
+  const m = text.match(/\{[\s\S]*\}/)
+  if (!m) throw new Error(`No JSON object in Gemini response: ${text.slice(0, 200)}`)
+  const parsed = JSON.parse(m[0]) as Record<string, unknown>
+
+  // Validate shape: same keys, string values.
+  const out: Record<string, string> = {}
+  for (const key of Object.keys(strings)) {
+    const v = parsed[key]
+    if (typeof v !== 'string') {
+      throw new Error(`Missing or non-string value for key "${key}" in ${targetLang} batch`)
+    }
+    out[key] = v
+  }
+  return out
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
   const enJson: JsonObj = JSON.parse(fs.readFileSync(EN_FILE, 'utf-8'))
-  const flat = flatten(enJson)
-  const totalKeys = Object.keys(flat).length
+  const enFlat = flatten(enJson)
+  const totalKeys = Object.keys(enFlat).length
 
-  console.log(`\nTranslating ${totalKeys} strings from en.json`)
+  console.log(`\nen.json has ${totalKeys} strings`)
   console.log(`Target languages: ${targetLocales.join(', ')}`)
-  if (force) console.log('Force mode: will overwrite existing files\n')
+  console.log(`Mode: ${force ? 'force (overwrite)' : 'missing (delta only)'}\n`)
 
   for (const locale of targetLocales) {
     const outFile = nodePath.join(MESSAGES_DIR, `${locale}.json`)
+    const exists  = fs.existsSync(outFile)
 
-    if (fs.existsSync(outFile) && !force) {
-      console.log(`⏭  ${locale}: file exists — use --force to overwrite`)
-      continue
+    let existingFlat: Record<string, string> = {}
+    if (exists && !force) {
+      const existingJson: JsonObj = JSON.parse(fs.readFileSync(outFile, 'utf-8'))
+      existingFlat = flatten(existingJson)
     }
 
-    console.log(`\n→ Translating to ${LOCALE_NAMES[locale] ?? locale}…`)
+    // Pick which keys to translate: missing mode = (in en, not in locale); force = all.
+    const toTranslate: Record<string, string> = force
+      ? enFlat
+      : Object.fromEntries(
+          Object.entries(enFlat).filter(([k]) => !(k in existingFlat)),
+        )
 
-    // Split into batches of 50 key-value pairs to avoid token limits
-    const entries = Object.entries(flat)
+    const targetCount = Object.keys(toTranslate).length
+    if (targetCount === 0) {
+      console.log(`✓ ${locale}: nothing to translate`)
+      continue
+    }
+    console.log(`→ ${locale}: translating ${targetCount}${force ? '' : ' new'} strings…`)
+
+    const entries = Object.entries(toTranslate)
     const BATCH_SIZE = 25
     const translated: Record<string, string> = {}
 
@@ -157,12 +191,15 @@ async function main() {
           break
         } catch (err: unknown) {
           const status = (err as { status?: number })?.status
+          const msg = String(err)
           const isNetworkErr = (err as { code?: string })?.code === 'UND_ERR_HEADERS_TIMEOUT'
-            || String(err).includes('fetch failed')
-            || String(err).includes('ECONNRESET')
-          if ((status === 429 || isNetworkErr) && attempt < 5) {
-            const delay = Math.pow(2, attempt) * 8_000
-            console.log(`[${status ?? 'network error'} — waiting ${delay / 1000}s]`)
+            || msg.includes('fetch failed')
+            || msg.includes('ECONNRESET')
+          // Gemini sometimes drops a key or returns malformed JSON — retry the same batch.
+          const isShapeErr = msg.includes('Missing or non-string value') || msg.includes('No JSON object')
+          if ((status === 429 || isNetworkErr || isShapeErr) && attempt < 5) {
+            const delay = isShapeErr ? 1_500 : Math.pow(2, attempt) * 8_000
+            console.log(`[${status ?? (isShapeErr ? 'shape error' : 'network error')} — retry in ${delay / 1000}s]`)
             await new Promise(r => setTimeout(r, delay))
             attempt++
           } else {
@@ -172,10 +209,11 @@ async function main() {
       }
     }
 
-    // Rebuild nested structure
-    const nested = unflatten(translated)
+    // Merge new translations on top of existing (force replaces all).
+    const merged = force ? translated : { ...existingFlat, ...translated }
+    const nested = unflatten(merged)
     fs.writeFileSync(outFile, JSON.stringify(nested, null, 2) + '\n', 'utf-8')
-    console.log(`  ✓ Written to messages/${locale}.json`)
+    console.log(`  ✓ wrote messages/${locale}.json (${Object.keys(merged).length} keys)`)
   }
 
   console.log('\nDone.')

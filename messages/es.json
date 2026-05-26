@@ -550,7 +550,9 @@
     "bechdelTitle": "Test de Bechdel",
     "bechdelTooltip": "El test de Bechdel comprueba si un juego tiene al menos dos personajes femeninos con nombre que hablan entre sí sobre algo que no sea un hombre. Una medida sencilla de representación.",
     "bechdelPass": "Supera el test",
-    "bechdelFail": "No supera el test"
+    "bechdelFail": "No supera el test",
+    "bundledOnlineHeader": "Modo online incluido — riesgo adicional",
+    "bundledOnlinePreamble": "El LumiScore de arriba solo refleja la campaña de un solo jugador."
   },
   "parentTips": {
     "heading": "Consejos para padres",
@@ -1050,5 +1052,27 @@
     "currencyObfuscation": "Usar monedas dentro del juego (gemas, V-Bucks, Robux) en lugar de euros, para que sea difícil saber cuánto cuesta algo en dinero real.",
     "bds": "Benefits Development Score: una puntuación de 0 a 100 que combina los beneficios cognitivos, socioemocionales y motores que ofrece el juego.",
     "ris": "Risk Influence Score: una puntuación de 0 a 100 que combina la presión dopaminérgica, la presión de monetización y el riesgo social en el diseño del juego."
+  },
+  "lumiScoreHero": {
+    "verdictGreatAge": "Excelente opción para mayores de {age}+ — bajo riesgo de enganche",
+    "verdictGreatAny": "Genial para casi todas las edades — bajo riesgo de enganche",
+    "verdictGoodAge": "Adecuado para mayores de {age}+ con supervisión parental",
+    "verdictGoodAny": "Adecuado para casi todas las edades con supervisión parental",
+    "verdictCaution": "Úsalo con supervisión parental — algunos riesgos de diseño presentes",
+    "verdictAvoid": "No recomendado para jugar sin supervisión"
+  },
+  "scoreMeta": {
+    "scoredToday": "hoy",
+    "scoredDaysAgo": "hace {n, plural, one {# día} other {# días}}",
+    "scoredWeeksAgo": "hace {n, plural, one {# semana} other {# semanas}}",
+    "scoredPrefix": "Calificado {when}",
+    "methodologyVersion": "Metodología v{version}",
+    "methodFullRubricLabel": "Rúbrica de {n} dimensiones",
+    "methodFullRubricTooltip": "Calificado en {n} dimensiones usando la rúbrica estándar de LumiKin.",
+    "methodUgcLabel": "Adaptado por UGC",
+    "methodUgcTooltip": "Calificado en 9 dimensiones adaptadas de la rúbrica estándar. Los pesos de riesgo y beneficio coinciden; la granularidad es más gruesa.",
+    "methodHandLabel": "Curado a mano",
+    "methodHandTooltip": "Calificado por un editor en lugar del sistema automatizado.",
+    "lastUpdated": "Última actualización: {when}"
   }
 }

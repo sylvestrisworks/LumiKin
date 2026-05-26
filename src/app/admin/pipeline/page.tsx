@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { deleteGame } from './actions'
 import { db } from '@/lib/db'
-import { cronRuns, games, gameScores, gameTranslations, platformExperiences, experienceScores } from '@/lib/db/schema'
+import { cronRuns, games, gameScores, gameTranslations, platformExperiences, experienceScores, experienceTranslations } from '@/lib/db/schema'
 import { desc, eq, isNull, isNotNull, sql, and, lte } from 'drizzle-orm'
 
 // ─── Expected intervals per job (ms) — used for staleness detection ───────────
@@ -123,6 +123,11 @@ export default async function PipelinePage({
     .from(gameTranslations)
     .groupBy(gameTranslations.locale)
 
+  const expTranslationRows = await db
+    .select({ locale: experienceTranslations.locale, count: sql<number>`count(*)` })
+    .from(experienceTranslations)
+    .groupBy(experienceTranslations.locale)
+
   const [scoredCount] = await db
     .select({ count: sql<number>`count(*)` })
     .from(gameScores)
@@ -138,10 +143,42 @@ export default async function PipelinePage({
     .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
     .where(isNull(experienceScores.curascore))
 
+  const [scoredExperiences] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(experienceScores)
+    .where(isNotNull(experienceScores.curascore))
+
+  // ── Translation-quality signals (audit + retranslate queue) ────────────────
+
+  const [gameTxQuality] = await db
+    .select({
+      total:       sql<number>`count(*)`,
+      audited:     sql<number>`count(*) filter (where ${gameTranslations.auditedAt} is not null)`,
+      retranslate: sql<number>`count(*) filter (where ${gameTranslations.needsRetranslate} = true)`,
+      perfect:     sql<number>`count(*) filter (where ${gameTranslations.qualityScore} = 100)`,
+      good:        sql<number>`count(*) filter (where ${gameTranslations.qualityScore} between 70 and 99)`,
+      flagged:     sql<number>`count(*) filter (where ${gameTranslations.qualityScore} between 40 and 69)`,
+      bad:         sql<number>`count(*) filter (where ${gameTranslations.qualityScore} < 40)`,
+    })
+    .from(gameTranslations)
+
+  const [expTxQuality] = await db
+    .select({
+      total:       sql<number>`count(*)`,
+      audited:     sql<number>`count(*) filter (where ${experienceTranslations.auditedAt} is not null)`,
+      retranslate: sql<number>`count(*) filter (where ${experienceTranslations.needsRetranslate} = true)`,
+    })
+    .from(experienceTranslations)
+
   const scoredTotal = Number(scoredCount.count)
+  const scoredExpTotal = Number(scoredExperiences.count)
   const translationCoverage: Record<string, number> = {}
   for (const row of translationRows) {
     translationCoverage[row.locale] = Number(row.count)
+  }
+  const expTranslationCoverage: Record<string, number> = {}
+  for (const row of expTranslationRows) {
+    expTranslationCoverage[row.locale] = Number(row.count)
   }
 
   const now = new Date().toUTCString()
@@ -169,6 +206,47 @@ export default async function PipelinePage({
             <Stat label="de translations"      value={translationCoverage['de'] ?? 0} sub={`/ ${scoredTotal}`} />
             <Stat label="fr translations"      value={translationCoverage['fr'] ?? 0} sub={`/ ${scoredTotal}`} />
             <Stat label="es translations"      value={translationCoverage['es'] ?? 0} sub={`/ ${scoredTotal}`} />
+            <Stat label="sv exp translations"  value={expTranslationCoverage['sv'] ?? 0} sub={`/ ${scoredExpTotal}`} />
+            <Stat label="de exp translations"  value={expTranslationCoverage['de'] ?? 0} sub={`/ ${scoredExpTotal}`} />
+            <Stat label="fr exp translations"  value={expTranslationCoverage['fr'] ?? 0} sub={`/ ${scoredExpTotal}`} />
+            <Stat label="es exp translations"  value={expTranslationCoverage['es'] ?? 0} sub={`/ ${scoredExpTotal}`} />
+          </div>
+        </section>
+
+        {/* Translation quality */}
+        <section>
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">Translation quality</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Stat
+              label="Games audited"
+              value={Number(gameTxQuality.audited)}
+              sub={`/ ${Number(gameTxQuality.total).toLocaleString()}`}
+            />
+            <Stat
+              label="Games retranslate queue"
+              value={Number(gameTxQuality.retranslate)}
+              alert={Number(gameTxQuality.retranslate) > 1000}
+            />
+            <Stat
+              label="Games quality 70+"
+              value={Number(gameTxQuality.perfect) + Number(gameTxQuality.good)}
+              sub={`/ ${Number(gameTxQuality.audited).toLocaleString()}`}
+            />
+            <Stat
+              label="Games quality <40"
+              value={Number(gameTxQuality.bad)}
+              alert={Number(gameTxQuality.bad) > 500}
+            />
+            <Stat
+              label="Exp. audited"
+              value={Number(expTxQuality.audited)}
+              sub={`/ ${Number(expTxQuality.total).toLocaleString()}`}
+            />
+            <Stat
+              label="Exp. retranslate queue"
+              value={Number(expTxQuality.retranslate)}
+              alert={Number(expTxQuality.retranslate) > 200}
+            />
           </div>
         </section>
 

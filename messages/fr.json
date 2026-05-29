@@ -362,6 +362,7 @@
     "browseGames": "Parcourir les jeux",
     "getRecommendations": "Obtenir des recommandations",
     "research": "Recherche",
+    "parentsAskHeading": "Les parents demandent",
     "sectionCurascore": "Le LumiScore",
     "sectionBds": "Benefit Density Score (BDS)",
     "sectionRis": "Risk Intensity Score (RIS)",
@@ -928,6 +929,24 @@
     "metaTitle": "{title} — Convient-il aux enfants ? | LumiKin",
     "metaDescFallback": "LumiKin évalue {title} pour les parents — bénéfices, risques, mécaniques addictives et temps d'écran quotidien recommandé.",
     "ogAlt": "{title} — évaluation LumiKin"
+  },
+  "gameFaq": {
+    "heading": "Questions fréquentes des parents",
+    "q1": "{title} est-il sûr pour les enfants ?",
+    "q2": "Quel âge minimum pour {title} ? Recommandation LumiKin",
+    "q3": "Combien de temps les enfants devraient-ils jouer à {title} ?",
+    "q4": "Quels sont les principaux risques de {title} ?",
+    "a1": "LumiKin attribue à {title} un LumiScore de {score}/100. {verdict}",
+    "a1WithAge": "LumiKin attribue à {title} un LumiScore de {score}/100, recommandé à partir de {age} ans. {verdict}",
+    "a2": "La rubrique LumiKin recommande un âge minimum de {age} ans pour {title}, sur la base des bénéfices, des risques et de l'examen du contenu.",
+    "a2WithRatings": "La rubrique LumiKin recommande un âge minimum de {age} ans pour {title} ({ratings}), sur la base des bénéfices, des risques et de l'examen du contenu.",
+    "a2Ugc": "La rubrique LumiKin recommande un âge minimum de {age} ans pour {title} sur {platform}, en fonction du contenu, des risques sociaux et de la monétisation.",
+    "a3": "Le temps de jeu recommandé par LumiKin pour {title} est {time}, calibré sur le profil de dopamine, de monétisation et de pression sociale du jeu.",
+    "a3Ugc": "Le temps de jeu recommandé par LumiKin pour {title} est {time}, calibré sur le profil de dopamine, social et de monétisation de l'expérience.",
+    "verdictGreat": "Il obtient de très bons scores sur les bénéfices de développement avec des risques maîtrisables.",
+    "verdictGood": "Il offre de réels bénéfices mais nécessite un accompagnement parental sur les risques.",
+    "verdictCaution": "Il existe des risques notables à connaître avant de laisser les enfants jouer.",
+    "verdictAvoid": "Des risques importants rendent ce jeu difficile à recommander aux plus jeunes."
   },
   "importModal": {
     "title": "Importer la bibliothèque Steam",

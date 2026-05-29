@@ -8,6 +8,7 @@ import { eq, and } from 'drizzle-orm'
 import Link from 'next/link'
 import { getTranslations, getLocale } from 'next-intl/server'
 import UgcAttributionBlock from '@/components/UgcAttributionBlock'
+import GameFAQ from '@/components/GameFAQ'
 import { RUBRIC_DIMENSION_COUNT } from '@/lib/methodology'
 import { CONFIDENCE_THRESHOLD } from '@/lib/scoring/experience-risk'
 
@@ -52,16 +53,6 @@ function formatCount(n: number | null): string {
   if (n >= 1_000_000)     return `${(n / 1_000_000).toFixed(1)}M`
   if (n >= 1_000)         return `${(n / 1_000).toFixed(0)}K`
   return String(n)
-}
-
-// Parent-facing verdict narrative for FAQ answers. Verdict *labels* live in
-// messages/<locale>.json (roblox.metaVerdict*) so SERP titles can be localized;
-// narratives are FAQ-only and FAQ is EN-only for now, so they stay inline.
-function verdictNarrative(score: number): string {
-  if (score >= 70) return 'It scores well on developmental benefits with manageable risks.'
-  if (score >= 50) return 'It offers solid benefits but needs parental guidance on the risks.'
-  if (score >= 35) return 'There are notable risks worth knowing before letting kids play.'
-  return 'Significant risks make this hard to recommend for younger players.'
 }
 
 // ─── Horseshoe ring (pure SVG — server-safe) ──────────────────────────────────
@@ -353,47 +344,9 @@ export default async function ExperiencePage({ params }: Props) {
     url: canonicalUrl,
   } : null
 
-  // FAQ schema only emits on /en/* and when a score is displayable. Localized
-  // FAQ Q&A pairs are deferred to Phase E (translation audit) — shipping
-  // English copy on non-EN locales would pollute snippets.
-  const faqLd = locale === 'en' && displayScore?.curascore != null ? {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: `Is ${exp.title} safe for kids?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `LumiKin gives ${exp.title} a LumiScore of ${displayScore.curascore}/100${displayScore.recommendedMinAge != null ? `, recommended for ages ${displayScore.recommendedMinAge} and up` : ''}. ${verdictNarrative(displayScore.curascore)}`,
-        },
-      },
-      ...(displayScore.recommendedMinAge != null ? [{
-        '@type': 'Question',
-        name: `What age is ${exp.title} appropriate for?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `LumiKin's rubric recommends a minimum age of ${displayScore.recommendedMinAge}+ for ${exp.title} on Roblox, based on content, social, and monetization risks.`,
-        },
-      }] : []),
-      ...(displayScore.timeRecommendationLabel ? [{
-        '@type': 'Question',
-        name: `How long should kids play ${exp.title}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `LumiKin's recommended play time for ${exp.title} is ${displayScore.timeRecommendationLabel}, calibrated to the experience's dopamine, social, and monetization profile.`,
-        },
-      }] : []),
-      ...(displayScore.risksNarrative ? [{
-        '@type': 'Question',
-        name: `What are the risks of ${exp.title} on Roblox?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: displayScore.risksNarrative.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 400),
-        },
-      }] : []),
-    ],
-  } : null
+  // Per-experience FAQ block (visible Q&A + FAQPage JSON-LD) is rendered by
+  // <GameFAQ /> below — locale-aware, uses experience_translations-overlaid
+  // risksNarrative when present. Emits on every locale.
 
   const ldJson = (obj: unknown) =>
     JSON.stringify(obj).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026')
@@ -404,9 +357,6 @@ export default async function ExperiencePage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(breadcrumbLd) }} />
       {reviewLd && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(reviewLd) }} />
-      )}
-      {faqLd && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(faqLd) }} />
       )}
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-4">
@@ -542,6 +492,19 @@ export default async function ExperiencePage({ params }: Props) {
           <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed px-1">
             {t('scoringNote', { count: RUBRIC_DIMENSION_COUNT })}
           </p>
+        )}
+
+        {/* ── Parent-intent FAQ ──────────────────────────────────────────────── */}
+        {displayScore?.curascore != null && (
+          <GameFAQ
+            title={exp.title}
+            score={displayScore.curascore}
+            recommendedMinAge={displayScore.recommendedMinAge ?? null}
+            timeRecommendationLabel={displayScore.timeRecommendationLabel ?? null}
+            risksNarrative={displayScore.risksNarrative ?? null}
+            platformContext="Roblox"
+            locale={locale}
+          />
         )}
 
         {/* ── Parent tip ─────────────────────────────────────────────────────── */}

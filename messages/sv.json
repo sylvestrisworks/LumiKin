@@ -362,6 +362,7 @@
     "browseGames": "Utforska spel",
     "getRecommendations": "Få rekommendationer",
     "research": "Vår analys",
+    "parentsAskHeading": "Föräldrar frågar",
     "sectionCurascore": "Om LumiScore",
     "sectionBds": "Benefit Density Score (BDS)",
     "sectionRis": "Risk Intensity Score (RIS)",
@@ -928,6 +929,24 @@
     "metaTitle": "Åldersgräns för {title} — Är det bra för barn? | LumiKin",
     "metaDescFallback": "Åldersgräns och säkerhetsbedömning för {title} — fördelar, risker och rekommenderad daglig skärmtid. LumiKin betygsätter spel för föräldrar.",
     "ogAlt": "{title} — LumiKin-bedömning"
+  },
+  "gameFaq": {
+    "heading": "Vanliga frågor från föräldrar",
+    "q1": "Är {title} säkert för barn?",
+    "q2": "Åldersgräns för {title} — vilken ålder rekommenderas?",
+    "q3": "Hur länge bör barn spela {title}?",
+    "q4": "Vilka är de största riskerna med {title}?",
+    "a1": "LumiKin ger {title} en LumiScore på {score}/100. {verdict}",
+    "a1WithAge": "LumiKin ger {title} en LumiScore på {score}/100, rekommenderad åldersgräns från {age} år och uppåt. {verdict}",
+    "a2": "LumiKins rubrik rekommenderar en åldersgräns från {age} år för {title}, baserat på fördelar, risker och innehållsgranskning.",
+    "a2WithRatings": "LumiKins rubrik rekommenderar en åldersgräns från {age} år för {title} ({ratings}), baserat på fördelar, risker och innehållsgranskning.",
+    "a2Ugc": "LumiKins rubrik rekommenderar en åldersgräns från {age} år för {title} på {platform}, baserat på innehåll, sociala risker och monetisering.",
+    "a3": "LumiKins rekommenderade speltid för {title} är {time}, anpassad efter spelets dopamin-, monetiserings- och sociala riskprofil.",
+    "a3Ugc": "LumiKins rekommenderade speltid för {title} är {time}, anpassad efter upplevelsens dopamin-, sociala och monetiseringsprofil.",
+    "verdictGreat": "Det får höga betyg på utvecklingsfördelar med hanterbara risker.",
+    "verdictGood": "Det erbjuder gedigna fördelar men behöver föräldravägledning kring riskerna.",
+    "verdictCaution": "Det finns påtagliga risker som är värda att känna till innan barn får spela.",
+    "verdictAvoid": "Betydande risker gör det svårt att rekommendera för yngre spelare."
   },
   "importModal": {
     "title": "Importera Steam-bibliotek",

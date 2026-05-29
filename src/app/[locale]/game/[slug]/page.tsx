@@ -1,11 +1,12 @@
 export const revalidate = 3600
 
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import { eq, and } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { games, gameScores, reviews, darkPatterns, complianceStatus, userGames, childProfiles, gameTranslations } from '@/lib/db/schema'
+import { games, gameScores, reviews, darkPatterns, complianceStatus, userGames, childProfiles, gameTranslations, slugRedirects } from '@/lib/db/schema'
 import GameCard from '@/components/GameCard'
+import GameFAQ from '@/components/GameFAQ'
 import { RelatedGameCard } from '@/components/RelatedGameCard'
 import { GitCompareArrows } from 'lucide-react'
 import { fetchRelatedGames } from '@/lib/related-games'
@@ -291,7 +292,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default async function GamePage({ params }: Props) {
-  const { slug } = await params
+  const { slug, locale: routeLocale } = await params
   const [data, session, t, tGC, locale] = await Promise.all([
     fetchGameData(slug),
     auth(),
@@ -299,7 +300,21 @@ export default async function GamePage({ params }: Props) {
     getTranslations('gameCard'),
     getLocale(),
   ])
-  if (!data) notFound()
+  if (!data) {
+    // Consolidated-duplicate redirect: if this slug was merged into another
+    // game during the DLC/edition cleanup, 301 to the canonical slug.
+    try {
+      const [r] = await db
+        .select({ toSlug: slugRedirects.toSlug })
+        .from(slugRedirects)
+        .where(eq(slugRedirects.fromSlug, slug))
+        .limit(1)
+      if (r?.toSlug) permanentRedirect(`/${routeLocale}/game/${r.toSlug}`)
+    } catch {
+      // table missing or query failed — fall through to 404
+    }
+    notFound()
+  }
 
   // Overlay translated narrative content when locale is not English
   if (locale !== 'en' && data.game.id) {
@@ -441,54 +456,10 @@ export default async function GamePage({ params }: Props) {
     url: `${SITE_URL}/en/game/${game.slug}`,
   } : null
 
-  // FAQ schema only emits on /en/* and when a LumiScore exists. Localized
-  // FAQ Q&A pairs are deferred to Phase E (translation audit).
-  const verdictText =
-      scores?.curascore == null                ? null
-    : scores.curascore >= 70                    ? 'It scores well on developmental benefits with manageable risks.'
-    : scores.curascore >= 50                    ? 'It offers solid benefits but needs parental guidance on the risks.'
-    : scores.curascore >= 35                    ? 'There are notable risks worth knowing before letting kids play.'
-    :                                             'Significant risks make this hard to recommend for younger players.'
-  const ageRatingLine = [game.esrbRating, game.pegiRating].filter(Boolean).join(' · ')
-
-  const faqLd = locale === 'en' && scores?.curascore != null ? {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: `Is ${game.title} safe for kids?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `LumiKin gives ${game.title} a LumiScore of ${scores.curascore}/100${scores.recommendedMinAge != null ? `, recommended for ages ${scores.recommendedMinAge} and up` : ''}. ${verdictText}`,
-        },
-      },
-      ...(scores.recommendedMinAge != null ? [{
-        '@type': 'Question',
-        name: `What age is ${game.title} appropriate for?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `LumiKin's rubric recommends a minimum age of ${scores.recommendedMinAge}+ for ${game.title}${ageRatingLine ? ` (${ageRatingLine})` : ''}, based on benefits, risks, and content review.`,
-        },
-      }] : []),
-      ...(scores.timeRecommendationLabel ? [{
-        '@type': 'Question',
-        name: `How long should kids play ${game.title}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `LumiKin's recommended play time for ${game.title} is ${scores.timeRecommendationLabel}, calibrated to the game's dopamine, monetization, and social-pressure profile.`,
-        },
-      }] : []),
-      ...(data.review?.risksNarrative ? [{
-        '@type': 'Question',
-        name: `What are the main risks of ${game.title}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: data.review.risksNarrative.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 400),
-        },
-      }] : []),
-    ],
-  } : null
+  // Per-game FAQ block (visible Q&A + FAQPage JSON-LD) is rendered by
+  // <GameFAQ /> below — locale-aware, uses translated risksNarrative when
+  // game_translations has overlaid it. Emits on every locale.
+  const ageRatingLine = [game.esrbRating, game.pegiRating].filter(Boolean).join(' · ') || null
 
   return (
     <>
@@ -505,12 +476,6 @@ export default async function GamePage({ params }: Props) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
-        />
-      )}
-      {faqLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
         />
       )}
 
@@ -546,6 +511,21 @@ export default async function GamePage({ params }: Props) {
             {/* ── Left column: the game card ─────────────────────────────────── */}
             <div className="lg:col-span-8 min-w-0">
               <GameCard {...data} userProfiles={userProfiles} />
+
+              {/* Parent-intent FAQ — visible + FAQPage JSON-LD, all locales */}
+              {scores?.curascore != null && (
+                <div className="mt-4">
+                  <GameFAQ
+                    title={game.title}
+                    score={scores.curascore}
+                    recommendedMinAge={scores.recommendedMinAge ?? null}
+                    timeRecommendationLabel={scores.timeRecommendationLabel ?? null}
+                    risksNarrative={data.review?.risksNarrative ?? null}
+                    ageRatingLine={ageRatingLine}
+                    locale={locale}
+                  />
+                </div>
+              )}
             </div>
 
             {/* ── Right rail: supporting actions + context ───────────────────── */}

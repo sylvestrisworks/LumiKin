@@ -329,6 +329,7 @@
     "browseGames": "Browse games",
     "getRecommendations": "Get recommendations",
     "research": "Research",
+    "parentsAskHeading": "Parents ask",
     "sectionCurascore": "The LumiScore",
     "sectionBds": "Benefit Density Score (BDS)",
     "sectionRis": "Risk Intensity Score (RIS)",
@@ -917,6 +918,24 @@
     "metaTitle": "{title} — Is it good for kids? | LumiKin",
     "metaDescFallback": "LumiKin rates {title} for parents — benefits, risks, addictive design patterns, and a recommended daily screen time.",
     "ogAlt": "{title} — LumiKin rating"
+  },
+  "gameFaq": {
+    "heading": "Parents ask…",
+    "q1": "Is {title} safe for kids?",
+    "q2": "What age is {title} appropriate for?",
+    "q3": "How long should kids play {title}?",
+    "q4": "What are the main risks of {title}?",
+    "a1": "LumiKin gives {title} a LumiScore of {score}/100. {verdict}",
+    "a1WithAge": "LumiKin gives {title} a LumiScore of {score}/100, recommended for ages {age} and up. {verdict}",
+    "a2": "LumiKin's rubric recommends a minimum age of {age}+ for {title}, based on benefits, risks, and content review.",
+    "a2WithRatings": "LumiKin's rubric recommends a minimum age of {age}+ for {title} ({ratings}), based on benefits, risks, and content review.",
+    "a2Ugc": "LumiKin's rubric recommends a minimum age of {age}+ for {title} on {platform}, based on content, social, and monetization risks.",
+    "a3": "LumiKin's recommended play time for {title} is {time}, calibrated to the game's dopamine, monetization, and social-pressure profile.",
+    "a3Ugc": "LumiKin's recommended play time for {title} is {time}, calibrated to the experience's dopamine, social, and monetization profile.",
+    "verdictGreat": "It scores well on developmental benefits with manageable risks.",
+    "verdictGood": "It offers solid benefits but needs parental guidance on the risks.",
+    "verdictCaution": "There are notable risks worth knowing before letting kids play.",
+    "verdictAvoid": "Significant risks make this hard to recommend for younger players."
   },
   "importModal": {
     "title": "Import Steam Library",

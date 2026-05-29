@@ -4,6 +4,39 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { RUBRIC_DIMENSION_COUNT } from '@/lib/methodology'
+import { sanityClient } from '@/sanity/lib/client'
+import { faqsQuery } from '@/sanity/lib/queries'
+import PortableTextRenderer from '@/components/PortableTextRenderer'
+import type { PortableTextBlock } from '@portabletext/react'
+
+// ─── Sanity types ────────────────────────────────────────────────────────────
+
+type SanityFaqItem = {
+  _id: string
+  question: string
+  answer: PortableTextBlock[]
+  category?: string | null
+}
+
+// Walk a portable-text block array, returning a single plain-text string. Used
+// for FAQPage JSON-LD answer text. Drops mark metadata and image blocks; keeps
+// paragraph/list spacing as single spaces.
+function portableToPlain(blocks: PortableTextBlock[] | undefined): string {
+  if (!blocks?.length) return ''
+  const parts: string[] = []
+  for (const block of blocks) {
+    if (!block || block._type !== 'block') continue
+    const children = (block as PortableTextBlock & { children?: Array<{ text?: string }> }).children
+    if (!children) continue
+    parts.push(children.map((c) => c.text ?? '').join(''))
+  }
+  return parts.join(' ').replace(/\s+/g, ' ').trim()
+}
+
+// Categories shown above the hardcoded methodology sections. 'lumiscore' Q&As
+// in Sanity are folded into the methodology block instead (or skipped — the
+// hardcoded LumiScore section is more detailed than what fits portable text).
+const PARENT_INTENT_CATEGORIES = ['general', 'screen-time', 'game-safety']
 
 export const metadata: Metadata = {
   title: 'How it works — LumiKin',
@@ -491,8 +524,62 @@ export default async function FaqPage({ params }: { params: Promise<{ locale: st
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'faq' })
 
+  // Fetch parent-intent Q&As authored in Sanity Studio. Empty array when none
+  // are published yet — the section just doesn't render. EN-only filter
+  // happens via the query's $locale parameter (faqsQuery in queries.ts).
+  const sanityFaqs: SanityFaqItem[] =
+    (await sanityClient?.fetch(faqsQuery, { locale }).catch(() => null)) ?? []
+  const parentIntentFaqs = sanityFaqs.filter(
+    (f) => f.category && PARENT_INTENT_CATEGORIES.includes(f.category),
+  )
+
+  // FAQPage JSON-LD: combine Sanity Q&As + the methodology Q&As that have
+  // plain-string answers (the React-bodied ones can't safely flatten to text).
+  const hardcodedTextEntries: Array<{ q: string; a: string }> = []
+  for (const section of SECTIONS) {
+    for (const item of section.items) {
+      if (typeof item.a === 'string') {
+        hardcodedTextEntries.push({
+          q: item.q,
+          a: item.a.replace(/\s+/g, ' ').trim(),
+        })
+      }
+    }
+  }
+
+  const faqLdEntries = [
+    ...parentIntentFaqs.map((f) => ({
+      q: f.question,
+      a: portableToPlain(f.answer).slice(0, 800),
+    })),
+    ...hardcodedTextEntries,
+  ].filter((e) => e.a.length > 20)
+
+  const faqLd = faqLdEntries.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqLdEntries.map((e) => ({
+          '@type': 'Question',
+          name: e.q,
+          acceptedAnswer: { '@type': 'Answer', text: e.a },
+        })),
+      }
+    : null
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      {faqLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(faqLd)
+              .replace(/</g, '\\u003c')
+              .replace(/>/g, '\\u003e')
+              .replace(/&/g, '\\u0026'),
+          }}
+        />
+      )}
       <main className="max-w-3xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="mb-10">
@@ -517,6 +604,32 @@ export default async function FaqPage({ params }: { params: Promise<{ locale: st
             ))}
           </div>
         </div>
+
+        {/* Parent-intent Q&As (Sanity-authored) */}
+        {parentIntentFaqs.length > 0 && (
+          <section id="parents-ask" className="mb-12">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-5 pb-2 border-b border-slate-200 dark:border-slate-700">
+              {t('parentsAskHeading')}
+            </h2>
+            <div className="divide-y divide-slate-100 dark:divide-slate-700/50">
+              {parentIntentFaqs.map((f) => (
+                <details key={f._id} className="group py-4 open:pb-5">
+                  <summary className="flex items-start justify-between gap-4 cursor-pointer list-none">
+                    <span className="font-medium text-slate-800 dark:text-slate-100 group-open:text-indigo-600 dark:group-open:text-indigo-400 transition-colors">
+                      {f.question}
+                    </span>
+                    <span className="shrink-0 mt-0.5 text-slate-400 dark:text-slate-500 group-open:rotate-45 transition-transform text-lg leading-none">
+                      +
+                    </span>
+                  </summary>
+                  <div className="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed text-sm">
+                    <PortableTextRenderer value={f.answer} />
+                  </div>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Sections */}
         <div className="space-y-12">

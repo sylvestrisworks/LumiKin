@@ -759,3 +759,14 @@ export const cronRuns = pgTable('cron_runs', {
   jobNameIdx:   index('cron_runs_job_name_idx').on(t.jobName),
   startedAtIdx: index('cron_runs_started_at_idx').on(t.startedAt),
 }))
+
+// ============================================
+// SLUG REDIRECTS (301s for consolidated duplicates and renamed games)
+// ============================================
+
+export const slugRedirects = pgTable('slug_redirects', {
+  id:        serial('id').primaryKey(),
+  fromSlug:  varchar('from_slug', { length: 255 }).notNull().unique(),
+  toSlug:    varchar('to_slug', { length: 255 }).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+})

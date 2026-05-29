@@ -98,5 +98,5 @@ export default function middleware(req: NextRequest) {
 // pass through untouched). API routes are excluded because next-intl would
 // rewrite them; if you need rate-limiting on /api, layer the Vercel WAF.
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|admin(?:/.*)?|studio(?:/.*)?|.*\\..*).*)'],
+  matcher: ['/((?!api|_next|_vercel|admin(?:/.*)?|studio(?:/.*)?|design-preview(?:/.*)?|.*\\..*).*)'],
 }

@@ -2,12 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Editorial palette ──────────────────────────────────────────────────────── */
+/* Color tokens live as RGB triplets so Tailwind `<alpha-value>` modifiers still
+   work (e.g. `border-ink/30`, `bg-ink/10`). Morning is the default; `.evening`
+   on any wrapper inverts paper/ink and desaturates the verdict colors.
+   This is scope-local — `next-themes` and legacy `dark:` classes are untouched. */
+:root {
+  --paper:  247 241 232;
+  --ink:     20  17  15;
+  --rule:   184 174 160;
+  --muted:   92  84  74;
+  --accent: 200  16  46;
+  --ivy:     31 107  58;
+  --warm:   184 112  42;
+}
+.evening {
+  --paper:   20  17  15;
+  --ink:    237 229 216;
+  --rule:    58  51  44;
+  --muted:  154 143 126;
+  --accent: 217  58  74;
+  --ivy:    111 179 122;
+  --warm:   200 132  63;
+}
+
 /* ── Smooth theme transitions ───────────────────────────────────────────────── */
 @layer base {
   html {
     @apply transition-colors duration-200;
   }
-  
+
   body {
     @apply bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100;
   }

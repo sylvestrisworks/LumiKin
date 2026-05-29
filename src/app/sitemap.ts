@@ -12,7 +12,10 @@ import { allGuideSlugsQuery, allPostSlugsQuery } from '@/sanity/lib/queries'
 // the index at /sitemap.xml and each chunk at /sitemap/<id>.xml automatically.
 export const dynamic = 'force-dynamic'
 
-const CHUNK_SIZE = 45_000
+// 45k chunks pushed the Vercel ISR .fallback body past the 19.07 MB ceiling
+// (each entry is ~465 bytes once alternates.languages embeds 5 locale URLs).
+// 20k keeps each chunk ~9 MB and still clears Google's 50k-URL cap.
+const CHUNK_SIZE = 20_000
 
 const DB_TO_URL_SLUG: Record<string, string> = {
   'fortnite-creative': 'fortnite',

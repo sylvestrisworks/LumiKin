@@ -5,7 +5,9 @@ const COPY: Record<Variant, { top: string; bottom: string; glyph: string; color:
   caution:    { top: 'LUMIKIN · CAUTION',  bottom: 'KNOW BEFORE YOU BUY',     glyph: '!', color: 'text-accent' },
 }
 
-export default function EditorialRosette({
+export type RosetteVariant = Variant
+
+export function Rosette({
   variant = 'recommends',
   size = 132,
   rotate = -6,
@@ -38,7 +40,6 @@ export default function EditorialRosette({
         <circle cx="100.5" cy="99.5" r="78" fill="none" stroke="currentColor" strokeWidth="1.6" />
         <circle cx="100" cy="100" r="72" fill="none" stroke="currentColor" strokeWidth="0.6" />
 
-        {/* curved label paths */}
         <defs>
           <path id="ros-top" d="M 30,100 A 70,70 0 0 1 170,100" />
           <path id="ros-bot" d="M 30,100 A 70,70 0 0 0 170,100" />
@@ -66,7 +67,6 @@ export default function EditorialRosette({
           </textPath>
         </text>
 
-        {/* central glyph */}
         <text
           x="100"
           y={variant === 'caution' ? '118' : '120'}
@@ -79,7 +79,6 @@ export default function EditorialRosette({
           {glyph}
         </text>
 
-        {/* central crossbars under glyph */}
         <line x1="60" y1="135" x2="140" y2="135" stroke="currentColor" strokeWidth="0.6" />
       </svg>
     </div>

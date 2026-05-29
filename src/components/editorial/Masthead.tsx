@@ -1,28 +1,32 @@
 import Link from 'next/link'
 
-type Section = { href: string; label: string }
+export type MastheadSection = { href: string; label: string }
 
-const DEFAULT_SECTIONS: Section[] = [
+const DEFAULT_SECTIONS: MastheadSection[] = [
   { href: '/browse',   label: 'Reviews' },
   { href: '/discover', label: 'Discover' },
   { href: '/learn',    label: 'Guides' },
   { href: '/compare',  label: 'Compare' },
 ]
 
-function formatDateline(d: Date) {
+function defaultDateline(d: Date) {
   const day = d.toLocaleDateString('en-GB', { weekday: 'short' }).toUpperCase()
   const date = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
   return `${day} · ${date}`
 }
 
-export default function EditorialMasthead({
+export function Masthead({
+  brand = 'LumiKin',
   sections = DEFAULT_SECTIONS,
   tagline = 'Game ratings for parents',
   now = new Date(),
+  formatDateline = defaultDateline,
 }: {
-  sections?: Section[]
+  brand?: string
+  sections?: MastheadSection[]
   tagline?: string
   now?: Date
+  formatDateline?: (d: Date) => string
 }) {
   return (
     <header className="bg-paper text-ink">
@@ -33,7 +37,7 @@ export default function EditorialMasthead({
             className="font-serif text-display-sm tracking-tight"
             style={{ fontOpticalSizing: 'auto' }}
           >
-            LumiKin
+            {brand}
           </Link>
           <p className="hidden md:block font-serif italic text-muted text-lg">
             {tagline}

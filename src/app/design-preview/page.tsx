@@ -1,5 +1,15 @@
-import EditorialMasthead from '@/components/EditorialMasthead'
-import EditorialRosette from '@/components/EditorialRosette'
+import {
+  BigScore,
+  EditorialIcon,
+  ListingCard,
+  type ListingCardData,
+  Masthead,
+  Rosette,
+  ScoreBar,
+  ScoreTable,
+  type ScoreRow,
+  SearchInput,
+} from '@/components/editorial'
 import DesignPreviewShell from './DesignPreviewShell'
 
 export const metadata = {
@@ -7,45 +17,19 @@ export const metadata = {
   robots: { index: false, follow: false },
 }
 
-type Row = { code: string; label: string; value: number }
-
-const BENEFITS: Row[] = [
+const BENEFITS: ScoreRow[] = [
   { code: 'B1', label: 'Creativity',      value: 0.82 },
   { code: 'B2', label: 'Problem solving', value: 0.71 },
   { code: 'B3', label: 'Teamwork',        value: 0.54 },
 ]
 
-const RISKS: Row[] = [
+const RISKS: ScoreRow[] = [
   { code: 'R1', label: 'Addictive mechanics', value: 0.22 },
   { code: 'R2', label: 'Monetization',        value: 0.12 },
   { code: 'R3', label: 'FOMO',                value: 0.08 },
 ]
 
-function Bar({ value, tone }: { value: number; tone: 'ink' | 'accent' }) {
-  const pct = Math.round(value * 100)
-  return (
-    <div className="relative h-2 w-full bg-ink/10">
-      <div
-        className={tone === 'accent' ? 'absolute inset-y-0 left-0 bg-accent' : 'absolute inset-y-0 left-0 bg-ink'}
-        style={{ width: `${pct}%` }}
-      />
-    </div>
-  )
-}
-
-// ─── Listing card ────────────────────────────────────────────────────────────
-
-type ListingCardData = {
-  title: string
-  kicker: string
-  dek: string
-  bds: number
-  ris: number
-  minutes: number
-  ages: string
-  photoFrom: string
-  photoTo: string
-}
+// ─── Listing card data ───────────────────────────────────────────────────────
 
 const LISTING_CARDS: ListingCardData[] = [
   {
@@ -70,82 +54,6 @@ const LISTING_CARDS: ListingCardData[] = [
     photoFrom: '#3A1E5C', photoTo: '#A04BBF',
   },
 ]
-
-function MiniBar({ value, tone }: { value: number; tone: 'ink' | 'accent' }) {
-  const pct = Math.round(value * 100)
-  return (
-    <div className="relative h-[3px] w-full bg-ink/10">
-      <div
-        className={tone === 'accent' ? 'absolute inset-y-0 left-0 bg-accent' : 'absolute inset-y-0 left-0 bg-ink'}
-        style={{ width: `${pct}%` }}
-      />
-    </div>
-  )
-}
-
-function ListingCard({ card }: { card: ListingCardData }) {
-  return (
-    <article className="flex flex-col border-b border-ink pb-8">
-      {/* photo as duotone-ish gradient stand-in; replace with treated <img> */}
-      <div
-        className="aspect-[4/3] w-full mb-5"
-        style={{ background: `linear-gradient(135deg, ${card.photoFrom}, ${card.photoTo})` }}
-        aria-hidden
-      />
-
-      <p
-        className="text-kicker uppercase font-semibold text-accent mb-2"
-        style={{ fontVariantCaps: 'all-small-caps' }}
-      >
-        {card.kicker}
-      </p>
-
-      <h3 className="font-serif text-3xl leading-[1.05] tracking-tight mb-3" style={{ fontOpticalSizing: 'auto' }}>
-        {card.title}
-      </h3>
-
-      <p className="font-serif italic text-muted text-base leading-snug mb-5">
-        {card.dek}
-      </p>
-
-      {/* sparkline row */}
-      <div className="mt-auto grid grid-cols-[auto_1fr_auto] gap-x-3 items-center text-sm font-sans">
-        <span
-          className="text-kicker uppercase text-muted"
-          style={{ fontVariantCaps: 'all-small-caps' }}
-        >
-          B
-        </span>
-        <MiniBar value={card.bds} tone="ink" />
-        <span className="tabular-nums text-ink">{Math.round(card.bds * 100)}</span>
-
-        <span
-          className="text-kicker uppercase text-muted mt-2"
-          style={{ fontVariantCaps: 'all-small-caps' }}
-        >
-          R
-        </span>
-        <div className="mt-2"><MiniBar value={card.ris} tone="accent" /></div>
-        <span className="tabular-nums text-ink mt-2">{Math.round(card.ris * 100)}</span>
-      </div>
-
-      <div className="mt-5 pt-3 border-t border-ink/20 flex items-baseline justify-between font-sans">
-        <span
-          className="text-kicker uppercase text-muted"
-          style={{ fontVariantCaps: 'all-small-caps' }}
-        >
-          {card.minutes} min · ages {card.ages}
-        </span>
-        <span
-          className="text-kicker uppercase text-accent"
-          style={{ fontVariantCaps: 'all-small-caps' }}
-        >
-          Read review →
-        </span>
-      </div>
-    </article>
-  )
-}
 
 // ─── Detail panel ────────────────────────────────────────────────────────────
 
@@ -303,109 +211,7 @@ function DetailPanel() {
   )
 }
 
-// ─── Editorial icon set ───────────────────────────────────────────────────────
-// Six line-art icons used in the heads-up rows. 1.5px stroke, no fill, currentColor.
-// Graduates to src/components/editorial/icons.tsx in Round B.
-
-type IconName =
-  | 'marketplace'
-  | 'chat'
-  | 'subscription'
-  | 'lootBox'
-  | 'timePressure'
-  | 'dataCollection'
-
-function EditorialIcon({ name, size = 18 }: { name: IconName; size?: number }) {
-  const props = {
-    width: size,
-    height: size,
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.5,
-    strokeLinecap: 'round' as const,
-    strokeLinejoin: 'round' as const,
-  }
-  switch (name) {
-    case 'marketplace':
-      // a small awning-shop: pitched canopy + counter + door
-      return (
-        <svg {...props}>
-          <path d="M3 9l1.5-4h15L21 9" />
-          <path d="M4 9v11h16V9" />
-          <path d="M10 20v-5h4v5" />
-          <path d="M3 9h18" />
-        </svg>
-      )
-    case 'chat':
-      // two overlapping speech bubbles — one solid outline, one peeking
-      return (
-        <svg {...props}>
-          <path d="M3 6h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H8l-4 3v-3H3z" />
-          <path d="M9 19v1l2-1h6a2 2 0 0 0 2-2v-4" />
-        </svg>
-      )
-    case 'subscription':
-      // a calendar leaf with one date circled
-      return (
-        <svg {...props}>
-          <rect x="3" y="5" width="18" height="16" rx="1" />
-          <path d="M3 10h18M8 3v4M16 3v4" />
-          <circle cx="12" cy="15" r="2.5" />
-        </svg>
-      )
-    case 'lootBox':
-      // a wrapped cube — ribbon cross + base square
-      return (
-        <svg {...props}>
-          <rect x="3" y="7" width="18" height="13" rx="1" />
-          <path d="M3 11h18M12 7v13" />
-          <path d="M8 7c0-2 2-3.5 4-3.5S16 5 16 7" />
-        </svg>
-      )
-    case 'timePressure':
-      // hourglass with a faint mid-flow line
-      return (
-        <svg {...props}>
-          <path d="M6 3h12M6 21h12" />
-          <path d="M7 3c0 5 5 6 5 9s-5 4-5 9" />
-          <path d="M17 3c0 5-5 6-5 9s5 4 5 9" />
-          <path d="M9 12h6" strokeDasharray="2 2" />
-        </svg>
-      )
-    case 'dataCollection':
-      // an open eye with a small data dot pupil
-      return (
-        <svg {...props}>
-          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
-          <circle cx="12" cy="12" r="2.5" />
-          <circle cx="12" cy="12" r="0.6" fill="currentColor" stroke="none" />
-        </svg>
-      )
-  }
-}
-
 // ─── Detail panel · v2 — Monocle-leaning ──────────────────────────────────────
-
-function BigScore({ label, value, tone }: { label: string; value: number; tone: 'ivy' | 'accent' }) {
-  const numColor = tone === 'ivy' ? 'text-ivy' : 'text-accent'
-  return (
-    <div>
-      <p
-        className="text-kicker uppercase text-muted mb-1"
-        style={{ fontVariantCaps: 'all-small-caps' }}
-      >
-        {label}
-      </p>
-      <p
-        className={`font-serif tabular-nums leading-none tracking-tight ${numColor}`}
-        style={{ fontSize: '6.5rem', fontOpticalSizing: 'auto', fontWeight: 500 }}
-      >
-        {Math.round(value * 100)}
-      </p>
-    </div>
-  )
-}
 
 type V2Variant = 'standard' | 'bundled' | 'pending'
 
@@ -436,7 +242,7 @@ function DetailPanelV2({ variant = 'standard' }: { variant?: V2Variant } = {}) {
           {/* Rosette · md+: pinned to photo corner; mobile renders a smaller stamp above the title */}
           {showRosette && (
             <div className="hidden md:block absolute -top-4 -right-4 md:-right-10">
-              <EditorialRosette variant="recommends" size={140} rotate={-7} />
+              <Rosette variant="recommends" size={140} rotate={-7} />
             </div>
           )}
           <p className="font-serif italic text-sm text-muted mt-2">
@@ -448,7 +254,7 @@ function DetailPanelV2({ variant = 'standard' }: { variant?: V2Variant } = {}) {
           {/* Mobile-only rosette stamp — shrinks + rotates less for the tighter context */}
           {showRosette && (
             <div className="md:hidden mb-4 -mt-2">
-              <EditorialRosette variant="recommends" size={88} rotate={-3} />
+              <Rosette variant="recommends" size={88} rotate={-3} />
             </div>
           )}
           <p
@@ -725,54 +531,6 @@ function DetailPanelV2({ variant = 'standard' }: { variant?: V2Variant } = {}) {
   )
 }
 
-// ─── Editorial search input ──────────────────────────────────────────────────
-
-function EditorialSearchInput({
-  placeholder = 'Search 6,400 reviews',
-  width = 'max-w-xl',
-}: {
-  placeholder?: string
-  width?: string
-}) {
-  return (
-    <div
-      className={
-        'flex items-center gap-3 border border-ink/60 focus-within:border-accent bg-paper px-4 py-3 transition-colors ' +
-        width
-      }
-    >
-      {/* tiny line-art magnifier — keeps the input from reading as a generic form field */}
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        className="text-muted"
-        aria-hidden
-      >
-        <circle cx="11" cy="11" r="6" />
-        <path d="m20 20-4-4" />
-      </svg>
-      <input
-        type="search"
-        placeholder={placeholder}
-        aria-label={placeholder}
-        className="flex-1 bg-transparent font-serif text-lg text-ink placeholder:italic placeholder:text-muted focus:outline-none"
-      />
-      <span
-        className="text-kicker uppercase text-muted whitespace-nowrap select-none"
-        style={{ fontVariantCaps: 'all-small-caps' }}
-        aria-hidden
-      >
-        Return ↵
-      </span>
-    </div>
-  )
-}
-
 // ─── Homepage cover spread ───────────────────────────────────────────────────
 
 function HomepageCover() {
@@ -796,7 +554,7 @@ function HomepageCover() {
           aria-hidden
         />
         <div className="hidden md:block absolute -bottom-8 -right-2 md:-right-6">
-          <EditorialRosette variant="recommends" size={160} rotate={-5} />
+          <Rosette variant="recommends" size={160} rotate={-5} />
         </div>
       </div>
 
@@ -875,8 +633,8 @@ type CompareGame = {
   ris: number
   minutes: number
   ages: string
-  benefits: Row[]
-  risks: Row[]
+  benefits: ScoreRow[]
+  risks: ScoreRow[]
 }
 
 const COMPARE_A: CompareGame = {
@@ -991,41 +749,12 @@ function ComparePanel() {
   )
 }
 
-function ScoreTable({ title, rows, tone }: { title: string; rows: Row[]; tone: 'ink' | 'accent' }) {
-  return (
-    <section className="font-sans">
-      <h3
-        className="text-kicker uppercase font-semibold text-muted mb-3"
-        style={{ fontVariantCaps: 'all-small-caps' }}
-      >
-        {title}
-      </h3>
-      <table className="w-full border-collapse">
-        <tbody>
-          {rows.map((r, i) => (
-            <tr key={r.code} className={i === 0 ? 'border-t border-ink/20' : 'border-t border-ink/10'}>
-              <td className="py-3 pr-4 text-muted text-sm w-10 tabular-nums">{r.code}</td>
-              <td className="py-3 pr-6 text-ink text-sm">{r.label}</td>
-              <td className="py-3 pr-6 w-1/2">
-                <Bar value={r.value} tone={tone} />
-              </td>
-              <td className="py-3 text-ink text-sm tabular-nums text-right w-16">
-                {r.value.toFixed(2)}
-              </td>
-            </tr>
-          ))}
-          <tr className="border-t border-ink/20" />
-        </tbody>
-      </table>
-    </section>
-  )
-}
 
 export default function DesignPreviewPage() {
   return (
     <DesignPreviewShell>
       <div className="min-h-screen bg-paper text-ink">
-        <EditorialMasthead />
+        <Masthead />
 
       <main className="mx-auto max-w-7xl px-8 py-16">
         <article className="max-w-prose">
@@ -1110,7 +839,7 @@ export default function DesignPreviewPage() {
             >
               Search the archive
             </p>
-            <EditorialSearchInput placeholder="Search 6,400 reviews" width="w-full" />
+            <SearchInput placeholder="Search 6,400 reviews" width="w-full" />
           </div>
 
           <div className="mt-32">
@@ -1139,7 +868,7 @@ export default function DesignPreviewPage() {
               >
                 Masthead — narrow
               </p>
-              <EditorialSearchInput placeholder="Search reviews" width="max-w-sm" />
+              <SearchInput placeholder="Search reviews" width="max-w-sm" />
             </div>
             <div>
               <p
@@ -1148,7 +877,7 @@ export default function DesignPreviewPage() {
               >
                 Homepage — full width
               </p>
-              <EditorialSearchInput placeholder="Search 6,400 reviews" width="w-full" />
+              <SearchInput placeholder="Search 6,400 reviews" width="w-full" />
             </div>
             <div>
               <p
@@ -1157,7 +886,7 @@ export default function DesignPreviewPage() {
               >
                 Empty state — italic prompt
               </p>
-              <EditorialSearchInput
+              <SearchInput
                 placeholder="Try “Stardew”, “co-op”, or “low monetization”"
                 width="max-w-2xl"
               />

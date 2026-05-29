@@ -6,10 +6,13 @@ import { sanityClient } from '@/sanity/lib/client'
 import { allGuideSlugsQuery, allPostSlugsQuery } from '@/sanity/lib/queries'
 
 // force-dynamic so Vercel regenerates on every request without caching at the edge.
-// The DB queries are fast (indexed slug+curascore scans); a short-TTL CDN cache is
-// added via the Cache-Control header below if the response function is used instead.
-// When the URL count exceeds 50 000, switch to generateSitemaps() with id-encoded chunks.
+// The DB queries are fast (indexed slug+curascore scans).
+// We crossed Google's 50 000-URL cap in May 2026 — sitemap is now split via
+// generateSitemaps() into deterministic chunks of CHUNK_SIZE URLs. Next.js serves
+// the index at /sitemap.xml and each chunk at /sitemap/<id>.xml automatically.
 export const dynamic = 'force-dynamic'
+
+const CHUNK_SIZE = 45_000
 
 const DB_TO_URL_SLUG: Record<string, string> = {
   'fortnite-creative': 'fortnite',
@@ -40,7 +43,7 @@ function multiLocaleEntry(
   }))
 }
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+async function buildAllEntries(): Promise<MetadataRoute.Sitemap> {
 
   // ── Static pages ──────────────────────────────────────────────────────────
   const staticEntries: MetadataRoute.Sitemap = [
@@ -147,4 +150,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...guideEntries,
     ...postEntries,
   ]
+}
+
+export async function generateSitemaps(): Promise<Array<{ id: number }>> {
+  const all = await buildAllEntries()
+  const count = Math.max(1, Math.ceil(all.length / CHUNK_SIZE))
+  return Array.from({ length: count }, (_, id) => ({ id }))
+}
+
+export default async function sitemap({ id }: { id: number }): Promise<MetadataRoute.Sitemap> {
+  const all = await buildAllEntries()
+  return all.slice(id * CHUNK_SIZE, (id + 1) * CHUNK_SIZE)
 }

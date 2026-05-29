@@ -1117,5 +1117,71 @@
     "methodHandLabel": "Manuell erstellt",
     "methodHandTooltip": "Von einem Redakteur bewertet statt durch die automatische Pipeline.",
     "lastUpdated": "Zuletzt aktualisiert {when}"
+  },
+  "editorial": {
+    "masthead": {
+      "tagline": "Game ratings for parents",
+      "sections": {
+        "reviews": "Reviews",
+        "discover": "Discover",
+        "guides": "Guides",
+        "compare": "Compare"
+      }
+    },
+    "dateline": {
+      "locale": "de-DE"
+    },
+    "rosette": {
+      "recommends": {
+        "top": "LUMIKIN · APPROVED",
+        "bottom": "WORTH YOUR CHILD’S TIME"
+      },
+      "caution": {
+        "top": "LUMIKIN · CAUTION",
+        "bottom": "KNOW BEFORE YOU BUY"
+      }
+    },
+    "verdict": {
+      "growth": "Growth (BDS)",
+      "risk": "Risk (RIS)",
+      "dailyLimit": "Daily limit",
+      "ageGuidance": "Age guidance",
+      "minutesShort": "min"
+    },
+    "headsUp": {
+      "title": "Heads up"
+    },
+    "banners": {
+      "bundled": {
+        "kicker": "Bundled online — know the live-service layer",
+        "body": "The base price unlocks the singleplayer story. The connected online mode is its own product, with its own monetization and chat layer — we score those separately.",
+        "cta": "Read how we handle bundled-online games →"
+      },
+      "pending": {
+        "kicker": "Under review · provisional scores",
+        "bodyTemplate": "We’re still verifying this experience — scores below are provisional. Confidence: {confidence}."
+      }
+    },
+    "meta": {
+      "basePrice": "Base price",
+      "avgPlaytime": "Avg playtime",
+      "reviewed": "Reviewed",
+      "methodology": "How scores are calculated →",
+      "byline": "By the LumiKin editors"
+    },
+    "search": {
+      "placeholder": "Search {count} reviews",
+      "returnLabel": "Return ↵"
+    },
+    "sections": {
+      "todaysReview": "Today’s review",
+      "whatWereTracking": "What we’re tracking",
+      "allReviews": "All reviews →",
+      "readReview": "Read the review →"
+    },
+    "compare": {
+      "vs": "vs",
+      "comparingTemplate": "Comparing {a} vs {b}"
+    }
   }
 }

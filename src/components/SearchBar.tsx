@@ -7,6 +7,7 @@ import type { GameSummary } from '@/types/game'
 
 type SearchResult = GameSummary & { resultType?: 'game' | 'experience' }
 import { esrbToAge, ageBadgeColor } from '@/lib/ui'
+import { localizeGenre } from '@/lib/i18n/genres'
 
 function esrbBadge(rating: string | null) {
   if (!rating) return null
@@ -32,7 +33,8 @@ function splitTitle(title: string): [string, string | null] {
 }
 
 export default function SearchBar({ placeholder }: { placeholder?: string }) {
-  const t = useTranslations('search')
+  const t       = useTranslations('search')
+  const tGenres = useTranslations('genres')
   const locale = useLocale()
   const defaultPlaceholder = placeholder ?? t('placeholder')
   const [query, setQuery]         = useState('')
@@ -223,7 +225,8 @@ export default function SearchBar({ placeholder }: { placeholder?: string }) {
                         <span className="text-xs text-slate-500 dark:text-slate-400 truncate">{game.developer}</span>
                       )}
                       {game.genres[0] && (
-                        <span className="text-xs text-slate-400 dark:text-slate-500">· {game.genres[0]}</span>
+                        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+                        <span className="text-xs text-slate-400 dark:text-slate-500">· {localizeGenre(game.genres[0], tGenres as any)}</span>
                       )}
                     </div>
                   </div>

@@ -1209,11 +1209,24 @@
       "todaysReview": "Today’s review",
       "whatWereTracking": "What we’re tracking",
       "allReviews": "All reviews →",
-      "readReview": "Read the review →"
+      "readReview": "Read the review →",
+      "theDesk": "The desk",
+      "allGuides": "All guides →",
+      "readGuide": "Read the guide →",
+      "methodology": "Methodology"
     },
     "compare": {
       "vs": "vs",
       "comparingTemplate": "Comparing {a} vs {b}"
+    },
+    "actions": {
+      "browse": "Browse →"
+    },
+    "browseBy": {
+      "ageDek": "Find what fits your child at their age — and what to wait on.",
+      "platformDek": "Switch, PlayStation, Xbox, PC, mobile — narrow by what they actually play.",
+      "robloxDek": "Inside the Roblox catalogue, scored experience by experience.",
+      "fortniteDek": "Creative islands and modes rated separately from the base game."
     }
   },
   "shareButton": {
@@ -1236,5 +1249,26 @@
     "metaTitle": "Press Kit — LumiKin",
     "metaDescription": "Brand assets, coverage stats, quotable facts, and press contact for LumiKin — the structured game-rating engine for parents.",
     "ogDescription": "Brand assets, coverage stats, quotable facts, and press contact for LumiKin."
+  },
+  "genres": {
+    "action": "Action",
+    "indie": "Indie",
+    "adventure": "Adventure",
+    "casual": "Casual",
+    "educational": "Educational",
+    "fighting": "Fighting",
+    "family": "Family",
+    "simulation": "Simulation",
+    "arcade": "Arcade",
+    "strategy": "Strategy",
+    "puzzle": "Puzzle",
+    "rpg": "RPG",
+    "sports": "Sports",
+    "card": "Card",
+    "racing": "Racing",
+    "platformer": "Platformer",
+    "shooter": "Shooter",
+    "boardGames": "Board Games",
+    "mmo": "MMO"
   }
 }

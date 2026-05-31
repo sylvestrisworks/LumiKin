@@ -16,6 +16,7 @@ import {
 } from '@/components/editorial'
 import type { ComplianceBadge, DarkPattern, GameCardProps, SerializedScores } from '@/types/game'
 import { calcAge } from '@/lib/age'
+import { localizeGenre } from '@/lib/i18n/genres'
 
 type UserProfile = {
   id: number
@@ -123,8 +124,9 @@ export default function GameCardEditorial({
   compliance,
   userProfiles = [],
 }: Props) {
-  const t  = useTranslations('editorial')
-  const td = useTranslations('darkPatterns')
+  const t       = useTranslations('editorial')
+  const td      = useTranslations('darkPatterns')
+  const tGenres = useTranslations('genres')
 
   const bds = scores?.bds ?? null
   const ris = scores?.ris ?? null
@@ -172,7 +174,8 @@ export default function GameCardEditorial({
             className="text-kicker uppercase font-semibold text-accent mb-3"
             style={{ fontVariantCaps: 'all-small-caps' }}
           >
-            Review · {game.genres[0] ?? 'Game'} · {formatPlatforms(game.platforms.slice(0, 3))}
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            Review · {game.genres[0] ? localizeGenre(game.genres[0], tGenres as any) : 'Game'} · {formatPlatforms(game.platforms.slice(0, 3))}
           </p>
           <h1
             className="font-serif text-display-sm tracking-tight mb-4 leading-[1.02]"

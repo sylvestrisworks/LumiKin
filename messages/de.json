@@ -127,7 +127,13 @@
     "librarySellCta": "Kostenloses Konto erstellen →",
     "librarySellReassure": "Für Eltern immer kostenlos. Keine Karte erforderlich.",
     "metaTitle": "Spielebewertungen für Eltern — Altersfreigabe, Vorteile und Spielzeit pro Sitzung | LumiScore",
-    "metaDescription": "Finden Sie sichere Spiele für Kinder. LumiScore zeigt, was jedes Spiel vermittelt, worauf Sie achten sollten, und eine gesunde tägliche Spielzeit. {count}+ Spiele bewertet."
+    "metaDescription": "Finden Sie sichere Spiele für Kinder. LumiScore zeigt, was jedes Spiel vermittelt, worauf Sie achten sollten, und eine gesunde tägliche Spielzeit. {count}+ Spiele bewertet.",
+    "faq1Question": "Was ist LumiScore?",
+    "faq1Answer": "LumiScore ist LumiKins Bewertung von 0–100 für jedes Spiel. Sie kombiniert eine Entwicklungspunktzahl (Fähigkeiten, die das Spiel aufbaut) mit einer Risikopunktzahl (süchtig machende Mechanik, Monetarisierungsdruck, soziales Risiko) zu einer einzigen Zahl plus einer empfohlenen täglichen Spielzeit.",
+    "faq2Question": "Wie bewerten Sie Spiele?",
+    "faq2Answer": "Jedes Spiel wird über 60 Unterdimensionen einer öffentlichen Rubrik bewertet — zehn kognitive Fähigkeiten, sechs sozio-emotionale, vier motorische auf der Vorteilsseite, sowie Dopamin-, Monetarisierungs- und Sozialrisikomuster auf der Risikoseite. Lesen Sie die vollständige Methodik.",
+    "faq3Question": "Wie entscheiden Sie, wie lange mein Kind spielen sollte?",
+    "faq3Answer": "Wir berechnen ein tägliches Sitzungslimit aus den kombinierten Vorteils- und Risikopunkten — von 15 Minuten für Hochrisikospiele bis zu zwei Stunden für Spiele mit hohen Vorteilen und geringem Risiko. Das Limit spiegelt wider, wie das Spiel aufgebaut ist, nicht eine generische Bildschirmzeitempfehlung."
   },
   "age": {
     "earlyYears": "Frühe Jahre",
@@ -1236,11 +1242,24 @@
       "todaysReview": "Rezension des Tages",
       "whatWereTracking": "Was wir verfolgen",
       "allReviews": "Alle Rezensionen →",
-      "readReview": "Zur Rezension →"
+      "readReview": "Zur Rezension →",
+      "theDesk": "Redaktion",
+      "allGuides": "Alle Ratgeber →",
+      "readGuide": "Ratgeber lesen →",
+      "methodology": "Methodik"
     },
     "compare": {
       "vs": "gegen",
       "comparingTemplate": "{a} gegen {b}"
+    },
+    "actions": {
+      "browse": "Stöbern →"
+    },
+    "browseBy": {
+      "ageDek": "Finden Sie heraus, was zum Alter Ihres Kindes passt — und worauf Sie noch warten sollten.",
+      "platformDek": "Switch, PlayStation, Xbox, PC, mobil — filtern Sie nach dem, was sie tatsächlich spielen.",
+      "robloxDek": "Im Roblox-Katalog, jede Erfahrung einzeln bewertet.",
+      "fortniteDek": "Kreative Inseln und Modi separat vom Hauptspiel bewertet."
     }
   },
   "shareButton": {
@@ -1263,5 +1282,26 @@
     "metaTitle": "Pressemappe — LumiKin",
     "metaDescription": "Markenressourcen, Berichterstattungs-Statistiken, zitierbare Fakten und Pressekontakt für LumiKin — die strukturierte Spielbewertungs-Engine für Eltern.",
     "ogDescription": "Markenressourcen, Berichterstattungs-Statistiken, zitierbare Fakten und Pressekontakt für LumiKin."
+  },
+  "genres": {
+    "action": "Action",
+    "indie": "Indie",
+    "adventure": "Abenteuer",
+    "casual": "Casual",
+    "educational": "Lernspiel",
+    "fighting": "Kampfspiel",
+    "family": "Familie",
+    "simulation": "Simulation",
+    "arcade": "Arcade",
+    "strategy": "Strategie",
+    "puzzle": "Rätsel",
+    "rpg": "Rollenspiel",
+    "sports": "Sport",
+    "card": "Kartenspiel",
+    "racing": "Rennspiel",
+    "platformer": "Jump-’n’-Run",
+    "shooter": "Shooter",
+    "boardGames": "Brettspiel",
+    "mmo": "MMO"
   }
 }

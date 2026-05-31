@@ -5,11 +5,13 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import type { GameSummary } from '@/types/game'
 import { curascoreBg, esrbToAge, ageBadgeColor } from '@/lib/ui'
+import { localizeGenre } from '@/lib/i18n/genres'
 import Icon, { type IconName } from '@/components/Icon'
 
 // ─── Tile ─────────────────────────────────────────────────────────────────────
 
 function CarouselTile({ game }: { game: GameSummary }) {
+  const tGenres = useTranslations('genres')
   return (
     <Link href={`/game/${game.slug}`} className="group/tile shrink-0 w-48 sm:w-56 snap-start">
       {/* Image */}
@@ -63,7 +65,8 @@ function CarouselTile({ game }: { game: GameSummary }) {
         {game.title}
       </p>
       <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
-        {game.genres[0] ?? game.developer ?? ''}
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        {game.genres[0] ? localizeGenre(game.genres[0], tGenres as any) : (game.developer ?? '')}
       </p>
     </Link>
   )

@@ -6,6 +6,7 @@ import { useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { SlidersHorizontal, X, LayoutGrid, List } from 'lucide-react'
+import { localizeGenre } from '@/lib/i18n/genres'
 
 // ─── Filter definitions ───────────────────────────────────────────────────────
 
@@ -81,6 +82,7 @@ export default function BrowseFilters({ active, totalCount, childId, childName }
   const router   = useRouter()
   const pathname = usePathname()
   const t        = useTranslations('filters')
+  const tGenres  = useTranslations('genres')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [showAdvanced, setShowAdvanced] = useState(
     !!(active.rep || active.noProp || active.bechdel || active.compliance.length)
@@ -229,7 +231,8 @@ export default function BrowseFilters({ active, totalCount, childId, childName }
             <ActivePill label={active.age} onRemove={() => push({ age: undefined })} />
           )}
           {active.genres.map(g => (
-            <ActivePill key={g} label={g} onRemove={() => toggle('genres', g)} />
+            /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+            <ActivePill key={g} label={localizeGenre(g, tGenres as any)} onRemove={() => toggle('genres', g)} />
           ))}
           {active.platforms.map(p => (
             <ActivePill key={p} label={p} onRemove={() => toggle('platforms', p)} />
@@ -399,7 +402,8 @@ function FilterPanel({
           {GENRE_OPTIONS.map(g => (
             <InlineChip
               key={g}
-              label={g}
+              /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+              label={localizeGenre(g, tGenres as any)}
               active={active.genres.includes(g)}
               onClick={() => toggle('genres', g)}
             />

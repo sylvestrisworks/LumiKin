@@ -3,6 +3,7 @@
 import { Link } from '@/navigation'
 import { useTranslations } from 'next-intl'
 import { curascoreBg, esrbToAge, ageBadgeColor } from '@/lib/ui'
+import { localizeGenre } from '@/lib/i18n/genres'
 import type { GameSummary } from '@/types/game'
 
 type Props = {
@@ -10,7 +11,8 @@ type Props = {
 }
 
 export default function GameCompactCard({ game }: Props) {
-  const t = useTranslations('gameCompact')
+  const t       = useTranslations('gameCompact')
+  const tGenres = useTranslations('genres')
   return (
     <Link
       href={`/game/${game.slug}`}
@@ -57,7 +59,8 @@ export default function GameCompactCard({ game }: Props) {
         <div className="flex items-center gap-1 flex-wrap">
           {game.genres[0] && (
             <span className="text-xs text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-700 px-1.5 py-0.5 rounded-full">
-              {game.genres[0]}
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {localizeGenre(game.genres[0], tGenres as any)}
             </span>
           )}
           {game.esrbRating && (

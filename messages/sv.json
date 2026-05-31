@@ -127,7 +127,13 @@
     "librarySellCta": "Skapa ett gratis konto →",
     "librarySellReassure": "Alltid gratis för föräldrar. Inget kort krävs.",
     "metaTitle": "Spelrecensioner för föräldrar — Åldersgräns, fördelar och speltid per session | LumiScore",
-    "metaDescription": "Hitta säkra spel för barn. LumiScore visar vad varje spel lär ut, vad du bör vara uppmärksam på och en sund daglig speltid. {count}+ spel granskade."
+    "metaDescription": "Hitta säkra spel för barn. LumiScore visar vad varje spel lär ut, vad du bör vara uppmärksam på och en sund daglig speltid. {count}+ spel granskade.",
+    "faq1Question": "Vad är LumiScore?",
+    "faq1Answer": "LumiScore är LumiKins betyg på 0–100 för varje spel. Det kombinerar en utvecklingspoäng (kunskaper spelet bygger) med en riskpoäng (beroendeframkallande mekanik, betalningspress, social risk) till ett enda nummer plus en rekommenderad daglig speltid.",
+    "faq2Question": "Hur bedömer ni spel?",
+    "faq2Answer": "Varje spel bedöms på 60 underdimensioner enligt en öppen mall — tio kognitiva färdigheter, sex socioemotionella, fyra motoriska på fördelssidan, och dopamin-, monetariserings- och socialrisk-mönster på risksidan. Läs hela metoden för formlerna.",
+    "faq3Question": "Hur avgör ni hur länge mitt barn ska spela?",
+    "faq3Answer": "Vi beräknar en daglig sessionsgräns från de kombinerade fördels- och riskpoängen — från 15 minuter för högriskspel till två timmar för spel med stora fördelar och låg risk. Gränsen speglar hur spelet är byggt, inte en generell skärmtidsrekommendation."
   },
   "age": {
     "earlyYears": "Lågstadiet",
@@ -1236,11 +1242,24 @@
       "todaysReview": "Dagens recension",
       "whatWereTracking": "Vad vi följer",
       "allReviews": "Alla recensioner →",
-      "readReview": "Läs recensionen →"
+      "readReview": "Läs recensionen →",
+      "theDesk": "Redaktionen",
+      "allGuides": "Alla guider →",
+      "readGuide": "Läs guiden →",
+      "methodology": "Metod"
     },
     "compare": {
       "vs": "mot",
       "comparingTemplate": "Jämför {a} mot {b}"
+    },
+    "actions": {
+      "browse": "Bläddra →"
+    },
+    "browseBy": {
+      "ageDek": "Hitta det som passar barnets ålder — och vad du bör vänta med.",
+      "platformDek": "Switch, PlayStation, Xbox, PC, mobil — sortera efter vad de faktiskt spelar.",
+      "robloxDek": "Inuti Roblox-katalogen, varje upplevelse betygsatt för sig.",
+      "fortniteDek": "Kreativa öar och spellägen betygsatta separat från huvudspelet."
     }
   },
   "shareButton": {
@@ -1263,5 +1282,26 @@
     "metaTitle": "Presskit — LumiKin",
     "metaDescription": "Varumärkesresurser, täckningsstatistik, citerbara fakta och presskontakt för LumiKin — det strukturerade spelbetygsystemet för föräldrar.",
     "ogDescription": "Varumärkesresurser, täckningsstatistik, citerbara fakta och presskontakt för LumiKin."
+  },
+  "genres": {
+    "action": "Action",
+    "indie": "Indie",
+    "adventure": "Äventyr",
+    "casual": "Casual",
+    "educational": "Lärorikt",
+    "fighting": "Fighting",
+    "family": "Familj",
+    "simulation": "Simulator",
+    "arcade": "Arkad",
+    "strategy": "Strategi",
+    "puzzle": "Pussel",
+    "rpg": "Rollspel",
+    "sports": "Sport",
+    "card": "Kortspel",
+    "racing": "Racing",
+    "platformer": "Plattform",
+    "shooter": "Skjutspel",
+    "boardGames": "Brädspel",
+    "mmo": "MMO"
   }
 }

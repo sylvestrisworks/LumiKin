@@ -7,7 +7,8 @@ import { fetchSiteStats } from '@/lib/stats'
 import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import CoverageStrip from './partners/_components/CoverageStrip'
 import SearchBar from '@/components/SearchBar'
-import FeaturedGame from './_components/FeaturedGame'
+import TodaysReview from './_components/TodaysReview'
+import TrackingRow from './_components/TrackingRow'
 import ParentValueTiles from './_components/ParentValueTiles'
 import LibrarySell from './_components/LibrarySell'
 import BusinessRow from './_components/BusinessRow'
@@ -101,8 +102,11 @@ export default async function HomePage({ params, searchParams }: Props) {
         </div>
       </section>
 
-      {/* ── Featured game (show, don't tell) ─────────────────────────────────── */}
-      <FeaturedGame locale={locale} />
+      {/* ── Today's review (editorial cover) ─────────────────────────────────── */}
+      <TodaysReview locale={locale} />
+
+      {/* ── What we're tracking (3-up listing) ───────────────────────────────── */}
+      <TrackingRow locale={locale} />
 
       {/* ── Or browse by (demoted secondary entries) ─────────────────────────── */}
       <section className="border-t border-slate-200 dark:border-slate-800">

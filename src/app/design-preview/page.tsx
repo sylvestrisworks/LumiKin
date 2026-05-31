@@ -410,7 +410,7 @@ function DetailPanelV2({ variant = 'standard' }: { variant?: V2Variant } = {}) {
               A note from the editors
             </p>
           </div>
-          <p className="font-hand text-2xl leading-snug text-ink/90" style={{ transform: 'rotate(-0.4deg)' }}>
+          <p className="font-hand text-xl leading-snug text-ink/90">
             Sit alongside for the first hour. Minecraft rewards patience, and a
             child who hears <em>“show me what you built”</em> at the end of a
             session keeps building for years.

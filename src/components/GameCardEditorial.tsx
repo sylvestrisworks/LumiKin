@@ -77,6 +77,16 @@ function dpToneClass(severity: DarkPattern['severity']): string {
   }
 }
 
+// LumiScore (curascore) verdict thresholds mirror the legacy LumiScoreHero copy.
+// TODO(i18n): move labels into `editorial.lumiscoreVerdict.*` once we land
+// the next translation sweep — hardcoded English for now.
+function lumiScoreVerdict(score: number): { label: string; toneClass: string } {
+  if (score >= 70) return { label: 'Recommended', toneClass: 'text-ivy'    }
+  if (score >= 50) return { label: 'Good',        toneClass: 'text-ivy'    }
+  if (score >= 35) return { label: 'Caution',     toneClass: 'text-warm'   }
+  return              { label: 'Avoid',       toneClass: 'text-accent' }
+}
+
 // Reusable heads-up row. Mobile stacks label + body below the icon; desktop
 // uses a 3-column grid (icon · label · body).
 function HeadsUpRow({
@@ -170,11 +180,8 @@ export default function GameCardEditorial({
           >
             {game.title}
           </h1>
-          {scores?.executiveSummary && (
-            <p className="font-serif text-lg italic text-muted leading-snug mb-4">
-              {scores.executiveSummary}
-            </p>
-          )}
+          {/* Executive summary moved to the LumiScore verdict block below.
+              Title block keeps to byline + reviewed date + platforms. */}
           <div className="text-sm text-muted space-y-1">
             <p className="font-sans italic">{t('meta.byline')}</p>
             {game.updatedAt && (
@@ -304,10 +311,11 @@ export default function GameCardEditorial({
             )}
           </div>
 
-          {/* Drill-down tabs — only render when there's extra content to show
-              (granular review or a debate transcript). */}
+          {/* Drill-down tabs — closed by default. Reader opens "Full scores"
+              or "Debate transcript" to expand; clicking the active tab again
+              collapses back to the simplified view above. */}
           {(review || scores?.debateTranscript) && (
-            <EditorialTabs tabs={buildDetailTabs(review, scores)} defaultTabId="full">
+            <EditorialTabs tabs={buildDetailTabs(review, scores)}>
               {(active) => {
                 if (active === 'full')   return <FullScoresGrid scores={scores} review={review} />
                 if (active === 'debate') return <DebateTranscript text={scores?.debateTranscript ?? null} />
@@ -324,10 +332,7 @@ export default function GameCardEditorial({
             >
               A note from the editors
             </p>
-            <p
-              className="font-hand text-2xl leading-snug text-ink/90"
-              style={{ transform: 'rotate(-0.4deg)' }}
-            >
+            <p className="font-hand text-xl leading-snug text-ink/90">
               {review.parentTip}
             </p>
             <p

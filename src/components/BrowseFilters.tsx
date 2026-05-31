@@ -318,6 +318,7 @@ function FilterPanel({
   showAdvanced: boolean
   setShowAdvanced: (v: boolean) => void
 }) {
+  const tGenres = useTranslations('genres')
   return (
     <div className="space-y-5">
       {/* Header — bara synlig på desktop (mobil har egen header i drawer) */}

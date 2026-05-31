@@ -11,8 +11,14 @@ import type { GameSummary } from '@/types/game'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { calcAge } from '@/lib/age'
 import Icon from '@/components/Icon'
+import type { Metadata } from 'next'
 
-export const metadata = { title: 'My Library — LumiKin' }
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'library' })
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  return { title: t('metaTitle' as any) }
+}
 
 // ─── ESRB → minimum age fallback ─────────────────────────────────────────────
 
@@ -387,13 +393,15 @@ export default async function LibraryPage({
           <section>
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {isFiltered
-                  ? `${selectedChild!.name}'s ${t('owned').toLowerCase()} (${owned.length})`
+                  ? t('ownedByChild' as any, { name: selectedChild!.name, count: owned.length })
                   : `${t('owned')} (${owned.length})`}
               </h2>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-slate-400 dark:text-slate-500 hidden sm:inline">
-                  Make sure Steam &rarr; Privacy Settings &rarr; Game details is set to <strong>Public</strong>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {t.rich('steamPrivacyShort' as any, { strong: (c) => <strong>{c}</strong> })}
                 </span>
                 <ImportLibraryButton />
               </div>
@@ -413,17 +421,20 @@ export default async function LibraryPage({
               {/* Privacy tip — visible by default, not collapsed */}
               <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl px-4 py-3">
                 <p className="text-xs font-semibold text-amber-800 dark:text-amber-300 mb-1">
-                  First: make your Steam library public
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {t('steamPublicHeading' as any)}
                 </p>
                 <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
-                  Steam app &rarr; click your avatar &rarr; <strong>View my profile</strong> &rarr; <strong>Edit Profile</strong> &rarr; <strong>Privacy Settings</strong> &rarr; set <strong>Game details</strong> to <strong>Public</strong>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {t.rich('steamPublicSteps' as any, { strong: (c) => <strong>{c}</strong> })}
                 </p>
               </div>
 
               <ImportLibraryButton />
             </div>
             <p className="text-xs text-center text-slate-400 dark:text-slate-500">
-              Or browse the catalogue and use <strong>Add to Library</strong> on any game page
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t.rich('orBrowseCatalogue' as any, { strong: (c) => <strong>{c}</strong> })}
             </p>
           </div>
         )}
@@ -432,7 +443,10 @@ export default async function LibraryPage({
         {allWishlist.length > 0 && (
           <section>
             <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-4">
-              {t('wishlist')} ({wishlist.length}{isFiltered && wishlist.length < allWishlist.length ? ` of ${allWishlist.length}` : ''})
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('wishlist')} {isFiltered && wishlist.length < allWishlist.length
+                ? t('countOfTotal' as any, { count: wishlist.length, total: allWishlist.length })
+                : `(${wishlist.length})`}
             </h2>
             {wishlist.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">

@@ -160,7 +160,21 @@
     "nextPage": "Suivant",
     "backToBrowse": "Back to browse",
     "byAgePrompt": "Looking for games for a specific age?",
-    "byAgeLink": "Browse by age →"
+    "byAgeLink": "Browse by age →",
+    "metaTitle": "Parcourir les jeux — LumiKin",
+    "metaDescription": "Trouvez le bon jeu pour votre enfant. Filtrez par âge, genre, plateforme, niveau de risque et plus.",
+    "tellAboutKid": "Parlez-nous de votre enfant pour des recommandations personnalisées",
+    "addFirstKid": "Ajoutez votre premier enfant pour des recommandations personnalisées",
+    "clearFiltersShort": "Effacer les filtres",
+    "alsoOn": "Aussi sur :",
+    "carouselTrending": "Tendances",
+    "carouselAcclaimed": "Encensés par la critique",
+    "carouselNewWorth": "Nouveaux à découvrir",
+    "carouselTopRated": "Mieux notés",
+    "carouselFamilyCoop": "Co-op familial",
+    "carouselSmart": "Jeux astucieux",
+    "carouselVrAr": "VR & AR",
+    "carouselBeginner": "Pour débutants"
   },
   "filters": {
     "heading": "Filtres",
@@ -689,7 +703,14 @@
     "sortTime": "Limite de temps",
     "scoredOf": "{scored} sur {total} évalués",
     "noMatchFilter": "Aucun jeu de votre bibliothèque ne correspond au profil de cet enfant.",
-    "viewAll": "Tous"
+    "viewAll": "Tous",
+    "metaTitle": "Ma bibliothèque — LumiKin",
+    "ownedByChild": "Bibliothèque de {name} ({count})",
+    "countOfTotal": "({count} sur {total})",
+    "steamPrivacyShort": "Assurez-vous que Steam → Paramètres de confidentialité → Détails du jeu est réglé sur <strong>Public</strong>",
+    "steamPublicHeading": "D'abord : rendez votre bibliothèque Steam publique",
+    "steamPublicSteps": "Appli Steam → cliquez sur votre avatar → <strong>Voir mon profil</strong> → <strong>Modifier le profil</strong> → <strong>Paramètres de confidentialité</strong> → réglez <strong>Détails du jeu</strong> sur <strong>Public</strong>",
+    "orBrowseCatalogue": "Ou parcourez le catalogue et utilisez <strong>Ajouter à la bibliothèque</strong> sur n'importe quelle page de jeu"
   },
   "account": {
     "title": "Compte",
@@ -1207,5 +1228,10 @@
       "vs": "contre",
       "comparingTemplate": "{a} contre {b}"
     }
+  },
+  "shareButton": {
+    "copyLink": "Copier le lien",
+    "copied": "Copié",
+    "share": "Partager"
   }
 }

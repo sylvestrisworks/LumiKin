@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 
 type Props = {
   title: string
@@ -8,6 +9,7 @@ type Props = {
 }
 
 export default function ShareButton({ title, url }: Props) {
+  const t = useTranslations('shareButton')
   const [copied, setCopied] = useState(false)
   const [hasNativeShare, setHasNativeShare] = useState(false)
 
@@ -53,9 +55,9 @@ export default function ShareButton({ title, url }: Props) {
             ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
             : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-slate-400 hover:text-slate-800 dark:hover:border-slate-500 dark:hover:text-slate-100'
         }`}
-        title="Copy link"
+        title={t('copyLink')}
       >
-        {copied ? '✓ Copied' : '🔗 Copy link'}
+        {copied ? `✓ ${t('copied')}` : `🔗 ${t('copyLink')}`}
       </button>
 
       {/* Native share — only shown after mount on devices that support it */}
@@ -63,9 +65,9 @@ export default function ShareButton({ title, url }: Props) {
         <button
           onClick={nativeShare}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-slate-400 hover:text-slate-800 dark:hover:border-slate-500 dark:hover:text-slate-100 transition-all"
-          title="Share"
+          title={t('share')}
         >
-          ↗ Share
+          ↗ {t('share')}
         </button>
       )}
     </div>

@@ -160,7 +160,21 @@
     "nextPage": "Nästa",
     "backToBrowse": "Back to browse",
     "byAgePrompt": "Looking for games for a specific age?",
-    "byAgeLink": "Browse by age →"
+    "byAgeLink": "Browse by age →",
+    "metaTitle": "Bläddra bland spel — LumiKin",
+    "metaDescription": "Hitta rätt spel för ditt barn. Filtrera efter ålder, genre, plattform, risknivå och mer.",
+    "tellAboutKid": "Berätta om ditt barn för personliga rekommendationer",
+    "addFirstKid": "Lägg till ditt första barn för personliga rekommendationer",
+    "clearFiltersShort": "Rensa filter",
+    "alsoOn": "Även på:",
+    "carouselTrending": "Populära just nu",
+    "carouselAcclaimed": "Kritikerrosade",
+    "carouselNewWorth": "Nytt & värt att spela",
+    "carouselTopRated": "Toppbetyg",
+    "carouselFamilyCoop": "Familjeco-op",
+    "carouselSmart": "Smarta spel",
+    "carouselVrAr": "VR & AR",
+    "carouselBeginner": "Nytt för nybörjare"
   },
   "filters": {
     "heading": "Filter",
@@ -689,7 +703,14 @@
     "sortTime": "Tidsgräns",
     "scoredOf": "{scored} av {total} bedömda",
     "noMatchFilter": "Inga spel i ditt bibliotek matchar det här barnets profil.",
-    "viewAll": "Alla"
+    "viewAll": "Alla",
+    "metaTitle": "Mitt bibliotek — LumiKin",
+    "ownedByChild": "{name}s ägda ({count})",
+    "countOfTotal": "({count} av {total})",
+    "steamPrivacyShort": "Se till att Steam → Sekretessinställningar → Speldetaljer är inställd på <strong>Offentlig</strong>",
+    "steamPublicHeading": "Först: gör ditt Steam-bibliotek offentligt",
+    "steamPublicSteps": "Steam-appen → klicka på din avatar → <strong>Visa min profil</strong> → <strong>Redigera profil</strong> → <strong>Sekretessinställningar</strong> → ställ in <strong>Speldetaljer</strong> på <strong>Offentlig</strong>",
+    "orBrowseCatalogue": "Eller utforska katalogen och använd <strong>Lägg till i bibliotek</strong> på valfri spelsida"
   },
   "account": {
     "title": "Konto",
@@ -1207,5 +1228,10 @@
       "vs": "mot",
       "comparingTemplate": "Jämför {a} mot {b}"
     }
+  },
+  "shareButton": {
+    "copyLink": "Kopiera länk",
+    "copied": "Kopierad",
+    "share": "Dela"
   }
 }

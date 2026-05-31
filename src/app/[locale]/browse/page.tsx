@@ -21,9 +21,15 @@ import { auth } from '@/auth'
 import { calcAge } from '@/lib/age'
 import type { GameSummary } from '@/types/game'
 
-export const metadata: Metadata = {
-  title: 'Browse Games — LumiKin',
-  description: 'Find the right game for your child. Filter by age, genre, platform, risk level, and more.',
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'browse' })
+  return {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    title:       t('metaTitle' as any),
+    description: t('metaDescription' as any),
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+  }
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -125,6 +131,7 @@ function escapeIlike(s: string): string {
 }
 
 async function getCarouselRows(platforms: string[], age: string | undefined, locale: string): Promise<CarouselRowData[]> {
+  const t = await getTranslations({ locale, namespace: 'browse' })
   const platformFilter: SQL | undefined = platforms.length > 0
     ? or(...platforms.map(p => sql`${games.platforms}::text ILIKE ${'%' + escapeIlike(p) + '%'}`))
     : undefined
@@ -155,14 +162,16 @@ async function getCarouselRows(platforms: string[], age: string | undefined, loc
   const pp = platforms.length > 0 ? `&platforms=${platforms.join(',')}` : ''
 
   const rows: CarouselRowData[] = [
-    { id: 'trending', title: 'Trending',               iconName: 'trending',  browseHref: `${b}?sort=trending${ap}${pp}`,           games: trending.map(toCarouselGame)     },
-    { id: 'popular',  title: 'Critically Acclaimed',   iconName: 'acclaimed', browseHref: `${b}?sort=popular${ap}${pp}`,             games: popular.map(toCarouselGame)      },
-    { id: 'newgood',  title: 'New & Worth Playing',    iconName: 'new',       browseHref: `${b}?sort=newest${ap}${pp}`,              games: newAndGood.map(toCarouselGame)   },
-    { id: 'top',      title: 'Top Rated',              iconName: 'topscore',  browseHref: `${b}?sort=curascore${ap}${pp}`,           games: topRated.map(toCarouselGame)     },
-    { id: 'coop',     title: 'Family Co-Op',           iconName: 'family',    browseHref: `${b}?benefits=teamwork${ap}${pp}`,        games: coopPlay.map(toCarouselGame)     },
-    { id: 'brain',    title: 'Sneaky Smart Games',     iconName: 'smart',     browseHref: `${b}?benefits=problem-solving${ap}${pp}`, games: highBenefit.map(toCarouselGame)  },
-    { id: 'vr',       title: 'VR & AR',                iconName: 'vr',        browseHref: `${b}?platforms=VR${ap}`,                  games: vrGames.map(toCarouselGame)      },
-    { id: 'beginner', title: 'New to Gaming',          iconName: 'beginner',  browseHref: `${b}?age=E10&risk=low${pp}`,              games: beginnerGames.map(toCarouselGame)},
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    { id: 'trending', title: t('carouselTrending'     as any), iconName: 'trending',  browseHref: `${b}?sort=trending${ap}${pp}`,           games: trending.map(toCarouselGame)     },
+    { id: 'popular',  title: t('carouselAcclaimed'    as any), iconName: 'acclaimed', browseHref: `${b}?sort=popular${ap}${pp}`,             games: popular.map(toCarouselGame)      },
+    { id: 'newgood',  title: t('carouselNewWorth'     as any), iconName: 'new',       browseHref: `${b}?sort=newest${ap}${pp}`,              games: newAndGood.map(toCarouselGame)   },
+    { id: 'top',      title: t('carouselTopRated'     as any), iconName: 'topscore',  browseHref: `${b}?sort=curascore${ap}${pp}`,           games: topRated.map(toCarouselGame)     },
+    { id: 'coop',     title: t('carouselFamilyCoop'   as any), iconName: 'family',    browseHref: `${b}?benefits=teamwork${ap}${pp}`,        games: coopPlay.map(toCarouselGame)     },
+    { id: 'brain',    title: t('carouselSmart'        as any), iconName: 'smart',     browseHref: `${b}?benefits=problem-solving${ap}${pp}`, games: highBenefit.map(toCarouselGame)  },
+    { id: 'vr',       title: t('carouselVrAr'         as any), iconName: 'vr',        browseHref: `${b}?platforms=VR${ap}`,                  games: vrGames.map(toCarouselGame)      },
+    { id: 'beginner', title: t('carouselBeginner'     as any), iconName: 'beginner',  browseHref: `${b}?age=E10&risk=low${pp}`,              games: beginnerGames.map(toCarouselGame)},
+    /* eslint-enable @typescript-eslint/no-explicit-any */
   ]
 
   return rows.filter(r => r.games.length > 0)
@@ -641,7 +650,8 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                   href={`/${locale}/account`}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-sm font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors"
                 >
-                  Tell us about your kid for personal recs
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {t('tellAboutKid' as any)}
                   <span aria-hidden>→</span>
                 </Link>
               )}
@@ -650,7 +660,8 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                   href={`/${locale}/account`}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-sm font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors"
                 >
-                  Add your first kid for personal recs
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {t('addFirstKid' as any)}
                   <span aria-hidden>→</span>
                 </Link>
               )}
@@ -706,7 +717,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
               </p>
               {(filters.platforms.length > 0 || filters.age !== undefined) && (
                 <a href={`/${locale}/browse`} className="inline-block text-xs text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors">
-                  Clear filters
+                  {t('clearFiltersShort')}
                 </a>
               )}
             </div>
@@ -825,7 +836,8 @@ export default async function BrowsePage({ params, searchParams }: Props) {
             {ugcPlatforms.length > 0 && (
               <div className="flex items-center gap-2 flex-wrap mb-4">
                 <span className="text-xs text-slate-400 dark:text-slate-500 font-medium shrink-0">
-                  Also on:
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {t('alsoOn' as any)}
                 </span>
                 {ugcPlatforms.map(p => (
                   <Link

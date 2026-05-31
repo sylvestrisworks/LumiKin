@@ -160,7 +160,21 @@
     "nextPage": "Weiter",
     "backToBrowse": "Back to browse",
     "byAgePrompt": "Looking for games for a specific age?",
-    "byAgeLink": "Browse by age →"
+    "byAgeLink": "Browse by age →",
+    "metaTitle": "Spiele entdecken — LumiKin",
+    "metaDescription": "Finde das richtige Spiel für dein Kind. Filtere nach Alter, Genre, Plattform, Risikostufe und mehr.",
+    "tellAboutKid": "Erzähl uns von deinem Kind für persönliche Empfehlungen",
+    "addFirstKid": "Füge dein erstes Kind hinzu für persönliche Empfehlungen",
+    "clearFiltersShort": "Filter zurücksetzen",
+    "alsoOn": "Auch auf:",
+    "carouselTrending": "Im Trend",
+    "carouselAcclaimed": "Kritikerlieblinge",
+    "carouselNewWorth": "Neu & spielenswert",
+    "carouselTopRated": "Bestbewertet",
+    "carouselFamilyCoop": "Familien-Koop",
+    "carouselSmart": "Knifflige Spiele",
+    "carouselVrAr": "VR & AR",
+    "carouselBeginner": "Neu im Gaming"
   },
   "filters": {
     "heading": "Filter",
@@ -689,7 +703,14 @@
     "sortTime": "Zeitlimit",
     "scoredOf": "{scored} von {total} bewertet",
     "noMatchFilter": "Keine Spiele in deiner Bibliothek passen zum Profil dieses Kindes.",
-    "viewAll": "Alle"
+    "viewAll": "Alle",
+    "metaTitle": "Meine Bibliothek — LumiKin",
+    "ownedByChild": "{name}s Bibliothek ({count})",
+    "countOfTotal": "({count} von {total})",
+    "steamPrivacyShort": "Stelle sicher, dass Steam → Privatsphäre-Einstellungen → Spieldetails auf <strong>Öffentlich</strong> steht",
+    "steamPublicHeading": "Zuerst: Mach deine Steam-Bibliothek öffentlich",
+    "steamPublicSteps": "Steam-App → klicke auf deinen Avatar → <strong>Mein Profil anzeigen</strong> → <strong>Profil bearbeiten</strong> → <strong>Privatsphäre-Einstellungen</strong> → setze <strong>Spieldetails</strong> auf <strong>Öffentlich</strong>",
+    "orBrowseCatalogue": "Oder durchstöbere den Katalog und nutze <strong>Zur Bibliothek hinzufügen</strong> auf jeder Spielseite"
   },
   "account": {
     "title": "Konto",
@@ -1207,5 +1228,10 @@
       "vs": "gegen",
       "comparingTemplate": "{a} gegen {b}"
     }
+  },
+  "shareButton": {
+    "copyLink": "Link kopieren",
+    "copied": "Kopiert",
+    "share": "Teilen"
   }
 }

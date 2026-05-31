@@ -160,7 +160,21 @@
     "nextPage": "Siguiente",
     "backToBrowse": "Back to browse",
     "byAgePrompt": "Looking for games for a specific age?",
-    "byAgeLink": "Browse by age →"
+    "byAgeLink": "Browse by age →",
+    "metaTitle": "Explorar juegos — LumiKin",
+    "metaDescription": "Encuentra el juego adecuado para tu hijo. Filtra por edad, género, plataforma, nivel de riesgo y más.",
+    "tellAboutKid": "Cuéntanos sobre tu hijo para recomendaciones personalizadas",
+    "addFirstKid": "Añade tu primer hijo para recomendaciones personalizadas",
+    "clearFiltersShort": "Limpiar filtros",
+    "alsoOn": "También en:",
+    "carouselTrending": "Tendencias",
+    "carouselAcclaimed": "Aclamados por la crítica",
+    "carouselNewWorth": "Nuevos para jugar",
+    "carouselTopRated": "Mejor valorados",
+    "carouselFamilyCoop": "Cooperativos en familia",
+    "carouselSmart": "Juegos astutos",
+    "carouselVrAr": "VR & AR",
+    "carouselBeginner": "Para empezar"
   },
   "filters": {
     "heading": "Filtros",
@@ -689,7 +703,14 @@
     "sortTime": "Límite de tiempo",
     "scoredOf": "{scored} de {total} evaluados",
     "noMatchFilter": "Ningún juego de tu biblioteca coincide con el perfil de este niño.",
-    "viewAll": "Todos"
+    "viewAll": "Todos",
+    "metaTitle": "Mi biblioteca — LumiKin",
+    "ownedByChild": "Biblioteca de {name} ({count})",
+    "countOfTotal": "({count} de {total})",
+    "steamPrivacyShort": "Asegúrate de que Steam → Configuración de privacidad → Detalles del juego esté en <strong>Público</strong>",
+    "steamPublicHeading": "Primero: haz tu biblioteca de Steam pública",
+    "steamPublicSteps": "App de Steam → haz clic en tu avatar → <strong>Ver mi perfil</strong> → <strong>Editar perfil</strong> → <strong>Configuración de privacidad</strong> → pon <strong>Detalles del juego</strong> en <strong>Público</strong>",
+    "orBrowseCatalogue": "O explora el catálogo y usa <strong>Añadir a biblioteca</strong> en cualquier página de juego"
   },
   "account": {
     "title": "Cuenta",
@@ -1207,5 +1228,10 @@
       "vs": "vs",
       "comparingTemplate": "{a} vs {b}"
     }
+  },
+  "shareButton": {
+    "copyLink": "Copiar enlace",
+    "copied": "Copiado",
+    "share": "Compartir"
   }
 }

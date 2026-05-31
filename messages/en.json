@@ -127,7 +127,21 @@
     "nextPage": "Next",
     "backToBrowse": "Back to browse",
     "byAgePrompt": "Looking for games for a specific age?",
-    "byAgeLink": "Browse by age →"
+    "byAgeLink": "Browse by age →",
+    "metaTitle": "Browse Games — LumiKin",
+    "metaDescription": "Find the right game for your child. Filter by age, genre, platform, risk level, and more.",
+    "tellAboutKid": "Tell us about your kid for personal recs",
+    "addFirstKid": "Add your first kid for personal recs",
+    "clearFiltersShort": "Clear filters",
+    "alsoOn": "Also on:",
+    "carouselTrending": "Trending",
+    "carouselAcclaimed": "Critically Acclaimed",
+    "carouselNewWorth": "New & Worth Playing",
+    "carouselTopRated": "Top Rated",
+    "carouselFamilyCoop": "Family Co-Op",
+    "carouselSmart": "Sneaky Smart Games",
+    "carouselVrAr": "VR & AR",
+    "carouselBeginner": "New to Gaming"
   },
   "filters": {
     "heading": "Filters",
@@ -678,7 +692,14 @@
     "sortTime": "Time limit",
     "scoredOf": "{scored} of {total} scored",
     "noMatchFilter": "No games in your library match this child's profile.",
-    "viewAll": "All"
+    "viewAll": "All",
+    "metaTitle": "My Library — LumiKin",
+    "ownedByChild": "{name}'s owned ({count})",
+    "countOfTotal": "({count} of {total})",
+    "steamPrivacyShort": "Make sure Steam → Privacy Settings → Game details is set to <strong>Public</strong>",
+    "steamPublicHeading": "First: make your Steam library public",
+    "steamPublicSteps": "Steam app → click your avatar → <strong>View my profile</strong> → <strong>Edit Profile</strong> → <strong>Privacy Settings</strong> → set <strong>Game details</strong> to <strong>Public</strong>",
+    "orBrowseCatalogue": "Or browse the catalogue and use <strong>Add to Library</strong> on any game page"
   },
   "account": {
     "title": "Account",
@@ -1174,5 +1195,10 @@
       "vs": "vs",
       "comparingTemplate": "Comparing {a} vs {b}"
     }
+  },
+  "shareButton": {
+    "copyLink": "Copy link",
+    "copied": "Copied",
+    "share": "Share"
   }
 }

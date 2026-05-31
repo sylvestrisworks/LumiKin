@@ -316,7 +316,10 @@ export default async function GamePage({ params }: Props) {
     notFound()
   }
 
-  // Overlay translated narrative content when locale is not English
+  // Overlay translated narrative content when locale is not English. Per-field
+  // gap policy: a NULL field in the translation row means the cron hasn't
+  // backfilled it yet — null out the English source instead of leaking it. The
+  // UI renderers already gate on null, so missing fields disappear quietly.
   if (locale !== 'en' && data.game.id) {
     try {
       const [tx] = await db
@@ -325,13 +328,34 @@ export default async function GamePage({ params }: Props) {
         .where(and(eq(gameTranslations.gameId, data.game.id), eq(gameTranslations.locale, locale)))
         .limit(1)
       if (tx) {
-        if (tx.executiveSummary            && data.scores) data.scores = { ...data.scores, executiveSummary: tx.executiveSummary }
-        if (tx.timeRecommendationReasoning && data.scores) data.scores = { ...data.scores, timeRecommendationReasoning: tx.timeRecommendationReasoning }
-        if (tx.benefitsNarrative           && data.review)  data.review = { ...data.review, benefitsNarrative: tx.benefitsNarrative }
-        if (tx.risksNarrative              && data.review)  data.review = { ...data.review, risksNarrative: tx.risksNarrative }
-        if (tx.parentTip                   && data.review)  data.review = { ...data.review, parentTip: tx.parentTip }
-        if (tx.parentTipBenefits           && data.review)  data.review = { ...data.review, parentTipBenefits: tx.parentTipBenefits }
-        if (tx.bechdelNotes                && data.review)  data.review = { ...data.review, bechdelNotes: tx.bechdelNotes }
+        if (data.scores) data.scores = {
+          ...data.scores,
+          executiveSummary:            tx.executiveSummary,
+          timeRecommendationReasoning: tx.timeRecommendationReasoning,
+        }
+        if (data.review) data.review = {
+          ...data.review,
+          benefitsNarrative: tx.benefitsNarrative,
+          risksNarrative:    tx.risksNarrative,
+          parentTip:         tx.parentTip,
+          parentTipBenefits: tx.parentTipBenefits,
+          bechdelNotes:      tx.bechdelNotes,
+        }
+      } else {
+        // No translation row at all — hide translatable narrative fields.
+        if (data.scores) data.scores = {
+          ...data.scores,
+          executiveSummary:            null,
+          timeRecommendationReasoning: null,
+        }
+        if (data.review) data.review = {
+          ...data.review,
+          benefitsNarrative: null,
+          risksNarrative:    null,
+          parentTip:         null,
+          parentTipBenefits: null,
+          bechdelNotes:      null,
+        }
       }
     } catch {
       // game_translations table not yet migrated — skip silently

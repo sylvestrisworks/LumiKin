@@ -131,7 +131,11 @@ export async function fetchFeatured(locale: string): Promise<FeaturedGameData | 
   const row = (rows[0] as FeaturedGameData) ?? null
   if (!row) return null
 
-  // Overlay translated narrative fields when locale is not English
+  // Overlay translated narrative fields when locale is not English. Per-field
+  // gap policy: if the translation row exists but a specific field is NULL
+  // (cron hasn't backfilled it yet), null out the English source rather than
+  // leaking it into a non-English page. The translate-content cron fills these
+  // in over time; until then the field is simply hidden.
   if (locale !== 'en') {
     try {
       const [tx] = await db
@@ -145,10 +149,17 @@ export async function fetchFeatured(locale: string): Promise<FeaturedGameData | 
         .where(and(eq(gameTranslations.gameId, row.id), eq(gameTranslations.locale, locale)))
         .limit(1)
       if (tx) {
-        if (tx.executiveSummary)            row.executiveSummary            = tx.executiveSummary
-        if (tx.parentTip)                   row.parentTip                   = tx.parentTip
-        if (tx.parentTipBenefits)           row.parentTipBenefits           = tx.parentTipBenefits
-        if (tx.timeRecommendationReasoning) row.timeRecommendationReasoning = tx.timeRecommendationReasoning
+        row.executiveSummary            = tx.executiveSummary
+        row.parentTip                   = tx.parentTip
+        row.parentTipBenefits           = tx.parentTipBenefits
+        row.timeRecommendationReasoning = tx.timeRecommendationReasoning
+      } else {
+        // No translation row at all — hide all translatable narrative fields
+        // rather than leaking English.
+        row.executiveSummary            = null
+        row.parentTip                   = null
+        row.parentTipBenefits           = null
+        row.timeRecommendationReasoning = null
       }
     } catch {
       // game_translations table not yet migrated — skip silently

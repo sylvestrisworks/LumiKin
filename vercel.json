@@ -1,4 +1,12 @@
 {
   "regions": ["arn1"],
-  "crons": []
+  "crons": [],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.lumikin.org" }],
+      "destination": "https://lumikin.org/:path*",
+      "permanent": true
+    }
+  ]
 }

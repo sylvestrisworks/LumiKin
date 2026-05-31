@@ -20,3 +20,8 @@ export { ListingCard } from './ListingCard'
 export type { ListingCardData } from './ListingCard'
 
 export { SearchInput } from './SearchInput'
+
+export { EditorialTabs } from './Tabs'
+export type { EditorialTab } from './Tabs'
+
+export { FullScoresGrid } from './FullScoresGrid'

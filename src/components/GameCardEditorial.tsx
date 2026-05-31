@@ -6,6 +6,9 @@ import {
   BigScore,
   EditorialIcon,
   type EditorialIconName,
+  EditorialTabs,
+  type EditorialTab,
+  FullScoresGrid,
   Rosette,
   type RosetteVariant,
   ScoreTable,
@@ -281,6 +284,9 @@ export default function GameCardEditorial({
           Desktop: scores 2/3 + handwritten parent tip in dashed-rule sidebar 1/3. */}
       <div className="mt-16 grid md:grid-cols-3 gap-12">
         <div className="md:col-span-2 space-y-12">
+          {/* Simplified composite scores always come first so a reader sees the
+              headline at a glance. Tabs below let them drill into the full
+              dimension grid or the adversarial debate transcript. */}
           <div className="space-y-4">
             <ScoreTable title="Developmental benefits" rows={benefitRows(scores)} tone="ink" />
             {review?.benefitsNarrative && (
@@ -297,6 +303,18 @@ export default function GameCardEditorial({
               </p>
             )}
           </div>
+
+          {/* Drill-down tabs — only render when there's extra content to show
+              (granular review or a debate transcript). */}
+          {(review || scores?.debateTranscript) && (
+            <EditorialTabs tabs={buildDetailTabs(review, scores)} defaultTabId="full">
+              {(active) => {
+                if (active === 'full')   return <FullScoresGrid scores={scores} review={review} />
+                if (active === 'debate') return <DebateTranscript text={scores?.debateTranscript ?? null} />
+                return null
+              }}
+            </EditorialTabs>
+          )}
         </div>
         {review?.parentTip && (
           <aside className="md:col-span-1 pl-4 md:pl-6 border-l-2 md:border-l border-accent md:border-ink/40 [border-left-style:solid] md:[border-left-style:dashed]">
@@ -457,6 +475,36 @@ export default function GameCardEditorial({
         </span>
       </div>
     </article>
+  )
+}
+
+// Tabs surfaced under the simplified score view. "Full scores" needs review
+// data; "Debate transcript" needs a non-empty debateTranscript on scores.
+function buildDetailTabs(
+  review: GameCardProps['review'],
+  scores: SerializedScores | null,
+): EditorialTab[] {
+  const tabs: EditorialTab[] = []
+  if (review) tabs.push({ id: 'full', label: 'Full scores', count: 44 })
+  if (scores?.debateTranscript) {
+    tabs.push({
+      id: 'debate',
+      label: 'Debate transcript',
+      count: scores.debateRounds ?? undefined,
+    })
+  }
+  return tabs
+}
+
+// Adversarial transcript — preserve whitespace; render as serif body text.
+function DebateTranscript({ text }: { text: string | null }) {
+  if (!text) {
+    return <p className="font-serif italic text-muted">No debate transcript on file.</p>
+  }
+  return (
+    <pre className="font-serif text-base text-ink/90 leading-relaxed whitespace-pre-wrap max-w-prose">
+      {text}
+    </pre>
   )
 }
 

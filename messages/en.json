@@ -92,7 +92,15 @@
     "librarySellTile4Title": "Child profiles",
     "librarySellTile4Body": "One account, one profile per kid. Each gets their own age, platforms, and skill focus — and their own library view.",
     "librarySellCta": "Create a free account →",
-    "librarySellReassure": "Free forever for parents. No card required."
+    "librarySellReassure": "Free forever for parents. No card required.",
+    "metaTitle": "Game ratings for parents — Age, benefits & time per session | LumiScore",
+    "metaDescription": "Find safe games for kids. LumiScore shows what each game teaches, what to watch for, and a healthy daily time limit. {count}+ games reviewed.",
+    "faq1Question": "What is LumiScore?",
+    "faq1Answer": "LumiScore is LumiKin's 0–100 rating for every game. It combines a Benefits Development Score (skills the game builds) with a Risk Influence Score (addictive mechanics, monetization pressure, social risk) into a single number plus a recommended daily session length.",
+    "faq2Question": "How do you rate games?",
+    "faq2Answer": "Every game is scored across 60 sub-dimensions from a public rubric — ten cognitive skills, six social-emotional skills, four motor skills on the benefits side, and dopamine, monetization, and social-risk design patterns on the risk side. Read the full methodology for the formulas.",
+    "faq3Question": "How do you decide how long my child should play?",
+    "faq3Answer": "We calculate a daily session limit from the combined Benefits and Risk scores — from 15 minutes for high-risk games to two hours for high-benefit, low-risk ones. The limit reflects how the game is built, not a generic screen-time recommendation."
   },
   "age": {
     "earlyYears": "Early Years",

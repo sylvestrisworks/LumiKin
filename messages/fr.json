@@ -125,7 +125,9 @@
     "librarySellTile4Title": "Profils enfants",
     "librarySellTile4Body": "Un compte, un profil par enfant. Chacun a son âge, ses plateformes et son axe de compétences — et sa propre vue bibliothèque.",
     "librarySellCta": "Créer un compte gratuit →",
-    "librarySellReassure": "Toujours gratuit pour les parents. Sans carte bancaire."
+    "librarySellReassure": "Toujours gratuit pour les parents. Sans carte bancaire.",
+    "metaTitle": "Évaluations de jeux pour parents — Âge, bénéfices et temps de jeu par session | LumiScore",
+    "metaDescription": "Trouvez des jeux sûrs pour les enfants. LumiScore montre ce qu'enseigne chaque jeu, à quoi faire attention, et un temps de jeu quotidien sain. Plus de {count} jeux évalués."
   },
   "age": {
     "earlyYears": "Premières années",

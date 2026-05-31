@@ -125,7 +125,9 @@
     "librarySellTile4Title": "Barnprofiler",
     "librarySellTile4Body": "Ett konto, en profil per barn. Var och en får sin egen ålder, plattformar och färdighetsfokus – och sin egen bibliotek-vy.",
     "librarySellCta": "Skapa ett gratis konto →",
-    "librarySellReassure": "Alltid gratis för föräldrar. Inget kort krävs."
+    "librarySellReassure": "Alltid gratis för föräldrar. Inget kort krävs.",
+    "metaTitle": "Spelrecensioner för föräldrar — Åldersgräns, fördelar och speltid per session | LumiScore",
+    "metaDescription": "Hitta säkra spel för barn. LumiScore visar vad varje spel lär ut, vad du bör vara uppmärksam på och en sund daglig speltid. {count}+ spel granskade."
   },
   "age": {
     "earlyYears": "Lågstadiet",

@@ -287,7 +287,9 @@
     "pillCreativePlay": "Kreatives Spielen",
     "pillTopRated": "Top bewertet",
     "pillYoungKids": "Super für kleine Kinder",
-    "pillLearningFocus": "Fokus auf Lernen"
+    "pillLearningFocus": "Fokus auf Lernen",
+    "metaTitle": "Entdecken — LumiKin",
+    "metaDescription": "Finde das richtige Spiel für dein Kind, fundiert in der kindlichen Entwicklung."
   },
   "compare": {
     "title": "Spiele vergleichen",
@@ -382,7 +384,9 @@
     "sectionRis": "Risk Intensity Score (RIS)",
     "sectionTime": "Tägliche Spielzeit-Empfehlung",
     "sectionReviews": "So bewerten wir Spiele",
-    "sectionContext": "Weitere Hintergrundinfos"
+    "sectionContext": "Weitere Hintergrundinfos",
+    "metaTitle": "So funktioniert es — LumiKin",
+    "metaDescription": "Verstehe den LumiScore, Benefit Density Score, Risk Intensity Score und die täglichen Zeitempfehlungen."
   },
   "gameCard": {
     "tabBenefits": "Vorteile",
@@ -667,7 +671,8 @@
     "browseForChild": "Für {name} stöbern →",
     "addChildCta": "Füge ein Kinderprofil hinzu, um loszulegen",
     "addChildDesc": "Wir bewerten deine bestehende Bibliothek für jedes Kind in deiner Familie.",
-    "age": "{age} Jahre"
+    "age": "{age} Jahre",
+    "metaTitle": "Familien-Dashboard — LumiKin"
   },
   "library": {
     "title": "Meine Bibliothek",
@@ -732,7 +737,8 @@
     "manage": "Verwalten",
     "legal": "Rechtliches",
     "privacyPolicy": "Datenschutz",
-    "termsOfService": "Nutzungsbedingungen"
+    "termsOfService": "Nutzungsbedingungen",
+    "metaTitle": "Kontoeinstellungen — LumiKin"
   },
   "notifications": {
     "title": "Benachrichtigungen",
@@ -1009,7 +1015,9 @@
     "catScreenTime": "Bildschirmzeit",
     "catGameSafety": "Spielsicherheit",
     "catAgeGuide": "Altersleitfaden",
-    "catParentingTips": "Eltern-Tipps"
+    "catParentingTips": "Eltern-Tipps",
+    "metaTitle": "Lernen — Eltern-Guides, News & FAQs | LumiKin",
+    "metaDescription": "Experten-Guides für Eltern zu Bildschirmzeit, Spielsicherheit und altersgerechtem Gaming. News, Tipps und Antworten auf die häufigsten Fragen."
   },
   "blog": {
     "breadcrumbLearn": "Wissen",
@@ -1017,14 +1025,18 @@
     "subtitle": "Gaming aus Elternsicht.",
     "comingSoon": "Beiträge folgen in Kürze.",
     "news": "Neuigkeiten",
-    "posts": "Blog"
+    "posts": "Blog",
+    "metaTitle": "Blog & News — LumiKin",
+    "metaDescription": "Gaming-Neuigkeiten, Erziehungstipps und Updates von LumiKin — ein Eltern-Blick auf die Spiele, die deine Kinder spielen."
   },
   "guides": {
     "breadcrumbLearn": "Wissen",
     "breadcrumbCurrent": "Ratgeber",
     "title": "Eltern-Ratgeber",
     "subtitle": "Ausführliche Artikel, die dir helfen, Gaming mit deinen Kindern besser zu verstehen und zu begleiten.",
-    "comingSoon": "Ratgeber folgen bald."
+    "comingSoon": "Ratgeber folgen bald.",
+    "metaTitle": "Eltern-Guides — Bildschirmzeit, Spielsicherheit und mehr | LumiKin",
+    "metaDescription": "Ausführliche Guides für Eltern zu Bildschirmzeit-Grenzen, Spielsicherheit, altersgerechtem Gaming und dem Aufbau gesunder Gewohnheiten rund um Videospiele."
   },
   "banner": {
     "betaTitle": "LumiKin ist noch in der Beta",
@@ -1233,5 +1245,21 @@
     "copyLink": "Link kopieren",
     "copied": "Kopiert",
     "share": "Teilen"
+  },
+  "review": {
+    "metaTitle": "Rezensenten-Dashboard — LumiKin"
+  },
+  "privacy": {
+    "metaTitle": "Datenschutzrichtlinie — LumiKin",
+    "metaDescription": "Wie LumiKin deine personenbezogenen Daten erfasst, verwendet und schützt."
+  },
+  "terms": {
+    "metaTitle": "Nutzungsbedingungen — LumiKin",
+    "metaDescription": "Bedingungen, die deine Nutzung des LumiKin-Spielbewertungsdienstes regeln."
+  },
+  "press": {
+    "metaTitle": "Pressemappe — LumiKin",
+    "metaDescription": "Markenressourcen, Berichterstattungs-Statistiken, zitierbare Fakten und Pressekontakt für LumiKin — die strukturierte Spielbewertungs-Engine für Eltern.",
+    "ogDescription": "Markenressourcen, Berichterstattungs-Statistiken, zitierbare Fakten und Pressekontakt für LumiKin."
   }
 }

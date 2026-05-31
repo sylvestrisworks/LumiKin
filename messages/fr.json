@@ -287,7 +287,9 @@
     "pillCreativePlay": "Jeu créatif",
     "pillTopRated": "Les mieux notés",
     "pillYoungKids": "Idéal pour les jeunes enfants",
-    "pillLearningFocus": "Axé sur l'apprentissage"
+    "pillLearningFocus": "Axé sur l'apprentissage",
+    "metaTitle": "Découvrir — LumiKin",
+    "metaDescription": "Trouvez le bon jeu pour votre enfant, fondé sur le développement infantile."
   },
   "compare": {
     "title": "Comparer les jeux",
@@ -382,7 +384,9 @@
     "sectionRis": "Risk Intensity Score (RIS)",
     "sectionTime": "Recommandation de temps de jeu quotidien",
     "sectionReviews": "Comment les jeux sont évalués",
-    "sectionContext": "Informations contextuelles additionnelles"
+    "sectionContext": "Informations contextuelles additionnelles",
+    "metaTitle": "Comment ça marche — LumiKin",
+    "metaDescription": "Comprenez le LumiScore, le Benefit Density Score, le Risk Intensity Score et les recommandations de temps quotidien."
   },
   "gameCard": {
     "tabBenefits": "Bénéfices",
@@ -667,7 +671,8 @@
     "browseForChild": "Parcourir pour {name} →",
     "addChildCta": "Ajoutez un profil enfant pour commencer",
     "addChildDesc": "Nous évaluerons votre bibliothèque existante pour chaque enfant de votre famille.",
-    "age": "{age} ans"
+    "age": "{age} ans",
+    "metaTitle": "Tableau de bord famille — LumiKin"
   },
   "library": {
     "title": "Ma bibliothèque",
@@ -732,7 +737,8 @@
     "manage": "Gérer",
     "legal": "Mentions légales",
     "privacyPolicy": "Politique de confidentialité",
-    "termsOfService": "Conditions d'utilisation"
+    "termsOfService": "Conditions d'utilisation",
+    "metaTitle": "Paramètres du compte — LumiKin"
   },
   "notifications": {
     "title": "Notifications",
@@ -1009,7 +1015,9 @@
     "catScreenTime": "Temps d'écran",
     "catGameSafety": "Sécurité des jeux",
     "catAgeGuide": "Guide par âge",
-    "catParentingTips": "Conseils parentaux"
+    "catParentingTips": "Conseils parentaux",
+    "metaTitle": "Apprendre — Guides parentaux, actus & FAQ | LumiKin",
+    "metaDescription": "Guides d'experts pour parents sur le temps d'écran, la sécurité des jeux et le jeu adapté à l'âge. Actus, conseils et réponses aux questions les plus fréquentes."
   },
   "blog": {
     "breadcrumbLearn": "Apprendre",
@@ -1017,14 +1025,18 @@
     "subtitle": "Le jeu vidéo sous l'angle parental.",
     "comingSoon": "Articles à venir.",
     "news": "Actualités",
-    "posts": "Blog"
+    "posts": "Blog",
+    "metaTitle": "Blog & Actualités — LumiKin",
+    "metaDescription": "Actualités du jeu, conseils parentaux et nouveautés de LumiKin — une perspective parentale sur les jeux auxquels vos enfants jouent."
   },
   "guides": {
     "breadcrumbLearn": "Découvrir",
     "breadcrumbCurrent": "Guides",
     "title": "Guides parentaux",
     "subtitle": "Des articles détaillés pour vous accompagner dans l'univers du jeu vidéo avec vos enfants.",
-    "comingSoon": "Guides bientôt disponibles."
+    "comingSoon": "Guides bientôt disponibles.",
+    "metaTitle": "Guides parentaux — Temps d'écran, sécurité des jeux et plus | LumiKin",
+    "metaDescription": "Guides détaillés pour parents sur les limites de temps d'écran, la sécurité des jeux, le jeu adapté à l'âge et la construction d'habitudes saines autour des jeux vidéo."
   },
   "banner": {
     "betaTitle": "LumiKin est en bêta",
@@ -1233,5 +1245,21 @@
     "copyLink": "Copier le lien",
     "copied": "Copié",
     "share": "Partager"
+  },
+  "review": {
+    "metaTitle": "Tableau de bord des évaluateurs — LumiKin"
+  },
+  "privacy": {
+    "metaTitle": "Politique de confidentialité — LumiKin",
+    "metaDescription": "Comment LumiKin collecte, utilise et protège vos données personnelles."
+  },
+  "terms": {
+    "metaTitle": "Conditions d'utilisation — LumiKin",
+    "metaDescription": "Conditions régissant votre utilisation du service d'évaluation de jeux LumiKin."
+  },
+  "press": {
+    "metaTitle": "Kit presse — LumiKin",
+    "metaDescription": "Ressources de marque, statistiques de couverture, faits citables et contact presse pour LumiKin — le moteur d'évaluation de jeux structuré pour les parents.",
+    "ogDescription": "Ressources de marque, statistiques de couverture, faits citables et contact presse pour LumiKin."
   }
 }

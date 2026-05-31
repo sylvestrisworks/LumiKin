@@ -287,7 +287,9 @@
     "pillCreativePlay": "Uppmuntrar kreativitet",
     "pillTopRated": "Högt rankat",
     "pillYoungKids": "Passar små barn",
-    "pillLearningFocus": "Lärande i fokus"
+    "pillLearningFocus": "Lärande i fokus",
+    "metaTitle": "Upptäck — LumiKin",
+    "metaDescription": "Hitta rätt spel för ditt barn, grundat i barnutveckling."
   },
   "compare": {
     "title": "Jämför spel",
@@ -382,7 +384,9 @@
     "sectionRis": "Risk Intensity Score (RIS)",
     "sectionTime": "Rekommenderad daglig speltid",
     "sectionReviews": "Så recenseras spel",
-    "sectionContext": "Kompletterande information"
+    "sectionContext": "Kompletterande information",
+    "metaTitle": "Så fungerar det — LumiKin",
+    "metaDescription": "Förstå LumiScore, Benefit Density Score, Risk Intensity Score och dagliga tidsrekommendationer."
   },
   "gameCard": {
     "tabBenefits": "Fördelar",
@@ -667,7 +671,8 @@
     "browseForChild": "Utforska för {name} →",
     "addChildCta": "Lägg till en barnprofil för att komma igång",
     "addChildDesc": "Vi betygsätter ditt befintliga bibliotek för varje barn i din familj.",
-    "age": "{age} år"
+    "age": "{age} år",
+    "metaTitle": "Familjeöversikt — LumiKin"
   },
   "library": {
     "title": "Mitt bibliotek",
@@ -732,7 +737,8 @@
     "manage": "Hantera",
     "legal": "Juridik",
     "privacyPolicy": "Integritetspolicy",
-    "termsOfService": "Användarvillkor"
+    "termsOfService": "Användarvillkor",
+    "metaTitle": "Kontoinställningar — LumiKin"
   },
   "notifications": {
     "title": "Aviseringar",
@@ -1009,7 +1015,9 @@
     "catScreenTime": "Skärmtid",
     "catGameSafety": "Spelsäkerhet",
     "catAgeGuide": "Åldersguide",
-    "catParentingTips": "Föräldratips"
+    "catParentingTips": "Föräldratips",
+    "metaTitle": "Lär dig — föräldraguider, nyheter & FAQ | LumiKin",
+    "metaDescription": "Expertguider för föräldrar om skärmtid, spelsäkerhet och åldersanpassat spelande. Nyheter, tips och svar på de vanligaste frågorna."
   },
   "blog": {
     "breadcrumbLearn": "Lär dig mer",
@@ -1017,14 +1025,18 @@
     "subtitle": "Spel ur ett föräldraperspektiv.",
     "comingSoon": "Inlägg kommer snart.",
     "news": "Nyheter",
-    "posts": "Blogg"
+    "posts": "Blogg",
+    "metaTitle": "Blogg & nyheter — LumiKin",
+    "metaDescription": "Spelnyheter, föräldratips och uppdateringar från LumiKin — ett föräldraperspektiv på spelen ditt barn spelar."
   },
   "guides": {
     "breadcrumbLearn": "Kunskap",
     "breadcrumbCurrent": "Guider",
     "title": "Föräldraguider",
     "subtitle": "Djupgående artiklar som hjälper dig att hitta rätt i spelvärlden tillsammans med dina barn.",
-    "comingSoon": "Guider kommer snart."
+    "comingSoon": "Guider kommer snart.",
+    "metaTitle": "Föräldraguider — skärmtid, spelsäkerhet och mer | LumiKin",
+    "metaDescription": "Djupgående guider för föräldrar om skärmtid, spelsäkerhet, åldersanpassat spelande och hur man bygger sunda vanor kring videospel."
   },
   "banner": {
     "betaTitle": "LumiKin är i beta",
@@ -1233,5 +1245,21 @@
     "copyLink": "Kopiera länk",
     "copied": "Kopierad",
     "share": "Dela"
+  },
+  "review": {
+    "metaTitle": "Recensentpanel — LumiKin"
+  },
+  "privacy": {
+    "metaTitle": "Integritetspolicy — LumiKin",
+    "metaDescription": "Så samlar in, använder och skyddar LumiKin dina personuppgifter."
+  },
+  "terms": {
+    "metaTitle": "Användarvillkor — LumiKin",
+    "metaDescription": "Villkor som styr din användning av LumiKins speltjänst."
+  },
+  "press": {
+    "metaTitle": "Presskit — LumiKin",
+    "metaDescription": "Varumärkesresurser, täckningsstatistik, citerbara fakta och presskontakt för LumiKin — det strukturerade spelbetygsystemet för föräldrar.",
+    "ogDescription": "Varumärkesresurser, täckningsstatistik, citerbara fakta och presskontakt för LumiKin."
   }
 }

@@ -8,9 +8,15 @@ import { Newspaper } from 'lucide-react'
 
 export const revalidate = 3600
 
-export const metadata: Metadata = {
-  title: 'Blog & News — LumiKin',
-  description: 'Gaming news, parenting tips, and updates from LumiKin — a parenting perspective on the games your kids are playing.',
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'blog' })
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  return {
+    title:       t('metaTitle' as any),
+    description: t('metaDescription' as any),
+  }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 }
 
 type SanityPost = {

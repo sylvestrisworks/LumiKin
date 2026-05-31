@@ -5,9 +5,14 @@ import { redirect } from 'next/navigation'
 import { desc, eq, isNotNull, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { games, reviews, gameScores } from '@/lib/db/schema'
+import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 
-export const metadata = {
-  title: 'Reviewer Dashboard — LumiKin',
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'review' })
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  return { title: t('metaTitle' as any) }
 }
 
 type GameRow = {

@@ -9,8 +9,14 @@ import { calcAge } from '@/lib/age'
 import ProfileManager from '@/components/ProfileManager'
 import PlatformConnectionsWidget from '@/components/PlatformConnectionsWidget'
 import { getLocale, getTranslations } from 'next-intl/server'
+import type { Metadata } from 'next'
 
-export const metadata = { title: 'Family Dashboard — LumiKin' }
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'dashboard' })
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  return { title: t('metaTitle' as any) }
+}
 export const dynamic = 'force-dynamic'
 
 function esrbToMinAge(rating: string | null | undefined): number | null {

@@ -8,9 +8,15 @@ import { BookOpen } from 'lucide-react'
 
 export const revalidate = 3600
 
-export const metadata: Metadata = {
-  title: 'Parental Guides — Screen Time, Game Safety & More | LumiKin',
-  description: 'In-depth guides for parents on screen time limits, game safety, age-appropriate gaming, and building healthy habits around video games.',
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'guides' })
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  return {
+    title:       t('metaTitle' as any),
+    description: t('metaDescription' as any),
+  }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 }
 
 const CATEGORY_COLORS: Record<string, string> = {

@@ -254,7 +254,9 @@
     "pillCreativePlay": "Creative Play",
     "pillTopRated": "Top Rated",
     "pillYoungKids": "Great for Young Kids",
-    "pillLearningFocus": "Learning Focus"
+    "pillLearningFocus": "Learning Focus",
+    "metaTitle": "Discover — LumiKin",
+    "metaDescription": "Find the right game for your child, grounded in child development."
   },
   "compare": {
     "title": "Compare games",
@@ -349,7 +351,9 @@
     "sectionRis": "Risk Intensity Score (RIS)",
     "sectionTime": "Daily time recommendation",
     "sectionReviews": "How games are reviewed",
-    "sectionContext": "Additional context fields"
+    "sectionContext": "Additional context fields",
+    "metaTitle": "How it works — LumiKin",
+    "metaDescription": "Understand the LumiScore, Benefit Density Score, Risk Intensity Score, and daily time recommendations."
   },
   "gameCard": {
     "tabBenefits": "Benefits",
@@ -656,7 +660,8 @@
     "browseForChild": "Browse for {name} →",
     "addChildCta": "Add a child profile to get started",
     "addChildDesc": "We'll score your existing library for each child in your family.",
-    "age": "Age {age}"
+    "age": "Age {age}",
+    "metaTitle": "Family Dashboard — LumiKin"
   },
   "library": {
     "title": "My Library",
@@ -721,7 +726,8 @@
     "manage": "Manage",
     "legal": "Legal",
     "privacyPolicy": "Privacy Policy",
-    "termsOfService": "Terms of Service"
+    "termsOfService": "Terms of Service",
+    "metaTitle": "Account Settings — LumiKin"
   },
   "notifications": {
     "title": "Notifications",
@@ -998,7 +1004,9 @@
     "catScreenTime": "Screen Time",
     "catGameSafety": "Game Safety",
     "catAgeGuide": "Age Guide",
-    "catParentingTips": "Parenting Tips"
+    "catParentingTips": "Parenting Tips",
+    "metaTitle": "Learn — Parental Guides, News & FAQs | LumiKin",
+    "metaDescription": "Expert guides for parents on screen time, game safety, and age-appropriate gaming. News, tips, and answers to your most common questions."
   },
   "blog": {
     "breadcrumbLearn": "Learn",
@@ -1006,14 +1014,18 @@
     "subtitle": "Gaming from a parenting perspective.",
     "comingSoon": "Posts coming soon.",
     "news": "News",
-    "posts": "Blog"
+    "posts": "Blog",
+    "metaTitle": "Blog & News — LumiKin",
+    "metaDescription": "Gaming news, parenting tips, and updates from LumiKin — a parenting perspective on the games your kids are playing."
   },
   "guides": {
     "breadcrumbLearn": "Learn",
     "breadcrumbCurrent": "Guides",
     "title": "Parental Guides",
     "subtitle": "In-depth articles to help you navigate gaming with your kids.",
-    "comingSoon": "Guides coming soon."
+    "comingSoon": "Guides coming soon.",
+    "metaTitle": "Parental Guides — Screen Time, Game Safety & More | LumiKin",
+    "metaDescription": "In-depth guides for parents on screen time limits, game safety, age-appropriate gaming, and building healthy habits around video games."
   },
   "banner": {
     "betaTitle": "LumiKin is in beta",
@@ -1200,5 +1212,21 @@
     "copyLink": "Copy link",
     "copied": "Copied",
     "share": "Share"
+  },
+  "review": {
+    "metaTitle": "Reviewer Dashboard — LumiKin"
+  },
+  "privacy": {
+    "metaTitle": "Privacy Policy — LumiKin",
+    "metaDescription": "How LumiKin collects, uses, and protects your personal data."
+  },
+  "terms": {
+    "metaTitle": "Terms of Service — LumiKin",
+    "metaDescription": "Terms governing your use of the LumiKin game rating service."
+  },
+  "press": {
+    "metaTitle": "Press Kit — LumiKin",
+    "metaDescription": "Brand assets, coverage stats, quotable facts, and press contact for LumiKin — the structured game-rating engine for parents.",
+    "ogDescription": "Brand assets, coverage stats, quotable facts, and press contact for LumiKin."
   }
 }

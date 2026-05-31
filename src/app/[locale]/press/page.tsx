@@ -2,24 +2,31 @@ export const revalidate = 3600
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { fetchSiteStats, type SiteStats } from '@/lib/stats'
 import { CURRENT_METHODOLOGY_VERSION, RUBRIC_DIMENSION_COUNT } from '@/lib/methodology'
 import PlausibleGoal from '@/components/PlausibleGoal'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
-const PAGE_URL = `${SITE_URL}/en/press`
 
-export const metadata: Metadata = {
-  title: 'Press Kit — LumiKin',
-  description:
-    'Brand assets, coverage stats, quotable facts, and press contact for LumiKin — the structured game-rating engine for parents.',
-  openGraph: {
-    title: 'Press Kit — LumiKin',
-    description:
-      'Brand assets, coverage stats, quotable facts, and press contact for LumiKin.',
-    type: 'website',
-    url: PAGE_URL,
-  },
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'press' })
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  const title    = t('metaTitle' as any)
+  const desc     = t('metaDescription' as any)
+  const ogDesc   = t('ogDescription' as any)
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+  return {
+    title,
+    description: desc,
+    openGraph: {
+      title,
+      description: ogDesc,
+      type: 'website',
+      url: `${SITE_URL}/${locale}/press`,
+    },
+  }
 }
 
 // ─── Brand ───────────────────────────────────────────────────────────────────

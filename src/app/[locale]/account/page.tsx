@@ -9,8 +9,16 @@ import Icon from '@/components/Icon'
 import ProfileManager from '@/components/ProfileManager'
 import AccountActions from '@/components/AccountActions'
 
+import type { Metadata } from 'next'
+
 export const dynamic = 'force-dynamic'
-export const metadata = { title: 'Account Settings — LumiKin' }
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'account' })
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  return { title: t('metaTitle' as any) }
+}
 
 export default async function AccountPage() {
   const [session, locale, t] = await Promise.all([auth(), getLocale(), getTranslations('account')])

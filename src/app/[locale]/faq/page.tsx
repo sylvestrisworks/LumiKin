@@ -38,9 +38,15 @@ function portableToPlain(blocks: PortableTextBlock[] | undefined): string {
 // hardcoded LumiScore section is more detailed than what fits portable text).
 const PARENT_INTENT_CATEGORIES = ['general', 'screen-time', 'game-safety']
 
-export const metadata: Metadata = {
-  title: 'How it works — LumiKin',
-  description: 'Understand the LumiScore, Benefit Density Score, Risk Intensity Score, and daily time recommendations.',
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'faq' })
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  return {
+    title:       t('metaTitle' as any),
+    description: t('metaDescription' as any),
+  }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 }
 
 // ─── Data ─────────────────────────────────────────────────────────────────────

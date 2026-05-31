@@ -8,9 +8,15 @@ import { BookOpen, Newspaper, HelpCircle, ArrowRight } from 'lucide-react'
 
 export const revalidate = 3600
 
-export const metadata: Metadata = {
-  title: 'Learn — Parental Guides, News & FAQs | LumiKin',
-  description: 'Expert guides for parents on screen time, game safety, and age-appropriate gaming. News, tips, and answers to your most common questions.',
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'learn' })
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  return {
+    title:       t('metaTitle' as any),
+    description: t('metaDescription' as any),
+  }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 }
 
 const CATEGORY_COLORS: Record<string, string> = {

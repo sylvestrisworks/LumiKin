@@ -4,10 +4,10 @@ import SearchBar from '@/components/SearchBar'
 import { fetchSiteStats } from '@/lib/stats'
 
 // Editorial cover headline. Replaces the legacy slate hero so the homepage
-// reads as a magazine front from the Masthead down. Keeps the typeahead
-// <SearchBar> as-is — its rounded chrome doesn't quite match the editorial
-// palette but the typeahead UX is worth preserving over a pure-editorial
-// look. Restyle the input itself in a separate pass if we want full purity.
+// reads as a magazine front from the Masthead down. SearchBar renders in
+// its editorial variant — hairline ink border on paper, italic Fraunces
+// placeholder, accent focus rule — so it sits in the cover without breaking
+// the palette.
 export default async function EditorialHero({ locale }: { locale: string }) {
   const [t, stats] = await Promise.all([
     getTranslations('home'),
@@ -29,7 +29,7 @@ export default async function EditorialHero({ locale }: { locale: string }) {
         </p>
 
         <div className="max-w-2xl">
-          <SearchBar placeholder={t('searchPlaceholder')} />
+          <SearchBar placeholder={t('searchPlaceholder')} variant="editorial" />
         </div>
 
         <div className="mt-6">

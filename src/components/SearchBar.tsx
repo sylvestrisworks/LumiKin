@@ -32,7 +32,10 @@ function splitTitle(title: string): [string, string | null] {
   return [title, null]
 }
 
-export default function SearchBar({ placeholder }: { placeholder?: string }) {
+type SearchBarVariant = 'default' | 'editorial'
+
+export default function SearchBar({ placeholder, variant = 'default' }: { placeholder?: string; variant?: SearchBarVariant }) {
+  const editorial = variant === 'editorial'
   const t       = useTranslations('search')
   const tGenres = useTranslations('genres')
   const locale = useLocale()
@@ -151,7 +154,7 @@ export default function SearchBar({ placeholder }: { placeholder?: string }) {
       <form onSubmit={handleSubmit}>
         <div className="relative">
           <svg
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"
+            className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${editorial ? 'text-muted' : 'text-slate-400'}`}
             fill="none" stroke="currentColor" viewBox="0 0 24 24"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -168,13 +171,14 @@ export default function SearchBar({ placeholder }: { placeholder?: string }) {
             autoComplete="off"
             aria-autocomplete="list"
             aria-expanded={showDropdown}
-            className="w-full pl-12 pr-4 py-3.5 text-base rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm
-              focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
-              placeholder:text-slate-400 dark:placeholder:text-slate-500"
+            className={editorial
+              ? 'w-full pl-12 pr-4 py-3.5 text-base border border-ink/60 bg-paper text-ink font-serif transition-colors focus:outline-none focus:border-accent placeholder:italic placeholder:text-muted'
+              : 'w-full pl-12 pr-4 py-3.5 text-base rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-slate-400 dark:placeholder:text-slate-500'
+            }
           />
           {loading && (
             <div className="absolute right-4 top-1/2 -translate-y-1/2" aria-label={t('loading')} role="status">
-              <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+              <div className={`w-4 h-4 border-2 ${editorial ? 'border-accent' : 'border-indigo-500'} border-t-transparent rounded-full animate-spin`} />
             </div>
           )}
         </div>
@@ -184,49 +188,69 @@ export default function SearchBar({ placeholder }: { placeholder?: string }) {
       {showDropdown && (
         <div
           role="listbox"
-          className="absolute top-full mt-1.5 left-0 right-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg z-[200] overflow-hidden max-h-[70vh] overflow-y-auto"
+          className={editorial
+            ? 'absolute top-full -mt-px left-0 right-0 bg-paper border border-ink/60 z-[200] overflow-hidden max-h-[70vh] overflow-y-auto'
+            : 'absolute top-full mt-1.5 left-0 right-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg z-[200] overflow-hidden max-h-[70vh] overflow-y-auto'
+          }
         >
           {results.length > 0 ? (
             results.map((game, idx) => {
               const [mainTitle, subtitle] = splitTitle(game.title)
               const isFocused = idx === focusedIdx
+              const rowCls = editorial
+                ? `w-full flex items-center gap-3 px-4 py-3 text-left border-b border-ink/20 last:border-0 transition-colors ${isFocused ? 'bg-ink/[0.06]' : 'hover:bg-ink/[0.03]'}`
+                : `w-full flex items-center gap-3 px-4 py-3 text-left border-b border-slate-100 dark:border-slate-700 last:border-0 transition-colors ${isFocused ? 'bg-indigo-50 dark:bg-indigo-900/30' : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'}`
               return (
                 <button
                   key={game.slug}
                   ref={el => { itemRefs.current[idx] = el }}
                   role="option"
                   aria-selected={isFocused}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-left border-b border-slate-100 dark:border-slate-700 last:border-0 transition-colors
-                    ${isFocused ? 'bg-indigo-50 dark:bg-indigo-900/30' : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'}`}
+                  className={rowCls}
                   onClick={() => navigate(game)}
                   onMouseEnter={() => setFocusedIdx(idx)}
                 >
                   {/* Thumbnail */}
-                  <div className="w-10 h-10 rounded-lg overflow-hidden bg-indigo-100 shrink-0 flex items-center justify-center">
+                  <div className={editorial
+                    ? 'w-10 h-10 overflow-hidden bg-ink/10 shrink-0 flex items-center justify-center'
+                    : 'w-10 h-10 rounded-lg overflow-hidden bg-indigo-100 shrink-0 flex items-center justify-center'
+                  }>
                     {game.backgroundImage ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={game.backgroundImage} alt="" className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-xs font-bold text-indigo-600">
+                      <span className={editorial ? 'text-xs font-bold text-ink/50 font-serif' : 'text-xs font-bold text-indigo-600'}>
                         {mainTitle.slice(0, 2).toUpperCase()}
                       </span>
                     )}
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
+                    <p className={editorial
+                      ? 'text-base font-serif font-medium text-ink truncate'
+                      : 'text-sm font-semibold text-slate-800 dark:text-slate-100 truncate'
+                    }>
                       {mainTitle}
                       {subtitle && (
-                        <span className="font-normal text-slate-400 dark:text-slate-500"> · {subtitle}</span>
+                        <span className={editorial
+                          ? 'font-normal text-muted'
+                          : 'font-normal text-slate-400 dark:text-slate-500'
+                        }> · {subtitle}</span>
                       )}
                     </p>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       {game.developer && (
-                        <span className="text-xs text-slate-500 dark:text-slate-400 truncate">{game.developer}</span>
+                        <span className={editorial
+                          ? 'text-xs text-muted truncate'
+                          : 'text-xs text-slate-500 dark:text-slate-400 truncate'
+                        }>{game.developer}</span>
                       )}
                       {game.genres[0] && (
                         /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-                        <span className="text-xs text-slate-400 dark:text-slate-500">· {localizeGenre(game.genres[0], tGenres as any)}</span>
+                        <span className={editorial
+                          ? 'text-xs text-muted'
+                          : 'text-xs text-slate-400 dark:text-slate-500'
+                        }>· {localizeGenre(game.genres[0], tGenres as any)}</span>
                       )}
                     </div>
                   </div>
@@ -240,10 +264,16 @@ export default function SearchBar({ placeholder }: { placeholder?: string }) {
             })
           ) : showNoResults ? (
             <div className="px-5 py-4 text-center">
-              <p className="text-sm text-slate-500 dark:text-slate-400">{t('noResults', { query })}</p>
+              <p className={editorial ? 'text-sm font-serif italic text-muted' : 'text-sm text-slate-500 dark:text-slate-400'}>
+                {t('noResults', { query })}
+              </p>
               <a
                 href={`/${locale}/browse`}
-                className="mt-2 inline-block text-xs text-indigo-600 hover:underline font-medium"
+                className={editorial
+                  ? 'mt-2 inline-block text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors'
+                  : 'mt-2 inline-block text-xs text-indigo-600 hover:underline font-medium'
+                }
+                style={editorial ? { fontVariantCaps: 'all-small-caps' } : undefined}
               >
                 {t('browseAll')}
               </a>

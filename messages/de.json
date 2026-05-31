@@ -805,7 +805,15 @@
     "parentGuidePara2": "<strong>Roblox ist eine Plattform mit über 40 Millionen von Nutzern erstellten Spielen</strong>, nicht nur ein einziges Spiel. Qualität, Sicherheit und Altersgerechtheit variieren stark zwischen den einzelnen Erlebnissen. Die LumiKin Bewertungen oben beziehen sich auf individuelle Erlebnisse – die Plattform selbst garantiert keine Sicherheit.",
     "parentGuidePara3": "<strong>Robux ist die In-Game-Währung</strong>, die in den meisten beliebten Erlebnissen verwendet wird. Viele Spiele sind auf Robux-Ausgaben ausgelegt – Pay-to-Win-Mechaniken, exklusive Kosmetika und der soziale Vergleich von Avatar-Gegenständen sind üblich. Lege eine klare Ausgabenpolitik fest, bevor dein Kind die erste Kaufaufforderung erhält.",
     "parentGuidePara4": "<strong>Der Chatfilter ist unvollkommen.</strong> Kinder finden regelmäßig Umgehungen (Zahlenersatz, absichtliche Falschschreibungen). Überprüfe regelmäßig den Chatverlauf mit den Eltern-PIN-Tools und sprich offen darüber, was zu tun ist, wenn jemand etwas Unangenehmes sagt.",
-    "parentGuideAction": "<strong>Aktion:</strong> Roblox Einstellungen → Privatsphäre → Kontoeinschränkungen (AN). Das beschränkt Chat, Freundschaftsanfragen und den Zugang zu Spielen auf eine vorab geprüfte, altersgerechte Auswahl. Lege einen Eltern-PIN fest, um zu verhindern, dass dein Kind diese Einstellung deaktiviert."
+    "parentGuideAction": "<strong>Aktion:</strong> Roblox Einstellungen → Privatsphäre → Kontoeinschränkungen (AN). Das beschränkt Chat, Freundschaftsanfragen und den Zugang zu Spielen auf eine vorab geprüfte, altersgerechte Auswahl. Lege einen Eltern-PIN fest, um zu verhindern, dass dein Kind diese Einstellung deaktiviert.",
+    "hubMetaTitle": "Roblox-Leitfaden — LumiKin",
+    "hubMetaDescription": "LumiKin-Bewertungen für beliebte Roblox-Erlebnisse. Finde heraus, welche Spiele für dein Kind sicher sind — mit Werten für Fremdkontakt-Risiko, Monetarisierungsdruck und mehr.",
+    "platformBadge": "Plattform",
+    "hubTagline": "Millionen nutzergenerierter Erlebnisse — die Sicherheit variiert stark. Stöbere durch unsere Bewertungen, um das Passende für dein Kind zu finden.",
+    "recommendedSuffix": "empfohlen",
+    "freeToPlay": "Kostenlos spielbar",
+    "noFilterMatch": "Keine Erlebnisse passen zu deinen Filtern.",
+    "noIndexed": "Noch keine Erlebnisse indexiert. Schau bald wieder vorbei."
   },
   "fortnite": {
     "title": "Fortnite Creative",

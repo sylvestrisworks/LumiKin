@@ -794,7 +794,15 @@
     "parentGuidePara2": "<strong>Roblox is a platform of 40 million+ user-made games</strong>, not a single game. Quality, safety, and age-appropriateness vary dramatically between experiences. The LumiKin ratings above reflect individual experiences — the platform itself does not guarantee safety.",
     "parentGuidePara3": "<strong>Robux is the in-game currency</strong> used across most popular experiences. Many games are designed around Robux spending — pay-to-win mechanics, exclusive cosmetics, and social comparison of avatar items are common. Set a clear spending policy before your child encounters the first purchase prompt.",
     "parentGuidePara4": "<strong>The chat filter is imperfect.</strong> Children regularly find workarounds (number substitutions, deliberate misspellings). Monitor chat history periodically using the Parent PIN tools, and have an open conversation about what to do if someone says something uncomfortable.",
-    "parentGuideAction": "<strong>Action:</strong> Roblox settings → Privacy → Account Restrictions (ON). This restricts chat, friend requests, and game access to a pre-screened age-appropriate set. Set a Parent PIN to prevent your child from disabling it."
+    "parentGuideAction": "<strong>Action:</strong> Roblox settings → Privacy → Account Restrictions (ON). This restricts chat, friend requests, and game access to a pre-screened age-appropriate set. Set a Parent PIN to prevent your child from disabling it.",
+    "hubMetaTitle": "Roblox Experience Guide — LumiKin",
+    "hubMetaDescription": "LumiKin ratings for popular Roblox experiences. Find out which games are safe for your child, with scores for stranger risk, monetization pressure, and more.",
+    "platformBadge": "Platform",
+    "hubTagline": "Millions of user-generated experiences — safety varies widely. Browse our ratings to find the best fits for your child.",
+    "recommendedSuffix": "recommended",
+    "freeToPlay": "Free to play",
+    "noFilterMatch": "No experiences match your filters.",
+    "noIndexed": "No experiences indexed yet. Check back soon."
   },
   "fortnite": {
     "title": "Fortnite Creative",

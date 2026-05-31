@@ -495,7 +495,8 @@ async function TraditionalPlatformPage({
             </Link>
 
             <p className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
-              Average LumiScore
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('averageLumiScore' as any)}
             </p>
 
             <div
@@ -509,11 +510,13 @@ async function TraditionalPlatformPage({
               className="text-sm text-slate-400 dark:text-slate-500 mt-2"
               style={{ fontVariant: 'small-caps', letterSpacing: '0.06em' }}
             >
-              out of 100
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('outOf100' as any)}
             </p>
 
             <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-              across <span className="font-bold text-slate-700 dark:text-slate-200">{scoredCount}</span> rated {config.name} games
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t.rich('acrossScoredGames' as any, { count: scoredCount, name: config.name, bold: (c) => <span className="font-bold text-slate-700 dark:text-slate-200">{c}</span> })}
             </p>
           </div>
         )}
@@ -526,26 +529,30 @@ async function TraditionalPlatformPage({
                 <div className="w-8 h-8 bg-green-200 dark:bg-green-800 rounded-xl flex items-center justify-center">
                   <Sparkles size={16} className="text-green-700 dark:text-green-300" strokeWidth={2.5} />
                 </div>
-                <p className="text-xs font-black uppercase tracking-widest text-green-700 dark:text-green-400">Avg Growth</p>
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <p className="text-xs font-black uppercase tracking-widest text-green-700 dark:text-green-400">{t('avgGrowth' as any)}</p>
               </div>
               <p className="text-3xl font-black tracking-tighter text-green-900 dark:text-green-200">
                 {Math.round(avgBds * 100)}
                 <span className="text-base font-bold text-green-600 dark:text-green-400">/100</span>
               </p>
-              <p className="text-xs font-semibold text-green-700 dark:text-green-400">Benefit Density</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-xs font-semibold text-green-700 dark:text-green-400">{t('benefitDensity' as any)}</p>
             </div>
             <div className="bg-orange-50 dark:bg-orange-900/20 rounded-3xl p-4 sm:p-5 space-y-2">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-orange-200 dark:bg-orange-800 rounded-xl flex items-center justify-center">
                   <Zap size={16} className="text-orange-700 dark:text-orange-300" strokeWidth={2.5} />
                 </div>
-                <p className="text-xs font-black uppercase tracking-widest text-orange-700 dark:text-orange-400">Avg Risk</p>
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <p className="text-xs font-black uppercase tracking-widest text-orange-700 dark:text-orange-400">{t('avgRisk' as any)}</p>
               </div>
               <p className="text-3xl font-black tracking-tighter text-orange-900 dark:text-orange-200">
                 {Math.round(avgRis * 100)}
                 <span className="text-base font-bold text-orange-600 dark:text-orange-400">/100</span>
               </p>
-              <p className="text-xs font-semibold text-orange-700 dark:text-orange-400">Engagement Hooks</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-xs font-semibold text-orange-700 dark:text-orange-400">{t('engagementHooks' as any)}</p>
             </div>
           </div>
         )}
@@ -556,22 +563,26 @@ async function TraditionalPlatformPage({
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
               <Gamepad2 size={16} className="mx-auto mb-1 text-slate-400 dark:text-slate-500" />
               <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{scoredCount}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Games rated</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('gamesRated' as any)}</p>
             </div>
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
               <ShieldCheck size={16} className="mx-auto mb-1 text-emerald-500" />
               <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{safestCount}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Safest picks</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('safestPicks' as any)}</p>
             </div>
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
               <Trophy size={16} className="mx-auto mb-1 text-amber-500" />
               <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{maxScore ?? '—'}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Top score</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('topScore' as any)}</p>
             </div>
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
               <Clock size={16} className="mx-auto mb-1 text-blue-500" />
               <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{avgTime ?? '—'}<span className="text-xs font-bold">m</span></p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Avg time/day</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('avgTimePerDay' as any)}</p>
             </div>
           </div>
         )}
@@ -591,7 +602,8 @@ async function TraditionalPlatformPage({
               )}
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                  <Trophy size={11} strokeWidth={2.5} /> Highest-rated {config.name} pick
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  <Trophy size={11} strokeWidth={2.5} /> {t('highestRatedPick' as any, { name: config.name })}
                 </p>
                 <p className="text-base font-bold text-slate-800 dark:text-slate-100 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                   {topGame.title}
@@ -849,7 +861,8 @@ export default async function PlatformHubPage({ params }: Props) {
         {avgScore != null && (
           <div className="relative bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 px-6 pt-6 pb-6 text-center">
             <p className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
-              Average LumiScore
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('averageLumiScore' as any)}
             </p>
             <div
               className={`leading-none font-bold tabular-nums ${curascoreText(avgScore)}`}
@@ -861,10 +874,12 @@ export default async function PlatformHubPage({ params }: Props) {
               className="text-sm text-slate-400 dark:text-slate-500 mt-2"
               style={{ fontVariant: 'small-caps', letterSpacing: '0.06em' }}
             >
-              out of 100
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('outOf100' as any)}
             </p>
             <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-              across <span className="font-bold text-slate-700 dark:text-slate-200">{scoredCount}</span> scored experiences
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t.rich('acrossScoredExperiences' as any, { count: scoredCount, bold: (c) => <span className="font-bold text-slate-700 dark:text-slate-200">{c}</span> })}
             </p>
           </div>
         )}
@@ -877,26 +892,30 @@ export default async function PlatformHubPage({ params }: Props) {
                 <div className="w-8 h-8 bg-green-200 dark:bg-green-800 rounded-xl flex items-center justify-center">
                   <Sparkles size={16} className="text-green-700 dark:text-green-300" strokeWidth={2.5} />
                 </div>
-                <p className="text-xs font-black uppercase tracking-widest text-green-700 dark:text-green-400">Avg Growth</p>
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <p className="text-xs font-black uppercase tracking-widest text-green-700 dark:text-green-400">{t('avgGrowth' as any)}</p>
               </div>
               <p className="text-3xl font-black tracking-tighter text-green-900 dark:text-green-200">
                 {Math.round(avgBds * 100)}
                 <span className="text-base font-bold text-green-600 dark:text-green-400">/100</span>
               </p>
-              <p className="text-xs font-semibold text-green-700 dark:text-green-400">Benefit Density</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-xs font-semibold text-green-700 dark:text-green-400">{t('benefitDensity' as any)}</p>
             </div>
             <div className="bg-orange-50 dark:bg-orange-900/20 rounded-3xl p-4 sm:p-5 space-y-2">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-orange-200 dark:bg-orange-800 rounded-xl flex items-center justify-center">
                   <Zap size={16} className="text-orange-700 dark:text-orange-300" strokeWidth={2.5} />
                 </div>
-                <p className="text-xs font-black uppercase tracking-widest text-orange-700 dark:text-orange-400">Avg Risk</p>
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <p className="text-xs font-black uppercase tracking-widest text-orange-700 dark:text-orange-400">{t('avgRisk' as any)}</p>
               </div>
               <p className="text-3xl font-black tracking-tighter text-orange-900 dark:text-orange-200">
                 {Math.round(avgRis * 100)}
                 <span className="text-base font-bold text-orange-600 dark:text-orange-400">/100</span>
               </p>
-              <p className="text-xs font-semibold text-orange-700 dark:text-orange-400">Engagement Hooks</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-xs font-semibold text-orange-700 dark:text-orange-400">{t('engagementHooks' as any)}</p>
             </div>
           </div>
         )}
@@ -907,22 +926,26 @@ export default async function PlatformHubPage({ params }: Props) {
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
               <Gamepad2 size={16} className="mx-auto mb-1 text-slate-400 dark:text-slate-500" />
               <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{scoredCount}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Experiences</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('experiences' as any)}</p>
             </div>
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
               <ShieldCheck size={16} className="mx-auto mb-1 text-emerald-500" />
               <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{safestCount}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Safest picks</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('safestPicks' as any)}</p>
             </div>
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
               <Trophy size={16} className="mx-auto mb-1 text-amber-500" />
               <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{maxScore ?? '—'}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Top score</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('topScore' as any)}</p>
             </div>
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
               <Clock size={16} className="mx-auto mb-1 text-blue-500" />
               <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{avgTime ?? '—'}<span className="text-xs font-bold">m</span></p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Avg time/day</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('avgTimePerDay' as any)}</p>
             </div>
           </div>
         )}
@@ -942,7 +965,8 @@ export default async function PlatformHubPage({ params }: Props) {
               )}
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                  <Trophy size={11} strokeWidth={2.5} /> Highest-rated {platform.title} experience
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  <Trophy size={11} strokeWidth={2.5} /> {t('highestRatedExperience' as any, { name: platform.title })}
                 </p>
                 <p className="text-base font-bold text-slate-800 dark:text-slate-100 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                   {topExperience.title}
@@ -971,7 +995,8 @@ export default async function PlatformHubPage({ params }: Props) {
 
         {scoredCount === 0 && (
           <div className="text-center py-16 text-slate-400 dark:text-slate-500">
-            No scored experiences yet. Check back soon.
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {t('noScoredExperiences' as any)}
           </div>
         )}
 

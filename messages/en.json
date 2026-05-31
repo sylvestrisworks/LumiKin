@@ -795,7 +795,15 @@
     "parentGuidePara2": "<strong>Roblox is a platform of 40 million+ user-made games</strong>, not a single game. Quality, safety, and age-appropriateness vary dramatically between experiences. The LumiKin ratings above reflect individual experiences — the platform itself does not guarantee safety.",
     "parentGuidePara3": "<strong>Robux is the in-game currency</strong> used across most popular experiences. Many games are designed around Robux spending — pay-to-win mechanics, exclusive cosmetics, and social comparison of avatar items are common. Set a clear spending policy before your child encounters the first purchase prompt.",
     "parentGuidePara4": "<strong>The chat filter is imperfect.</strong> Children regularly find workarounds (number substitutions, deliberate misspellings). Monitor chat history periodically using the Parent PIN tools, and have an open conversation about what to do if someone says something uncomfortable.",
-    "parentGuideAction": "<strong>Action:</strong> Roblox settings → Privacy → Account Restrictions (ON). This restricts chat, friend requests, and game access to a pre-screened age-appropriate set. Set a Parent PIN to prevent your child from disabling it."
+    "parentGuideAction": "<strong>Action:</strong> Roblox settings → Privacy → Account Restrictions (ON). This restricts chat, friend requests, and game access to a pre-screened age-appropriate set. Set a Parent PIN to prevent your child from disabling it.",
+    "hubMetaTitle": "Roblox Experience Guide — LumiKin",
+    "hubMetaDescription": "LumiKin ratings for popular Roblox experiences. Find out which games are safe for your child, with scores for stranger risk, monetization pressure, and more.",
+    "platformBadge": "Platform",
+    "hubTagline": "Millions of user-generated experiences — safety varies widely. Browse our ratings to find the best fits for your child.",
+    "recommendedSuffix": "recommended",
+    "freeToPlay": "Free to play",
+    "noFilterMatch": "No experiences match your filters.",
+    "noIndexed": "No experiences indexed yet. Check back soon."
   },
   "fortnite": {
     "title": "Fortnite Creative",
@@ -1049,7 +1057,23 @@
     "editorial_nintendo_switch": "Nintendo Switch has one of the most family-friendly first-party libraries of any console, with beloved franchises like Mario, Zelda, and Pokémon consistently earning high benefit scores. The platform is also easy to manage with built-in parental controls and screen time limits. LumiKin scores help you find the standout third-party games worth adding to your collection.",
     "editorial_ios": "The App Store labels many games \"free\", but the real cost is often attention, in-app purchases, or intrusive ads. iOS games range from genuinely educational apps to highly optimized engagement loops. LumiKin scores flag monetization pressure and dopamine-trap mechanics so you can tell the difference before downloading.",
     "editorial_android": "Android gaming spans high-quality ports, indie gems, and heavily monetized free-to-play titles — often hard to tell apart from the Play Store listing alone. Google's content ratings cover subject matter, not design patterns. LumiKin scores go deeper, surfacing which games are built for benefit and which are built for maximum session length.",
-    "editorial_pc": "PC gaming offers the widest catalogue of any platform, from calm educational puzzlers to massive online worlds. Steam family controls and library sharing features help, but the sheer volume makes curation difficult. LumiKin scores sort the catalogue by benefit-to-risk ratio so you can build a quality family library without trial and error."
+    "editorial_pc": "PC gaming offers the widest catalogue of any platform, from calm educational puzzlers to massive online worlds. Steam family controls and library sharing features help, but the sheer volume makes curation difficult. LumiKin scores sort the catalogue by benefit-to-risk ratio so you can build a quality family library without trial and error.",
+    "averageLumiScore": "Average LumiScore",
+    "outOf100": "out of 100",
+    "acrossScoredGames": "across <bold>{count}</bold> rated {name} games",
+    "acrossScoredExperiences": "across <bold>{count}</bold> scored experiences",
+    "avgGrowth": "Avg Growth",
+    "benefitDensity": "Benefit Density",
+    "avgRisk": "Avg Risk",
+    "engagementHooks": "Engagement Hooks",
+    "gamesRated": "Games rated",
+    "experiences": "Experiences",
+    "safestPicks": "Safest picks",
+    "topScore": "Top score",
+    "avgTimePerDay": "Avg time/day",
+    "highestRatedPick": "Highest-rated {name} pick",
+    "highestRatedExperience": "Highest-rated {name} experience",
+    "noScoredExperiences": "No scored experiences yet. Check back soon."
   },
   "ageHub": {
     "indexMetaTitle": "Browse games by age — LumiKin",

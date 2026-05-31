@@ -806,7 +806,15 @@
     "parentGuidePara2": "<strong>Roblox est une plateforme de plus de 40 millions de jeux créés par les utilisateurs</strong>, et non un jeu unique. La qualité, la sécurité et l'adéquation à l'âge varient considérablement entre les expériences. Les évaluations LumiKin ci-dessus reflètent des expériences individuelles — la plateforme elle-même ne garantit pas la sécurité.",
     "parentGuidePara3": "<strong>Le Robux est la monnaie du jeu</strong> utilisée dans la plupart des expériences populaires. De nombreux jeux sont conçus autour des dépenses de Robux — les mécanismes de \"pay-to-win\", les cosmétiques exclusifs et la comparaison sociale des objets d'avatar sont courants. Établissez une politique de dépenses claire avant que votre enfant ne rencontre la première incitation à l'achat.",
     "parentGuidePara4": "<strong>Le filtre de chat est imparfait.</strong> Les enfants trouvent régulièrement des moyens de le contourner (substitutions de chiffres, fautes d'orthographe délibérées). Surveillez régulièrement l'historique de chat à l'aide des outils du code PIN parental, et ayez une conversation ouverte sur ce qu'il faut faire si quelqu'un dit quelque chose d'inapproprié.",
-    "parentGuideAction": "<strong>Action :</strong> Paramètres Roblox → Confidentialité → Restrictions de compte (ACTIVÉ). Cela restreint le chat, les demandes d'amis et l'accès aux jeux à un ensemble présélectionné et adapté à l'âge. Définissez un code PIN parental pour empêcher votre enfant de le désactiver."
+    "parentGuideAction": "<strong>Action :</strong> Paramètres Roblox → Confidentialité → Restrictions de compte (ACTIVÉ). Cela restreint le chat, les demandes d'amis et l'accès aux jeux à un ensemble présélectionné et adapté à l'âge. Définissez un code PIN parental pour empêcher votre enfant de le désactiver.",
+    "hubMetaTitle": "Guide des expériences Roblox — LumiKin",
+    "hubMetaDescription": "Évaluations LumiKin pour les expériences Roblox populaires. Découvrez quels jeux sont adaptés à votre enfant, avec des scores sur le risque d'inconnus, la pression de monétisation et plus.",
+    "platformBadge": "Plateforme",
+    "hubTagline": "Des millions d'expériences créées par les utilisateurs — la sécurité varie énormément. Parcourez nos évaluations pour trouver les mieux adaptées à votre enfant.",
+    "recommendedSuffix": "recommandé",
+    "freeToPlay": "Gratuit",
+    "noFilterMatch": "Aucune expérience ne correspond à vos filtres.",
+    "noIndexed": "Aucune expérience indexée pour le moment. Revenez bientôt."
   },
   "fortnite": {
     "title": "Fortnite Creative",
@@ -1060,7 +1068,23 @@
     "editorial_nintendo_switch": "Nintendo Switch has one of the most family-friendly first-party libraries of any console, with beloved franchises like Mario, Zelda, and Pokémon consistently earning high benefit scores. The platform is also easy to manage with built-in parental controls and screen time limits. LumiKin scores help you find the standout third-party games worth adding to your collection.",
     "editorial_ios": "The App Store labels many games \"free\", but the real cost is often attention, in-app purchases, or intrusive ads. iOS games range from genuinely educational apps to highly optimized engagement loops. LumiKin scores flag monetization pressure and dopamine-trap mechanics so you can tell the difference before downloading.",
     "editorial_android": "Android gaming spans high-quality ports, indie gems, and heavily monetized free-to-play titles — often hard to tell apart from the Play Store listing alone. Google's content ratings cover subject matter, not design patterns. LumiKin scores go deeper, surfacing which games are built for benefit and which are built for maximum session length.",
-    "editorial_pc": "PC gaming offers the widest catalogue of any platform, from calm educational puzzlers to massive online worlds. Steam family controls and library sharing features help, but the sheer volume makes curation difficult. LumiKin scores sort the catalogue by benefit-to-risk ratio so you can build a quality family library without trial and error."
+    "editorial_pc": "PC gaming offers the widest catalogue of any platform, from calm educational puzzlers to massive online worlds. Steam family controls and library sharing features help, but the sheer volume makes curation difficult. LumiKin scores sort the catalogue by benefit-to-risk ratio so you can build a quality family library without trial and error.",
+    "averageLumiScore": "LumiScore moyen",
+    "outOf100": "sur 100",
+    "acrossScoredGames": "sur <bold>{count}</bold> jeux {name} évalués",
+    "acrossScoredExperiences": "sur <bold>{count}</bold> expériences évaluées",
+    "avgGrowth": "Croissance moy.",
+    "benefitDensity": "Densité de bénéfices",
+    "avgRisk": "Risque moy.",
+    "engagementHooks": "Crochets d'engagement",
+    "gamesRated": "Jeux évalués",
+    "experiences": "Expériences",
+    "safestPicks": "Choix les plus sûrs",
+    "topScore": "Meilleur score",
+    "avgTimePerDay": "Temps moy./jour",
+    "highestRatedPick": "Jeu {name} le mieux noté",
+    "highestRatedExperience": "Expérience {name} la mieux notée",
+    "noScoredExperiences": "Pas encore d'expérience évaluée. Revenez bientôt."
   },
   "ageHub": {
     "indexMetaTitle": "Browse games by age — LumiKin",

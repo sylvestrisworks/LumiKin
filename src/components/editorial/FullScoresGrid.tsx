@@ -19,6 +19,92 @@ function rRow(code: string, label: string, value: number | null): ScoreRow {
   return { code, label, value: (value ?? 0) / 3 }
 }
 
+// Display-only sections normalize off the 0-3 scale.
+function dRow(code: string, label: string, value: number | null): ScoreRow {
+  return { code, label, value: (value ?? 0) / 3 }
+}
+
+// Display-only sections — surfaced only when at least one field is non-null,
+// matching legacy GameCard which skipped these entirely if data was missing.
+type DisplaySection = { code: string; title: string; suffix?: string; tone: 'ink' | 'accent'; rows: ScoreRow[] }
+
+function buildDisplayOnlySections(review: SerializedReview, t: T): DisplaySection[] {
+  const sections: DisplaySection[] = []
+
+  if ([review.violenceLevel, review.sexualContent, review.language, review.substanceRef, review.fearHorror].some((v) => v != null)) {
+    sections.push({
+      code: 'R4',
+      title: t('r4Content'),
+      suffix: t('displayOnly'),
+      tone: 'accent',
+      rows: [
+        dRow('R4.1', t('fieldViolenceLevel'), review.violenceLevel),
+        dRow('R4.2', t('fieldSexualContent'), review.sexualContent),
+        dRow('R4.3', t('fieldLanguage'),      review.language),
+        dRow('R4.4', t('fieldSubstanceRef'),  review.substanceRef),
+        dRow('R4.5', t('fieldFearHorror'),    review.fearHorror),
+      ],
+    })
+  }
+
+  if ([review.r5CrossPlatform, review.r5LoadTime, review.r5MobileOptimized, review.r5LoginBarrier].some((v) => v != null)) {
+    sections.push({
+      code: 'R5',
+      title: t('r5Accessibility'),
+      suffix: t('displayOnly'),
+      tone: 'ink',
+      rows: [
+        dRow('R5.1', t('fieldCrossPlatform'),   review.r5CrossPlatform),
+        dRow('R5.2', t('fieldLoadTime'),        review.r5LoadTime),
+        dRow('R5.3', t('fieldMobileOptimised'), review.r5MobileOptimized),
+        dRow('R5.4', t('fieldLoginBarrier'),    review.r5LoginBarrier),
+      ],
+    })
+  }
+
+  if ([review.r6InfiniteGameplay, review.r6NoStoppingPoints, review.r6NoGameOver, review.r6NoChapterStructure].some((v) => v != null)) {
+    sections.push({
+      code: 'R6',
+      title: t('r6Endless'),
+      suffix: t('displayOnly'),
+      tone: 'accent',
+      rows: [
+        dRow('R6.1', t('fieldInfiniteGameplay'),   review.r6InfiniteGameplay),
+        dRow('R6.2', t('fieldNoStoppingPoints'),   review.r6NoStoppingPoints),
+        dRow('R6.3', t('fieldNoGameOver'),         review.r6NoGameOver),
+        dRow('R6.4', t('fieldNoChapterStructure'), review.r6NoChapterStructure),
+      ],
+    })
+  }
+
+  if (review.repGenderBalance != null || review.repEthnicDiversity != null) {
+    sections.push({
+      code: 'REP',
+      title: t('repHeader'),
+      suffix: t('higherIsBetter'),
+      tone: 'ink',
+      rows: [
+        dRow('REP.1', t('fieldGenderBalance'),   review.repGenderBalance),
+        dRow('REP.2', t('fieldEthnicDiversity'), review.repEthnicDiversity),
+      ],
+    })
+  }
+
+  if (review.propagandaLevel != null) {
+    sections.push({
+      code: 'PROP',
+      title: t('propHeader'),
+      suffix: t('displayOnly'),
+      tone: 'accent',
+      rows: [
+        dRow('PROP.1', t('fieldPropagandaLevel'), review.propagandaLevel),
+      ],
+    })
+  }
+
+  return sections
+}
+
 function buildBenefitSections(review: SerializedReview, t: T) {
   return [
     {
@@ -126,8 +212,11 @@ export function FullScoresGrid({
     )
   }
 
-  const benefitSections = buildBenefitSections(review, t)
-  const riskSections    = buildRiskSections(review, t)
+  const benefitSections     = buildBenefitSections(review, t)
+  const riskSections        = buildRiskSections(review, t)
+  const displayOnlySections = buildDisplayOnlySections(review, t)
+  const propagandaNotes     = review.propagandaNotes
+  const bechdelResult       = review.bechdelResult
 
   return (
     <div className="space-y-12">
@@ -160,6 +249,55 @@ export function FullScoresGrid({
           <ScoreTable key={s.code} title={`${s.code} · ${s.title}`} rows={s.rows} tone="accent" />
         ))}
       </div>
+
+      {/* Display-only sections — content / accessibility / endless design /
+          representation / propaganda / Bechdel. Surfaced only when at least
+          one field is non-null. These don't feed BDS or RIS; they sit below
+          the main rubric tables under a muted "Display only" qualifier. */}
+      {(displayOnlySections.length > 0 || propagandaNotes || bechdelResult) && (
+        <div className="space-y-10 pt-6 border-t border-ink/30">
+          <p
+            className="text-kicker uppercase font-semibold text-muted"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
+            Context · {t('displayOnly')}
+          </p>
+          {displayOnlySections.map((s) => (
+            <div key={s.code}>
+              <ScoreTable
+                title={`${s.code} · ${s.title}${s.suffix ? ` · ${s.suffix}` : ''}`}
+                rows={s.rows}
+                tone={s.tone}
+              />
+              {s.code === 'PROP' && propagandaNotes && (
+                <p className="mt-3 font-serif italic text-sm text-muted leading-snug max-w-prose">
+                  {propagandaNotes}
+                </p>
+              )}
+            </div>
+          ))}
+
+          {bechdelResult && (
+            <div className="border-t border-ink/20 pt-6">
+              <p
+                className="text-kicker uppercase font-semibold text-ink mb-2"
+                style={{ fontVariantCaps: 'all-small-caps' }}
+              >
+                <span className="mr-2">♀</span>
+                {t('bechdelTitle')}
+                <span className="ml-3 text-muted normal-case tracking-normal font-normal">
+                  — {bechdelResult === 'pass' ? t('bechdelPass') : bechdelResult === 'na' ? t('bechdelNa') : t('bechdelFail')}
+                </span>
+              </p>
+              {review.bechdelNotes && (
+                <p className="font-serif italic text-sm text-muted leading-snug max-w-prose">
+                  {review.bechdelNotes}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

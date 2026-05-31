@@ -2,13 +2,12 @@ export const revalidate = 300
 
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { routing } from '@/i18n/routing'
 import { fetchSiteStats } from '@/lib/stats'
 import { Masthead } from '@/components/editorial'
 import CoverageStrip from './partners/_components/CoverageStrip'
-import SearchBar from '@/components/SearchBar'
+import EditorialHero from './_components/EditorialHero'
 import TodaysReview from './_components/TodaysReview'
 import TrackingRow from './_components/TrackingRow'
 import DeskRow from './_components/DeskRow'
@@ -148,32 +147,8 @@ export default async function HomePage({ params, searchParams }: Props) {
 
     <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
 
-      {/* ── Hero (parent-first) ──────────────────────────────────────────────── */}
-      <section className="max-w-5xl mx-auto px-6 pt-20 pb-14">
-        <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight max-w-3xl">
-          {t('h1')}
-        </h1>
-        <p className="mt-6 text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-          {t('subhead', { count: stats.total_games_scored })}
-        </p>
-
-        <div className="mt-8 max-w-xl relative">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -inset-4 -z-10 rounded-3xl blur-2xl bg-indigo-300/40 dark:bg-indigo-500/20"
-          />
-          <SearchBar placeholder={t('searchPlaceholder')} />
-        </div>
-
-        <div className="mt-5">
-          <Link
-            href={`/${locale}/browse`}
-            className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 underline underline-offset-4 hover:no-underline"
-          >
-            {t('browseAll')}
-          </Link>
-        </div>
-      </section>
+      {/* ── Editorial hero (cover headline + search + browse link) ───────────── */}
+      <EditorialHero locale={locale} />
 
       {/* ── Today's review (editorial cover) ─────────────────────────────────── */}
       <TodaysReview locale={locale} />

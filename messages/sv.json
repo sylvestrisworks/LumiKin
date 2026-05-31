@@ -1120,12 +1120,12 @@
   },
   "editorial": {
     "masthead": {
-      "tagline": "Game ratings for parents",
+      "tagline": "Spelbedömningar för föräldrar",
       "sections": {
-        "reviews": "Reviews",
-        "discover": "Discover",
-        "guides": "Guides",
-        "compare": "Compare"
+        "reviews": "Recensioner",
+        "discover": "Upptäck",
+        "guides": "Guider",
+        "compare": "Jämför"
       }
     },
     "dateline": {
@@ -1133,55 +1133,55 @@
     },
     "rosette": {
       "recommends": {
-        "top": "LUMIKIN · APPROVED",
-        "bottom": "WORTH YOUR CHILD’S TIME"
+        "top": "LUMIKIN · GODKÄND",
+        "bottom": "VÄRT DITT BARNS TID"
       },
       "caution": {
-        "top": "LUMIKIN · CAUTION",
-        "bottom": "KNOW BEFORE YOU BUY"
+        "top": "LUMIKIN · VARNING",
+        "bottom": "VETA INNAN DU KÖPER"
       }
     },
     "verdict": {
-      "growth": "Growth (BDS)",
+      "growth": "Utveckling (BDS)",
       "risk": "Risk (RIS)",
-      "dailyLimit": "Daily limit",
-      "ageGuidance": "Age guidance",
+      "dailyLimit": "Daglig gräns",
+      "ageGuidance": "Åldersrekommendation",
       "minutesShort": "min"
     },
     "headsUp": {
-      "title": "Heads up"
+      "title": "Att tänka på"
     },
     "banners": {
       "bundled": {
-        "kicker": "Bundled online — know the live-service layer",
-        "body": "The base price unlocks the singleplayer story. The connected online mode is its own product, with its own monetization and chat layer — we score those separately.",
-        "cta": "Read how we handle bundled-online games →"
+        "kicker": "Onlinepaket — känn till live-service-lagret",
+        "body": "Grundpriset låser upp enspelarberättelsen. Det uppkopplade onlineläget är en egen produkt med egen monetisering och eget chattlager — vi bedömer dem separat.",
+        "cta": "Läs hur vi hanterar onlinepaketspel →"
       },
       "pending": {
-        "kicker": "Under review · provisional scores",
-        "bodyTemplate": "We’re still verifying this experience — scores below are provisional. Confidence: {confidence}."
+        "kicker": "Under granskning · preliminära poäng",
+        "bodyTemplate": "Vi verifierar fortfarande den här upplevelsen — poängen nedan är preliminära. Tillförlitlighet: {confidence}."
       }
     },
     "meta": {
-      "basePrice": "Base price",
-      "avgPlaytime": "Avg playtime",
-      "reviewed": "Reviewed",
-      "methodology": "How scores are calculated →",
-      "byline": "By the LumiKin editors"
+      "basePrice": "Grundpris",
+      "avgPlaytime": "Genomsnittlig speltid",
+      "reviewed": "Granskad",
+      "methodology": "Så beräknas poängen →",
+      "byline": "Av LumiKins redaktörer"
     },
     "search": {
-      "placeholder": "Search {count} reviews",
-      "returnLabel": "Return ↵"
+      "placeholder": "Sök bland {count} recensioner",
+      "returnLabel": "Retur ↵"
     },
     "sections": {
-      "todaysReview": "Today’s review",
-      "whatWereTracking": "What we’re tracking",
-      "allReviews": "All reviews →",
-      "readReview": "Read the review →"
+      "todaysReview": "Dagens recension",
+      "whatWereTracking": "Vad vi följer",
+      "allReviews": "Alla recensioner →",
+      "readReview": "Läs recensionen →"
     },
     "compare": {
-      "vs": "vs",
-      "comparingTemplate": "Comparing {a} vs {b}"
+      "vs": "mot",
+      "comparingTemplate": "Jämför {a} mot {b}"
     }
   }
 }

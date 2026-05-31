@@ -495,7 +495,8 @@ async function TraditionalPlatformPage({
             </Link>
 
             <p className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
-              Average LumiScore
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('averageLumiScore' as any)}
             </p>
 
             <div
@@ -509,11 +510,13 @@ async function TraditionalPlatformPage({
               className="text-sm text-slate-400 dark:text-slate-500 mt-2"
               style={{ fontVariant: 'small-caps', letterSpacing: '0.06em' }}
             >
-              out of 100
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('outOf100' as any)}
             </p>
 
             <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-              across <span className="font-bold text-slate-700 dark:text-slate-200">{scoredCount}</span> rated {config.name} games
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t.rich('acrossScored' as any, { count: scoredCount, name: config.name, bold: (c) => <span className="font-bold text-slate-700 dark:text-slate-200">{c}</span> })}
             </p>
           </div>
         )}

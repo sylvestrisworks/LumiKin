@@ -10,12 +10,16 @@ import { curascoreText } from '@/lib/ui'
 import RobloxFilters, { type RobloxFilterState } from '@/components/RobloxFilters'
 import { getTranslations } from 'next-intl/server'
 
-export const metadata: Metadata = {
-  title: 'Roblox Experience Guide — LumiKin',
-  description: 'LumiKin ratings for popular Roblox experiences. Find out which games are safe for your child, with scores for stranger risk, monetization pressure, and more.',
-}
-
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> }
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'roblox' })
+  return {
+    title:       t('hubMetaTitle'),
+    description: t('hubMetaDescription'),
+  }
+}
 
 export default async function RobloxHubPage({ searchParams }: Props) {
   const [sp, t] = await Promise.all([searchParams, getTranslations('roblox')])
@@ -104,7 +108,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="text-[11px] font-semibold bg-red-500/25 text-red-200 border border-red-400/30 px-2 py-0.5 rounded-full tracking-wide uppercase">Platform</span>
+                <span className="text-[11px] font-semibold bg-red-500/25 text-red-200 border border-red-400/30 px-2 py-0.5 rounded-full tracking-wide uppercase">{t('platformBadge')}</span>
                 {platformScore?.curascore != null && (
                   <span className={`text-[11px] font-bold bg-white/10 border border-white/20 px-2 py-0.5 rounded-full ${curascoreText(platformScore.curascore)}`}>
                     LumiScore {platformScore.curascore}
@@ -113,7 +117,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
               </div>
               <h1 className="text-2xl font-bold text-white">Roblox</h1>
               <p className="text-sm text-white/75 mt-1 line-clamp-2">
-                Millions of user-generated experiences — safety varies widely. Browse our ratings to find the best fits for your child.
+                {t('hubTagline')}
               </p>
               <div className="flex items-center gap-2 mt-3 flex-wrap">
                 <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
@@ -123,11 +127,11 @@ export default async function RobloxHubPage({ searchParams }: Props) {
                 {platformScore?.timeRecommendationLabel && (
                   <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
                     <span className="text-sm font-semibold text-white">{platformScore.timeRecommendationLabel}</span>
-                    <span className="text-xs text-white/50 ml-1">recommended</span>
+                    <span className="text-xs text-white/50 ml-1">{t('recommendedSuffix')}</span>
                   </div>
                 )}
                 <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
-                  <span className="text-xs text-white/60">Free to play</span>
+                  <span className="text-xs text-white/60">{t('freeToPlay')}</span>
                 </div>
               </div>
             </div>
@@ -152,7 +156,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
             </div>
           ) : (
             <div className="text-center py-16 text-slate-400">
-              No experiences match your filters.
+              {t('noFilterMatch')}
             </div>
           )
         ) : (
@@ -191,7 +195,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
 
             {experiences.length === 0 && (
               <div className="text-center py-16 text-slate-400">
-                No experiences indexed yet. Check back soon.
+                {t('noIndexed')}
               </div>
             )}
           </>

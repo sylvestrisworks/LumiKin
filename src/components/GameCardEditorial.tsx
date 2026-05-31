@@ -74,6 +74,34 @@ function dpToneClass(severity: DarkPattern['severity']): string {
   }
 }
 
+// Reusable heads-up row. Mobile stacks label + body below the icon; desktop
+// uses a 3-column grid (icon · label · body).
+function HeadsUpRow({
+  icon, tone, label, body,
+}: {
+  icon: EditorialIconName
+  tone: string
+  label: string
+  body: string
+}) {
+  return (
+    <li className="border-b border-ink/20 py-4 grid grid-cols-[1.5rem_1fr] md:grid-cols-[2rem_11rem_1fr] gap-x-4 gap-y-2 items-start">
+      <span className={`${tone} mt-0.5`}>
+        <EditorialIcon name={icon} />
+      </span>
+      <span
+        className="text-sm text-ink uppercase tracking-wider"
+        style={{ fontVariantCaps: 'all-small-caps' }}
+      >
+        {label}
+      </span>
+      <span className="col-span-2 md:col-span-1 font-serif text-base text-ink leading-snug">
+        {body}
+      </span>
+    </li>
+  )
+}
+
 export default function GameCardEditorial({
   game,
   scores,
@@ -165,6 +193,23 @@ export default function GameCardEditorial({
         </div>
       </div>
 
+      {/* Bundled-online — hairline-bounded warning above the verdict strip.
+          Surfaces game.bundledOnlineNote when the publisher has split the
+          singleplayer base game from a live-service online layer. */}
+      {game.bundledOnlineNote && (
+        <section className="mt-12 border-t border-b border-ink py-4 max-w-5xl">
+          <p
+            className="text-kicker uppercase font-semibold text-accent mb-2"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
+            Bundled online — know the live-service layer
+          </p>
+          <p className="font-serif italic text-base leading-snug text-ink/90">
+            {game.bundledOnlineNote}
+          </p>
+        </section>
+      )}
+
       {/* Verdict strip — Growth · Risk · Daily limit · Age guidance.
           Mobile: 2×2 with horizontal rule between rows. Desktop: 1×4 with vertical rules. */}
       <div className="mt-12 md:mt-16 border-t-2 border-ink border-b border-b-ink py-6 md:py-8 grid grid-cols-2 md:grid-cols-4 gap-x-6 md:gap-x-8 gap-y-6 md:gap-y-0 items-end">
@@ -236,8 +281,22 @@ export default function GameCardEditorial({
           Desktop: scores 2/3 + handwritten parent tip in dashed-rule sidebar 1/3. */}
       <div className="mt-16 grid md:grid-cols-3 gap-12">
         <div className="md:col-span-2 space-y-12">
-          <ScoreTable title="Developmental benefits" rows={benefitRows(scores)} tone="ink" />
-          <ScoreTable title="Design risks"           rows={riskRows(scores)}    tone="accent" />
+          <div className="space-y-4">
+            <ScoreTable title="Developmental benefits" rows={benefitRows(scores)} tone="ink" />
+            {review?.benefitsNarrative && (
+              <p className="font-serif italic text-base text-ink/90 leading-snug border-l-2 border-ivy pl-4">
+                {review.benefitsNarrative}
+              </p>
+            )}
+          </div>
+          <div className="space-y-4">
+            <ScoreTable title="Design risks" rows={riskRows(scores)} tone="accent" />
+            {review?.risksNarrative && (
+              <p className="font-serif italic text-base text-ink/90 leading-snug border-l-2 border-accent pl-4">
+                {review.risksNarrative}
+              </p>
+            )}
+          </div>
         </div>
         {review?.parentTip && (
           <aside className="md:col-span-1 pl-4 md:pl-6 border-l-2 md:border-l border-accent md:border-ink/40 [border-left-style:solid] md:[border-left-style:dashed]">
@@ -263,9 +322,12 @@ export default function GameCardEditorial({
         )}
       </div>
 
-      {/* Heads-up — dark patterns + compliance, as hairline rows. Replaces the
-          color-coded pill chip layout from the legacy DarkPatternPills. */}
-      {(darkPatterns.length > 0 || compliance.length > 0) && (
+      {/* Heads-up — dark patterns + monthly cost + virtual currency, hairline rows.
+          Compliance moved to the meta footer below. Section header suppressed
+          when there's nothing to show (e.g. Minecraft: 0 dark patterns, no cost). */}
+      {(darkPatterns.length > 0
+        || (review?.estimatedMonthlyCostLow != null && review.estimatedMonthlyCostHigh != null)
+        || review?.virtualCurrencyName) && (
         <section className="mt-16 max-w-5xl">
           <p
             className="text-kicker uppercase font-semibold text-accent mb-4"
@@ -274,51 +336,76 @@ export default function GameCardEditorial({
             {t('headsUp.title')}
           </p>
           <ul className="border-t border-ink">
+            {review?.estimatedMonthlyCostLow != null && review.estimatedMonthlyCostHigh != null && (
+              <HeadsUpRow
+                icon="marketplace"
+                tone="text-warm"
+                label="Monthly spend"
+                body={`Typical real-money spend by engaged players: $${review.estimatedMonthlyCostLow}–${review.estimatedMonthlyCostHigh}/mo.`}
+              />
+            )}
+            {review?.virtualCurrencyName && (
+              <HeadsUpRow
+                icon="marketplace"
+                tone="text-warm"
+                label={`In-game currency · ${review.virtualCurrencyName}`}
+                body={review.virtualCurrencyRate
+                  ? `Conversion rate: ${review.virtualCurrencyRate}.`
+                  : `${review.virtualCurrencyName} obscures the real-money price of items.`}
+              />
+            )}
             {darkPatterns.map((dp) => {
               const labelKey = `dp${dp.patternId.slice(2)}Label` as Parameters<typeof td>[0]
               const descKey  = `dp${dp.patternId.slice(2)}Desc`  as Parameters<typeof td>[0]
               const label    = td(labelKey)
               const body     = dp.description ?? td(descKey)
               return (
-                <li
+                <HeadsUpRow
                   key={dp.patternId}
-                  className="border-b border-ink/20 py-4 grid grid-cols-[1.5rem_1fr] md:grid-cols-[2rem_11rem_1fr] gap-x-4 gap-y-2 items-start"
-                >
-                  <span className={`${dpToneClass(dp.severity)} mt-0.5`}>
-                    <EditorialIcon name={DP_ICON[dp.patternId] ?? 'timePressure'} />
-                  </span>
-                  <span
-                    className="text-sm text-ink uppercase tracking-wider"
-                    style={{ fontVariantCaps: 'all-small-caps' }}
-                  >
-                    {label}
-                  </span>
-                  <span className="col-span-2 md:col-span-1 font-serif text-base text-ink leading-snug">
-                    {body}
-                  </span>
-                </li>
+                  icon={DP_ICON[dp.patternId] ?? 'timePressure'}
+                  tone={dpToneClass(dp.severity)}
+                  label={label}
+                  body={body}
+                />
               )
             })}
           </ul>
-
-          {/* Compliance — small-caps inline notation below the heads-up rows.
-              Status maps: non_compliant → accent, not_assessed → muted, compliant → ivy. */}
-          {compliance.length > 0 && (
-            <p
-              className="mt-6 text-kicker uppercase text-muted"
-              style={{ fontVariantCaps: 'all-small-caps' }}
-            >
-              {compliance.map((c, i) => (
-                <span key={c.regulation}>
-                  {i > 0 && <span className="text-rule mx-2">·</span>}
-                  <span className={statusToneClass(c.status)}>
-                    {c.regulation}
-                  </span>
-                </span>
-              ))}
-            </p>
-          )}
         </section>
+      )}
+
+      {/* Compliance — small-caps line just above the meta footer.
+          Each regulation gets a status-tone color and, if there are notes
+          worth surfacing, an italic disclosure line below. */}
+      {compliance.length > 0 && (
+        <div className="mt-12 border-t border-ink/30 pt-4 max-w-5xl">
+          <p
+            className="text-kicker uppercase text-muted"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
+            Regulatory compliance ·{' '}
+            {compliance.map((c, i) => (
+              <span key={c.regulation}>
+                {i > 0 && <span className="text-rule mx-2">·</span>}
+                <span className={statusToneClass(c.status)}>{c.regulation}</span>
+              </span>
+            ))}
+          </p>
+          {compliance.some((c) => c.notes) && (
+            <ul className="mt-2 space-y-1">
+              {compliance.filter((c) => c.notes).map((c) => (
+                <li
+                  key={c.regulation}
+                  className="font-serif italic text-sm text-muted leading-snug"
+                >
+                  <span className={`not-italic font-semibold ${statusToneClass(c.status)} mr-1`}>
+                    {c.regulation}:
+                  </span>
+                  {c.notes}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       )}
 
       {/* Meta footer — base price, avg playtime, reviewed date, methodology link. */}

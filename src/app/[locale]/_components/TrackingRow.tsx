@@ -78,7 +78,7 @@ export default async function TrackingRow({ locale }: { locale: string }) {
               className="group block h-full hover:[&_h3]:text-accent transition-colors"
               aria-label={`${row.title} — read review`}
             >
-              <ListingCard card={toCard(row, idx, fallbackDek)} />
+              <ListingCard card={toCard(row, idx, fallbackDek)} readLabel={te('sections.readReview')} />
             </Link>
           ))}
         </div>

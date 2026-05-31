@@ -4,9 +4,10 @@ import { Term } from '@/components/Term'
 import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 
 export default async function MethodologyEditorial({ locale }: { locale: string }) {
-  const [t, tg] = await Promise.all([
+  const [t, tg, te] = await Promise.all([
     getTranslations('home'),
     getTranslations('glossary'),
+    getTranslations('editorial'),
   ])
 
   // Inline-term wrappers for t.rich(). Defs come from the `glossary` namespace
@@ -25,12 +26,11 @@ export default async function MethodologyEditorial({ locale }: { locale: string 
     <section className="bg-paper text-ink">
       <div className="mx-auto max-w-7xl px-8 py-16 md:py-20">
         <div className="border-t border-ink pt-4 mb-6">
-          {/* TODO(editorial i18n sweep): editorial.sections.methodology */}
           <p
             className="text-kicker uppercase font-semibold text-muted"
             style={{ fontVariantCaps: 'all-small-caps' }}
           >
-            Methodology
+            {te('sections.methodology')}
           </p>
         </div>
 
@@ -48,7 +48,6 @@ export default async function MethodologyEditorial({ locale }: { locale: string 
         {/* Two-column body — benefits left, risks right. Stacks on mobile. */}
         <div className="grid md:grid-cols-2 gap-10 md:gap-16">
           <div>
-            {/* TODO(editorial i18n sweep): editorial.sections.benefits */}
             <p
               className="text-kicker uppercase font-semibold text-ivy mb-4"
               style={{ fontVariantCaps: 'all-small-caps' }}
@@ -60,7 +59,6 @@ export default async function MethodologyEditorial({ locale }: { locale: string 
             </p>
           </div>
           <div>
-            {/* TODO(editorial i18n sweep): editorial.sections.risks */}
             <p
               className="text-kicker uppercase font-semibold text-accent mb-4"
               style={{ fontVariantCaps: 'all-small-caps' }}

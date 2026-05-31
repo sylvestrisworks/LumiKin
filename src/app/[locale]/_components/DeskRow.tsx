@@ -111,20 +111,18 @@ export default async function DeskRow({ locale }: { locale: string }) {
     <section className="bg-paper text-ink">
       <div className="mx-auto max-w-7xl px-8 py-16 md:py-20">
         <div className="border-t border-ink pt-4 mb-10 flex items-baseline justify-between gap-4 flex-wrap">
-          {/* TODO(editorial i18n sweep): move to editorial.sections.theDesk */}
           <p
             className="text-kicker uppercase font-semibold text-muted"
             style={{ fontVariantCaps: 'all-small-caps' }}
           >
-            The desk
+            {te('sections.theDesk')}
           </p>
           <Link
             href={`/${locale}/guides`}
             className="text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors"
             style={{ fontVariantCaps: 'all-small-caps' }}
           >
-            {/* TODO(editorial i18n sweep): move to editorial.sections.allGuides */}
-            All guides →
+            {te('sections.allGuides')}
           </Link>
         </div>
 
@@ -144,8 +142,7 @@ export default async function DeskRow({ locale }: { locale: string }) {
                   idx={idx}
                   dateLocale={dateLocale}
                   categoryLabel={categoryLabel}
-                  /* TODO(editorial i18n sweep): editorial.sections.readGuide */
-                  readLabel="Read the guide →"
+                  readLabel={te('sections.readGuide')}
                 />
               </Link>
             )

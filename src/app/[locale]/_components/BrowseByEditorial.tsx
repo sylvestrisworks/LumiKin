@@ -1,26 +1,21 @@
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 
-// TODO(editorial i18n sweep): move deks to editorial.browseBy.*Dek
-// Inline English deks for now so the visual lands; translation pass collects
-// them alongside the other hardcoded editorial strings on this branch.
-type Entry = { key: 'age' | 'platform' | 'roblox' | 'fortnite'; href: string; titleKey: 'browseByAge' | 'browseByPlatform' | 'browseByRoblox' | 'browseByFortnite'; dek: string }
-
-const DEKS: Record<Entry['key'], string> = {
-  age:      'Find what fits your child at their age — and what to wait on.',
-  platform: 'Switch, PlayStation, Xbox, PC, mobile — narrow by what they actually play.',
-  roblox:   'Inside the Roblox catalogue, scored experience by experience.',
-  fortnite: 'Creative islands and modes rated separately from the base game.',
-}
+type DekKey = 'ageDek' | 'platformDek' | 'robloxDek' | 'fortniteDek'
+type TitleKey = 'browseByAge' | 'browseByPlatform' | 'browseByRoblox' | 'browseByFortnite'
+type Entry = { key: string; href: string; titleKey: TitleKey; dekKey: DekKey }
 
 export default async function BrowseByEditorial({ locale }: { locale: string }) {
-  const t = await getTranslations('home')
+  const [t, te] = await Promise.all([
+    getTranslations('home'),
+    getTranslations('editorial'),
+  ])
 
   const entries: Entry[] = [
-    { key: 'age',      href: `/${locale}/age`,                titleKey: 'browseByAge',      dek: DEKS.age      },
-    { key: 'platform', href: `/${locale}/platform`,           titleKey: 'browseByPlatform', dek: DEKS.platform },
-    { key: 'roblox',   href: `/${locale}/platform/roblox`,    titleKey: 'browseByRoblox',   dek: DEKS.roblox   },
-    { key: 'fortnite', href: `/${locale}/platform/fortnite`,  titleKey: 'browseByFortnite', dek: DEKS.fortnite },
+    { key: 'age',      href: `/${locale}/age`,                titleKey: 'browseByAge',      dekKey: 'ageDek'      },
+    { key: 'platform', href: `/${locale}/platform`,           titleKey: 'browseByPlatform', dekKey: 'platformDek' },
+    { key: 'roblox',   href: `/${locale}/platform/roblox`,    titleKey: 'browseByRoblox',   dekKey: 'robloxDek'   },
+    { key: 'fortnite', href: `/${locale}/platform/fortnite`,  titleKey: 'browseByFortnite', dekKey: 'fortniteDek' },
   ]
 
   return (
@@ -51,13 +46,13 @@ export default async function BrowseByEditorial({ locale }: { locale: string }) 
                   {t(entry.titleKey)}
                 </h3>
                 <p className="font-serif italic text-base text-muted leading-snug">
-                  {entry.dek}
+                  {te(`browseBy.${entry.dekKey}`)}
                 </p>
                 <p
                   className="mt-4 text-kicker uppercase font-semibold text-ink/60 group-hover:text-accent transition-colors"
                   style={{ fontVariantCaps: 'all-small-caps' }}
                 >
-                  Browse →
+                  {te('actions.browse')}
                 </p>
               </Link>
             </li>

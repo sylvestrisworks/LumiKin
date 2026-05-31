@@ -1,12 +1,19 @@
 /**
- * Import markdown drafts in docs/redesign/editorial-drafts/ into Sanity as drafts.
+ * Import markdown drafts in docs/redesign/editorial-drafts/ into Sanity.
+ *
+ * Default: imports as drafts (visible in Studio for review, not on the site).
+ * With --publish: creates published docs directly. If a draft already exists
+ * for the same slug+locale, it's promoted (published, then the draft deleted).
+ * Published docs are never overwritten — re-run with --publish to bulk-fill
+ * remaining items without trampling earlier edits.
  *
  * Run with:
  *   node --env-file=.env.local --env-file=.env node_modules/tsx/dist/cli.cjs scripts/import-drafts-to-sanity.ts
+ *   node --env-file=.env.local --env-file=.env node_modules/tsx/dist/cli.cjs scripts/import-drafts-to-sanity.ts --publish
  *
- * Requires SANITY_API_TOKEN in .env.local (Editor role). Idempotent — skips
- * drafts whose slug + locale already exist (published or draft). Tables flatten
- * to " · "-joined paragraphs and need manual reformatting in Studio.
+ * Requires SANITY_API_TOKEN in .env.local (Editor role). Idempotent. Tables in
+ * source markdown flatten to " · "-joined paragraphs and need manual
+ * reformatting in Studio before they're presentation-quality.
  */
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
@@ -26,6 +33,8 @@ if (!token) {
   console.error('SANITY_API_TOKEN is required (Editor role token from sanity.io/manage)')
   process.exit(1)
 }
+
+const PUBLISH = process.argv.includes('--publish')
 
 const client = createClient({ projectId, dataset, apiVersion: '2024-01-01', token, useCdn: false })
 
@@ -182,7 +191,7 @@ function markdownToBlocks(md: string): Block[] {
 
 // ─── Import one file ─────────────────────────────────────────────────────────
 
-async function importDraft(file: string): Promise<'created' | 'exists' | 'skipped'> {
+async function importDraft(file: string): Promise<'created' | 'published' | 'exists' | 'skipped'> {
   const src = readFileSync(join(DRAFTS_DIR, file), 'utf8')
   const { fm, body } = parseFrontmatter(src)
 
@@ -195,17 +204,25 @@ async function importDraft(file: string): Promise<'created' | 'exists' | 'skippe
   const locale = fm.locale ?? 'en'
   if (!slug) { console.log(`  SKIP ${file}: no slug`); return 'skipped' }
 
-  // Idempotency check — match any doc with same type/slug/locale, draft or published.
-  const existingId = await client.fetch<string | null>(
-    `*[_type == $type && slug.current == $slug && locale == $locale][0]._id`,
-    { type, slug, locale }
-  )
-  if (existingId) {
-    console.log(`  EXISTS ${file} → ${existingId}`)
+  const publishedId = `${type}-${slug}-${locale}`
+  const draftId     = `drafts.${publishedId}`
+
+  // Look up both ids so we can distinguish "draft only" from "already published".
+  const [publishedExists, draftExists] = await Promise.all([
+    client.fetch<string | null>(`*[_id == $id][0]._id`, { id: publishedId }),
+    client.fetch<string | null>(`*[_id == $id][0]._id`, { id: draftId }),
+  ])
+
+  if (publishedExists) {
+    console.log(`  EXISTS (published) ${file} → ${publishedId}`)
+    return 'exists'
+  }
+  if (draftExists && !PUBLISH) {
+    console.log(`  EXISTS (draft) ${file} → ${draftId}`)
     return 'exists'
   }
 
-  const docId = `drafts.${type}-${slug}-${locale}`
+  const docId = PUBLISH ? publishedId : draftId
   const bodyBlocks = markdownToBlocks(body)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -228,8 +245,17 @@ async function importDraft(file: string): Promise<'created' | 'exists' | 'skippe
   }
 
   await client.createOrReplace(doc)
-  console.log(`  CREATED ${file} → ${docId}`)
-  return 'created'
+
+  // In --publish mode, also clear the stale draft so Studio shows clean state.
+  if (PUBLISH && draftExists) {
+    await client.delete(draftId)
+    console.log(`  PUBLISHED ${file} → ${publishedId} (promoted from draft)`)
+  } else if (PUBLISH) {
+    console.log(`  PUBLISHED ${file} → ${publishedId}`)
+  } else {
+    console.log(`  CREATED  ${file} → ${docId}`)
+  }
+  return PUBLISH ? 'published' : 'created'
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────
@@ -237,12 +263,14 @@ async function importDraft(file: string): Promise<'created' | 'exists' | 'skippe
 async function main() {
   const files = readdirSync(DRAFTS_DIR).filter(f => f.endsWith('.md')).sort()
   console.log(`Project: ${projectId} / ${dataset}`)
-  console.log(`Importing ${files.length} drafts from ${DRAFTS_DIR}/\n`)
-  let created = 0, exists = 0, skipped = 0
+  console.log(`Mode:    ${PUBLISH ? 'PUBLISH (live on the site immediately)' : 'DRAFT (review in Studio first)'}`)
+  console.log(`Importing ${files.length} files from ${DRAFTS_DIR}/\n`)
+  let created = 0, published = 0, exists = 0, skipped = 0
   for (const f of files) {
     try {
       const result = await importDraft(f)
       if (result === 'created') created++
+      else if (result === 'published') published++
       else if (result === 'exists') exists++
       else skipped++
     } catch (e) {
@@ -250,9 +278,9 @@ async function main() {
       skipped++
     }
   }
-  console.log(`\nDone. created=${created} exists=${exists} skipped=${skipped}`)
-  console.log('Open Sanity Studio at /studio to review. Tables in drafts have been')
-  console.log('flattened to "·"-separated paragraphs — reformat in Studio before publish.')
+  console.log(`\nDone. created=${created} published=${published} exists=${exists} skipped=${skipped}`)
+  console.log('Open Sanity Studio at /studio to review. Tables in source markdown have been')
+  console.log('flattened to "·"-separated paragraphs — reformat in Studio for presentation quality.')
 }
 
 main().catch(e => { console.error(e); process.exit(1) })

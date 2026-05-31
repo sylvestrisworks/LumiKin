@@ -116,10 +116,8 @@ export default async function HomePage({ params, searchParams }: Props) {
     },
   }
   // FAQ JSON-LD — three parent-intent questions surfaced as FAQPage schema.
-  // EN-only emission for now; the editorial i18n sweep will localize the
-  // faq* keys across the other four locales.
-  // TODO(editorial i18n sweep): drop the locale gate once faq* keys ship in sv/de/es/fr.
-  const faqLd = locale === 'en' ? {
+  // Emitted on every locale; the faq* keys are populated in all 5 messages files.
+  const faqLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: [
@@ -131,7 +129,7 @@ export default async function HomePage({ params, searchParams }: Props) {
       name: q,
       acceptedAnswer: { '@type': 'Answer', text: a },
     })),
-  } : null
+  }
 
   const ldJson = (obj: unknown) =>
     JSON.stringify(obj).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026')
@@ -139,9 +137,7 @@ export default async function HomePage({ params, searchParams }: Props) {
   return (
     <>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(organizationLd) }} />
-    {faqLd && (
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(faqLd) }} />
-    )}
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(faqLd) }} />
 
     {/* ── Editorial masthead (homepage only in PR1) ────────────────────────── */}
     <Masthead

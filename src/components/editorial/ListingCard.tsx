@@ -12,7 +12,10 @@ export type ListingCardData = {
   photoTo: string
 }
 
-export function ListingCard({ card }: { card: ListingCardData }) {
+// `readLabel` lets the caller supply a localized CTA without coupling the
+// primitive to next-intl. Falls back to English so legacy consumers don't
+// break, but every editorial caller should pass an i18n value.
+export function ListingCard({ card, readLabel = 'Read review →' }: { card: ListingCardData; readLabel?: string }) {
   return (
     <article className="flex flex-col border-b border-ink pb-8">
       {/* Photo stand-in. Replace with treated <img> when real photography lands. */}
@@ -72,7 +75,7 @@ export function ListingCard({ card }: { card: ListingCardData }) {
           className="text-kicker uppercase text-accent"
           style={{ fontVariantCaps: 'all-small-caps' }}
         >
-          Read review →
+          {readLabel}
         </span>
       </div>
     </article>

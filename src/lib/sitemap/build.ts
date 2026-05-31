@@ -1,23 +1,28 @@
-import type { MetadataRoute } from 'next'
 import { db } from '@/lib/db'
 import { games, gameScores, platformExperiences, experienceScores } from '@/lib/db/schema'
 import { and, asc, eq, isNotNull, isNull, ne, or } from 'drizzle-orm'
 import { sanityClient } from '@/sanity/lib/client'
 import { allGuideSlugsQuery, allPostSlugsQuery } from '@/sanity/lib/queries'
 
-// force-dynamic so Vercel regenerates on every request without caching at the edge.
-// The DB queries are fast (indexed slug+curascore scans); a short-TTL CDN cache is
-// added via the Cache-Control header below if the response function is used instead.
-// When the URL count exceeds 50 000, switch to generateSitemaps() with id-encoded chunks.
-export const dynamic = 'force-dynamic'
+export const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
+export const LOCALES = ['en', 'es', 'fr', 'sv', 'de'] as const
+export type Locale = typeof LOCALES[number]
+
+// Google caps a single sitemap at 50 000 URLs / 50 MB. Each entry below is
+// ~465 bytes (5 alternates per <url>); 20 000 keeps each chunk ~9 MB.
+export const CHUNK_SIZE = 20_000
 
 const DB_TO_URL_SLUG: Record<string, string> = {
   'fortnite-creative': 'fortnite',
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
-const LOCALES   = ['en', 'es', 'fr', 'sv', 'de'] as const
-type Locale = typeof LOCALES[number]
+export type SitemapEntry = {
+  loc: string
+  lastmod?: string
+  changefreq?: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never'
+  priority?: number
+  alternates?: Record<string, string>
+}
 
 function localeUrl(locale: Locale, path: string): string {
   return `${BASE_URL}/${locale}${path}`
@@ -26,24 +31,23 @@ function localeUrl(locale: Locale, path: string): string {
 function multiLocaleEntry(
   path: string,
   priority: number,
-  changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency'],
-  lastModified?: Date,
-): MetadataRoute.Sitemap {
+  changefreq: SitemapEntry['changefreq'],
+  lastmod?: Date,
+): SitemapEntry[] {
+  const alternates: Record<string, string> = Object.fromEntries(
+    LOCALES.map((l) => [l, localeUrl(l, path)]),
+  )
   return LOCALES.map((locale) => ({
-    url: localeUrl(locale, path),
-    lastModified,
-    changeFrequency,
+    loc: localeUrl(locale, path),
+    lastmod: lastmod?.toISOString(),
+    changefreq,
     priority,
-    alternates: {
-      languages: Object.fromEntries(LOCALES.map((l) => [l, localeUrl(l, path)])),
-    },
+    alternates,
   }))
 }
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-
-  // ── Static pages ──────────────────────────────────────────────────────────
-  const staticEntries: MetadataRoute.Sitemap = [
+export async function buildAllEntries(): Promise<SitemapEntry[]> {
+  const staticEntries: SitemapEntry[] = [
     ...multiLocaleEntry('/',                       1.0, 'daily'),
     ...multiLocaleEntry('/browse',                 0.9, 'daily'),
     ...multiLocaleEntry('/partners',               0.8, 'monthly'),
@@ -61,11 +65,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...multiLocaleEntry('/age',                    0.8, 'weekly'),
   ]
 
-  // Age-specific discovery pages: /age/4 ... /age/17
-  const ageEntries: MetadataRoute.Sitemap = Array.from({ length: 14 }, (_, i) => i + 4)
+  const ageEntries: SitemapEntry[] = Array.from({ length: 14 }, (_, i) => i + 4)
     .flatMap((age) => multiLocaleEntry(`/age/${age}`, 0.7, 'weekly'))
 
-  // ── Scored games — lastModified = calculatedAt from the score row ────────
   const allGames = await db
     .select({ slug: games.slug, calculatedAt: gameScores.calculatedAt })
     .from(games)
@@ -76,11 +78,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ))
     .orderBy(asc(games.id))
 
-  const gameEntries: MetadataRoute.Sitemap = allGames.flatMap((g) =>
+  const gameEntries: SitemapEntry[] = allGames.flatMap((g) =>
     multiLocaleEntry(`/game/${g.slug}`, 0.8, 'weekly', g.calculatedAt ?? undefined),
   )
 
-  // ── Scored UGC experiences ────────────────────────────────────────────────
   const allUgc = await db
     .select({
       slug:         platformExperiences.slug,
@@ -93,7 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .where(and(eq(games.contentType, 'platform'), isNotNull(experienceScores.curascore), eq(platformExperiences.isPublic, true)))
     .orderBy(asc(platformExperiences.id))
 
-  const ugcEntries: MetadataRoute.Sitemap = allUgc.flatMap((exp) =>
+  const ugcEntries: SitemapEntry[] = allUgc.flatMap((exp) =>
     multiLocaleEntry(
       `/game/${exp.platformSlug}/${exp.slug}`,
       0.7,
@@ -102,19 +103,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ),
   )
 
-  // UGC platform hub pages (Roblox, Fortnite Creative, etc.)
   const platformDbSlugs = Array.from(new Set(allUgc.map((e) => e.platformSlug)))
-  const platformHubEntries: MetadataRoute.Sitemap = platformDbSlugs.flatMap((dbSlug) =>
+  const platformHubEntries: SitemapEntry[] = platformDbSlugs.flatMap((dbSlug) =>
     multiLocaleEntry(`/platform/${DB_TO_URL_SLUG[dbSlug] ?? dbSlug}`, 0.8, 'weekly'),
   )
 
-  // Traditional platform landing pages (PlayStation, Xbox, Nintendo Switch, iOS, Android, PC)
   const traditionalPlatformSlugs = ['playstation', 'xbox', 'nintendo-switch', 'ios', 'android', 'pc']
-  const traditionalPlatformEntries: MetadataRoute.Sitemap = traditionalPlatformSlugs.flatMap((slug) =>
+  const traditionalPlatformEntries: SitemapEntry[] = traditionalPlatformSlugs.flatMap((slug) =>
     multiLocaleEntry(`/platform/${slug}`, 0.8, 'weekly'),
   )
 
-  // ── Sanity content pages ──────────────────────────────────────────────────
   type SanitySlug = { slug: string; locale: string; _updatedAt?: string }
   const [guideSlugs, postSlugs]: [SanitySlug[], SanitySlug[]] = sanityClient
     ? await Promise.all([
@@ -123,17 +121,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ])
     : [[], []]
 
-  const guideEntries: MetadataRoute.Sitemap = guideSlugs.map((g) => ({
-    url: localeUrl((g.locale as Locale) ?? 'en', `/guides/${g.slug}`),
-    lastModified: g._updatedAt ? new Date(g._updatedAt) : undefined,
-    changeFrequency: 'monthly' as const,
+  const guideEntries: SitemapEntry[] = guideSlugs.map((g) => ({
+    loc: localeUrl((g.locale as Locale) ?? 'en', `/guides/${g.slug}`),
+    lastmod: g._updatedAt,
+    changefreq: 'monthly',
     priority: 0.7,
   }))
 
-  const postEntries: MetadataRoute.Sitemap = postSlugs.map((p) => ({
-    url: localeUrl((p.locale as Locale) ?? 'en', `/blog/${p.slug}`),
-    lastModified: p._updatedAt ? new Date(p._updatedAt) : undefined,
-    changeFrequency: 'weekly' as const,
+  const postEntries: SitemapEntry[] = postSlugs.map((p) => ({
+    loc: localeUrl((p.locale as Locale) ?? 'en', `/blog/${p.slug}`),
+    lastmod: p._updatedAt,
+    changefreq: 'weekly',
     priority: 0.6,
   }))
 
@@ -147,4 +145,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...guideEntries,
     ...postEntries,
   ]
+}
+
+const XML_ESCAPE: Record<string, string> = {
+  '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;',
+}
+export function escapeXml(s: string): string {
+  return s.replace(/[<>&'"]/g, (c) => XML_ESCAPE[c]!)
+}
+
+export function renderUrlset(entries: SitemapEntry[]): string {
+  const items = entries.map((e) => {
+    const alt = e.alternates
+      ? Object.entries(e.alternates)
+          .map(([lang, href]) => `<xhtml:link rel="alternate" hreflang="${lang}" href="${escapeXml(href)}"/>`)
+          .join('')
+      : ''
+    const lastmod = e.lastmod ? `<lastmod>${escapeXml(e.lastmod)}</lastmod>` : ''
+    const changefreq = e.changefreq ? `<changefreq>${e.changefreq}</changefreq>` : ''
+    const priority = e.priority != null ? `<priority>${e.priority}</priority>` : ''
+    return `<url><loc>${escapeXml(e.loc)}</loc>${alt}${lastmod}${changefreq}${priority}</url>`
+  }).join('')
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">${items}</urlset>`
+}
+
+export function renderIndex(chunkCount: number, lastmod: string): string {
+  const items = Array.from({ length: chunkCount }, (_, id) =>
+    `<sitemap><loc>${BASE_URL}/sitemap/${id}.xml</loc><lastmod>${lastmod}</lastmod></sitemap>`,
+  ).join('')
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${items}</sitemapindex>`
 }

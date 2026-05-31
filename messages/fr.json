@@ -1120,12 +1120,12 @@
   },
   "editorial": {
     "masthead": {
-      "tagline": "Game ratings for parents",
+      "tagline": "Évaluations de jeux pour les parents",
       "sections": {
-        "reviews": "Reviews",
-        "discover": "Discover",
+        "reviews": "Critiques",
+        "discover": "Découvrir",
         "guides": "Guides",
-        "compare": "Compare"
+        "compare": "Comparer"
       }
     },
     "dateline": {
@@ -1133,55 +1133,55 @@
     },
     "rosette": {
       "recommends": {
-        "top": "LUMIKIN · APPROVED",
-        "bottom": "WORTH YOUR CHILD’S TIME"
+        "top": "LUMIKIN · APPROUVÉ",
+        "bottom": "TEMPS BIEN INVESTI"
       },
       "caution": {
-        "top": "LUMIKIN · CAUTION",
-        "bottom": "KNOW BEFORE YOU BUY"
+        "top": "LUMIKIN · ATTENTION",
+        "bottom": "À SAVOIR AVANT D’ACHETER"
       }
     },
     "verdict": {
-      "growth": "Growth (BDS)",
-      "risk": "Risk (RIS)",
-      "dailyLimit": "Daily limit",
-      "ageGuidance": "Age guidance",
+      "growth": "Bénéfices (BDS)",
+      "risk": "Risque (RIS)",
+      "dailyLimit": "Limite quotidienne",
+      "ageGuidance": "Âge recommandé",
       "minutesShort": "min"
     },
     "headsUp": {
-      "title": "Heads up"
+      "title": "À noter"
     },
     "banners": {
       "bundled": {
-        "kicker": "Bundled online — know the live-service layer",
-        "body": "The base price unlocks the singleplayer story. The connected online mode is its own product, with its own monetization and chat layer — we score those separately.",
-        "cta": "Read how we handle bundled-online games →"
+        "kicker": "Online groupé — connaître le live-service",
+        "body": "Le prix de base débloque la campagne solo. Le mode en ligne est un produit à part, avec sa propre monétisation et sa propre couche de discussion — nous les évaluons séparément.",
+        "cta": "Comment nous traitons les jeux online groupés →"
       },
       "pending": {
-        "kicker": "Under review · provisional scores",
-        "bodyTemplate": "We’re still verifying this experience — scores below are provisional. Confidence: {confidence}."
+        "kicker": "En cours d’examen · notes provisoires",
+        "bodyTemplate": "Nous vérifions encore cette expérience — les notes ci-dessous sont provisoires. Confiance : {confidence}."
       }
     },
     "meta": {
-      "basePrice": "Base price",
-      "avgPlaytime": "Avg playtime",
-      "reviewed": "Reviewed",
-      "methodology": "How scores are calculated →",
-      "byline": "By the LumiKin editors"
+      "basePrice": "Prix de base",
+      "avgPlaytime": "Temps de jeu moyen",
+      "reviewed": "Évalué",
+      "methodology": "Comment les notes sont calculées →",
+      "byline": "Par la rédaction LumiKin"
     },
     "search": {
-      "placeholder": "Search {count} reviews",
-      "returnLabel": "Return ↵"
+      "placeholder": "Rechercher parmi {count} critiques",
+      "returnLabel": "Entrée ↵"
     },
     "sections": {
-      "todaysReview": "Today’s review",
-      "whatWereTracking": "What we’re tracking",
-      "allReviews": "All reviews →",
-      "readReview": "Read the review →"
+      "todaysReview": "La critique du jour",
+      "whatWereTracking": "Ce que nous suivons",
+      "allReviews": "Toutes les critiques →",
+      "readReview": "Lire la critique →"
     },
     "compare": {
-      "vs": "vs",
-      "comparingTemplate": "Comparing {a} vs {b}"
+      "vs": "contre",
+      "comparingTemplate": "{a} contre {b}"
     }
   }
 }

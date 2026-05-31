@@ -203,6 +203,45 @@ export default function GameCardEditorial({
         </div>
       </div>
 
+      {/* LumiScore verdict headline — the publication-style overall rating.
+          Big numeral colored per threshold, verdict label inline, executive
+          summary as italic tagline below. Anchors the editorial card the way
+          the legacy LumiScoreHero card did, but without leaving the editorial
+          language. */}
+      {scores?.curascore != null && (() => {
+        const { label, toneClass } = lumiScoreVerdict(scores.curascore)
+        return (
+          <section className="mt-12 border-t-2 border-ink pt-6 max-w-5xl">
+            <p
+              className="text-kicker uppercase font-semibold text-muted mb-2"
+              style={{ fontVariantCaps: 'all-small-caps' }}
+            >
+              LumiScore
+            </p>
+            <div className="flex items-baseline gap-x-8 gap-y-2 flex-wrap">
+              <p
+                className={`font-serif tabular-nums leading-none tracking-tight ${toneClass}`}
+                style={{ fontSize: '6.5rem', fontOpticalSizing: 'auto', fontWeight: 500 }}
+              >
+                {scores.curascore}
+                <span className="text-2xl text-muted ml-2 align-baseline">/100</span>
+              </p>
+              <p
+                className={`font-serif text-3xl italic ${toneClass}`}
+                style={{ fontOpticalSizing: 'auto' }}
+              >
+                {label}
+              </p>
+            </div>
+            {scores.executiveSummary && (
+              <p className="mt-4 font-serif text-lg italic text-muted leading-snug max-w-prose">
+                {scores.executiveSummary}
+              </p>
+            )}
+          </section>
+        )
+      })()}
+
       {/* Bundled-online — hairline-bounded warning above the verdict strip.
           Surfaces game.bundledOnlineNote when the publisher has split the
           singleplayer base game from a live-service online layer. */}

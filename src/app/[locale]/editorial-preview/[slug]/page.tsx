@@ -5,6 +5,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { eq } from 'drizzle-orm'
+import { getLocale } from 'next-intl/server'
 import { db } from '@/lib/db'
 import {
   games,
@@ -219,7 +220,14 @@ async function fetchGameData(slug: string): Promise<GameCardProps | null> {
 
 export default async function EditorialPreviewPage({ params }: Props) {
   const { locale, slug } = await params
-  const data = await fetchGameData(slug)
+  // `getLocale()` is the side-effect that establishes the locale context
+  // for downstream client components using `useTranslations()`. Without it
+  // the editorial preview rendered every locale in English. Mirrors the
+  // production game route's Promise.all pattern.
+  const [data] = await Promise.all([
+    fetchGameData(slug),
+    getLocale(),
+  ])
   if (!data) notFound()
 
   // Lightweight session lookup for per-child line; missing auth is non-fatal.

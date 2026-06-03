@@ -43,6 +43,7 @@ export type FeaturedGameData = {
   topBenefits: unknown
   parentTip: string | null
   parentTipBenefits: string | null
+  reviewedAt: Date | null
 }
 
 export async function fetchFeatured(locale: string): Promise<FeaturedGameData | null> {
@@ -86,6 +87,7 @@ export async function fetchFeatured(locale: string): Promise<FeaturedGameData | 
 
     parentTip:                   reviews.parentTip,
     parentTipBenefits:           reviews.parentTipBenefits,
+    reviewedAt:                  reviews.reviewedAt,
   }
 
   const baseWhere = and(

@@ -8,7 +8,9 @@ import { fetchSiteStats } from '@/lib/stats'
 import { Masthead } from '@/components/editorial'
 import CoverageStrip from './partners/_components/CoverageStrip'
 import EditorialHero from './_components/EditorialHero'
+import Standfirst from './_components/Standfirst'
 import TodaysReview from './_components/TodaysReview'
+import ByTheNumbers from './_components/ByTheNumbers'
 import TrackingRow from './_components/TrackingRow'
 import DeskRow from './_components/DeskRow'
 import MethodologyEditorial from './_components/MethodologyEditorial'
@@ -145,13 +147,19 @@ export default async function HomePage({ params, searchParams }: Props) {
       formatDateline={formatDateline}
     />
 
-    <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="bg-paper text-ink">
 
       {/* ── Editorial hero (cover headline + search + browse link) ───────────── */}
       <EditorialHero locale={locale} />
 
+      {/* ── Standfirst (editor's note — who we are, the promise) ─────────────── */}
+      <Standfirst />
+
       {/* ── Today's review (editorial cover) ─────────────────────────────────── */}
       <TodaysReview locale={locale} />
+
+      {/* ── By the numbers (anatomy of a LumiScore — Pudding-style spread) ────── */}
+      <ByTheNumbers locale={locale} />
 
       {/* ── What we're tracking (3-up listing) ───────────────────────────────── */}
       <TrackingRow locale={locale} />

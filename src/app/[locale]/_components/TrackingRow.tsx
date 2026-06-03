@@ -26,7 +26,7 @@ function firstGenre(genres: unknown): string | null {
   return typeof g === 'string' ? g : null
 }
 
-function toCard(row: TrendingRow, idx: number, fallbackDek: string): ListingCardData {
+function toCard(row: TrendingRow, idx: number, fallbackDek: string, byline: string): ListingCardData {
   const palette = PHOTO_PALETTE[idx % PHOTO_PALETTE.length]
   const genre   = firstGenre(row.genres)
   return {
@@ -37,8 +37,10 @@ function toCard(row: TrendingRow, idx: number, fallbackDek: string): ListingCard
     ris:       row.ris ?? 0,
     minutes:   row.timeRecommendationMinutes ?? 0,
     ages:      esrbToAge(row.esrbRating),
+    photoUrl:  row.backgroundImage,
     photoFrom: palette.from,
     photoTo:   palette.to,
+    byline,
   }
 }
 
@@ -49,7 +51,8 @@ export default async function TrackingRow({ locale }: { locale: string }) {
   ])
   if (rows.length === 0) return null
 
-  const fallbackDek = te('meta.byline') // generic editorial-voice fallback when no summary exists
+  const byline      = te('meta.byline')
+  const fallbackDek = byline // generic editorial-voice fallback when no summary exists
 
   return (
     <section className="bg-paper text-ink">
@@ -78,7 +81,7 @@ export default async function TrackingRow({ locale }: { locale: string }) {
               className="group block h-full hover:[&_h3]:text-accent transition-colors"
               aria-label={`${row.title} — read review`}
             >
-              <ListingCard card={toCard(row, idx, fallbackDek)} readLabel={te('sections.readReview')} />
+              <ListingCard card={toCard(row, idx, fallbackDek, byline)} readLabel={te('sections.readReview')} />
             </Link>
           ))}
         </div>

@@ -133,7 +133,8 @@
     "faq2Question": "¿Cómo puntúan los juegos?",
     "faq2Answer": "Cada juego se puntúa en 60 subdimensiones de una rúbrica pública: diez habilidades cognitivas, seis socioemocionales y cuatro motoras en el lado de los beneficios, y patrones de dopamina, monetización y riesgo social en el lado del riesgo. Lee la metodología completa para conocer las fórmulas.",
     "faq3Question": "¿Cómo deciden cuánto tiempo debe jugar mi hijo?",
-    "faq3Answer": "Calculamos un límite diario de sesión a partir de las puntuaciones combinadas de beneficios y riesgo: desde 15 minutos para juegos de alto riesgo hasta dos horas para juegos de altos beneficios y bajo riesgo. El límite refleja cómo está construido el juego, no una recomendación genérica de tiempo de pantalla."
+    "faq3Answer": "Calculamos un límite diario de sesión a partir de las puntuaciones combinadas de beneficios y riesgo: desde 15 minutos para juegos de alto riesgo hasta dos horas para juegos de altos beneficios y bajo riesgo. El límite refleja cómo está construido el juego, no una recomendación genérica de tiempo de pantalla.",
+    "methodologySource": "Basado en una rúbrica pública — versionada y de descarga gratuita."
   },
   "age": {
     "earlyYears": "Primeros Años",
@@ -1261,6 +1262,21 @@
       "platformDek": "Switch, PlayStation, Xbox, PC, móvil — filtra por lo que realmente juegan.",
       "robloxDek": "Dentro del catálogo de Roblox, cada experiencia evaluada por separado.",
       "fortniteDek": "Islas y modos Creative evaluados aparte del juego base."
+    },
+    "standfirst": {
+      "kicker": "De la redacción",
+      "body": "LumiKin es un pequeño equipo de madres, padres y reseñadores que evalúa lo que un juego desarrolla en un niño — y lo que cuesta en atención, dinero y calma en casa. Los beneficios van primero. Cada puntuación se basa en una rúbrica pública. Y siempre señalamos lo único que conviene comprobar antes de comprar.",
+      "signoff": "— La redacción de LumiKin"
+    },
+    "byTheNumbers": {
+      "kicker": "En cifras",
+      "intro": "La anatomía de un LumiScore.",
+      "dimensionsLabel": "Subdimensiones evaluadas",
+      "scoresLabel": "Puntuaciones compuestas — beneficio y riesgo",
+      "scaleLabel": "La escala LumiScore",
+      "timeLabel": "Minutos recomendados por sesión",
+      "source": "Cada puntuación se basa en una rúbrica pública y versionada.",
+      "sourceCta": "Leer la metodología →"
     }
   },
   "shareButton": {

@@ -71,8 +71,13 @@ export default async function MethodologyEditorial({ locale }: { locale: string 
           </div>
         </div>
 
+        {/* Sourcing line — the score is auditable, not a black box. */}
+        <p className="mt-12 font-serif italic text-lg text-muted max-w-3xl">
+          {t('methodologySource')}
+        </p>
+
         {/* CTA row — small-caps links, hairline above */}
-        <div className="mt-12 border-t border-ink pt-4 flex flex-wrap items-baseline gap-x-8 gap-y-2">
+        <div className="mt-6 border-t border-ink pt-4 flex flex-wrap items-baseline gap-x-8 gap-y-2">
           <Link
             href={`/${locale}/methodology`}
             className="text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors"

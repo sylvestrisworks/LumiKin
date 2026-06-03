@@ -3,15 +3,6 @@ import { getTranslations } from 'next-intl/server'
 import { urlFor } from '@/sanity/lib/image'
 import { fetchDeskGuides, type DeskGuide } from '../_data/desk'
 
-// Same rotating palette as TrackingRow so the two homepage rows look like part
-// of the same editorial system. Duplicated rather than extracted while only two
-// consumers exist — promote to a shared module if a third lands.
-const PHOTO_PALETTE: Array<{ from: string; to: string }> = [
-  { from: '#3F5A2E', to: '#7C8F4E' }, // ivy / olive
-  { from: '#6B4A2B', to: '#C49A6C' }, // warm amber
-  { from: '#3A1E5C', to: '#A04BBF' }, // mulberry
-]
-
 type LearnT = Awaited<ReturnType<typeof getTranslations<'learn'>>>
 
 const CATEGORY_KEY: Record<string, Parameters<LearnT>[0]> = {
@@ -29,15 +20,13 @@ function formatDate(iso: string | undefined, locale: string): string {
 }
 
 function GuideCard({
-  guide, idx, dateLocale, categoryLabel, readLabel,
+  guide, dateLocale, categoryLabel, readLabel,
 }: {
   guide: DeskGuide
-  idx: number
   dateLocale: string
   categoryLabel: string
   readLabel: string
 }) {
-  const palette = PHOTO_PALETTE[idx % PHOTO_PALETTE.length]
   const hasCover = Boolean(guide.coverImage?.asset)
   const coverUrl = hasCover ? urlFor(guide.coverImage!)?.width(800).height(600).auto('format').url() : null
 
@@ -52,11 +41,21 @@ function GuideCard({
           style={{ filter: 'saturate(1.05) contrast(1.03)' }}
         />
       ) : (
+        // Typographic cover for un-illustrated guides — a deliberate section
+        // tile (LumiKin mark + category) rather than a random gradient, so it
+        // still reads as authored rather than templated.
         <div
-          className="aspect-[4/3] w-full mb-5"
-          style={{ background: `linear-gradient(135deg, ${palette.from}, ${palette.to})` }}
+          className="aspect-[4/3] w-full mb-5 border border-ink bg-paper flex flex-col items-center justify-center gap-4 px-6 text-center"
           aria-hidden
-        />
+        >
+          <span className="font-serif text-5xl text-ink/80" style={{ fontOpticalSizing: 'auto' }}>✳</span>
+          <span
+            className="text-kicker uppercase font-semibold text-muted"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
+            {categoryLabel}
+          </span>
+        </div>
       )}
 
       <p
@@ -127,7 +126,7 @@ export default async function DeskRow({ locale }: { locale: string }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
-          {guides.map((guide, idx) => {
+          {guides.map((guide) => {
             const catKey = guide.category ? CATEGORY_KEY[guide.category] : undefined
             const categoryLabel = catKey ? tLearn(catKey) : (guide.category ?? 'Guide')
             return (
@@ -139,7 +138,6 @@ export default async function DeskRow({ locale }: { locale: string }) {
               >
                 <GuideCard
                   guide={guide}
-                  idx={idx}
                   dateLocale={dateLocale}
                   categoryLabel={categoryLabel}
                   readLabel={te('sections.readGuide')}

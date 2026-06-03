@@ -100,7 +100,8 @@
     "faq2Question": "How do you rate games?",
     "faq2Answer": "Every game is scored across 60 sub-dimensions from a public rubric — ten cognitive skills, six social-emotional skills, four motor skills on the benefits side, and dopamine, monetization, and social-risk design patterns on the risk side. Read the full methodology for the formulas.",
     "faq3Question": "How do you decide how long my child should play?",
-    "faq3Answer": "We calculate a daily session limit from the combined Benefits and Risk scores — from 15 minutes for high-risk games to two hours for high-benefit, low-risk ones. The limit reflects how the game is built, not a generic screen-time recommendation."
+    "faq3Answer": "We calculate a daily session limit from the combined Benefits and Risk scores — from 15 minutes for high-risk games to two hours for high-benefit, low-risk ones. The limit reflects how the game is built, not a generic screen-time recommendation.",
+    "methodologySource": "Built on a public rubric — version-controlled and free to download."
   },
   "age": {
     "earlyYears": "Early Years",
@@ -1228,6 +1229,21 @@
       "platformDek": "Switch, PlayStation, Xbox, PC, mobile — narrow by what they actually play.",
       "robloxDek": "Inside the Roblox catalogue, scored experience by experience.",
       "fortniteDek": "Creative islands and modes rated separately from the base game."
+    },
+    "standfirst": {
+      "kicker": "From the desk",
+      "body": "LumiKin is a small team of parents and reviewers rating what a game grows in a child — and what it costs in attention, money, and calm at home. Benefits come first. Every score traces to a public rubric. And we always name the one thing to check before you buy.",
+      "signoff": "— The LumiKin editors"
+    },
+    "byTheNumbers": {
+      "kicker": "By the numbers",
+      "intro": "The anatomy of a LumiScore.",
+      "dimensionsLabel": "Sub-dimensions scored",
+      "scoresLabel": "Composite scores — benefit and risk",
+      "scaleLabel": "The LumiScore scale",
+      "timeLabel": "Recommended minutes per session",
+      "source": "Every score traces to a public, version-controlled rubric.",
+      "sourceCta": "Read the methodology →"
     }
   },
   "shareButton": {

@@ -133,7 +133,8 @@
     "faq2Question": "Hur bedömer ni spel?",
     "faq2Answer": "Varje spel bedöms på 60 underdimensioner enligt en öppen mall — tio kognitiva färdigheter, sex socioemotionella, fyra motoriska på fördelssidan, och dopamin-, monetariserings- och socialrisk-mönster på risksidan. Läs hela metoden för formlerna.",
     "faq3Question": "Hur avgör ni hur länge mitt barn ska spela?",
-    "faq3Answer": "Vi beräknar en daglig sessionsgräns från de kombinerade fördels- och riskpoängen — från 15 minuter för högriskspel till två timmar för spel med stora fördelar och låg risk. Gränsen speglar hur spelet är byggt, inte en generell skärmtidsrekommendation."
+    "faq3Answer": "Vi beräknar en daglig sessionsgräns från de kombinerade fördels- och riskpoängen — från 15 minuter för högriskspel till två timmar för spel med stora fördelar och låg risk. Gränsen speglar hur spelet är byggt, inte en generell skärmtidsrekommendation.",
+    "methodologySource": "Byggt på en offentlig bedömningsmall – versionshanterad och fri att ladda ner."
   },
   "age": {
     "earlyYears": "Lågstadiet",
@@ -1261,6 +1262,21 @@
       "platformDek": "Switch, PlayStation, Xbox, PC, mobil — sortera efter vad de faktiskt spelar.",
       "robloxDek": "Inuti Roblox-katalogen, varje upplevelse betygsatt för sig.",
       "fortniteDek": "Kreativa öar och spellägen betygsatta separat från huvudspelet."
+    },
+    "standfirst": {
+      "kicker": "Från redaktionen",
+      "body": "LumiKin är ett litet team av föräldrar och recensenter som bedömer vad ett spel utvecklar hos ett barn – och vad det kostar i uppmärksamhet, pengar och lugn hemma. Fördelarna kommer först. Varje betyg bygger på en offentlig bedömningsmall. Och vi pekar alltid ut det enda du bör kolla innan du köper.",
+      "signoff": "— LumiKins redaktion"
+    },
+    "byTheNumbers": {
+      "kicker": "I siffror",
+      "intro": "Anatomin bakom ett LumiScore.",
+      "dimensionsLabel": "Bedömda deldimensioner",
+      "scoresLabel": "Sammansatta betyg – nytta och risk",
+      "scaleLabel": "LumiScore-skalan",
+      "timeLabel": "Rekommenderade minuter per pass",
+      "source": "Varje betyg bygger på en offentlig, versionshanterad bedömningsmall.",
+      "sourceCta": "Läs metoden →"
     }
   },
   "shareButton": {

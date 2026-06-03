@@ -34,6 +34,30 @@ function riskRows(g: FeaturedGameData, labels: { dopamine: string; monetization:
   ]
 }
 
+// Lift the opening one-to-two sentences of the executive summary as a magazine
+// pull-quote — the cue that a human read the game and formed a judgment.
+function pullQuote(text: string | null, max = 200): string | null {
+  if (!text) return null
+  const trimmed = text.trim()
+  let cut = trimmed
+  let count = 0
+  for (let i = 0; i < trimmed.length; i++) {
+    if (trimmed[i] === '.' && trimmed[i + 1] === ' ') {
+      count++
+      if (count === 2 || i + 1 >= max) { cut = trimmed.slice(0, i + 1); break }
+    }
+  }
+  if (cut.length > max) cut = cut.slice(0, max - 1).trimEnd() + '…'
+  return cut
+}
+
+function formatReviewDate(d: Date | null, locale: string): string | null {
+  if (!d) return null
+  return new Date(d)
+    .toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' })
+    .toUpperCase()
+}
+
 export default async function TodaysReview({ locale }: { locale: string }) {
   const [game, te, th] = await Promise.all([
     fetchFeatured(locale),
@@ -44,6 +68,8 @@ export default async function TodaysReview({ locale }: { locale: string }) {
 
   const variant = rosetteVariantFor(game.bds, game.ris)
   const tip = game.parentTipBenefits ?? game.parentTip
+  const quote = pullQuote(game.executiveSummary)
+  const reviewDate = formatReviewDate(game.reviewedAt, te('dateline.locale'))
 
   return (
     <section className="bg-paper text-ink">
@@ -112,17 +138,39 @@ export default async function TodaysReview({ locale }: { locale: string }) {
                 {game.title}
               </h2>
 
-              {game.executiveSummary && (
-                <p className="font-serif italic text-lg text-muted leading-snug mb-5">
-                  {game.executiveSummary}
-                </p>
-              )}
-
-              <p className="font-sans italic text-sm text-muted">
-                {te('meta.byline')}
-              </p>
+              {/* Byline + dateline — the human cue that a person reviewed this,
+                  and when. Hairline rule separates them from the title block. */}
+              <div className="border-t border-ink/30 pt-3 mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span className="font-sans italic text-sm text-muted">
+                  {te('meta.byline')}
+                </span>
+                {reviewDate && (
+                  <>
+                    <span className="text-muted/60" aria-hidden>·</span>
+                    <time
+                      className="text-kicker uppercase text-muted tabular-nums"
+                      style={{ fontVariantCaps: 'all-small-caps' }}
+                    >
+                      {reviewDate}
+                    </time>
+                  </>
+                )}
+              </div>
             </div>
           </div>
+
+          {/* Pull-quote — the sharpest line of the verdict, set large. One of the
+              classic editorial cues that a human read and judged the thing. */}
+          {quote && (
+            <blockquote className="mt-10 md:mt-14 border-t border-ink pt-8 max-w-5xl">
+              <p
+                className="font-serif italic text-2xl md:text-4xl leading-[1.18] tracking-tight text-ink"
+                style={{ fontOpticalSizing: 'auto' }}
+              >
+                {quote}
+              </p>
+            </blockquote>
+          )}
 
           {/* Verdict strip — Growth · Risk · Daily limit */}
           <div className="mt-12 md:mt-16 border-t-2 border-ink border-b border-b-ink py-6 md:py-8 grid grid-cols-3 gap-x-6 md:gap-x-8 items-end">

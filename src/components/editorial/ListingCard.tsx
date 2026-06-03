@@ -8,8 +8,13 @@ export type ListingCardData = {
   ris: number
   minutes: number
   ages: string
+  /** Real cover/screenshot URL. When present, rendered as a treated photo. */
+  photoUrl?: string | null
+  /** Gradient stand-in shown only when no `photoUrl` is available. */
   photoFrom: string
   photoTo: string
+  /** Optional byline — the human cue that a person reviewed this. */
+  byline?: string
 }
 
 // `readLabel` lets the caller supply a localized CTA without coupling the
@@ -18,12 +23,23 @@ export type ListingCardData = {
 export function ListingCard({ card, readLabel = 'Read review →' }: { card: ListingCardData; readLabel?: string }) {
   return (
     <article className="flex flex-col border-b border-ink pb-8">
-      {/* Photo stand-in. Replace with treated <img> when real photography lands. */}
-      <div
-        className="aspect-[4/3] w-full mb-5"
-        style={{ background: `linear-gradient(135deg, ${card.photoFrom}, ${card.photoTo})` }}
-        aria-hidden
-      />
+      {/* Real cover art when we have it, treated to match the editorial palette
+          (same filter as TodaysReview/DeskRow); gradient stand-in otherwise. */}
+      {card.photoUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={card.photoUrl}
+          alt={card.title}
+          className="aspect-[4/3] w-full mb-5 object-cover"
+          style={{ filter: 'saturate(1.05) contrast(1.03)' }}
+        />
+      ) : (
+        <div
+          className="aspect-[4/3] w-full mb-5"
+          style={{ background: `linear-gradient(135deg, ${card.photoFrom}, ${card.photoTo})` }}
+          aria-hidden
+        />
+      )}
 
       <p
         className="text-kicker uppercase font-semibold text-accent mb-2"
@@ -39,9 +55,15 @@ export function ListingCard({ card, readLabel = 'Read review →' }: { card: Lis
         {card.title}
       </h3>
 
-      <p className="font-serif italic text-muted text-base leading-snug mb-5">
+      <p className="font-serif italic text-muted text-base leading-snug mb-3">
         {card.dek}
       </p>
+
+      {card.byline && (
+        <p className="font-sans italic text-xs text-muted mb-5">
+          {card.byline}
+        </p>
+      )}
 
       {/* Sparkline row */}
       <div className="mt-auto grid grid-cols-[auto_1fr_auto] gap-x-3 items-center text-sm font-sans">

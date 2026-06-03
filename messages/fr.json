@@ -133,7 +133,8 @@
     "faq2Question": "Comment évaluez-vous les jeux ?",
     "faq2Answer": "Chaque jeu est évalué sur 60 sous-dimensions d'une grille publique — dix compétences cognitives, six socio-émotionnelles, quatre motrices côté bénéfices, et des schémas de dopamine, monétisation et risque social côté risque. Lisez la méthodologie complète pour les formules.",
     "faq3Question": "Comment décidez-vous combien de temps mon enfant doit jouer ?",
-    "faq3Answer": "Nous calculons une limite quotidienne de session à partir des scores combinés de bénéfices et de risque — de 15 minutes pour les jeux à haut risque à deux heures pour les jeux à forts bénéfices et faible risque. La limite reflète comment le jeu est construit, pas une recommandation générique de temps d'écran."
+    "faq3Answer": "Nous calculons une limite quotidienne de session à partir des scores combinés de bénéfices et de risque — de 15 minutes pour les jeux à haut risque à deux heures pour les jeux à forts bénéfices et faible risque. La limite reflète comment le jeu est construit, pas une recommandation générique de temps d'écran.",
+    "methodologySource": "Fondé sur un barème public — versionné et téléchargeable gratuitement."
   },
   "age": {
     "earlyYears": "Premières années",
@@ -1261,6 +1262,21 @@
       "platformDek": "Switch, PlayStation, Xbox, PC, mobile — affinez par ce qu'ils jouent réellement.",
       "robloxDek": "À l'intérieur du catalogue Roblox, chaque expérience évaluée séparément.",
       "fortniteDek": "Îles et modes Creative évalués séparément du jeu de base."
+    },
+    "standfirst": {
+      "kicker": "De la rédaction",
+      "body": "LumiKin est une petite équipe de parents et de critiques qui évaluent ce qu'un jeu développe chez un enfant — et ce qu'il coûte en attention, en argent et en tranquillité à la maison. Les bénéfices passent d'abord. Chaque note repose sur un barème public. Et nous signalons toujours le point à vérifier avant d'acheter.",
+      "signoff": "— La rédaction de LumiKin"
+    },
+    "byTheNumbers": {
+      "kicker": "En chiffres",
+      "intro": "L'anatomie d'un LumiScore.",
+      "dimensionsLabel": "Sous-dimensions évaluées",
+      "scoresLabel": "Scores composites — bénéfice et risque",
+      "scaleLabel": "L'échelle LumiScore",
+      "timeLabel": "Minutes recommandées par session",
+      "source": "Chaque note repose sur un barème public et versionné.",
+      "sourceCta": "Lire la méthodologie →"
     }
   },
   "shareButton": {

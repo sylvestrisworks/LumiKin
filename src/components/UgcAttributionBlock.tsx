@@ -43,13 +43,13 @@ export default function UgcAttributionBlock({
   const urlSlug = PLATFORM_URL_SLUG[platformSlug] ?? platformSlug
 
   return (
-    <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 px-4 py-2.5 text-sm text-slate-500 dark:text-slate-400">
+    <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 border border-rule px-4 py-2.5 text-sm text-muted">
       {/* Piece 1: content type + platform link */}
       <span>
         A{' '}
         <Link
           href={`/${locale}/platform/${urlSlug}`}
-          className="font-medium text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          className="font-medium text-ink hover:text-accent transition-colors"
         >
           {platformName}
         </Link>
@@ -59,10 +59,10 @@ export default function UgcAttributionBlock({
       {/* Piece 2: official rating (omitted if unavailable) */}
       {rating && (
         <>
-          <span aria-hidden="true" className="text-slate-300 dark:text-slate-600 select-none">·</span>
+          <span aria-hidden="true" className="text-rule select-none">·</span>
           <span>
             {platformName} is rated{' '}
-            <span className="font-semibold text-slate-700 dark:text-slate-300">{rating.label}</span>
+            <span className="font-semibold text-ink">{rating.label}</span>
             {' '}by {rating.board}
           </span>
         </>
@@ -71,10 +71,10 @@ export default function UgcAttributionBlock({
       {/* Piece 3: this experience's LumiScore */}
       {curascore != null && (
         <>
-          <span aria-hidden="true" className="text-slate-300 dark:text-slate-600 select-none">·</span>
+          <span aria-hidden="true" className="text-rule select-none">·</span>
           <span>
             LumiScore{' '}
-            <span className="font-semibold text-slate-700 dark:text-slate-300">{curascore}</span>
+            <span className="font-semibold text-ink">{curascore}</span>
           </span>
         </>
       )}

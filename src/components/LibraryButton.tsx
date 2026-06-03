@@ -45,11 +45,12 @@ export default function LibraryButton({ gameId, initialOwned, initialWishlisted 
       <button
         onClick={() => toggle('owned')}
         disabled={loading !== null}
-        className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold border transition-colors disabled:opacity-60 ${
+        className={`flex items-center gap-1.5 px-4 py-2 text-kicker uppercase font-semibold border transition-colors disabled:opacity-60 ${
           owned
-            ? 'bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700'
-            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-indigo-400 hover:text-indigo-700'
+            ? 'bg-ink text-paper border-ink hover:bg-accent'
+            : 'text-ink border-rule hover:border-ink hover:text-accent'
         }`}
+        style={{ fontVariantCaps: 'all-small-caps' }}
       >
         {loading === 'owned' ? (
           <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -62,11 +63,12 @@ export default function LibraryButton({ gameId, initialOwned, initialWishlisted 
       <button
         onClick={() => toggle('wishlist')}
         disabled={loading !== null}
-        className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold border transition-colors disabled:opacity-60 ${
+        className={`flex items-center gap-1.5 px-4 py-2 text-kicker uppercase font-semibold border transition-colors disabled:opacity-60 ${
           wishlisted
-            ? 'bg-amber-500 text-white border-amber-500 hover:bg-amber-600'
-            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-amber-400 hover:text-amber-600'
+            ? 'bg-warm text-paper border-warm hover:opacity-90'
+            : 'text-ink border-rule hover:border-warm hover:text-warm'
         }`}
+        style={{ fontVariantCaps: 'all-small-caps' }}
       >
         {loading === 'wishlist' ? (
           <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />

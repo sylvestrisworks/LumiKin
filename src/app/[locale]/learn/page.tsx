@@ -8,17 +8,17 @@ import { BookOpen, Newspaper, HelpCircle, ArrowRight } from 'lucide-react'
 
 export const revalidate = 3600
 
-export const metadata: Metadata = {
-  title: 'Learn — Parental Guides, News & FAQs | LumiKin',
-  description: 'Expert guides for parents on screen time, game safety, and age-appropriate gaming. News, tips, and answers to your most common questions.',
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'learn' })
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  return {
+    title:       t('metaTitle' as any),
+    description: t('metaDescription' as any),
+  }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 }
 
-const CATEGORY_COLORS: Record<string, string> = {
-  'screen-time':    'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
-  'game-safety':    'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
-  'age-guide':      'bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300',
-  'parenting-tips': 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
-}
 
 type LearnT = Awaited<ReturnType<typeof getTranslations<'learn'>>>
 
@@ -71,80 +71,80 @@ export default async function LearnPage() {
 
   const { featuredGuides, recentPosts } = data
 
+  const TYPE_CARDS = [
+    { href: `/${locale}/guides`, Icon: BookOpen,   title: t('guidesTitle'), sub: t('guidesSub') },
+    { href: `/${locale}/blog`,   Icon: Newspaper,  title: t('blogTitle'),   sub: t('blogSub') },
+    { href: `/${locale}/faq`,    Icon: HelpCircle, title: t('faqTitle'),    sub: t('faqSub') },
+  ]
+
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <main className="min-h-screen bg-paper text-ink">
       <div className="max-w-5xl mx-auto px-4 py-12 space-y-16">
 
         {/* ── Hero ─────────────────────────────────────────────────── */}
-        <div className="text-center space-y-3">
-          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+        <div className="text-center space-y-3 border-b border-ink pb-8">
+          <h1 className="font-serif text-display-sm md:text-display text-ink tracking-tight">
             {t('title')}
           </h1>
-          <p className="text-lg text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
+          <p className="font-serif italic text-lg text-muted max-w-xl mx-auto">
             {t('subtitle')}
           </p>
         </div>
 
         {/* ── Content type cards ──────────────────────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Link href={`/${locale}/guides`} className="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-md transition-all">
-            <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center mb-4">
-              <BookOpen size={20} className="text-indigo-600 dark:text-indigo-400" />
-            </div>
-            <h2 className="font-black text-slate-900 dark:text-white mb-1 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">{t('guidesTitle')}</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{t('guidesSub')}</p>
-          </Link>
-
-          <Link href={`/${locale}/blog`} className="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-md transition-all">
-            <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center mb-4">
-              <Newspaper size={20} className="text-emerald-600 dark:text-emerald-400" />
-            </div>
-            <h2 className="font-black text-slate-900 dark:text-white mb-1 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">{t('blogTitle')}</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{t('blogSub')}</p>
-          </Link>
-
-          <Link href={`/${locale}/faq`} className="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-md transition-all">
-            <div className="w-10 h-10 bg-violet-50 dark:bg-violet-900/30 rounded-xl flex items-center justify-center mb-4">
-              <HelpCircle size={20} className="text-violet-600 dark:text-violet-400" />
-            </div>
-            <h2 className="font-black text-slate-900 dark:text-white mb-1 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">{t('faqTitle')}</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{t('faqSub')}</p>
-          </Link>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-rule border border-rule">
+          {TYPE_CARDS.map(({ href, Icon, title, sub }) => (
+            <Link key={href} href={href} className="group bg-paper p-6 hover:bg-ink/[0.02] transition-colors">
+              <Icon size={22} strokeWidth={1.5} className="text-ink mb-4" aria-hidden />
+              <h2 className="font-serif text-lg text-ink mb-1 group-hover:text-accent transition-colors">{title}</h2>
+              <p className="text-sm text-muted">{sub}</p>
+            </Link>
+          ))}
         </div>
 
         {/* ── Featured Guides ──────────────────────────────────────────── */}
         {featuredGuides.length > 0 && (
           <section>
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-xl font-black text-slate-900 dark:text-white">{t('featuredGuides')}</h2>
-              <Link href={`/${locale}/guides`} className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
+            <div className="flex items-baseline justify-between mb-6 border-t border-ink pt-4">
+              <h2
+                className="text-kicker uppercase font-semibold text-muted"
+                style={{ fontVariantCaps: 'all-small-caps' }}
+              >{t('featuredGuides')}</h2>
+              <Link
+                href={`/${locale}/guides`}
+                className="text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors flex items-center gap-1"
+                style={{ fontVariantCaps: 'all-small-caps' }}
+              >
                 {t('allGuides')} <ArrowRight size={14} />
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
               {featuredGuides.map((guide) => (
-                <Link key={guide._id} href={`/${locale}/guides/${guide.slug.current}`} className="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-700 transition-all">
+                <Link key={guide._id} href={`/${locale}/guides/${guide.slug.current}`} className="group block">
                   {guide.coverImage?.asset ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={urlFor(guide.coverImage)!.width(600).height(300).auto('format').url()}
                       alt={guide.coverImage.alt ?? guide.title}
-                      className="w-full h-36 object-cover"
+                      className="w-full h-36 object-cover mb-3"
                     />
                   ) : (
-                    <div className="w-full h-36 bg-gradient-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/40 dark:to-violet-900/40" />
+                    <div className="w-full h-36 bg-rule/40 mb-3" />
                   )}
-                  <div className="p-4">
+                  <div>
                     {guide.category && (
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${CATEGORY_COLORS[guide.category] ?? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400'} mb-2 inline-block`}>
+                      <span
+                        className="text-kicker uppercase font-semibold text-accent mb-2 inline-block"
+                        style={{ fontVariantCaps: 'all-small-caps' }}
+                      >
                         {CATEGORY_KEY[guide.category] ? t(CATEGORY_KEY[guide.category]) : guide.category}
                       </span>
                     )}
-                    <h3 className="font-bold text-slate-900 dark:text-white text-sm leading-snug group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">
+                    <h3 className="font-serif text-base text-ink leading-snug group-hover:text-accent transition-colors">
                       {guide.title}
                     </h3>
                     {guide.excerpt && (
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 line-clamp-2">{guide.excerpt}</p>
+                      <p className="text-xs text-muted mt-1.5 line-clamp-2">{guide.excerpt}</p>
                     )}
                   </div>
                 </Link>
@@ -156,37 +156,47 @@ export default async function LearnPage() {
         {/* ── Recent Posts ─────────────────────────────────────────────── */}
         {recentPosts.length > 0 && (
           <section>
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-xl font-black text-slate-900 dark:text-white">{t('latestBlog')}</h2>
-              <Link href={`/${locale}/blog`} className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
+            <div className="flex items-baseline justify-between mb-6 border-t border-ink pt-4">
+              <h2
+                className="text-kicker uppercase font-semibold text-muted"
+                style={{ fontVariantCaps: 'all-small-caps' }}
+              >{t('latestBlog')}</h2>
+              <Link
+                href={`/${locale}/blog`}
+                className="text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors flex items-center gap-1"
+                style={{ fontVariantCaps: 'all-small-caps' }}
+              >
                 {t('allPosts')} <ArrowRight size={14} />
               </Link>
             </div>
-            <div className="space-y-3">
+            <div className="divide-y divide-rule/60">
               {recentPosts.map((post) => (
-                <Link key={post._id} href={`/${locale}/blog/${post.slug.current}`} className="group flex items-start gap-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:border-indigo-200 dark:hover:border-indigo-700 hover:shadow-sm transition-all">
+                <Link key={post._id} href={`/${locale}/blog/${post.slug.current}`} className="group flex items-start gap-4 py-4">
                   {post.coverImage?.asset ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={urlFor(post.coverImage)!.width(160).height(100).auto('format').url()}
                       alt={post.coverImage.alt ?? post.title}
-                      className="w-20 h-14 rounded-lg object-cover shrink-0"
+                      className="w-20 h-14 object-cover shrink-0"
                     />
                   ) : (
-                    <div className="w-20 h-14 rounded-lg bg-slate-100 dark:bg-slate-700 shrink-0 flex items-center justify-center">
-                      <Newspaper size={16} className="text-slate-400" />
+                    <div className="w-20 h-14 bg-rule/40 shrink-0 flex items-center justify-center">
+                      <Newspaper size={16} className="text-muted" />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       {post.postType && (
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                        <span
+                          className="text-kicker uppercase font-semibold text-muted"
+                          style={{ fontVariantCaps: 'all-small-caps' }}
+                        >
                           {post.postType}
                         </span>
                       )}
-                      <span className="text-[10px] text-slate-300 dark:text-slate-600">{formatDate(post.publishedAt)}</span>
+                      <span className="text-[10px] text-muted">{formatDate(post.publishedAt)}</span>
                     </div>
-                    <h3 className="font-bold text-slate-900 dark:text-white text-sm leading-snug group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
+                    <h3 className="font-serif text-base text-ink leading-snug group-hover:text-accent transition-colors line-clamp-2">
                       {post.title}
                     </h3>
                   </div>
@@ -198,9 +208,9 @@ export default async function LearnPage() {
 
         {/* ── Empty state ──────────────────────────────────────────────── */}
         {featuredGuides.length === 0 && recentPosts.length === 0 && (
-          <div className="text-center py-16 text-slate-400 dark:text-slate-600">
+          <div className="text-center py-16 text-muted">
             <BookOpen size={40} className="mx-auto mb-3 opacity-40" />
-            <p className="font-medium">{t('comingSoon')}</p>
+            <p className="font-serif italic">{t('comingSoon')}</p>
           </div>
         )}
 

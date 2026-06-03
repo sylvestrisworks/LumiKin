@@ -35,7 +35,7 @@ function Pill({ pattern, t }: { pattern: DarkPattern; t: T }) {
   const labelKey = LABEL_KEYS[pattern.patternId]
   const descKey  = DESC_KEYS[pattern.patternId]
   const label    = labelKey ? t(labelKey) : pattern.patternId
-  const desc     = pattern.description ?? (descKey ? t(descKey) : null)
+  const desc     = descKey ? t(descKey) : pattern.description
 
   return (
     <div>

@@ -2,16 +2,16 @@ export type HistogramBucket = { bucket: number; count: number }
 
 // Tailwind classes must be static strings — do not compute these at runtime
 const BUCKET_COLORS = [
-  'bg-red-600',    // 0–9
-  'bg-red-500',    // 10–19
-  'bg-orange-500', // 20–29
-  'bg-amber-600',  // 30–39
-  'bg-amber-500',  // 40–49
-  'bg-yellow-500', // 50–59
-  'bg-lime-500',   // 60–69
-  'bg-teal-500',   // 70–79
-  'bg-emerald-500',// 80–89
-  'bg-emerald-600',// 90–100
+  'bg-accent',     // 0–9
+  'bg-accent',     // 10–19
+  'bg-accent/70',  // 20–29
+  'bg-warm',       // 30–39
+  'bg-warm',       // 40–49
+  'bg-warm/70',    // 50–59
+  'bg-ivy/60',     // 60–69
+  'bg-ivy',        // 70–79
+  'bg-ivy',        // 80–89
+  'bg-ivy',        // 90–100
 ]
 
 const BUCKET_STARTS = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
@@ -31,12 +31,12 @@ export default function PlatformScoreHistogram({
   const total = counts.reduce((a, b) => a + b, 0)
 
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 px-4 pt-4 pb-3">
+    <div className="border border-rule px-4 pt-4 pb-3">
       <div className="flex items-baseline justify-between mb-4">
-        <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+        <h2 className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>
           {scoreDistributionLabel}
         </h2>
-        <span className="text-xs text-slate-400 dark:text-slate-500">{total} {scoredSuffix}</span>
+        <span className="text-xs text-muted">{total} {scoredSuffix}</span>
       </div>
 
       {/* Bars */}
@@ -47,7 +47,7 @@ export default function PlatformScoreHistogram({
           return (
             <div key={i} className="flex flex-col items-center flex-1 min-w-0 h-full justify-end">
               <div
-                className={`w-full rounded-t-sm ${BUCKET_COLORS[i]}`}
+                className={`w-full ${BUCKET_COLORS[i]}`}
                 style={{ height: `${heightPct}%` }}
                 title={`${label}: ${count}`}
               />
@@ -61,7 +61,7 @@ export default function PlatformScoreHistogram({
         {BUCKET_STARTS.map((start, i) => (
           <span
             key={i}
-            className="flex-1 text-center text-[9px] text-slate-400 dark:text-slate-500 font-mono"
+            className="flex-1 text-center text-[9px] text-muted font-mono"
           >
             {i % 2 === 0 ? start : ''}
           </span>

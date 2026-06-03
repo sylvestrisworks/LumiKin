@@ -6,7 +6,7 @@ import { db } from '@/lib/db'
 import { platformExperiences, experienceScores, games, gameScores } from '@/lib/db/schema'
 import { eq, desc, and, lte, ilike, isNotNull, inArray, type SQL } from 'drizzle-orm'
 import FortniteCard from '@/components/FortniteCard'
-import { curascoreText } from '@/lib/ui'
+import { curascoreTextEditorial } from '@/lib/ui'
 import FortniteFilters, { type FortniteFilterState } from '@/components/FortniteFilters'
 import { getTranslations, getLocale } from 'next-intl/server'
 import Link from 'next/link'
@@ -142,11 +142,11 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
   const unscored = maps.filter(e => e.curascore == null)
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
 
         {/* Platform header */}
-        <div className="relative rounded-2xl overflow-hidden border border-slate-700 shadow-lg bg-slate-900">
+        <div className="relative overflow-hidden border-2 border-ink bg-slate-900">
           {headerBg && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -166,7 +166,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                 <span className="text-[11px] font-semibold bg-blue-500/25 text-blue-200 border border-blue-400/30 px-2 py-0.5 rounded-full tracking-wide uppercase">{t('platformBadge')}</span>
                 {platformScore?.curascore != null && (
-                  <span className={`text-[11px] font-bold bg-white/10 border border-white/20 px-2 py-0.5 rounded-full ${curascoreText(platformScore.curascore)}`}>
+                  <span className={`text-[11px] font-bold bg-white/10 border border-white/20 px-2 py-0.5 rounded-full ${curascoreTextEditorial(platformScore.curascore)}`}>
                     LumiScore {platformScore.curascore}
                   </span>
                 )}
@@ -196,7 +196,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
         {/* Fortnite Game Modes */}
         {orderedModes.length > 0 && (
           <section>
-            <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+            <h2 className="text-kicker uppercase font-semibold text-muted mb-3 border-t border-ink pt-4" style={{ fontVariantCaps: 'all-small-caps' }}>
               {t('gameModesHeader')}
             </h2>
             <div className="flex items-stretch gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:pb-0 sm:snap-none">
@@ -207,7 +207,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
                   <div key={mode.slug} className="snap-start shrink-0 w-44 sm:w-auto h-full">
                   <Link
                     href={`/${locale}/game/${mode.slug}`}
-                    className={`group flex flex-col rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-800 hover:shadow-md transition-all h-full ${meta.hoverBorder}`}
+                    className="group flex flex-col border border-rule overflow-hidden hover:border-ink transition-colors h-full"
                   >
                     {/* Thumbnail */}
                     <div className="relative h-20 shrink-0 overflow-hidden">
@@ -224,19 +224,19 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
                     </div>
                     {/* Content */}
                     <div className="p-3 flex flex-col flex-1">
-                      <div className="text-sm font-semibold text-slate-800 dark:text-white leading-tight">{mode.title}</div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-tight line-clamp-1">{t(meta.taglineKey)}</div>
-                      <div className="flex items-center gap-1.5 mt-auto pt-2 flex-wrap">
+                      <div className="font-serif text-sm text-ink leading-tight group-hover:text-accent transition-colors">{mode.title}</div>
+                      <div className="text-xs text-muted mt-0.5 leading-tight line-clamp-1">{t(meta.taglineKey)}</div>
+                      <div className="flex items-center gap-2 mt-auto pt-2 flex-wrap">
                         {mode.esrbRating && (
-                          <span className="text-[10px] bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded font-medium">
+                          <span className="text-kicker uppercase text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>
                             {mode.esrbRating}
                           </span>
                         )}
-                        <span className="text-[10px] bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded font-medium">
+                        <span className="text-kicker uppercase text-ivy" style={{ fontVariantCaps: 'all-small-caps' }}>
                           {t('freeBadge')}
                         </span>
                         {mode.curascore != null && (
-                          <span className={`text-[10px] font-bold ${curascoreText(mode.curascore)}`}>
+                          <span className={`font-serif text-sm font-semibold ${curascoreTextEditorial(mode.curascore)}`}>
                             {mode.curascore}
                           </span>
                         )}
@@ -266,7 +266,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 text-slate-400">
+            <div className="text-center py-16 text-muted">
               {t('noMapsFiltered')}
             </div>
           )
@@ -274,7 +274,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
           <>
             {scored.length > 0 && (
               <section>
-                <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+                <h2 className="text-kicker uppercase font-semibold text-muted mb-3 border-t border-ink pt-4" style={{ fontVariantCaps: 'all-small-caps' }}>
                   {t('rated')}
                 </h2>
                 <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
@@ -289,7 +289,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
 
             {unscored.length > 0 && (
               <section>
-                <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+                <h2 className="text-kicker uppercase font-semibold text-muted mb-3 border-t border-ink pt-4" style={{ fontVariantCaps: 'all-small-caps' }}>
                   {t('awaitingRating')}
                 </h2>
                 <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
@@ -303,7 +303,7 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
             )}
 
             {maps.length === 0 && (
-              <div className="text-center py-16 text-slate-400">
+              <div className="text-center py-16 text-muted">
                 {t('noMapsYet')}
               </div>
             )}

@@ -29,45 +29,45 @@ export default async function LocaleLayout({
         <div className="flex-1">{children}</div>
         <CookieNotice />
         <BetaBanner />
-        <footer className="border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-          <div className="max-w-6xl mx-auto px-4 py-8">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <footer className="border-t-2 border-ink bg-paper text-ink">
+          <div className="max-w-7xl mx-auto px-8 py-12">
+            <div className="flex flex-col md:flex-row items-start md:items-baseline justify-between gap-8 md:gap-12">
               <div>
-                <p className="font-black text-indigo-700 dark:text-indigo-400 tracking-tight">
-                  {t('brand')} <span className="font-normal text-slate-400 dark:text-slate-500">{t('brandSub')}</span>
+                <p
+                  className="font-serif text-3xl tracking-tight leading-tight"
+                  style={{ fontOpticalSizing: 'auto' }}
+                >
+                  {t('brand')}{' '}
+                  <span className="font-serif italic text-xl text-muted">{t('brandSub')}</span>
                 </p>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{t('tagline')}</p>
+                <p className="font-serif italic text-sm text-muted mt-1">{t('tagline')}</p>
               </div>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
-                  <a href={`/${locale}/discover`} className="hover:text-indigo-700 dark:hover:text-indigo-400 hover:underline transition-colors">
-                    {t('navDiscover')}
-                  </a>
-                  <a href={`/${locale}/browse`} className="hover:text-indigo-700 dark:hover:text-indigo-400 hover:underline transition-colors">
-                    {t('navBrowse')}
-                  </a>
-                  <a href={`/${locale}/compare`} className="hover:text-indigo-700 dark:hover:text-indigo-400 hover:underline transition-colors">
-                    {t('navCompare')}
-                  </a>
-                  <a href={`/${locale}/privacy`} className="hover:text-indigo-700 dark:hover:text-indigo-400 hover:underline transition-colors">
-                    {t('navPrivacy')}
-                  </a>
-                  <a href={`/${locale}/terms`} className="hover:text-indigo-700 dark:hover:text-indigo-400 hover:underline transition-colors">
-                    {t('navTerms')}
-                  </a>
-                  <a href="/feed.xml" className="hover:text-indigo-700 dark:hover:text-indigo-400 hover:underline transition-colors">
-                    RSS
-                  </a>
-                  <a href="/feed.json" className="hover:text-indigo-700 dark:hover:text-indigo-400 hover:underline transition-colors">
-                    JSON Feed
-                  </a>
+
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+                <nav
+                  className="flex flex-wrap gap-x-6 gap-y-2 text-kicker uppercase font-semibold"
+                  style={{ fontVariantCaps: 'all-small-caps' }}
+                >
+                  <a href={`/${locale}/discover`} className="text-ink hover:text-accent transition-colors">{t('navDiscover')}</a>
+                  <a href={`/${locale}/browse`}   className="text-ink hover:text-accent transition-colors">{t('navBrowse')}</a>
+                  <a href={`/${locale}/compare`}  className="text-ink hover:text-accent transition-colors">{t('navCompare')}</a>
+                  <a href={`/${locale}/privacy`}  className="text-ink hover:text-accent transition-colors">{t('navPrivacy')}</a>
+                  <a href={`/${locale}/terms`}    className="text-ink hover:text-accent transition-colors">{t('navTerms')}</a>
+                  <a href="/feed.xml"             className="text-ink hover:text-accent transition-colors">RSS</a>
+                  <a href="/feed.json"            className="text-ink hover:text-accent transition-colors">JSON Feed</a>
                 </nav>
                 <LanguageSwitcher />
               </div>
             </div>
-            <p className="text-xs text-slate-300 dark:text-slate-600 mt-6">
-              {t('copyright', { year })}
-            </p>
+
+            <div className="mt-10 border-t border-ink/30 pt-4 flex items-baseline justify-between gap-4">
+              <p
+                className="text-kicker uppercase text-muted tabular-nums"
+                style={{ fontVariantCaps: 'all-small-caps' }}
+              >
+                {t('copyright', { year })}
+              </p>
+            </div>
           </div>
         </footer>
       </div>

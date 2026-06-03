@@ -93,38 +93,38 @@ export default async function PlatformIndex({ params }: Props) {
   ].sort((a, b) => b.count - a.count)
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
       <div className="max-w-5xl mx-auto px-4 py-10 sm:py-14">
-        <header className="text-center mb-8 sm:mb-10">
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+        <header className="text-center mb-10 border-b border-ink pb-6">
+          <h1 className="font-serif text-display-sm sm:text-display text-ink tracking-tight">
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {t('indexTitle' as any)}
           </h1>
-          <p className="mt-2 text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
+          <p className="mt-2 font-serif italic text-sm sm:text-base text-muted max-w-xl mx-auto">
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {t('indexSubtitle' as any)}
           </p>
         </header>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {tiles.map(tile => (
             <Link
               key={tile.slug}
               href={`/${locale}/platform/${tile.slug}`}
-              className="group rounded-2xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-500 hover:shadow-md transition-all"
+              className="group overflow-hidden border border-rule hover:border-ink transition-colors"
             >
               <div className={`h-16 bg-gradient-to-br ${tile.accent} flex items-center px-4 gap-3`}>
                 <span className={`shrink-0 w-10 h-10 rounded-xl ${tile.iconBg} ring-2 flex items-center justify-center text-white font-black text-[11px] tracking-tight`}>
                   {tile.iconLabel}
                 </span>
-                <span className="text-white font-bold text-base tracking-tight">{tile.name}</span>
+                <span className="text-white font-serif text-base tracking-tight">{tile.name}</span>
               </div>
               <div className="px-4 py-3 space-y-2">
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug line-clamp-2">
+                <p className="text-xs text-ink/80 leading-snug line-clamp-2">
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {t(tile.descKey as any)}
                 </p>
-                <p className="text-[11px] font-medium text-slate-500 dark:text-slate-500">
+                <p className="text-kicker uppercase text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>
                   {tile.count > 0 && tile.avgScore != null
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     ? t('tileSummary' as any, { count: tile.count, avg: tile.avgScore })

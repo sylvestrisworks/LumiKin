@@ -13,7 +13,8 @@ export default function ImportLibraryButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white border border-slate-200 text-slate-600 rounded-xl hover:border-indigo-300 hover:text-indigo-700 transition-colors"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-kicker uppercase font-semibold border border-rule text-ink hover:border-ink hover:text-accent transition-colors"
+        style={{ fontVariantCaps: 'all-small-caps' }}
       >
         ↓ {t('importButton')}
       </button>

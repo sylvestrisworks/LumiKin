@@ -8,9 +8,15 @@ import { games, gameScores } from '@/lib/db/schema'
 import GameDiscoveryDashboard from '@/components/GameDiscoveryDashboard'
 import type { GameSummary, SwapPair, CatalogStats } from '@/types/game'
 
-export const metadata: Metadata = {
-  title: 'Discover — LumiKin',
-  description: 'Find the right game for your child, grounded in child development.',
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'discover' })
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  return {
+    title:       t('metaTitle' as any),
+    description: t('metaDescription' as any),
+  }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 }
 
 async function getTopGames(): Promise<GameSummary[]> {

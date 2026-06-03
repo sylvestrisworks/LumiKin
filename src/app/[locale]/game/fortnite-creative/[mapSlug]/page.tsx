@@ -8,6 +8,7 @@ import { eq, and } from 'drizzle-orm'
 import Link from 'next/link'
 import { getTranslations, getLocale } from 'next-intl/server'
 import UgcAttributionBlock from '@/components/UgcAttributionBlock'
+import GameFAQ from '@/components/GameFAQ'
 import { RUBRIC_DIMENSION_COUNT } from '@/lib/methodology'
 import { CONFIDENCE_THRESHOLD } from '@/lib/scoring/experience-risk'
 
@@ -19,41 +20,31 @@ function pct(v: number | null, max = 1) { return `${Math.round(((v ?? 0) / max) 
 
 function getVerdict(score: number | null) {
   const s = score ?? 0
-  if (s >= 70) return { labelKey: 'verdictGreat',   color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/30',  ring: '#10b981' }
-  if (s >= 50) return { labelKey: 'verdictGood',    color: 'text-teal-600 dark:text-teal-400',       bg: 'bg-teal-50 dark:bg-teal-900/30',        ring: '#14b8a6' }
-  if (s >= 35) return { labelKey: 'verdictCaution', color: 'text-amber-600 dark:text-amber-400',     bg: 'bg-amber-50 dark:bg-amber-900/30',      ring: '#f59e0b' }
-  return              { labelKey: 'verdictAvoid',   color: 'text-red-600 dark:text-red-400',         bg: 'bg-red-50 dark:bg-red-900/30',          ring: '#ef4444' }
+  if (s >= 70) return { labelKey: 'verdictGreat',   color: 'text-ivy',    bg: '',  ring: 'rgb(var(--ivy))' }
+  if (s >= 50) return { labelKey: 'verdictGood',    color: 'text-ivy',    bg: '',  ring: 'rgb(var(--ivy))' }
+  if (s >= 35) return { labelKey: 'verdictCaution', color: 'text-warm',   bg: '',  ring: 'rgb(var(--warm))' }
+  return              { labelKey: 'verdictAvoid',   color: 'text-accent', bg: '',  ring: 'rgb(var(--accent))' }
 }
 
 function benefitBarColor(v: number, max = 3) {
   const f = v / max
-  if (f >= 0.67) return 'bg-emerald-400'
-  if (f >= 0.34) return 'bg-blue-400'
-  return 'bg-slate-300 dark:bg-slate-600'
+  if (f >= 0.67) return 'bg-ivy'
+  if (f >= 0.34) return 'bg-ivy/60'
+  return 'bg-rule'
 }
 
 function riskBarColor(v: number, max = 3) {
   const f = v / max
-  if (f >= 0.67) return 'bg-red-600'
-  if (f >= 0.34) return 'bg-orange-500'
-  return 'bg-yellow-400'
+  if (f >= 0.67) return 'bg-accent'
+  if (f >= 0.34) return 'bg-warm'
+  return 'bg-warm/50'
 }
 
 function riskLevel(v: number, max = 3) {
   const f = v / max
-  if (f < 0.34) return { labelKey: 'riskLow',      cls: 'bg-yellow-100 dark:bg-yellow-900/50 border border-yellow-300 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200' }
-  if (f < 0.67) return { labelKey: 'riskModerate', cls: 'bg-orange-100 dark:bg-orange-900/50 border border-orange-300 dark:border-orange-600 text-orange-800 dark:text-orange-200' }
-  return               { labelKey: 'riskHigh',     cls: 'bg-red-100 dark:bg-red-900/50 border border-red-300 dark:border-red-600 text-red-800 dark:text-red-200' }
-}
-
-// Parent-facing verdict narrative for FAQ answers. Verdict *labels* live in
-// messages/<locale>.json (fortnite.metaVerdict*); FAQ is EN-only for now, so
-// these narratives stay inline.
-function verdictNarrative(score: number): string {
-  if (score >= 70) return 'It scores well on developmental benefits with manageable risks.'
-  if (score >= 50) return 'It offers solid benefits but needs parental guidance on the risks.'
-  if (score >= 35) return 'There are notable risks worth knowing before letting kids play.'
-  return 'Significant risks make this hard to recommend for younger players.'
+  if (f < 0.34) return { labelKey: 'riskLow',      cls: 'border border-rule text-muted' }
+  if (f < 0.67) return { labelKey: 'riskModerate', cls: 'border border-warm text-warm' }
+  return               { labelKey: 'riskHigh',     cls: 'border border-accent text-accent' }
 }
 
 // ─── Horseshoe ring ───────────────────────────────────────────────────────────
@@ -68,7 +59,7 @@ function HorseshoeRing({ score, ring }: { score: number; ring: string }) {
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} style={{ transform: 'rotate(135deg)' }} aria-hidden="true">
         <circle cx={cx} cy={cy} r={r} fill="none" stroke="currentColor"
-          className="text-slate-200 dark:text-slate-700"
+          className="text-rule/50"
           strokeWidth={stroke} strokeLinecap="round"
           strokeDasharray={`${totalArc} ${gap}`} />
         <circle cx={cx} cy={cy} r={r} fill="none"
@@ -76,8 +67,8 @@ function HorseshoeRing({ score, ring }: { score: number; ring: string }) {
           strokeDasharray={`${filled} ${circ - filled}`} />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center pb-4">
-        <span className="text-5xl font-black tracking-tighter leading-none" style={{ color: ring }}>{score}</span>
-        <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mt-1">/ 100</span>
+        <span className="font-serif text-5xl tracking-tighter leading-none" style={{ color: ring }}>{score}</span>
+        <span className="text-xs font-bold text-muted mt-1">/ 100</span>
       </div>
     </div>
   )
@@ -89,11 +80,11 @@ function BenefitBar({ label, value, max = 3 }: { label: string; value: number | 
   const v = value ?? 0
   return (
     <div className="flex items-center gap-3">
-      <span className="w-28 text-sm text-slate-600 dark:text-slate-300 shrink-0">{label}</span>
-      <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
-        <div className={`h-full rounded-full transition-all ${benefitBarColor(v, max)}`} style={{ width: pct(v, max) }} />
+      <span className="w-28 text-sm text-ink/80 shrink-0">{label}</span>
+      <div className="flex-1 bg-rule/30 h-2.5 overflow-hidden">
+        <div className={`h-full transition-all ${benefitBarColor(v, max)}`} style={{ width: pct(v, max) }} />
       </div>
-      <span className="w-10 text-right text-xs font-medium text-slate-700 dark:text-slate-300 shrink-0">{v}/{max}</span>
+      <span className="w-10 text-right text-xs font-medium text-ink/80 shrink-0">{v}/{max}</span>
     </div>
   )
 }
@@ -106,11 +97,11 @@ function RiskMeter({ label, levelLabel, value, max = 3 }: { label: string; level
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</span>
-        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full shrink-0 ${level.cls}`}>{levelLabel}</span>
+        <span className="text-sm font-medium text-ink/80">{label}</span>
+        <span className={`text-kicker uppercase font-semibold px-2.5 py-0.5 shrink-0 ${level.cls}`} style={{ fontVariantCaps: 'all-small-caps' }}>{levelLabel}</span>
       </div>
-      <div className="bg-slate-100 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
-        <div className={`h-full rounded-full transition-all ${riskBarColor(v, max)}`} style={{ width: pct(v, max) }} />
+      <div className="bg-rule/30 h-3 overflow-hidden">
+        <div className={`h-full transition-all ${riskBarColor(v, max)}`} style={{ width: pct(v, max) }} />
       </div>
     </div>
   )
@@ -339,46 +330,9 @@ export default async function FortniteMapPage({ params }: Props) {
     url: canonicalUrl,
   } : null
 
-  // FAQ schema only emits on /en/* and when a score is displayable. Localized
-  // FAQ Q&A pairs are deferred to Phase E (translation audit).
-  const faqLd = locale === 'en' && displayScore?.curascore != null ? {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: `Is ${exp.title} safe for kids?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `LumiKin gives ${exp.title} a LumiScore of ${displayScore.curascore}/100${displayScore.recommendedMinAge != null ? `, recommended for ages ${displayScore.recommendedMinAge} and up` : ''}. ${verdictNarrative(displayScore.curascore)}`,
-        },
-      },
-      ...(displayScore.recommendedMinAge != null ? [{
-        '@type': 'Question',
-        name: `What age is ${exp.title} appropriate for?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `LumiKin's rubric recommends a minimum age of ${displayScore.recommendedMinAge}+ for ${exp.title} on Fortnite Creative, based on content, social, and monetization risks.`,
-        },
-      }] : []),
-      ...(displayScore.timeRecommendationLabel ? [{
-        '@type': 'Question',
-        name: `How long should kids play ${exp.title}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `LumiKin's recommended play time for ${exp.title} is ${displayScore.timeRecommendationLabel}, calibrated to the map's dopamine, social, and monetization profile.`,
-        },
-      }] : []),
-      ...(displayScore.risksNarrative ? [{
-        '@type': 'Question',
-        name: `What are the risks of ${exp.title} on Fortnite?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: displayScore.risksNarrative.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 400),
-        },
-      }] : []),
-    ],
-  } : null
+  // Per-map FAQ block (visible Q&A + FAQPage JSON-LD) is rendered by
+  // <GameFAQ /> below — locale-aware, uses experience_translations-overlaid
+  // risksNarrative when present. Emits on every locale.
 
   const ldJson = (obj: unknown) =>
     JSON.stringify(obj).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026')
@@ -390,23 +344,20 @@ export default async function FortniteMapPage({ params }: Props) {
       {reviewLd && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(reviewLd) }} />
       )}
-      {faqLd && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(faqLd) }} />
-      )}
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-4">
 
         {/* Breadcrumb */}
-        <nav className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
-          <Link href={`/${locale}/game/fortnite-creative`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+        <nav className="text-kicker uppercase text-muted flex items-center gap-1.5" style={{ fontVariantCaps: 'all-small-caps' }}>
+          <Link href={`/${locale}/game/fortnite-creative`} className="hover:text-accent transition-colors">
             {t('breadcrumbHub')}
           </Link>
-          <span>/</span>
-          <span className="text-slate-600 dark:text-slate-300 truncate">{exp.title}</span>
+          <span className="text-rule">/</span>
+          <span className="text-ink truncate">{exp.title}</span>
         </nav>
 
         {/* ── Hero card ──────────────────────────────────────────────────────── */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+        <div className="border border-rule overflow-hidden">
           {exp.thumbnailUrl && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={exp.thumbnailUrl} alt="" className="w-full h-40 object-cover" />
@@ -422,16 +373,16 @@ export default async function FortniteMapPage({ params }: Props) {
               )}
 
               <div className="flex-1 min-w-0 pt-1">
-                <h1 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">{exp.title}</h1>
+                <h1 className="font-serif text-2xl text-ink leading-tight">{exp.title}</h1>
                 {exp.creatorName && (
-                  <p className="text-sm text-slate-400 mt-0.5">{t('mapBy', { creator: exp.creatorName })}</p>
+                  <p className="text-sm text-muted mt-0.5">{t('mapBy', { creator: exp.creatorName })}</p>
                 )}
 
                 {/* Island code */}
                 {exp.placeId && (
                   <div className="flex items-center gap-2 mt-2">
-                    <span className="text-xs text-slate-400 dark:text-slate-500">{t('islandCode')}:</span>
-                    <code className="text-xs font-mono bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded">
+                    <span className="text-xs text-muted">{t('islandCode')}:</span>
+                    <code className="text-xs font-mono bg-ink/5 text-ink px-2 py-0.5">
                       {exp.placeId}
                     </code>
                   </div>
@@ -440,7 +391,7 @@ export default async function FortniteMapPage({ params }: Props) {
                 {/* Genre */}
                 {exp.genre && (
                   <div className="flex flex-wrap gap-2 mt-2">
-                    <span className="text-xs bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 px-2 py-0.5 rounded-full">
+                    <span className="text-kicker uppercase text-muted border border-rule px-2 py-0.5" style={{ fontVariantCaps: 'all-small-caps' }}>
                       {exp.genre}
                     </span>
                   </div>
@@ -448,10 +399,10 @@ export default async function FortniteMapPage({ params }: Props) {
 
                 {/* Time recommendation */}
                 {displayScore?.timeRecommendationLabel && (
-                  <div className={`mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-sm font-semibold ${
-                    displayScore.timeRecommendationColor === 'green'  ? 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400' :
-                    displayScore.timeRecommendationColor === 'amber'  ? 'bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400' :
-                                                                        'bg-red-50 border-red-200 text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400'
+                  <div className={`mt-3 inline-flex items-center gap-2 px-3 py-1.5 border text-sm font-semibold ${
+                    displayScore.timeRecommendationColor === 'green'  ? 'border-ivy text-ivy' :
+                    displayScore.timeRecommendationColor === 'amber'  ? 'border-warm text-warm' :
+                                                                        'border-accent text-accent'
                   }`}>
                     <span>{t('recommendedPrefix', { label: displayScore.timeRecommendationLabel })}</span>
                     {displayScore.recommendedMinAge != null && (
@@ -478,15 +429,15 @@ export default async function FortniteMapPage({ params }: Props) {
 
         {/* ── Summary ────────────────────────────────────────────────────────── */}
         {displayScore?.summary && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
-            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed italic">"{displayScore.summary}"</p>
+          <div className="border-l-2 border-accent pl-4 py-1">
+            <p className="font-serif text-base text-ink leading-relaxed italic">"{displayScore.summary}"</p>
           </div>
         )}
 
         {/* ── Benefits ───────────────────────────────────────────────────────── */}
         {displayScore && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-5 space-y-4">
-            <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+          <div className="border border-rule px-5 py-5 space-y-4">
+            <h2 className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>
               {t('whatChildDevelops')}
             </h2>
 
@@ -497,9 +448,9 @@ export default async function FortniteMapPage({ params }: Props) {
             </div>
 
             {displayScore.benefitsNarrative && (
-              <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-4 mt-2">
-                <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300 mb-1">{t('whatChildDevelops')}</p>
-                <p className="text-sm text-emerald-900 dark:text-emerald-200 leading-relaxed">{displayScore.benefitsNarrative}</p>
+              <div className="border-l-2 border-ivy pl-4 py-1 mt-2">
+                <p className="text-kicker uppercase font-semibold text-ivy mb-1" style={{ fontVariantCaps: 'all-small-caps' }}>{t('whatChildDevelops')}</p>
+                <p className="text-sm text-ink/85 leading-relaxed">{displayScore.benefitsNarrative}</p>
               </div>
             )}
           </div>
@@ -507,8 +458,8 @@ export default async function FortniteMapPage({ params }: Props) {
 
         {/* ── Risks ──────────────────────────────────────────────────────────── */}
         {displayScore && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-5 space-y-4">
-            <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+          <div className="border border-rule px-5 py-5 space-y-4">
+            <h2 className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>
               {t('watchOutFor')}
             </h2>
 
@@ -522,9 +473,9 @@ export default async function FortniteMapPage({ params }: Props) {
             </div>
 
             {displayScore.risksNarrative && (
-              <div className="bg-slate-50 dark:bg-slate-700/50 rounded-2xl p-4 mt-2">
-                <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">{t('watchOutFor')}</p>
-                <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{displayScore.risksNarrative}</p>
+              <div className="border-l-2 border-warm pl-4 py-1 mt-2">
+                <p className="text-kicker uppercase font-semibold text-warm mb-1" style={{ fontVariantCaps: 'all-small-caps' }}>{t('watchOutFor')}</p>
+                <p className="text-sm text-ink/85 leading-relaxed">{displayScore.risksNarrative}</p>
               </div>
             )}
           </div>
@@ -532,23 +483,36 @@ export default async function FortniteMapPage({ params }: Props) {
 
         {/* ── Scoring method note (Fix 8) ────────────────────────────────────── */}
         {displayScore && (
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed px-1">
+          <p className="text-[11px] text-muted leading-relaxed px-1">
             {t('scoringNote', { count: RUBRIC_DIMENSION_COUNT })}
           </p>
         )}
 
+        {/* ── Parent-intent FAQ ──────────────────────────────────────────────── */}
+        {displayScore?.curascore != null && (
+          <GameFAQ
+            title={exp.title}
+            score={displayScore.curascore}
+            recommendedMinAge={displayScore.recommendedMinAge ?? null}
+            timeRecommendationLabel={displayScore.timeRecommendationLabel ?? null}
+            risksNarrative={displayScore.risksNarrative ?? null}
+            platformContext="Fortnite Creative"
+            locale={locale}
+          />
+        )}
+
         {/* ── Parent tip ─────────────────────────────────────────────────────── */}
         {displayScore?.parentTip && (
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl px-5 py-4">
-            <p className="text-xs font-black uppercase tracking-widest text-blue-700 dark:text-blue-400 mb-1">{t('parentTip')}</p>
-            <p className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">{displayScore.parentTip}</p>
+          <div className="border-l-2 border-accent pl-4 py-1">
+            <p className="text-kicker uppercase font-semibold text-accent mb-1" style={{ fontVariantCaps: 'all-small-caps' }}>{t('parentTip')}</p>
+            <p className="font-serif text-sm text-ink/85 leading-relaxed italic">{displayScore.parentTip}</p>
           </div>
         )}
 
         {/* ── No score / pending ─────────────────────────────────────────────── */}
         {!displayScore && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-8 text-center text-slate-500 dark:text-slate-400">
-            <p className="font-medium">
+          <div className="border border-rule px-5 py-8 text-center text-muted">
+            <p className="font-serif text-ink">
               {isPending ? 'Not enough info to rate' : t('ratingInProgress')}
             </p>
             <p className="text-xs mt-1">
@@ -561,28 +525,29 @@ export default async function FortniteMapPage({ params }: Props) {
 
         {/* ── Fortnite platform parent guide ─────────────────────────────────── */}
         <details className="group/panel">
-          <summary className="flex items-center justify-between gap-2 cursor-pointer list-none select-none py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+          <summary className="flex items-center justify-between gap-2 cursor-pointer list-none select-none py-2 text-kicker uppercase font-semibold text-muted hover:text-ink transition-colors" style={{ fontVariantCaps: 'all-small-caps' }}>
             <span className="flex items-center gap-1.5">
-              <span className="text-blue-400">ℹ</span>
+              <span className="text-accent">ℹ</span>
               {t('parentGuideTitle')}
             </span>
-            <span className="transition-transform group-open/panel:rotate-180 text-slate-300 dark:text-slate-600">▾</span>
+            <span className="transition-transform group-open/panel:rotate-180 text-rule">▾</span>
           </summary>
-          <div className="mt-2 rounded-xl border border-blue-100 dark:border-blue-900/40 bg-blue-50/60 dark:bg-blue-950/30 px-4 py-3 text-xs text-slate-600 dark:text-slate-400 space-y-2.5 leading-relaxed">
-            <p className="font-semibold text-slate-700 dark:text-slate-300 text-[11px] uppercase tracking-wide">{t('parentGuideBottomLine')}</p>
-            <p>{t.rich('parentGuidePara1', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
-            <p>{t.rich('parentGuidePara2', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
-            <p>{t.rich('parentGuidePara3', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
-            <p>{t.rich('parentGuidePara4', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
-            <p className="pt-0.5 border-t border-blue-100 dark:border-blue-900/40 text-slate-500 dark:text-slate-400">
-              {t.rich('parentGuideAction', { strong: (chunks) => <strong className="text-slate-600 dark:text-slate-300">{chunks}</strong> })}
+          <div className="mt-2 border-l-2 border-rule pl-4 py-1 text-xs text-ink/70 space-y-2.5 leading-relaxed">
+            <p className="font-semibold text-ink text-[11px] uppercase tracking-wide">{t('parentGuideBottomLine')}</p>
+            <p>{t.rich('parentGuidePara1', { strong: (chunks) => <strong className="text-ink">{chunks}</strong> })}</p>
+            <p>{t.rich('parentGuidePara2', { strong: (chunks) => <strong className="text-ink">{chunks}</strong> })}</p>
+            <p>{t.rich('parentGuidePara3', { strong: (chunks) => <strong className="text-ink">{chunks}</strong> })}</p>
+            <p>{t.rich('parentGuidePara4', { strong: (chunks) => <strong className="text-ink">{chunks}</strong> })}</p>
+            <p className="pt-0.5 border-t border-rule/60 text-muted">
+              {t.rich('parentGuideAction', { strong: (chunks) => <strong className="text-ink">{chunks}</strong> })}
             </p>
           </div>
         </details>
 
         <Link
           href={`/${locale}/game/fortnite-creative`}
-          className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          className="inline-flex items-center gap-1.5 text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors"
+          style={{ fontVariantCaps: 'all-small-caps' }}
         >
           {t('backToFortnite')}
         </Link>

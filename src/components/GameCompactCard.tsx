@@ -2,7 +2,8 @@
 
 import { Link } from '@/navigation'
 import { useTranslations } from 'next-intl'
-import { curascoreBg, esrbToAge, ageBadgeColor } from '@/lib/ui'
+import { curascoreTextEditorial, esrbToAge } from '@/lib/ui'
+import { localizeGenre } from '@/lib/i18n/genres'
 import type { GameSummary } from '@/types/game'
 
 type Props = {
@@ -10,14 +11,15 @@ type Props = {
 }
 
 export default function GameCompactCard({ game }: Props) {
-  const t = useTranslations('gameCompact')
+  const t       = useTranslations('gameCompact')
+  const tGenres = useTranslations('genres')
   return (
     <Link
       href={`/game/${game.slug}`}
-      className="group flex flex-col bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-500 transition-all"
+      className="group flex flex-col border border-rule overflow-hidden hover:border-ink transition-colors"
     >
       {/* Thumbnail */}
-      <div className="relative h-28 bg-indigo-50 dark:bg-indigo-900/40 overflow-hidden shrink-0">
+      <div className="relative h-28 bg-rule/30 overflow-hidden shrink-0">
         {game.backgroundImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -26,23 +28,19 @@ export default function GameCompactCard({ game }: Props) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/40 dark:to-violet-900/40">
-            <span className="text-2xl font-black text-indigo-300 dark:text-indigo-500 select-none">
+          <div className="w-full h-full flex items-center justify-center bg-rule/40">
+            <span className="text-2xl font-serif text-muted select-none">
               {game.title.slice(0, 2).toUpperCase()}
             </span>
           </div>
         )}
 
-        {/* LumiScore chip — top right */}
-        {game.curascore != null && (
-          <div className={`absolute top-1.5 right-1.5 ${curascoreBg(game.curascore)} text-white text-xs font-black px-1.5 py-0.5 rounded-full`}>
-            {game.curascore}<span className="text-[9px] font-bold opacity-70">/100</span>
-          </div>
-        )}
-
         {/* Min age badge — bottom left */}
         {game.esrbRating && (
-          <div className={`absolute bottom-1.5 left-1.5 ${ageBadgeColor(game.esrbRating)} text-white text-[10px] font-black px-1.5 py-0.5 rounded-full leading-none`}>
+          <div
+            className="absolute bottom-1.5 left-1.5 bg-paper text-ink text-kicker uppercase font-semibold px-1.5 py-0.5 leading-none"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
             {esrbToAge(game.esrbRating)}
           </div>
         )}
@@ -50,33 +48,37 @@ export default function GameCompactCard({ game }: Props) {
 
       {/* Body */}
       <div className="px-3 py-2.5 flex flex-col gap-1 flex-1">
-        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-tight line-clamp-2 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">
-          {game.title}
-        </p>
-
-        <div className="flex items-center gap-1 flex-wrap">
-          {game.genres[0] && (
-            <span className="text-xs text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-700 px-1.5 py-0.5 rounded-full">
-              {game.genres[0]}
-            </span>
-          )}
-          {game.esrbRating && (
-            <span className={`text-xs text-white font-bold px-1.5 py-0.5 rounded-full ${ageBadgeColor(game.esrbRating)}`}>
-              {esrbToAge(game.esrbRating)}
+        <div className="flex items-start justify-between gap-2">
+          <p className="font-serif text-sm text-ink leading-tight line-clamp-2 group-hover:text-accent transition-colors">
+            {game.title}
+          </p>
+          {game.curascore != null && (
+            <span className={`font-serif text-base font-semibold tabular-nums leading-none shrink-0 ${curascoreTextEditorial(game.curascore)}`}>
+              {game.curascore}
             </span>
           )}
         </div>
 
+        {game.genres[0] && (
+          <span
+            className="text-kicker uppercase text-muted"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {localizeGenre(game.genres[0], tGenres as any)}
+          </span>
+        )}
+
         {/* Time recommendation */}
         {game.timeRecommendationMinutes != null && (
           <div className="mt-auto pt-1">
-            <span className="text-xs text-slate-400 dark:text-slate-500">{game.timeRecommendationMinutes} {t('minDay')}</span>
+            <span className="text-xs text-muted">{game.timeRecommendationMinutes} {t('minDay')}</span>
           </div>
         )}
 
         {/* Monetization flag */}
         {(game.hasLootBoxes || game.hasMicrotransactions) && (
-          <span className="text-xs text-amber-600 dark:text-amber-400 mt-auto" title={t('hasMonetization')}>💰 {t('monetization')}</span>
+          <span className="text-xs text-warm mt-auto" title={t('hasMonetization')}>💰 {t('monetization')}</span>
         )}
       </div>
     </Link>

@@ -20,11 +20,11 @@ export default function NavNotificationBell() {
   return (
     <a
       href={`/${locale}/notifications`}
-      className="relative flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+      className="relative flex items-center justify-center w-9 h-9 text-muted hover:bg-ink/[0.04] hover:text-accent transition-colors"
       aria-label={`${count} unread notification${count !== 1 ? 's' : ''}`}
     >
       <Bell size={18} />
-      <span className="absolute top-1 right-1 min-w-[14px] h-[14px] bg-indigo-600 text-white text-[9px] font-black rounded-full flex items-center justify-center px-0.5 leading-none">
+      <span className="absolute top-1 right-1 min-w-[14px] h-[14px] bg-accent text-paper text-[9px] font-black rounded-full flex items-center justify-center px-0.5 leading-none">
         {count > 9 ? '9+' : count}
       </span>
     </a>

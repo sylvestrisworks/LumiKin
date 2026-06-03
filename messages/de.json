@@ -125,7 +125,16 @@
     "librarySellTile4Title": "Kinderprofile",
     "librarySellTile4Body": "Ein Konto, ein Profil pro Kind. Jedes erhält sein eigenes Alter, seine Plattformen und seinen Fähigkeitsschwerpunkt – und seine eigene Bibliotheksansicht.",
     "librarySellCta": "Kostenloses Konto erstellen →",
-    "librarySellReassure": "Für Eltern immer kostenlos. Keine Karte erforderlich."
+    "librarySellReassure": "Für Eltern immer kostenlos. Keine Karte erforderlich.",
+    "metaTitle": "Spielebewertungen für Eltern — Altersfreigabe, Vorteile und Spielzeit pro Sitzung | LumiScore",
+    "metaDescription": "Finden Sie sichere Spiele für Kinder. LumiScore zeigt, was jedes Spiel vermittelt, worauf Sie achten sollten, und eine gesunde tägliche Spielzeit. {count}+ Spiele bewertet.",
+    "faq1Question": "Was ist LumiScore?",
+    "faq1Answer": "LumiScore ist LumiKins Bewertung von 0–100 für jedes Spiel. Sie kombiniert eine Entwicklungspunktzahl (Fähigkeiten, die das Spiel aufbaut) mit einer Risikopunktzahl (süchtig machende Mechanik, Monetarisierungsdruck, soziales Risiko) zu einer einzigen Zahl plus einer empfohlenen täglichen Spielzeit.",
+    "faq2Question": "Wie bewerten Sie Spiele?",
+    "faq2Answer": "Jedes Spiel wird über 60 Unterdimensionen einer öffentlichen Rubrik bewertet — zehn kognitive Fähigkeiten, sechs sozio-emotionale, vier motorische auf der Vorteilsseite, sowie Dopamin-, Monetarisierungs- und Sozialrisikomuster auf der Risikoseite. Lesen Sie die vollständige Methodik.",
+    "faq3Question": "Wie entscheiden Sie, wie lange mein Kind spielen sollte?",
+    "faq3Answer": "Wir berechnen ein tägliches Sitzungslimit aus den kombinierten Vorteils- und Risikopunkten — von 15 Minuten für Hochrisikospiele bis zu zwei Stunden für Spiele mit hohen Vorteilen und geringem Risiko. Das Limit spiegelt wider, wie das Spiel aufgebaut ist, nicht eine generische Bildschirmzeitempfehlung.",
+    "methodologySource": "Basiert auf einem öffentlichen Bewertungsraster – versioniert und frei herunterladbar."
   },
   "age": {
     "earlyYears": "Frühe Jahre",
@@ -160,7 +169,21 @@
     "nextPage": "Weiter",
     "backToBrowse": "Back to browse",
     "byAgePrompt": "Looking for games for a specific age?",
-    "byAgeLink": "Browse by age →"
+    "byAgeLink": "Browse by age →",
+    "metaTitle": "Spiele entdecken — LumiKin",
+    "metaDescription": "Finde das richtige Spiel für dein Kind. Filtere nach Alter, Genre, Plattform, Risikostufe und mehr.",
+    "tellAboutKid": "Erzähl uns von deinem Kind für persönliche Empfehlungen",
+    "addFirstKid": "Füge dein erstes Kind hinzu für persönliche Empfehlungen",
+    "clearFiltersShort": "Filter zurücksetzen",
+    "alsoOn": "Auch auf:",
+    "carouselTrending": "Im Trend",
+    "carouselAcclaimed": "Kritikerlieblinge",
+    "carouselNewWorth": "Neu & spielenswert",
+    "carouselTopRated": "Bestbewertet",
+    "carouselFamilyCoop": "Familien-Koop",
+    "carouselSmart": "Knifflige Spiele",
+    "carouselVrAr": "VR & AR",
+    "carouselBeginner": "Neu im Gaming"
   },
   "filters": {
     "heading": "Filter",
@@ -273,7 +296,9 @@
     "pillCreativePlay": "Kreatives Spielen",
     "pillTopRated": "Top bewertet",
     "pillYoungKids": "Super für kleine Kinder",
-    "pillLearningFocus": "Fokus auf Lernen"
+    "pillLearningFocus": "Fokus auf Lernen",
+    "metaTitle": "Entdecken — LumiKin",
+    "metaDescription": "Finde das richtige Spiel für dein Kind, fundiert in der kindlichen Entwicklung."
   },
   "compare": {
     "title": "Spiele vergleichen",
@@ -362,12 +387,15 @@
     "browseGames": "Spiele entdecken",
     "getRecommendations": "Empfehlungen bekommen",
     "research": "Recherchieren",
+    "parentsAskHeading": "Eltern fragen",
     "sectionCurascore": "Der LumiScore",
     "sectionBds": "Benefit Density Score (BDS)",
     "sectionRis": "Risk Intensity Score (RIS)",
     "sectionTime": "Tägliche Spielzeit-Empfehlung",
     "sectionReviews": "So bewerten wir Spiele",
-    "sectionContext": "Weitere Hintergrundinfos"
+    "sectionContext": "Weitere Hintergrundinfos",
+    "metaTitle": "So funktioniert es — LumiKin",
+    "metaDescription": "Verstehe den LumiScore, Benefit Density Score, Risk Intensity Score und die täglichen Zeitempfehlungen."
   },
   "gameCard": {
     "tabBenefits": "Vorteile",
@@ -530,6 +558,7 @@
     "debateShow": "Transkript anzeigen",
     "debateHide": "Ausblenden",
     "compareThis": "Dieses Spiel vergleichen",
+    "exploreMore": "Mehr entdecken",
     "howScoresCalculated": "Wie Bewertungen berechnet werden",
     "bdsStrong": "Stark",
     "bdsGood": "Gut",
@@ -652,7 +681,8 @@
     "browseForChild": "Für {name} stöbern →",
     "addChildCta": "Füge ein Kinderprofil hinzu, um loszulegen",
     "addChildDesc": "Wir bewerten deine bestehende Bibliothek für jedes Kind in deiner Familie.",
-    "age": "{age} Jahre"
+    "age": "{age} Jahre",
+    "metaTitle": "Familien-Dashboard — LumiKin"
   },
   "library": {
     "title": "Meine Bibliothek",
@@ -688,7 +718,14 @@
     "sortTime": "Zeitlimit",
     "scoredOf": "{scored} von {total} bewertet",
     "noMatchFilter": "Keine Spiele in deiner Bibliothek passen zum Profil dieses Kindes.",
-    "viewAll": "Alle"
+    "viewAll": "Alle",
+    "metaTitle": "Meine Bibliothek — LumiKin",
+    "ownedByChild": "{name}s Bibliothek ({count})",
+    "countOfTotal": "({count} von {total})",
+    "steamPrivacyShort": "Stelle sicher, dass Steam → Privatsphäre-Einstellungen → Spieldetails auf <strong>Öffentlich</strong> steht",
+    "steamPublicHeading": "Zuerst: Mach deine Steam-Bibliothek öffentlich",
+    "steamPublicSteps": "Steam-App → klicke auf deinen Avatar → <strong>Mein Profil anzeigen</strong> → <strong>Profil bearbeiten</strong> → <strong>Privatsphäre-Einstellungen</strong> → setze <strong>Spieldetails</strong> auf <strong>Öffentlich</strong>",
+    "orBrowseCatalogue": "Oder durchstöbere den Katalog und nutze <strong>Zur Bibliothek hinzufügen</strong> auf jeder Spielseite"
   },
   "account": {
     "title": "Konto",
@@ -710,7 +747,8 @@
     "manage": "Verwalten",
     "legal": "Rechtliches",
     "privacyPolicy": "Datenschutz",
-    "termsOfService": "Nutzungsbedingungen"
+    "termsOfService": "Nutzungsbedingungen",
+    "metaTitle": "Kontoeinstellungen — LumiKin"
   },
   "notifications": {
     "title": "Benachrichtigungen",
@@ -805,7 +843,15 @@
     "parentGuidePara2": "<strong>Roblox ist eine Plattform mit über 40 Millionen von Nutzern erstellten Spielen</strong>, nicht nur ein einziges Spiel. Qualität, Sicherheit und Altersgerechtheit variieren stark zwischen den einzelnen Erlebnissen. Die LumiKin Bewertungen oben beziehen sich auf individuelle Erlebnisse – die Plattform selbst garantiert keine Sicherheit.",
     "parentGuidePara3": "<strong>Robux ist die In-Game-Währung</strong>, die in den meisten beliebten Erlebnissen verwendet wird. Viele Spiele sind auf Robux-Ausgaben ausgelegt – Pay-to-Win-Mechaniken, exklusive Kosmetika und der soziale Vergleich von Avatar-Gegenständen sind üblich. Lege eine klare Ausgabenpolitik fest, bevor dein Kind die erste Kaufaufforderung erhält.",
     "parentGuidePara4": "<strong>Der Chatfilter ist unvollkommen.</strong> Kinder finden regelmäßig Umgehungen (Zahlenersatz, absichtliche Falschschreibungen). Überprüfe regelmäßig den Chatverlauf mit den Eltern-PIN-Tools und sprich offen darüber, was zu tun ist, wenn jemand etwas Unangenehmes sagt.",
-    "parentGuideAction": "<strong>Aktion:</strong> Roblox Einstellungen → Privatsphäre → Kontoeinschränkungen (AN). Das beschränkt Chat, Freundschaftsanfragen und den Zugang zu Spielen auf eine vorab geprüfte, altersgerechte Auswahl. Lege einen Eltern-PIN fest, um zu verhindern, dass dein Kind diese Einstellung deaktiviert."
+    "parentGuideAction": "<strong>Aktion:</strong> Roblox Einstellungen → Privatsphäre → Kontoeinschränkungen (AN). Das beschränkt Chat, Freundschaftsanfragen und den Zugang zu Spielen auf eine vorab geprüfte, altersgerechte Auswahl. Lege einen Eltern-PIN fest, um zu verhindern, dass dein Kind diese Einstellung deaktiviert.",
+    "hubMetaTitle": "Roblox-Leitfaden — LumiKin",
+    "hubMetaDescription": "LumiKin-Bewertungen für beliebte Roblox-Erlebnisse. Finde heraus, welche Spiele für dein Kind sicher sind — mit Werten für Fremdkontakt-Risiko, Monetarisierungsdruck und mehr.",
+    "platformBadge": "Plattform",
+    "hubTagline": "Millionen nutzergenerierter Erlebnisse — die Sicherheit variiert stark. Stöbere durch unsere Bewertungen, um das Passende für dein Kind zu finden.",
+    "recommendedSuffix": "empfohlen",
+    "freeToPlay": "Kostenlos spielbar",
+    "noFilterMatch": "Keine Erlebnisse passen zu deinen Filtern.",
+    "noIndexed": "Noch keine Erlebnisse indexiert. Schau bald wieder vorbei."
   },
   "fortnite": {
     "title": "Fortnite Creative",
@@ -925,9 +971,27 @@
     "similarGames": "Ähnliche Spiele",
     "navHome": "Start",
     "navBrowse": "Entdecken",
-    "metaTitle": "{title} — Gut für Kinder? | LumiKin",
-    "metaDescFallback": "LumiKin bewertet {title} für Eltern — Vorteile, Risiken, suchterzeugende Designmuster und empfohlene tägliche Bildschirmzeit.",
+    "metaTitle": "Altersfreigabe {title} — Gut für Kinder? | LumiKin",
+    "metaDescFallback": "Altersfreigabe und Sicherheitsbewertung für {title} — Vorteile, Risiken und empfohlene tägliche Bildschirmzeit. LumiKin bewertet Spiele für Eltern.",
     "ogAlt": "{title} — LumiKin-Bewertung"
+  },
+  "gameFaq": {
+    "heading": "Häufige Elternfragen",
+    "q1": "Ist {title} sicher für Kinder?",
+    "q2": "Altersfreigabe für {title} — welche Empfehlung gilt?",
+    "q3": "Wie lange sollten Kinder {title} spielen?",
+    "q4": "Was sind die größten Risiken von {title}?",
+    "a1": "LumiKin vergibt für {title} einen LumiScore von {score}/100. {verdict}",
+    "a1WithAge": "LumiKin vergibt für {title} einen LumiScore von {score}/100, mit einer Altersfreigabe ab {age} Jahren. {verdict}",
+    "a2": "Die LumiKin-Rubrik empfiehlt eine Altersfreigabe ab {age} Jahren für {title}, basierend auf Vorteilen, Risiken und Inhaltsprüfung.",
+    "a2WithRatings": "Die LumiKin-Rubrik empfiehlt eine Altersfreigabe ab {age} Jahren für {title} ({ratings}), basierend auf Vorteilen, Risiken und Inhaltsprüfung.",
+    "a2Ugc": "Die LumiKin-Rubrik empfiehlt eine Altersfreigabe ab {age} Jahren für {title} auf {platform}, basierend auf Inhalt, sozialen Risiken und Monetarisierung.",
+    "a3": "Die von LumiKin empfohlene Spielzeit für {title} beträgt {time}, abgestimmt auf das Dopamin-, Monetarisierungs- und soziale Druckprofil des Spiels.",
+    "a3Ugc": "Die von LumiKin empfohlene Spielzeit für {title} beträgt {time}, abgestimmt auf das Dopamin-, soziale und Monetarisierungsprofil des Erlebnisses.",
+    "verdictGreat": "Das Spiel schneidet bei Entwicklungsvorteilen sehr gut ab und hat überschaubare Risiken.",
+    "verdictGood": "Es bietet solide Vorteile, benötigt aber elterliche Begleitung bei den Risiken.",
+    "verdictCaution": "Es gibt deutliche Risiken, die Eltern vorher kennen sollten.",
+    "verdictAvoid": "Erhebliche Risiken machen eine Empfehlung für jüngere Spieler schwierig."
   },
   "importModal": {
     "title": "Steam-Bibliothek importieren",
@@ -961,7 +1025,9 @@
     "catScreenTime": "Bildschirmzeit",
     "catGameSafety": "Spielsicherheit",
     "catAgeGuide": "Altersleitfaden",
-    "catParentingTips": "Eltern-Tipps"
+    "catParentingTips": "Eltern-Tipps",
+    "metaTitle": "Lernen — Eltern-Guides, News & FAQs | LumiKin",
+    "metaDescription": "Experten-Guides für Eltern zu Bildschirmzeit, Spielsicherheit und altersgerechtem Gaming. News, Tipps und Antworten auf die häufigsten Fragen."
   },
   "blog": {
     "breadcrumbLearn": "Wissen",
@@ -969,14 +1035,18 @@
     "subtitle": "Gaming aus Elternsicht.",
     "comingSoon": "Beiträge folgen in Kürze.",
     "news": "Neuigkeiten",
-    "posts": "Blog"
+    "posts": "Blog",
+    "metaTitle": "Blog & News — LumiKin",
+    "metaDescription": "Gaming-Neuigkeiten, Erziehungstipps und Updates von LumiKin — ein Eltern-Blick auf die Spiele, die deine Kinder spielen."
   },
   "guides": {
     "breadcrumbLearn": "Wissen",
     "breadcrumbCurrent": "Ratgeber",
     "title": "Eltern-Ratgeber",
     "subtitle": "Ausführliche Artikel, die dir helfen, Gaming mit deinen Kindern besser zu verstehen und zu begleiten.",
-    "comingSoon": "Ratgeber folgen bald."
+    "comingSoon": "Ratgeber folgen bald.",
+    "metaTitle": "Eltern-Guides — Bildschirmzeit, Spielsicherheit und mehr | LumiKin",
+    "metaDescription": "Ausführliche Guides für Eltern zu Bildschirmzeit-Grenzen, Spielsicherheit, altersgerechtem Gaming und dem Aufbau gesunder Gewohnheiten rund um Videospiele."
   },
   "banner": {
     "betaTitle": "LumiKin ist noch in der Beta",
@@ -1041,7 +1111,23 @@
     "editorial_nintendo_switch": "Nintendo Switch has one of the most family-friendly first-party libraries of any console, with beloved franchises like Mario, Zelda, and Pokémon consistently earning high benefit scores. The platform is also easy to manage with built-in parental controls and screen time limits. LumiKin scores help you find the standout third-party games worth adding to your collection.",
     "editorial_ios": "The App Store labels many games \"free\", but the real cost is often attention, in-app purchases, or intrusive ads. iOS games range from genuinely educational apps to highly optimized engagement loops. LumiKin scores flag monetization pressure and dopamine-trap mechanics so you can tell the difference before downloading.",
     "editorial_android": "Android gaming spans high-quality ports, indie gems, and heavily monetized free-to-play titles — often hard to tell apart from the Play Store listing alone. Google's content ratings cover subject matter, not design patterns. LumiKin scores go deeper, surfacing which games are built for benefit and which are built for maximum session length.",
-    "editorial_pc": "PC gaming offers the widest catalogue of any platform, from calm educational puzzlers to massive online worlds. Steam family controls and library sharing features help, but the sheer volume makes curation difficult. LumiKin scores sort the catalogue by benefit-to-risk ratio so you can build a quality family library without trial and error."
+    "editorial_pc": "PC gaming offers the widest catalogue of any platform, from calm educational puzzlers to massive online worlds. Steam family controls and library sharing features help, but the sheer volume makes curation difficult. LumiKin scores sort the catalogue by benefit-to-risk ratio so you can build a quality family library without trial and error.",
+    "averageLumiScore": "Durchschnittlicher LumiScore",
+    "outOf100": "von 100",
+    "acrossScoredGames": "über <bold>{count}</bold> bewertete {name}-Spiele",
+    "acrossScoredExperiences": "über <bold>{count}</bold> bewertete Erlebnisse",
+    "avgGrowth": "Ø Förderung",
+    "benefitDensity": "Nutzendichte",
+    "avgRisk": "Ø Risiko",
+    "engagementHooks": "Bindungs-Mechaniken",
+    "gamesRated": "Spiele bewertet",
+    "experiences": "Erlebnisse",
+    "safestPicks": "Sicherste Auswahl",
+    "topScore": "Bestnote",
+    "avgTimePerDay": "Ø Zeit/Tag",
+    "highestRatedPick": "Bestbewertetes {name}-Spiel",
+    "highestRatedExperience": "Bestbewertetes {name}-Erlebnis",
+    "noScoredExperiences": "Noch keine bewerteten Erlebnisse. Schau bald wieder vorbei."
   },
   "ageHub": {
     "indexMetaTitle": "Browse games by age — LumiKin",
@@ -1098,5 +1184,141 @@
     "methodHandLabel": "Manuell erstellt",
     "methodHandTooltip": "Von einem Redakteur bewertet statt durch die automatische Pipeline.",
     "lastUpdated": "Zuletzt aktualisiert {when}"
+  },
+  "editorial": {
+    "masthead": {
+      "tagline": "Spielebewertungen für Eltern",
+      "sections": {
+        "reviews": "Rezensionen",
+        "discover": "Entdecken",
+        "guides": "Ratgeber",
+        "compare": "Vergleichen"
+      }
+    },
+    "dateline": {
+      "locale": "de-DE"
+    },
+    "rosette": {
+      "recommends": {
+        "top": "LUMIKIN · EMPFOHLEN",
+        "bottom": "WERTVOLLE SPIELZEIT"
+      },
+      "caution": {
+        "top": "LUMIKIN · VORSICHT",
+        "bottom": "INFORMIERT KAUFEN"
+      }
+    },
+    "verdict": {
+      "growth": "Entwicklung (BDS)",
+      "risk": "Risiko (RIS)",
+      "dailyLimit": "Tägliches Limit",
+      "ageGuidance": "Altersfreigabe",
+      "minutesShort": "Min"
+    },
+    "headsUp": {
+      "title": "Bitte beachten"
+    },
+    "banners": {
+      "bundled": {
+        "kicker": "Online-Paket — kennen Sie das Live-Service-Layer",
+        "body": "Der Grundpreis schaltet die Einzelspieler-Geschichte frei. Der verbundene Online-Modus ist ein eigenes Produkt mit eigener Monetarisierung und eigenem Chat-Layer — wir bewerten beides getrennt.",
+        "cta": "Wie wir Online-Paket-Spiele behandeln →"
+      },
+      "pending": {
+        "kicker": "In Prüfung · vorläufige Werte",
+        "bodyTemplate": "Wir prüfen dieses Erlebnis noch — die untenstehenden Werte sind vorläufig. Vertrauen: {confidence}."
+      }
+    },
+    "meta": {
+      "basePrice": "Grundpreis",
+      "avgPlaytime": "Durchschnittliche Spielzeit",
+      "reviewed": "Geprüft",
+      "methodology": "So entstehen die Werte →",
+      "byline": "Von der LumiKin-Redaktion"
+    },
+    "search": {
+      "placeholder": "Suche in {count} Rezensionen",
+      "returnLabel": "Enter ↵"
+    },
+    "sections": {
+      "todaysReview": "Rezension des Tages",
+      "whatWereTracking": "Was wir verfolgen",
+      "allReviews": "Alle Rezensionen →",
+      "readReview": "Zur Rezension →",
+      "theDesk": "Redaktion",
+      "allGuides": "Alle Ratgeber →",
+      "readGuide": "Ratgeber lesen →",
+      "methodology": "Methodik"
+    },
+    "compare": {
+      "vs": "gegen",
+      "comparingTemplate": "{a} gegen {b}"
+    },
+    "actions": {
+      "browse": "Stöbern →"
+    },
+    "browseBy": {
+      "ageDek": "Finden Sie heraus, was zum Alter Ihres Kindes passt — und worauf Sie noch warten sollten.",
+      "platformDek": "Switch, PlayStation, Xbox, PC, mobil — filtern Sie nach dem, was sie tatsächlich spielen.",
+      "robloxDek": "Im Roblox-Katalog, jede Erfahrung einzeln bewertet.",
+      "fortniteDek": "Kreative Inseln und Modi separat vom Hauptspiel bewertet."
+    },
+    "standfirst": {
+      "kicker": "Aus der Redaktion",
+      "body": "LumiKin ist ein kleines Team aus Eltern und Testern, das bewertet, was ein Spiel bei einem Kind fördert – und was es an Aufmerksamkeit, Geld und Ruhe zu Hause kostet. Der Nutzen steht an erster Stelle. Jede Bewertung beruht auf einem öffentlichen Bewertungsraster. Und wir benennen immer den einen Punkt, den Sie vor dem Kauf prüfen sollten.",
+      "signoff": "— Die LumiKin-Redaktion"
+    },
+    "byTheNumbers": {
+      "kicker": "In Zahlen",
+      "intro": "Die Anatomie eines LumiScore.",
+      "dimensionsLabel": "Bewertete Teildimensionen",
+      "scoresLabel": "Gesamtwerte – Nutzen und Risiko",
+      "scaleLabel": "Die LumiScore-Skala",
+      "timeLabel": "Empfohlene Minuten pro Sitzung",
+      "source": "Jede Bewertung beruht auf einem öffentlichen, versionierten Bewertungsraster.",
+      "sourceCta": "Zur Methodik →"
+    }
+  },
+  "shareButton": {
+    "copyLink": "Link kopieren",
+    "copied": "Kopiert",
+    "share": "Teilen"
+  },
+  "review": {
+    "metaTitle": "Rezensenten-Dashboard — LumiKin"
+  },
+  "privacy": {
+    "metaTitle": "Datenschutzrichtlinie — LumiKin",
+    "metaDescription": "Wie LumiKin deine personenbezogenen Daten erfasst, verwendet und schützt."
+  },
+  "terms": {
+    "metaTitle": "Nutzungsbedingungen — LumiKin",
+    "metaDescription": "Bedingungen, die deine Nutzung des LumiKin-Spielbewertungsdienstes regeln."
+  },
+  "press": {
+    "metaTitle": "Pressemappe — LumiKin",
+    "metaDescription": "Markenressourcen, Berichterstattungs-Statistiken, zitierbare Fakten und Pressekontakt für LumiKin — die strukturierte Spielbewertungs-Engine für Eltern.",
+    "ogDescription": "Markenressourcen, Berichterstattungs-Statistiken, zitierbare Fakten und Pressekontakt für LumiKin."
+  },
+  "genres": {
+    "action": "Action",
+    "indie": "Indie",
+    "adventure": "Abenteuer",
+    "casual": "Casual",
+    "educational": "Lernspiel",
+    "fighting": "Kampfspiel",
+    "family": "Familie",
+    "simulation": "Simulation",
+    "arcade": "Arcade",
+    "strategy": "Strategie",
+    "puzzle": "Rätsel",
+    "rpg": "Rollenspiel",
+    "sports": "Sport",
+    "card": "Kartenspiel",
+    "racing": "Rennspiel",
+    "platformer": "Jump-’n’-Run",
+    "shooter": "Shooter",
+    "boardGames": "Brettspiel",
+    "mmo": "MMO"
   }
 }

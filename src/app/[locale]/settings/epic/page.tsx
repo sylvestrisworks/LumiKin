@@ -57,22 +57,22 @@ export default function EpicConnectPage() {
 
   if (status === null) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
-        <p className="text-slate-400">Loading…</p>
+      <div className="min-h-screen bg-paper text-ink flex items-center justify-center">
+        <p className="text-muted">Loading…</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
       <main className="max-w-lg mx-auto px-4 py-10 space-y-6">
 
         {/* Header */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 border-b border-ink pb-4">
           <Icon name="fortnite" size={28} aria-hidden="true" />
           <div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">Epic Games</h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <h1 className="font-serif text-display-sm text-ink">Epic Games</h1>
+            <p className="text-sm text-muted">
               Connect your Epic account to import your game library
             </p>
           </div>
@@ -80,25 +80,25 @@ export default function EpicConnectPage() {
 
         {/* Already connected */}
         {status.connected && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-emerald-200 dark:border-emerald-800 shadow-sm px-5 py-4 space-y-3">
+          <div className="border border-ivy px-5 py-4 space-y-3">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
-              <p className="font-semibold text-slate-900 dark:text-white">
+              <span className="w-2 h-2 rounded-full bg-ivy inline-block" />
+              <p className="font-serif text-ink">
                 {status.displayName ? `Connected as ${status.displayName}` : 'Epic account connected'}
               </p>
             </div>
             {status.lastSyncedAt ? (
-              <p className="text-xs text-slate-400 dark:text-slate-500">
+              <p className="text-xs text-muted">
                 Library last synced: {timeAgo(status.lastSyncedAt)}
               </p>
             ) : (
-              <p className="text-xs text-slate-400 dark:text-slate-500">
+              <p className="text-xs text-muted">
                 First library sync runs tonight
               </p>
             )}
             <button
               onClick={disconnect}
-              className="text-xs text-red-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+              className="text-xs text-accent hover:underline transition-colors"
             >
               Disconnect
             </button>
@@ -107,21 +107,22 @@ export default function EpicConnectPage() {
 
         {/* Not connected */}
         {!status.connected && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-5 space-y-4">
-            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+          <div className="border border-rule px-5 py-5 space-y-4">
+            <p className="text-sm text-ink/80 leading-relaxed">
               Connect your Epic Games account to automatically import your library.
               Games you own on the Epic Games Store will appear in your LumiKin library
               with ratings already attached where available.
             </p>
             {error && (
-              <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl px-3 py-2">
+              <p className="text-sm text-accent border border-accent px-3 py-2">
                 {error}
               </p>
             )}
             <button
               onClick={startConnect}
               disabled={loading}
-              className="w-full py-2.5 bg-slate-900 hover:bg-slate-700 dark:bg-white dark:hover:bg-slate-200 dark:text-slate-900 disabled:opacity-50 text-white font-bold rounded-xl transition-colors"
+              className="w-full py-2.5 bg-ink hover:bg-accent disabled:opacity-50 text-paper text-kicker uppercase font-semibold transition-colors"
+              style={{ fontVariantCaps: 'all-small-caps' }}
             >
               {loading ? 'Redirecting to Epic…' : 'Connect Epic Games account'}
             </button>
@@ -129,13 +130,13 @@ export default function EpicConnectPage() {
         )}
 
         {/* What we access */}
-        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 px-5 py-4 space-y-2 text-sm text-slate-500 dark:text-slate-400">
-          <p className="font-semibold text-slate-700 dark:text-slate-300">What we access</p>
+        <div className="border border-rule px-5 py-4 space-y-2 text-sm text-muted">
+          <p className="font-semibold text-ink">What we access</p>
           <ul className="space-y-1 list-disc list-inside">
             <li>Your Epic display name</li>
             <li>Games you own on the Epic Games Store</li>
           </ul>
-          <p className="font-semibold text-slate-700 dark:text-slate-300 pt-1">What we never access</p>
+          <p className="font-semibold text-ink pt-1">What we never access</p>
           <ul className="space-y-1 list-disc list-inside">
             <li>Your Epic password or payment info</li>
             <li>Friends list or online activity</li>

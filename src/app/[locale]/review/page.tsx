@@ -5,9 +5,14 @@ import { redirect } from 'next/navigation'
 import { desc, eq, isNotNull, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { games, reviews, gameScores } from '@/lib/db/schema'
+import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 
-export const metadata = {
-  title: 'Reviewer Dashboard — LumiKin',
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'review' })
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  return { title: t('metaTitle' as any) }
 }
 
 type GameRow = {
@@ -47,7 +52,7 @@ async function getDashboardGames(): Promise<GameRow[]> {
 function StatusBadge({ status }: { status: string | null }) {
   if (!status) {
     return (
-      <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">
+      <span className="text-xs bg-rule/30 text-muted px-2 py-0.5 rounded-full">
         Not reviewed
       </span>
     )
@@ -59,7 +64,7 @@ function StatusBadge({ status }: { status: string | null }) {
     rejected: 'bg-red-100 text-red-600',
   }
   return (
-    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${map[status] ?? 'bg-slate-100 text-slate-500'}`}>
+    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${map[status] ?? 'bg-rule/30 text-muted'}`}>
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
   )
@@ -69,7 +74,7 @@ function ScorePill({ value, label, good }: { value: number | null; label: string
   if (value === null) return null
   const pct = Math.round(value * 100)
   const color = good
-    ? pct >= 60 ? 'text-emerald-700' : pct >= 35 ? 'text-blue-600' : 'text-slate-500'
+    ? pct >= 60 ? 'text-emerald-700' : pct >= 35 ? 'text-blue-600' : 'text-muted'
     : pct <= 30 ? 'text-emerald-700' : pct <= 55 ? 'text-amber-600' : 'text-red-600'
   return (
     <span className={`text-xs font-semibold ${color}`}>
@@ -90,15 +95,15 @@ export default async function ReviewDashboard() {
   const total      = rows.length
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-ink/[0.03]">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-40">
+      <header className="bg-paper border-b border-rule px-6 py-4 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center gap-3">
-          <a href="/" className="text-2xl font-extrabold text-indigo-700">LumiKin</a>
-          <span className="text-slate-300">/</span>
-          <span className="text-sm font-semibold text-slate-600">Reviewer Dashboard</span>
+          <a href="/" className="text-2xl font-extrabold text-accent">LumiKin</a>
+          <span className="text-rule">/</span>
+          <span className="text-sm font-semibold text-ink/80">Reviewer Dashboard</span>
         </div>
-        <a href="/api/auth/signout" className="text-sm text-slate-500 hover:text-slate-700">
+        <a href="/api/auth/signout" className="text-sm text-muted hover:text-ink/80">
           Sign out
         </a>
       </header>
@@ -107,14 +112,14 @@ export default async function ReviewDashboard() {
         {/* Stats */}
         <div className="grid grid-cols-4 gap-4 mb-8">
           {[
-            { label: 'Total games', value: total, color: 'text-slate-700' },
+            { label: 'Total games', value: total, color: 'text-ink/80' },
             { label: 'Unreviewed',  value: unreviewed.length, color: 'text-amber-600' },
             { label: 'Drafts',      value: drafts.length,     color: 'text-blue-600' },
             { label: 'Approved',    value: approved.length,   color: 'text-emerald-600' },
           ].map(s => (
-            <div key={s.label} className="bg-white rounded-xl border border-slate-200 p-4 text-center">
+            <div key={s.label} className="bg-paper rounded-xl border border-rule p-4 text-center">
               <div className={`text-3xl font-bold ${s.color}`}>{s.value}</div>
-              <div className="text-xs text-slate-500 mt-1">{s.label}</div>
+              <div className="text-xs text-muted mt-1">{s.label}</div>
             </div>
           ))}
         </div>
@@ -122,7 +127,7 @@ export default async function ReviewDashboard() {
         {/* Priority: unreviewed first */}
         {unreviewed.length > 0 && (
           <section className="mb-8">
-            <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
+            <h2 className="text-sm font-semibold text-muted uppercase tracking-wide mb-3">
               Needs review ({unreviewed.length})
             </h2>
             <GameList games={unreviewed} />
@@ -131,7 +136,7 @@ export default async function ReviewDashboard() {
 
         {drafts.length > 0 && (
           <section className="mb-8">
-            <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
+            <h2 className="text-sm font-semibold text-muted uppercase tracking-wide mb-3">
               Drafts ({drafts.length})
             </h2>
             <GameList games={drafts} />
@@ -140,7 +145,7 @@ export default async function ReviewDashboard() {
 
         {approved.length > 0 && (
           <section className="mb-8">
-            <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
+            <h2 className="text-sm font-semibold text-muted uppercase tracking-wide mb-3">
               Approved ({approved.length})
             </h2>
             <GameList games={approved} />
@@ -153,15 +158,15 @@ export default async function ReviewDashboard() {
 
 function GameList({ games }: { games: GameRow[] }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100 overflow-hidden">
+    <div className="bg-paper rounded-xl border border-rule divide-y divide-rule/50 overflow-hidden">
       {games.map(game => (
         <a
           key={game.id}
           href={`/review/${game.slug}`}
-          className="flex items-center gap-4 px-5 py-3.5 hover:bg-slate-50 transition-colors group"
+          className="flex items-center gap-4 px-5 py-3.5 hover:bg-ink/[0.03] transition-colors group"
         >
           {/* Thumbnail */}
-          <div className="w-12 h-8 rounded overflow-hidden bg-slate-100 shrink-0">
+          <div className="w-12 h-8 rounded overflow-hidden bg-rule/30 shrink-0">
             {game.backgroundImage ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -176,11 +181,11 @@ function GameList({ games }: { games: GameRow[] }) {
 
           {/* Title */}
           <div className="flex-1 min-w-0">
-            <span className="text-sm font-medium text-slate-800 group-hover:text-indigo-700 truncate block">
+            <span className="text-sm font-medium text-ink group-hover:text-accent truncate block">
               {game.title}
             </span>
             {game.esrbRating && (
-              <span className="text-xs text-slate-400">{game.esrbRating}</span>
+              <span className="text-xs text-muted">{game.esrbRating}</span>
             )}
           </div>
 
@@ -195,7 +200,7 @@ function GameList({ games }: { games: GameRow[] }) {
             <StatusBadge status={game.reviewStatus} />
           </div>
 
-          <span className="text-slate-300 group-hover:text-indigo-400 text-sm shrink-0">→</span>
+          <span className="text-rule group-hover:text-accent text-sm shrink-0">→</span>
         </a>
       ))}
     </div>

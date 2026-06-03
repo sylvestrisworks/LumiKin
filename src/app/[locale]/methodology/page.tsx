@@ -46,35 +46,38 @@ export default async function MethodologyPage({
   const pdfPath = entry.pdfAvailable ? `/lumikin-methodology-v${entry.version}.pdf` : null
 
   return (
-    <div className={`${lora.variable} bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100`}>
+    <div className={`${lora.variable} bg-paper text-ink`}>
       <PlausibleScrollDepth goal="methodology_deep_read" threshold={50} />
       <VersionBanner version={entry} locale={locale} />
 
       <div className="max-w-5xl mx-auto px-6 py-12">
 
         {/* ── Document header (screen) ─────────────────────────────────────── */}
-        <div className="mb-12 pb-8 border-b border-slate-200 dark:border-slate-800 print:hidden">
-          <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">
+        <div className="mb-12 pb-8 border-b border-ink print:hidden">
+          <p
+            className="text-kicker uppercase font-semibold text-muted mb-3"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
             LumiKin · Scoring Methodology
           </p>
-          <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-slate-100">
+          <h1 className="font-serif text-display-sm md:text-display tracking-tight text-ink">
             Methodology
           </h1>
-          <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+          <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-muted">
             <span>Version {entry.version}</span>
-            <span className="text-slate-300 dark:text-slate-700">·</span>
+            <span className="text-rule">·</span>
             <span>Published {publishedDate}</span>
-            <span className="text-slate-300 dark:text-slate-700">·</span>
-            <a href="#changelog" className="underline underline-offset-2 hover:no-underline hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
+            <span className="text-rule">·</span>
+            <a href="#changelog" className="underline underline-offset-2 hover:no-underline hover:text-accent transition-colors">
               Changelog
             </a>
             {pdfPath && (
               <>
-                <span className="text-slate-300 dark:text-slate-700">·</span>
+                <span className="text-rule">·</span>
                 <a
                   href={pdfPath}
                   download
-                  className="underline underline-offset-2 hover:no-underline hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                  className="underline underline-offset-2 hover:no-underline hover:text-accent transition-colors"
                 >
                   Download PDF
                 </a>
@@ -124,30 +127,26 @@ export default async function MethodologyPage({
           color: inherit;
         }
         .methodology-prose h2 {
-          font-family: system-ui, -apple-system, sans-serif;
-          font-size: 1.375rem;
-          font-weight: 800;
-          letter-spacing: -0.02em;
-          line-height: 1.25;
+          font-family: var(--font-fraunces), Georgia, serif;
+          font-size: 1.5rem;
+          font-weight: 600;
+          letter-spacing: -0.01em;
+          line-height: 1.2;
           margin-top: 3rem;
           margin-bottom: 1rem;
           padding-top: 1.5rem;
-          border-top: 1px solid rgb(228 228 231);
+          border-top: 1px solid rgb(var(--rule));
           scroll-margin-top: 5rem;
         }
-        @media (prefers-color-scheme: dark) {
-          .methodology-prose h2 { border-top-color: rgb(39 39 42); }
-        }
-        .dark .methodology-prose h2 { border-top-color: rgb(39 39 42); }
         .methodology-prose h2:first-child {
           margin-top: 0;
           padding-top: 0;
           border-top: none;
         }
         .methodology-prose h3 {
-          font-family: system-ui, -apple-system, sans-serif;
-          font-size: 1.0625rem;
-          font-weight: 700;
+          font-family: var(--font-fraunces), Georgia, serif;
+          font-size: 1.125rem;
+          font-weight: 600;
           margin-top: 2rem;
           margin-bottom: 0.5rem;
           scroll-margin-top: 5rem;
@@ -186,28 +185,25 @@ export default async function MethodologyPage({
           text-align: left;
           font-weight: 600;
           padding: 0.5rem 0.75rem;
-          border-bottom: 2px solid rgb(228 228 231);
-          color: rgb(113 113 122);
+          border-bottom: 2px solid rgb(var(--ink));
+          color: rgb(var(--muted));
           font-size: 0.75rem;
           text-transform: uppercase;
           letter-spacing: 0.05em;
         }
-        .dark .methodology-prose th { border-bottom-color: rgb(63 63 70); color: rgb(113 113 122); }
         .methodology-prose td {
           padding: 0.5rem 0.75rem;
-          border-bottom: 1px solid rgb(244 244 245);
+          border-bottom: 1px solid rgb(var(--rule) / 0.5);
           vertical-align: top;
         }
-        .dark .methodology-prose td { border-bottom-color: rgb(39 39 42); }
         .methodology-prose tr:last-child td { border-bottom: none; }
         .methodology-prose code {
           font-family: ui-monospace, monospace;
           font-size: 0.875em;
-          background: rgb(244 244 245);
+          background: rgb(var(--ink) / 0.06);
           padding: 0.15em 0.4em;
-          border-radius: 4px;
+          border-radius: 2px;
         }
-        .dark .methodology-prose code { background: rgb(39 39 42); }
         @media print {
           .methodology-prose { font-size: 11pt; }
           .methodology-prose h2 { font-size: 14pt; margin-top: 2rem; }

@@ -63,55 +63,63 @@ export default async function BlogPostPage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <main className="min-h-screen bg-paper text-ink">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
       />
       <div className="max-w-2xl mx-auto px-4 py-10">
 
-        <nav className="mb-6 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
-          <Link href={`/${locale}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+        <nav
+          className="mb-6 flex items-center gap-1.5 text-kicker uppercase text-muted"
+          style={{ fontVariantCaps: 'all-small-caps' }}
+        >
+          <Link href={`/${locale}`} className="hover:text-accent transition-colors">
             {tNav('navHome')}
           </Link>
-          <span aria-hidden>/</span>
-          <Link href={`/${locale}/learn`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+          <span aria-hidden className="text-rule">/</span>
+          <Link href={`/${locale}/learn`} className="hover:text-accent transition-colors">
             {tBlog('breadcrumbLearn')}
           </Link>
-          <span aria-hidden>/</span>
-          <Link href={`/${locale}/blog`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+          <span aria-hidden className="text-rule">/</span>
+          <Link href={`/${locale}/blog`} className="hover:text-accent transition-colors">
             {tBlog('title')}
           </Link>
-          <span aria-hidden>/</span>
-          <span className="text-slate-700 dark:text-slate-200 truncate">{post.title}</span>
+          <span aria-hidden className="text-rule">/</span>
+          <span className="text-ink truncate">{post.title}</span>
         </nav>
 
-        {/* ── Type badge ───────────────────────────────────────────────── */}
-        {post.postType && (
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3 block">
-            {post.postType}
-          </span>
-        )}
-
-        <h1 className="text-3xl font-black text-slate-900 dark:text-white leading-tight mb-3">
-          {post.title}
-        </h1>
-
-        {post.excerpt && (
-          <p className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed mb-4">{post.excerpt}</p>
-        )}
-
-        <div className="flex items-center gap-4 text-xs text-slate-400 dark:text-slate-500 mb-8">
-          {post.author && (
-            <span className="flex items-center gap-1.5">
-              <User size={12} /> {post.author}
+        <div className="border-b border-ink pb-6 mb-8">
+          {/* ── Type badge ───────────────────────────────────────────────── */}
+          {post.postType && (
+            <span
+              className="text-kicker uppercase font-semibold text-accent mb-3 block"
+              style={{ fontVariantCaps: 'all-small-caps' }}
+            >
+              {post.postType}
             </span>
           )}
-          {post.publishedAt && (
-            <span className="flex items-center gap-1.5">
-              <CalendarDays size={12} /> {formatDate(post.publishedAt)}
-            </span>
+
+          <h1 className="font-serif text-display-sm md:text-display text-ink leading-tight mb-3">
+            {post.title}
+          </h1>
+
+          {post.excerpt && (
+            <p className="font-serif italic text-lg text-muted leading-relaxed mb-4">{post.excerpt}</p>
           )}
+
+          <div className="flex items-center gap-4 text-kicker uppercase text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>
+            {post.author && (
+              <span className="flex items-center gap-1.5">
+                <User size={12} /> {post.author}
+              </span>
+            )}
+            {post.publishedAt && (
+              <span className="flex items-center gap-1.5">
+                <CalendarDays size={12} /> {formatDate(post.publishedAt)}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* ── Cover image ──────────────────────────────────────────────── */}
@@ -120,19 +128,23 @@ export default async function BlogPostPage({ params }: Props) {
           <img
             src={urlFor(post.coverImage)!.width(800).auto('format').url()}
             alt={post.coverImage.alt ?? post.title}
-            className="w-full rounded-2xl mb-8 shadow-sm"
+            className="w-full mb-8"
           />
         )}
 
         {/* ── Body ─────────────────────────────────────────────────────── */}
         {post.body && (
-          <article className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 px-6 py-8 shadow-sm">
+          <article className="max-w-prose">
             <PortableTextRenderer value={post.body} />
           </article>
         )}
 
-        <div className="mt-8">
-          <Link href={`/${locale}/blog`} className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
+        <div className="mt-10 border-t border-ink pt-4">
+          <Link
+            href={`/${locale}/blog`}
+            className="text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
             ← Back to Blog
           </Link>
         </div>

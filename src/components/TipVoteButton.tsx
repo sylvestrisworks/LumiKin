@@ -32,10 +32,10 @@ export default function TipVoteButton({ tipId, initialCount, initialVoted }: Pro
   return (
     <button
       onClick={toggle}
-      className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition-all ${
+      className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 border transition-all ${
         voted
-          ? 'bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700'
-          : 'bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-indigo-300 hover:text-indigo-600'
+          ? 'bg-ink border-ink text-paper hover:bg-accent'
+          : 'border-rule text-muted hover:border-ink hover:text-accent'
       }`}
       title={voted ? 'Remove vote' : 'Helpful'}
     >

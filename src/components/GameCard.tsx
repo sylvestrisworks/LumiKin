@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Lightbulb, Sparkles, Zap, Clock, User, AlertTriangle } from 'lucide-react'
 import type { DarkPattern, GameCardProps, SerializedReview, SerializedScores } from '@/types/game'
 import { calcAge } from '@/lib/age'
+import { localizeGenre } from '@/lib/i18n/genres'
 import { Tooltip } from './Tooltip'
 import { esrbToAge, ageBadgeColor } from '@/lib/ui'
 import DarkPatternPills from './DarkPatternPills'
@@ -574,10 +575,11 @@ type GameCardLocalProps = GameCardProps & {
 }
 
 export default function GameCard({ game, scores, review, darkPatterns, compliance, userProfiles = [] }: GameCardLocalProps) {
-  const t      = useTranslations('gameCard')
-  const tDP    = useTranslations('darkPatterns')
-  const tGame  = useTranslations('game')
-  const locale = useLocale()
+  const t       = useTranslations('gameCard')
+  const tDP     = useTranslations('darkPatterns')
+  const tGame   = useTranslations('game')
+  const tGenres = useTranslations('genres')
+  const locale  = useLocale()
 
   const gradient = placeholderGradient(game.title)
   const abbr = game.title.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('')
@@ -631,7 +633,8 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
             )}
             {game.genres.slice(0, 3).map((g) => (
               <span key={g} className="text-xs font-semibold text-white/70 bg-white/10 px-2 py-0.5 rounded-full backdrop-blur-sm">
-                {g}
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {localizeGenre(g, tGenres as any)}
               </span>
             ))}
           </div>

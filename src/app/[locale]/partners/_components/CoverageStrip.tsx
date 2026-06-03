@@ -32,14 +32,14 @@ export default async function CoverageStrip({ stats, variant = 'partner' }: Prop
   const gridCols = items.length === 3 ? 'grid-cols-3 md:grid-cols-3' : 'grid-cols-2 md:grid-cols-4'
 
   return (
-    <div className="border-y border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-      <div className={`max-w-5xl mx-auto px-6 py-10 grid ${gridCols} gap-8 md:gap-0 md:divide-x md:divide-slate-200 md:dark:divide-slate-700`}>
+    <div className="border-y border-ink">
+      <div className={`max-w-5xl mx-auto px-6 py-10 grid ${gridCols} gap-8 md:gap-0 md:divide-x md:divide-rule`}>
         {items.map(({ value, label }) => (
           <div key={label} className="md:px-8 first:pl-0 last:pr-0 flex flex-col gap-1">
-            <span className="text-4xl font-black tracking-tight text-slate-900 dark:text-slate-100 tabular-nums">
+            <span className="font-serif text-4xl tracking-tight text-ink tabular-nums">
               {value}
             </span>
-            <span className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+            <span className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>
               {label}
             </span>
           </div>

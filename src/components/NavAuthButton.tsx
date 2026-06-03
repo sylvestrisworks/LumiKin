@@ -20,8 +20,8 @@ function Initials({ name, email }: { name?: string | null; email?: string | null
     .map(w => w[0]?.toUpperCase() ?? '')
     .join('')
   return (
-    <span className="w-8 h-8 rounded-full bg-indigo-600 text-white text-xs font-bold
-      flex items-center justify-center select-none shrink-0 ring-2 ring-indigo-100 hover:ring-indigo-400 transition-all">
+    <span className="w-8 h-8 rounded-full bg-ink text-paper text-xs font-bold
+      flex items-center justify-center select-none shrink-0 ring-1 ring-rule hover:ring-ink transition-all">
       {initials}
     </span>
   )
@@ -41,7 +41,7 @@ export default async function NavAuthButton() {
               src={image}
               alt={name ?? email ?? 'User'}
               referrerPolicy="no-referrer"
-              className="w-8 h-8 rounded-full object-cover shrink-0 ring-2 ring-indigo-100 hover:ring-indigo-400 transition-all"
+              className="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-rule hover:ring-ink transition-all"
             />
           ) : (
             <Initials name={name} email={email} />
@@ -52,7 +52,8 @@ export default async function NavAuthButton() {
         <form action={handleSignOut}>
           <button
             type="submit"
-            className="text-xs font-medium text-slate-400 hover:text-red-500 transition-colors"
+            className="text-kicker uppercase font-semibold text-muted hover:text-accent transition-colors"
+            style={{ fontVariantCaps: 'all-small-caps' }}
             title="Sign out"
           >
             Sign out
@@ -66,9 +67,10 @@ export default async function NavAuthButton() {
     <form action={handleSignIn}>
       <button
         type="submit"
-        className="text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700
-          px-3 py-1.5 rounded-lg border border-slate-200 hover:border-indigo-300
-          hover:text-indigo-700 transition-colors shrink-0"
+        className="text-kicker uppercase font-semibold text-ink
+          px-3 py-1.5 border border-rule hover:border-ink
+          hover:text-accent transition-colors shrink-0"
+        style={{ fontVariantCaps: 'all-small-caps' }}
       >
         Sign in
       </button>

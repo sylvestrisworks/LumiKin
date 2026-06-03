@@ -11,7 +11,7 @@ import PlatformExperienceCard, { type PlatformExperienceSummary } from '@/compon
 import PlatformScoreHistogram, { type HistogramBucket } from '@/components/PlatformScoreHistogram'
 import CarouselRow from '@/components/CarouselRow'
 import Icon, { type IconName } from '@/components/Icon'
-import { curascoreText } from '@/lib/ui'
+import { curascoreTextEditorial } from '@/lib/ui'
 import type { GameSummary } from '@/types/game'
 import { Sparkles, Zap, Clock, Trophy, ShieldCheck, Gamepad2 } from 'lucide-react'
 
@@ -292,16 +292,16 @@ function BreadcrumbNav({
   platformName: string
 }) {
   return (
-    <nav className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
-      <a href={`/${locale}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+    <nav className="flex items-center gap-1.5 text-kicker uppercase text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>
+      <a href={`/${locale}`} className="hover:text-accent transition-colors">
         {homeLabel}
       </a>
-      <span aria-hidden>/</span>
-      <a href={`/${locale}/browse`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+      <span aria-hidden className="text-rule">/</span>
+      <a href={`/${locale}/browse`} className="hover:text-accent transition-colors">
         {browseLabel}
       </a>
-      <span aria-hidden>/</span>
-      <span className="text-slate-700 dark:text-slate-200 truncate">{platformName}</span>
+      <span aria-hidden className="text-rule">/</span>
+      <span className="text-ink truncate">{platformName}</span>
     </nav>
   )
 }
@@ -443,7 +443,7 @@ async function TraditionalPlatformPage({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
       <script
         type="application/ld+json"
         // Escape script-context-breaking sequences. Game titles in itemListElement
@@ -466,7 +466,7 @@ async function TraditionalPlatformPage({
         />
 
         {/* Hero — platform banner */}
-        <div className="relative rounded-3xl overflow-hidden border border-slate-700 shadow-lg bg-slate-900">
+        <div className="relative overflow-hidden border-2 border-ink bg-slate-900">
           <div className={`absolute inset-0 bg-gradient-to-br ${config.accent}`} />
           <div className="relative px-6 py-7 flex items-center gap-5">
             <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl ${config.iconBg} ring-2 flex items-center justify-center shrink-0 shadow-lg`}>
@@ -477,7 +477,7 @@ async function TraditionalPlatformPage({
               <span className="inline-block text-[11px] font-semibold bg-white/10 text-white/70 border border-white/20 px-2 py-0.5 rounded-full tracking-wide uppercase mb-1.5">
                 {t('badge' as any)}
               </span>
-              <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">{config.name}</h1>
+              <h1 className="text-3xl sm:text-4xl font-serif text-white tracking-tight">{config.name}</h1>
               <p className="text-sm text-white/70 mt-1 line-clamp-2">{descText}</p>
             </div>
           </div>
@@ -485,35 +485,39 @@ async function TraditionalPlatformPage({
 
         {/* Average LumiScore — circle hero */}
         {avgScore != null && (
-          <div className="relative bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 px-6 pt-6 pb-6 text-center">
+          <div className="relative border border-rule px-6 pt-6 pb-6 text-center">
             <Link
               href={`/${locale}/browse?platforms=${config.browseKey}`}
-              className="absolute top-3 right-3 text-[11px] font-semibold text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 border border-slate-200 dark:border-slate-600 hover:border-indigo-400 rounded-full px-2.5 py-1 transition-colors"
+              className="absolute top-3 right-3 text-kicker uppercase font-semibold text-muted hover:text-accent border border-rule hover:border-ink px-2.5 py-1 transition-colors"
+              style={{ fontVariantCaps: 'all-small-caps' }}
             >
               {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {t('browseAll' as any)}
             </Link>
 
-            <p className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
-              Average LumiScore
+            <p className="text-kicker uppercase font-semibold text-muted mb-4" style={{ fontVariantCaps: 'all-small-caps' }}>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('averageLumiScore' as any)}
             </p>
 
             <div
-              className={`leading-none font-bold tabular-nums ${curascoreText(avgScore)}`}
+              className={`leading-none font-bold tabular-nums ${curascoreTextEditorial(avgScore)}`}
               style={{ fontFamily: "Georgia, 'Iowan Old Style', serif", fontSize: 'clamp(64px, 14vw, 96px)' }}
             >
               {avgScore}
             </div>
 
             <p
-              className="text-sm text-slate-400 dark:text-slate-500 mt-2"
+              className="text-sm text-muted mt-2"
               style={{ fontVariant: 'small-caps', letterSpacing: '0.06em' }}
             >
-              out of 100
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('outOf100' as any)}
             </p>
 
-            <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-              across <span className="font-bold text-slate-700 dark:text-slate-200">{scoredCount}</span> rated {config.name} games
+            <p className="mt-3 text-sm text-muted">
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t.rich('acrossScoredGames' as any, { count: scoredCount, name: config.name, bold: (c) => <span className="font-bold text-ink">{c}</span> })}
             </p>
           </div>
         )}
@@ -521,31 +525,31 @@ async function TraditionalPlatformPage({
         {/* Growth + Risk pillars */}
         {scoredCount > 0 && avgBds != null && avgRis != null && (
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-green-50 dark:bg-green-900/20 rounded-3xl p-4 sm:p-5 space-y-2">
+            <div className="border-l-2 border-ivy pl-4 py-2 space-y-2">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-green-200 dark:bg-green-800 rounded-xl flex items-center justify-center">
-                  <Sparkles size={16} className="text-green-700 dark:text-green-300" strokeWidth={2.5} />
-                </div>
-                <p className="text-xs font-black uppercase tracking-widest text-green-700 dark:text-green-400">Avg Growth</p>
+                <Sparkles size={16} className="text-ivy" strokeWidth={2} />
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <p className="text-kicker uppercase font-semibold text-ivy" style={{ fontVariantCaps: 'all-small-caps' }}>{t('avgGrowth' as any)}</p>
               </div>
-              <p className="text-3xl font-black tracking-tighter text-green-900 dark:text-green-200">
+              <p className="font-serif text-3xl tracking-tighter text-ivy">
                 {Math.round(avgBds * 100)}
-                <span className="text-base font-bold text-green-600 dark:text-green-400">/100</span>
+                <span className="text-base font-bold text-muted">/100</span>
               </p>
-              <p className="text-xs font-semibold text-green-700 dark:text-green-400">Benefit Density</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-xs font-semibold text-muted">{t('benefitDensity' as any)}</p>
             </div>
-            <div className="bg-orange-50 dark:bg-orange-900/20 rounded-3xl p-4 sm:p-5 space-y-2">
+            <div className="border-l-2 border-warm pl-4 py-2 space-y-2">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-orange-200 dark:bg-orange-800 rounded-xl flex items-center justify-center">
-                  <Zap size={16} className="text-orange-700 dark:text-orange-300" strokeWidth={2.5} />
-                </div>
-                <p className="text-xs font-black uppercase tracking-widest text-orange-700 dark:text-orange-400">Avg Risk</p>
+                <Zap size={16} className="text-warm" strokeWidth={2} />
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <p className="text-kicker uppercase font-semibold text-warm" style={{ fontVariantCaps: 'all-small-caps' }}>{t('avgRisk' as any)}</p>
               </div>
-              <p className="text-3xl font-black tracking-tighter text-orange-900 dark:text-orange-200">
+              <p className="font-serif text-3xl tracking-tighter text-warm">
                 {Math.round(avgRis * 100)}
-                <span className="text-base font-bold text-orange-600 dark:text-orange-400">/100</span>
+                <span className="text-base font-bold text-muted">/100</span>
               </p>
-              <p className="text-xs font-semibold text-orange-700 dark:text-orange-400">Engagement Hooks</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-xs font-semibold text-muted">{t('engagementHooks' as any)}</p>
             </div>
           </div>
         )}
@@ -553,25 +557,29 @@ async function TraditionalPlatformPage({
         {/* Stats strip */}
         {scoredCount > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
-              <Gamepad2 size={16} className="mx-auto mb-1 text-slate-400 dark:text-slate-500" />
-              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{scoredCount}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Games rated</p>
+            <div className="border border-rule px-3 py-3 text-center">
+              <Gamepad2 size={16} className="mx-auto mb-1 text-muted" />
+              <p className="font-serif text-lg text-ink tabular-nums">{scoredCount}</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>{t('gamesRated' as any)}</p>
             </div>
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
-              <ShieldCheck size={16} className="mx-auto mb-1 text-emerald-500" />
-              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{safestCount}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Safest picks</p>
+            <div className="border border-rule px-3 py-3 text-center">
+              <ShieldCheck size={16} className="mx-auto mb-1 text-ivy" />
+              <p className="font-serif text-lg text-ink tabular-nums">{safestCount}</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>{t('safestPicks' as any)}</p>
             </div>
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
-              <Trophy size={16} className="mx-auto mb-1 text-amber-500" />
-              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{maxScore ?? '—'}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Top score</p>
+            <div className="border border-rule px-3 py-3 text-center">
+              <Trophy size={16} className="mx-auto mb-1 text-warm" />
+              <p className="font-serif text-lg text-ink tabular-nums">{maxScore ?? '—'}</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>{t('topScore' as any)}</p>
             </div>
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
+            <div className="border border-rule px-3 py-3 text-center">
               <Clock size={16} className="mx-auto mb-1 text-blue-500" />
-              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{avgTime ?? '—'}<span className="text-xs font-bold">m</span></p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Avg time/day</p>
+              <p className="font-serif text-lg text-ink tabular-nums">{avgTime ?? '—'}<span className="text-xs font-bold">m</span></p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>{t('avgTimePerDay' as any)}</p>
             </div>
           </div>
         )}
@@ -580,27 +588,28 @@ async function TraditionalPlatformPage({
         {topGame && topGame.curascore != null && (
           <Link
             href={`/${locale}/game/${topGame.slug}`}
-            className="block bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-amber-400 dark:hover:border-amber-500 rounded-2xl overflow-hidden transition-colors group"
+            className="block border border-rule hover:border-ink overflow-hidden transition-colors group"
           >
             <div className="flex items-center gap-3 p-3">
               {topGame.backgroundImage ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={topGame.backgroundImage} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
+                <img src={topGame.backgroundImage} alt="" className="w-16 h-16 object-cover shrink-0" />
               ) : (
-                <div className="w-16 h-16 rounded-xl bg-slate-100 dark:bg-slate-700 shrink-0" />
+                <div className="w-16 h-16 bg-rule/30 shrink-0" />
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                  <Trophy size={11} strokeWidth={2.5} /> Highest-rated {config.name} pick
+                <p className="text-kicker uppercase font-semibold text-accent flex items-center gap-1" style={{ fontVariantCaps: 'all-small-caps' }}>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  <Trophy size={11} strokeWidth={2.5} /> {t('highestRatedPick' as any, { name: config.name })}
                 </p>
-                <p className="text-base font-bold text-slate-800 dark:text-slate-100 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                <p className="font-serif text-base text-ink truncate group-hover:text-accent transition-colors">
                   {topGame.title}
                 </p>
                 {topGame.developer && (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{topGame.developer}</p>
+                  <p className="text-xs text-muted truncate">{topGame.developer}</p>
                 )}
               </div>
-              <div className={`shrink-0 text-2xl font-black tabular-nums ${curascoreText(topGame.curascore)}`} style={{ fontFamily: "Georgia, 'Iowan Old Style', serif" }}>
+              <div className={`shrink-0 font-serif text-2xl tabular-nums ${curascoreTextEditorial(topGame.curascore)}`}>
                 {topGame.curascore}
               </div>
             </div>
@@ -620,7 +629,7 @@ async function TraditionalPlatformPage({
 
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {scoredCount === 0 && (
-          <div className="text-center py-16 text-slate-400 dark:text-slate-500">
+          <div className="text-center py-16 text-muted">
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {t('noGames' as any)}
           </div>
@@ -628,7 +637,7 @@ async function TraditionalPlatformPage({
 
         {/* Editorial intro — crawlable context for search engines */}
         {scoredCount > 0 && (
-          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+          <p className="text-sm text-ink/80 leading-relaxed">
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {t(`editorial_${config.msgKey}` as any)}
           </p>
@@ -782,7 +791,7 @@ export default async function PlatformHubPage({ params }: Props) {
   })
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
@@ -799,7 +808,7 @@ export default async function PlatformHubPage({ params }: Props) {
         />
 
         {/* Platform hero */}
-        <div className="relative rounded-3xl overflow-hidden border border-slate-700 shadow-lg bg-slate-900">
+        <div className="relative overflow-hidden border-2 border-ink bg-slate-900">
           {platform.backgroundImage && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -823,7 +832,7 @@ export default async function PlatformHubPage({ params }: Props) {
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {t('badge' as any)}
               </span>
-              <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">{platform.title}</h1>
+              <h1 className="text-3xl sm:text-4xl font-serif text-white tracking-tight">{platform.title}</h1>
               {platform.description && (
                 <p className="text-sm text-white/70 mt-1 line-clamp-2">{platform.description}</p>
               )}
@@ -847,24 +856,27 @@ export default async function PlatformHubPage({ params }: Props) {
 
         {/* Average LumiScore — circle hero */}
         {avgScore != null && (
-          <div className="relative bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 px-6 pt-6 pb-6 text-center">
-            <p className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
-              Average LumiScore
+          <div className="relative border border-rule px-6 pt-6 pb-6 text-center">
+            <p className="text-kicker uppercase font-semibold text-muted mb-4" style={{ fontVariantCaps: 'all-small-caps' }}>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('averageLumiScore' as any)}
             </p>
             <div
-              className={`leading-none font-bold tabular-nums ${curascoreText(avgScore)}`}
+              className={`leading-none font-bold tabular-nums ${curascoreTextEditorial(avgScore)}`}
               style={{ fontFamily: "Georgia, 'Iowan Old Style', serif", fontSize: 'clamp(64px, 14vw, 96px)' }}
             >
               {avgScore}
             </div>
             <p
-              className="text-sm text-slate-400 dark:text-slate-500 mt-2"
+              className="text-sm text-muted mt-2"
               style={{ fontVariant: 'small-caps', letterSpacing: '0.06em' }}
             >
-              out of 100
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('outOf100' as any)}
             </p>
-            <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-              across <span className="font-bold text-slate-700 dark:text-slate-200">{scoredCount}</span> scored experiences
+            <p className="mt-3 text-sm text-muted">
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t.rich('acrossScoredExperiences' as any, { count: scoredCount, bold: (c) => <span className="font-bold text-ink">{c}</span> })}
             </p>
           </div>
         )}
@@ -872,31 +884,31 @@ export default async function PlatformHubPage({ params }: Props) {
         {/* Growth + Risk pillars */}
         {scoredCount > 0 && avgBds != null && avgRis != null && (
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-green-50 dark:bg-green-900/20 rounded-3xl p-4 sm:p-5 space-y-2">
+            <div className="border-l-2 border-ivy pl-4 py-2 space-y-2">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-green-200 dark:bg-green-800 rounded-xl flex items-center justify-center">
-                  <Sparkles size={16} className="text-green-700 dark:text-green-300" strokeWidth={2.5} />
-                </div>
-                <p className="text-xs font-black uppercase tracking-widest text-green-700 dark:text-green-400">Avg Growth</p>
+                <Sparkles size={16} className="text-ivy" strokeWidth={2} />
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <p className="text-kicker uppercase font-semibold text-ivy" style={{ fontVariantCaps: 'all-small-caps' }}>{t('avgGrowth' as any)}</p>
               </div>
-              <p className="text-3xl font-black tracking-tighter text-green-900 dark:text-green-200">
+              <p className="font-serif text-3xl tracking-tighter text-ivy">
                 {Math.round(avgBds * 100)}
-                <span className="text-base font-bold text-green-600 dark:text-green-400">/100</span>
+                <span className="text-base font-bold text-muted">/100</span>
               </p>
-              <p className="text-xs font-semibold text-green-700 dark:text-green-400">Benefit Density</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-xs font-semibold text-muted">{t('benefitDensity' as any)}</p>
             </div>
-            <div className="bg-orange-50 dark:bg-orange-900/20 rounded-3xl p-4 sm:p-5 space-y-2">
+            <div className="border-l-2 border-warm pl-4 py-2 space-y-2">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-orange-200 dark:bg-orange-800 rounded-xl flex items-center justify-center">
-                  <Zap size={16} className="text-orange-700 dark:text-orange-300" strokeWidth={2.5} />
-                </div>
-                <p className="text-xs font-black uppercase tracking-widest text-orange-700 dark:text-orange-400">Avg Risk</p>
+                <Zap size={16} className="text-warm" strokeWidth={2} />
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <p className="text-kicker uppercase font-semibold text-warm" style={{ fontVariantCaps: 'all-small-caps' }}>{t('avgRisk' as any)}</p>
               </div>
-              <p className="text-3xl font-black tracking-tighter text-orange-900 dark:text-orange-200">
+              <p className="font-serif text-3xl tracking-tighter text-warm">
                 {Math.round(avgRis * 100)}
-                <span className="text-base font-bold text-orange-600 dark:text-orange-400">/100</span>
+                <span className="text-base font-bold text-muted">/100</span>
               </p>
-              <p className="text-xs font-semibold text-orange-700 dark:text-orange-400">Engagement Hooks</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-xs font-semibold text-muted">{t('engagementHooks' as any)}</p>
             </div>
           </div>
         )}
@@ -904,25 +916,29 @@ export default async function PlatformHubPage({ params }: Props) {
         {/* Stats strip */}
         {scoredCount > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
-              <Gamepad2 size={16} className="mx-auto mb-1 text-slate-400 dark:text-slate-500" />
-              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{scoredCount}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Experiences</p>
+            <div className="border border-rule px-3 py-3 text-center">
+              <Gamepad2 size={16} className="mx-auto mb-1 text-muted" />
+              <p className="font-serif text-lg text-ink tabular-nums">{scoredCount}</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>{t('experiences' as any)}</p>
             </div>
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
-              <ShieldCheck size={16} className="mx-auto mb-1 text-emerald-500" />
-              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{safestCount}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Safest picks</p>
+            <div className="border border-rule px-3 py-3 text-center">
+              <ShieldCheck size={16} className="mx-auto mb-1 text-ivy" />
+              <p className="font-serif text-lg text-ink tabular-nums">{safestCount}</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>{t('safestPicks' as any)}</p>
             </div>
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
-              <Trophy size={16} className="mx-auto mb-1 text-amber-500" />
-              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{maxScore ?? '—'}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Top score</p>
+            <div className="border border-rule px-3 py-3 text-center">
+              <Trophy size={16} className="mx-auto mb-1 text-warm" />
+              <p className="font-serif text-lg text-ink tabular-nums">{maxScore ?? '—'}</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>{t('topScore' as any)}</p>
             </div>
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-3 text-center">
+            <div className="border border-rule px-3 py-3 text-center">
               <Clock size={16} className="mx-auto mb-1 text-blue-500" />
-              <p className="text-lg font-black text-slate-800 dark:text-slate-100 tabular-nums">{avgTime ?? '—'}<span className="text-xs font-bold">m</span></p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Avg time/day</p>
+              <p className="font-serif text-lg text-ink tabular-nums">{avgTime ?? '—'}<span className="text-xs font-bold">m</span></p>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <p className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>{t('avgTimePerDay' as any)}</p>
             </div>
           </div>
         )}
@@ -931,27 +947,28 @@ export default async function PlatformHubPage({ params }: Props) {
         {topExperience && topExperience.curascore != null && (
           <Link
             href={`/${locale}/game/${dbSlug}/${topExperience.slug}`}
-            className="block bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-amber-400 dark:hover:border-amber-500 rounded-2xl overflow-hidden transition-colors group"
+            className="block border border-rule hover:border-ink overflow-hidden transition-colors group"
           >
             <div className="flex items-center gap-3 p-3">
               {topExperience.thumbnailUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={topExperience.thumbnailUrl} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
+                <img src={topExperience.thumbnailUrl} alt="" className="w-16 h-16 object-cover shrink-0" />
               ) : (
-                <div className="w-16 h-16 rounded-xl bg-slate-100 dark:bg-slate-700 shrink-0" />
+                <div className="w-16 h-16 bg-rule/30 shrink-0" />
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                  <Trophy size={11} strokeWidth={2.5} /> Highest-rated {platform.title} experience
+                <p className="text-kicker uppercase font-semibold text-accent flex items-center gap-1" style={{ fontVariantCaps: 'all-small-caps' }}>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  <Trophy size={11} strokeWidth={2.5} /> {t('highestRatedExperience' as any, { name: platform.title })}
                 </p>
-                <p className="text-base font-bold text-slate-800 dark:text-slate-100 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                <p className="font-serif text-base text-ink truncate group-hover:text-accent transition-colors">
                   {topExperience.title}
                 </p>
                 {topExperience.creatorName && (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{topExperience.creatorName}</p>
+                  <p className="text-xs text-muted truncate">{topExperience.creatorName}</p>
                 )}
               </div>
-              <div className={`shrink-0 text-2xl font-black tabular-nums ${curascoreText(topExperience.curascore)}`} style={{ fontFamily: "Georgia, 'Iowan Old Style', serif" }}>
+              <div className={`shrink-0 font-serif text-2xl tabular-nums ${curascoreTextEditorial(topExperience.curascore)}`}>
                 {topExperience.curascore}
               </div>
             </div>
@@ -970,15 +987,16 @@ export default async function PlatformHubPage({ params }: Props) {
         )}
 
         {scoredCount === 0 && (
-          <div className="text-center py-16 text-slate-400 dark:text-slate-500">
-            No scored experiences yet. Check back soon.
+          <div className="text-center py-16 text-muted">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {t('noScoredExperiences' as any)}
           </div>
         )}
 
         {/* Top rated */}
         {topExperiences.length > 0 && (
           <section>
-            <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+            <h2 className="text-kicker uppercase font-semibold text-muted mb-3" style={{ fontVariantCaps: 'all-small-caps' }}>
               {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {t('topRated' as any)}
             </h2>
@@ -993,7 +1011,7 @@ export default async function PlatformHubPage({ params }: Props) {
         {/* Lowest rated */}
         {bottomExperiences.length > 0 && scoredCount >= 4 && (
           <section>
-            <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+            <h2 className="text-kicker uppercase font-semibold text-muted mb-3" style={{ fontVariantCaps: 'all-small-caps' }}>
               {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {t('lowestRated' as any)}
             </h2>
@@ -1008,7 +1026,7 @@ export default async function PlatformHubPage({ params }: Props) {
         {/* Recently scored */}
         {recentExperiences.length > 0 && (
           <section>
-            <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+            <h2 className="text-kicker uppercase font-semibold text-muted mb-3" style={{ fontVariantCaps: 'all-small-caps' }}>
               {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {t('recent' as any)}
             </h2>

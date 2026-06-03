@@ -10,9 +10,16 @@ import ImportLibraryButton from '@/components/ImportLibraryButton'
 import type { GameSummary } from '@/types/game'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { calcAge } from '@/lib/age'
+import { curascoreTextEditorial } from '@/lib/ui'
 import Icon from '@/components/Icon'
+import type { Metadata } from 'next'
 
-export const metadata = { title: 'My Library — LumiKin' }
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'library' })
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  return { title: t('metaTitle' as any) }
+}
 
 // ─── ESRB → minimum age fallback ─────────────────────────────────────────────
 
@@ -234,16 +241,16 @@ export default async function LibraryPage({
   const isFiltered = selectedChild != null
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
 
         {/* Header */}
-        <div>
+        <div className="border-b border-ink pb-6">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{t('title')}</h1>
+            <h1 className="font-serif text-display-sm text-ink">{t('title')}</h1>
             <ImportLibraryButton />
           </div>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
+          <p className="text-muted text-sm mt-1">
             {isFiltered
               ? `${owned.length} ${t('owned').toLowerCase()} · ${wishlist.length} ${t('wishlist').toLowerCase()}`
               : `${allOwned.length} ${t('owned').toLowerCase()} · ${allWishlist.length} ${t('wishlist').toLowerCase()}`}
@@ -256,13 +263,13 @@ export default async function LibraryPage({
           {/* Child filter */}
           {profiles.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-slate-400 dark:text-slate-500 font-medium w-14 shrink-0">View for:</span>
+              <span className="text-kicker uppercase text-muted w-14 shrink-0" style={{ fontVariantCaps: 'all-small-caps' }}>View for:</span>
               <a
                 href={libUrl({ child: null })}
-                className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                className={`text-xs px-3 min-h-[44px] inline-flex items-center font-medium border transition-colors ${
                   !selectedChild
-                    ? 'bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900'
-                    : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-slate-400'
+                    ? 'bg-ink border-ink text-paper'
+                    : 'border-rule text-ink hover:border-ink hover:text-accent'
                 }`}
               >
                 {t('viewAll')}
@@ -274,10 +281,10 @@ export default async function LibraryPage({
                   <a
                     key={p.id}
                     href={libUrl({ child: p.id })}
-                    className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                    className={`text-xs px-3 min-h-[44px] inline-flex items-center font-medium border transition-colors ${
                       isActive
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400'
+                        ? 'bg-accent border-accent text-paper'
+                        : 'border-rule text-ink hover:border-ink hover:text-accent'
                     }`}
                   >
                     {p.name} <span className="opacity-70">({age})</span>
@@ -289,15 +296,15 @@ export default async function LibraryPage({
 
           {/* Sort pills */}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs text-slate-400 dark:text-slate-500 font-medium w-14 shrink-0">{t('sortBy')}</span>
+            <span className="text-kicker uppercase text-muted w-14 shrink-0" style={{ fontVariantCaps: 'all-small-caps' }}>{t('sortBy')}</span>
             {(['curascore', 'time', 'added', 'alpha'] as SortKey[]).map(s => (
               <a
                 key={s}
                 href={libUrl({ sort: s })}
-                className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                className={`text-xs px-3 min-h-[44px] inline-flex items-center font-medium border transition-colors ${
                   sortKey === s
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400'
+                    ? 'bg-accent border-accent text-paper'
+                    : 'border-rule text-ink hover:border-ink hover:text-accent'
                 }`}
               >
                 {s === 'curascore' ? t('sortCurascore') : s === 'time' ? t('sortTime') : s === 'added' ? t('sortRecent') : 'A–Z'}
@@ -308,19 +315,19 @@ export default async function LibraryPage({
 
         {/* Filter notice */}
         {isFiltered && (
-          <div className="text-sm bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded-xl px-4 py-3 space-y-1">
-            <p className="text-indigo-800 dark:text-indigo-200 font-medium">
+          <div className="text-sm border-l-2 border-accent pl-4 py-1 space-y-1">
+            <p className="text-ink font-medium">
               {t('filterByChild', { name: selectedChild!.name })}
               {' '}·{' '}
-              <span className="font-normal text-indigo-600 dark:text-indigo-400">
+              <span className="font-normal text-muted">
                 {t('showingFor', { count: owned.length, total: allOwned.length })}
               </span>
               {' '}
-              <a href={libUrl({ child: null })} className="underline text-indigo-500 hover:text-indigo-700 dark:hover:text-indigo-300 text-xs ml-1">
+              <a href={libUrl({ child: null })} className="underline text-accent hover:no-underline text-xs ml-1">
                 {t('clearFilter')}
               </a>
             </p>
-            <p className="text-xs text-indigo-600 dark:text-indigo-400 flex flex-wrap gap-x-3 gap-y-1">
+            <p className="text-xs text-muted flex flex-wrap gap-x-3 gap-y-1">
               <span>Age {calcAge(selectedChild!.birthDate, selectedChild!.birthYear)}</span>
               {childPlatforms.length > 0 && (
                 <span className="flex items-center gap-1"><Icon name="ios" size={12} aria-hidden="true" />{childPlatforms.join(', ')}</span>
@@ -330,20 +337,20 @@ export default async function LibraryPage({
               )}
             </p>
             {owned.length === 0 && allOwned.length > 0 && (
-              <p className="text-xs text-indigo-500 dark:text-indigo-400 mt-1">{t('noMatchFilter')}</p>
+              <p className="text-xs text-muted mt-1">{t('noMatchFilter')}</p>
             )}
           </div>
         )}
 
         {/* Stats summary */}
         {owned.length > 0 && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+          <div className="border border-rule p-6">
             <div className="flex items-center justify-between gap-4 mb-4">
-              <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+              <h2 className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>
                 {t('librarySummary')}
               </h2>
               {scoredOwned.length < owned.length && (
-                <span className="text-xs text-slate-400 dark:text-slate-500">
+                <span className="text-xs text-muted">
                   {t('scoredOf', { scored: scoredOwned.length, total: owned.length })}
                 </span>
               )}
@@ -352,26 +359,23 @@ export default async function LibraryPage({
 
               {avgCurascore != null && (
                 <div className="text-center">
-                  <div className={`text-4xl font-black ${
-                    avgCurascore >= 70 ? 'text-emerald-600' :
-                    avgCurascore >= 50 ? 'text-amber-500' : 'text-red-500'
-                  }`}>
+                  <div className={`font-serif text-4xl ${curascoreTextEditorial(avgCurascore)}`}>
                     {avgCurascore}
                   </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t('avgCurascore')}</div>
+                  <div className="text-xs text-muted mt-1">{t('avgCurascore')}</div>
                 </div>
               )}
 
               {topSkills.length > 0 && (
                 <div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-2">{t('topFocusSkills')}</div>
+                  <div className="text-xs text-muted mb-2">{t('topFocusSkills')}</div>
                   <div className="flex flex-col gap-1.5">
                     {topSkills.map((s, i) => (
                       <div key={s.key} className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-400 w-4">{i + 1}.</span>
-                        <div className="h-2 rounded-full bg-indigo-500" style={{ width: `${Math.round(s.avg * 120)}px`, minWidth: '12px' }} />
-                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{skillLabels[s.key]}</span>
-                        <span className="text-xs text-slate-400 dark:text-slate-500">{Math.round(s.avg * 100)}%</span>
+                        <span className="text-xs font-bold text-muted w-4">{i + 1}.</span>
+                        <div className="h-2 bg-ivy" style={{ width: `${Math.round(s.avg * 120)}px`, minWidth: '12px' }} />
+                        <span className="text-sm font-medium text-ink/80">{skillLabels[s.key]}</span>
+                        <span className="text-xs text-muted">{Math.round(s.avg * 100)}%</span>
                       </div>
                     ))}
                   </div>
@@ -385,15 +389,17 @@ export default async function LibraryPage({
         {/* Owned games */}
         {owned.length > 0 ? (
           <section>
-            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-              <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2 border-t border-ink pt-4">
+              <h2 className="font-serif text-lg text-ink">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {isFiltered
-                  ? `${selectedChild!.name}'s ${t('owned').toLowerCase()} (${owned.length})`
+                  ? t('ownedByChild' as any, { name: selectedChild!.name, count: owned.length })
                   : `${t('owned')} (${owned.length})`}
               </h2>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400 dark:text-slate-500 hidden sm:inline">
-                  Make sure Steam &rarr; Privacy Settings &rarr; Game details is set to <strong>Public</strong>
+                <span className="text-xs text-muted hidden sm:inline">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {t.rich('steamPrivacyShort' as any, { strong: (c) => <strong>{c}</strong> })}
                 </span>
                 <ImportLibraryButton />
               </div>
@@ -404,26 +410,29 @@ export default async function LibraryPage({
           </section>
         ) : (
           <div className="max-w-md mx-auto py-6 space-y-3">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 space-y-4">
+            <div className="border border-rule p-6 space-y-4">
               <div>
-                <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-base">{t('emptyOwned')}</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{t('emptyOwnedSub')}</p>
+                <h3 className="font-serif text-lg text-ink">{t('emptyOwned')}</h3>
+                <p className="text-sm text-muted mt-1">{t('emptyOwnedSub')}</p>
               </div>
 
               {/* Privacy tip — visible by default, not collapsed */}
-              <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl px-4 py-3">
-                <p className="text-xs font-semibold text-amber-800 dark:text-amber-300 mb-1">
-                  First: make your Steam library public
+              <div className="border-l-2 border-warm pl-3 py-1">
+                <p className="text-kicker uppercase font-semibold text-warm mb-1" style={{ fontVariantCaps: 'all-small-caps' }}>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {t('steamPublicHeading' as any)}
                 </p>
-                <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
-                  Steam app &rarr; click your avatar &rarr; <strong>View my profile</strong> &rarr; <strong>Edit Profile</strong> &rarr; <strong>Privacy Settings</strong> &rarr; set <strong>Game details</strong> to <strong>Public</strong>
+                <p className="text-xs text-ink/70 leading-relaxed">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {t.rich('steamPublicSteps' as any, { strong: (c) => <strong>{c}</strong> })}
                 </p>
               </div>
 
               <ImportLibraryButton />
             </div>
-            <p className="text-xs text-center text-slate-400 dark:text-slate-500">
-              Or browse the catalogue and use <strong>Add to Library</strong> on any game page
+            <p className="text-xs text-center text-muted">
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t.rich('orBrowseCatalogue' as any, { strong: (c) => <strong>{c}</strong> })}
             </p>
           </div>
         )}
@@ -431,15 +440,18 @@ export default async function LibraryPage({
         {/* Wishlist */}
         {allWishlist.length > 0 && (
           <section>
-            <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-4">
-              {t('wishlist')} ({wishlist.length}{isFiltered && wishlist.length < allWishlist.length ? ` of ${allWishlist.length}` : ''})
+            <h2 className="font-serif text-lg text-ink mb-4 border-t border-ink pt-4">
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('wishlist')} {isFiltered && wishlist.length < allWishlist.length
+                ? t('countOfTotal' as any, { count: wishlist.length, total: allWishlist.length })
+                : `(${wishlist.length})`}
             </h2>
             {wishlist.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                 {wishlist.map(r => <GameCompactCard key={r.entryId} game={toSummary(r)} />)}
               </div>
             ) : (
-              <p className="text-sm text-slate-400 dark:text-slate-500 py-4">
+              <p className="text-sm text-muted py-4">
                 {t('noMatchFilter')}
               </p>
             )}

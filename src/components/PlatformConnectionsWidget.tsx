@@ -19,12 +19,12 @@ function PlatformCard({
   action:      React.ReactNode
 }) {
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4 flex items-center justify-between gap-4">
+    <div className="border border-rule px-5 py-4 flex items-center justify-between gap-4">
       <div className="flex items-center gap-3 min-w-0">
         <div className="shrink-0">{logo}</div>
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{name}</p>
-          <p className="text-xs text-slate-400 dark:text-slate-500 truncate">{description}</p>
+          <p className="font-serif text-sm text-ink truncate">{name}</p>
+          <p className="text-xs text-muted truncate">{description}</p>
         </div>
       </div>
       <div className="shrink-0">{action}</div>
@@ -65,7 +65,7 @@ function EpicLogo() {
 
 function ComingSoonBadge() {
   return (
-    <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-600">
+    <span className="inline-flex items-center px-2.5 py-1 text-kicker uppercase font-semibold text-muted border border-rule" style={{ fontVariantCaps: 'all-small-caps' }}>
       Coming soon
     </span>
   )
@@ -88,7 +88,8 @@ export default function PlatformConnectionsWidget() {
           action={
             <button
               onClick={() => setSteamOpen(true)}
-              className="text-xs px-3 py-1.5 bg-[#1b2838] hover:bg-[#2a475e] text-white font-semibold rounded-xl transition-colors"
+              className="text-kicker uppercase px-3 py-1.5 bg-ink hover:bg-accent text-paper font-semibold transition-colors"
+              style={{ fontVariantCaps: 'all-small-caps' }}
             >
               Import
             </button>

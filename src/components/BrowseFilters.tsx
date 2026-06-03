@@ -6,6 +6,7 @@ import { useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { SlidersHorizontal, X, LayoutGrid, List } from 'lucide-react'
+import { localizeGenre } from '@/lib/i18n/genres'
 
 // ─── Filter definitions ───────────────────────────────────────────────────────
 
@@ -81,6 +82,7 @@ export default function BrowseFilters({ active, totalCount, childId, childName }
   const router   = useRouter()
   const pathname = usePathname()
   const t        = useTranslations('filters')
+  const tGenres  = useTranslations('genres')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [showAdvanced, setShowAdvanced] = useState(
     !!(active.rep || active.noProp || active.bechdel || active.compliance.length)
@@ -204,9 +206,9 @@ export default function BrowseFilters({ active, totalCount, childId, childName }
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setDrawerOpen(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600
-              bg-white dark:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200
-              hover:border-indigo-300 hover:text-indigo-700 dark:hover:text-indigo-400
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-rule
+              bg-paper text-sm font-semibold text-ink/80
+              hover:border-ink hover:text-accent
               shadow-sm transition-colors min-h-[44px]"
             aria-label={t('heading')}
             aria-expanded={drawerOpen}
@@ -215,7 +217,7 @@ export default function BrowseFilters({ active, totalCount, childId, childName }
             <SlidersHorizontal size={15} />
             {t('heading')}
             {activeCount > 0 && (
-              <span className="ml-1 bg-indigo-600 text-white text-xs font-black px-1.5 py-0.5 rounded-full">
+              <span className="ml-1 bg-ink text-paper text-xs font-black px-1.5 py-0.5 rounded-full">
                 {activeCount}
               </span>
             )}
@@ -229,7 +231,8 @@ export default function BrowseFilters({ active, totalCount, childId, childName }
             <ActivePill label={active.age} onRemove={() => push({ age: undefined })} />
           )}
           {active.genres.map(g => (
-            <ActivePill key={g} label={g} onRemove={() => toggle('genres', g)} />
+            /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+            <ActivePill key={g} label={localizeGenre(g, tGenres as any)} onRemove={() => toggle('genres', g)} />
           ))}
           {active.platforms.map(p => (
             <ActivePill key={p} label={p} onRemove={() => toggle('platforms', p)} />
@@ -258,14 +261,14 @@ export default function BrowseFilters({ active, totalCount, childId, childName }
             onClick={() => setDrawerOpen(false)}
             aria-hidden="true"
           />
-          <aside className="relative ml-auto w-[min(320px,100vw)] h-full bg-white dark:bg-slate-800 shadow-xl overflow-y-auto flex flex-col">
+          <aside className="relative ml-auto w-[min(320px,100vw)] h-full bg-paper shadow-xl overflow-y-auto flex flex-col">
             {/* Drawer header */}
-            <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-slate-100 dark:border-slate-700 sticky top-0 bg-white dark:bg-slate-800 z-10">
-              <h2 className="font-bold text-slate-800 dark:text-slate-100">{t('heading')}</h2>
+            <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-rule/50 sticky top-0 bg-paper z-10">
+              <h2 className="font-bold text-ink">{t('heading')}</h2>
               {/* FIX: Rätt aria-label på stäng-knappen */}
               <button
                 onClick={() => setDrawerOpen(false)}
-                className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="p-2 rounded-lg text-muted hover:bg-ink/[0.04] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                 aria-label={t('close')}
               >
                 <X size={18} />
@@ -278,10 +281,11 @@ export default function BrowseFilters({ active, totalCount, childId, childName }
             </div>
 
             {/* Drawer footer — sticky visa-knapp */}
-            <div className="sticky bottom-0 px-4 sm:px-5 py-4 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700">
+            <div className="sticky bottom-0 px-4 sm:px-5 py-4 bg-paper border-t border-rule/50">
               <button
                 onClick={() => setDrawerOpen(false)}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold py-3.5 rounded-xl transition-colors min-h-[44px]"
+                className="w-full bg-ink hover:bg-accent text-paper text-kicker uppercase font-semibold py-3.5 transition-colors min-h-[44px]"
+                style={{ fontVariantCaps: 'all-small-caps' }}
               >
                 {t('showGames', { count: totalCount })}
               </button>
@@ -315,15 +319,16 @@ function FilterPanel({
   showAdvanced: boolean
   setShowAdvanced: (v: boolean) => void
 }) {
+  const tGenres = useTranslations('genres')
   return (
     <div className="space-y-5">
       {/* Header — bara synlig på desktop (mobil har egen header i drawer) */}
       <div className="hidden lg:flex items-center justify-between">
-        <h2 className="font-bold text-slate-800 dark:text-slate-100">{t('heading')}</h2>
+        <h2 className="font-bold text-ink">{t('heading')}</h2>
         {activeCount > 0 && (
           <button
             onClick={clearAll}
-            className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium"
+            className="text-xs text-accent hover:underline font-medium"
           >
             {t('clearAll')}
           </button>
@@ -335,7 +340,7 @@ function FilterPanel({
         <div className="lg:hidden">
           <button
             onClick={clearAll}
-            className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium"
+            className="text-xs text-accent hover:underline font-medium"
           >
             {t('clearAll')}
           </button>
@@ -344,17 +349,17 @@ function FilterPanel({
 
       {/* Active child indicator */}
       {childName && childId && (
-        <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800">
+        <div className="flex items-center justify-between px-3 py-2 border-l-2 border-accent">
           <div className="flex items-center gap-2 min-w-0">
             <span className="text-base shrink-0" aria-hidden="true">👤</span>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-indigo-700 dark:text-indigo-300 truncate">{childName}</p>
-              <p className="text-[10px] text-indigo-500 dark:text-indigo-400">Age-filtered</p>
+              <p className="text-xs font-semibold text-accent truncate">{childName}</p>
+              <p className="text-[10px] text-muted">Age-filtered</p>
             </div>
           </div>
           <button
             onClick={removeChild}
-            className="text-[10px] text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-200 shrink-0 ml-2"
+            className="text-[10px] text-muted hover:text-accent shrink-0 ml-2"
           >
             ✕
           </button>
@@ -363,14 +368,14 @@ function FilterPanel({
 
       {/* Sort */}
       <div>
-        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">
+        <p className="text-xs font-semibold text-muted uppercase tracking-wide mb-2">
           {t('sortBy')}
         </p>
         <select
           value={active.sort}
           onChange={e => push({ sort: e.target.value })}
-          className="w-full text-sm border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2.5 bg-white dark:bg-slate-700
-            text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+          className="w-full text-sm border border-rule px-3 py-2.5 bg-paper
+            text-ink/80 focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink
             min-h-[44px]"
         >
           {sortOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -399,7 +404,8 @@ function FilterPanel({
           {GENRE_OPTIONS.map(g => (
             <InlineChip
               key={g}
-              label={g}
+              /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+              label={localizeGenre(g, tGenres as any)}
               active={active.genres.includes(g)}
               onClick={() => toggle('genres', g)}
             />
@@ -429,11 +435,11 @@ function FilterPanel({
               type="checkbox"
               checked={active.benefits.includes(o.value)}
               onChange={() => toggle('benefits', o.value)}
-              className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-indigo-600
-                focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800
-                bg-white dark:bg-slate-700 shrink-0"
+              className="w-4 h-4 border-rule text-ink accent-ink
+                focus:ring-1 focus:ring-ink focus:ring-offset-1
+                bg-paper shrink-0"
             />
-            <span className="text-sm text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100">
+            <span className="text-sm text-ink/80 group-hover:text-ink">
               {t(o.labelKey as Parameters<T>[0])}
             </span>
           </label>
@@ -486,12 +492,12 @@ function FilterPanel({
       <div>
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+          className="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-ink transition-colors"
         >
           <span>{showAdvanced ? '▾' : '▸'}</span>
           {t('advancedFilters')}
           {(active.rep || active.noProp || active.bechdel || active.compliance.length > 0) && (
-            <span className="bg-indigo-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">
+            <span className="bg-ink text-paper text-[10px] font-black px-1.5 py-0.5 rounded-full">
               {[active.rep, active.noProp, active.bechdel, ...active.compliance].filter(Boolean).length}
             </span>
           )}
@@ -507,7 +513,7 @@ function FilterPanel({
               active={active.rep === 'good'}
               onClick={() => push({ rep: active.rep === 'good' ? undefined : 'good' })}
             />
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5">{t('repGoodNote')}</p>
+            <p className="text-xs text-muted mt-1.5">{t('repGoodNote')}</p>
           </FilterSection>
 
           {/* Ideology */}
@@ -517,7 +523,7 @@ function FilterPanel({
               active={active.noProp === 'true'}
               onClick={() => push({ noProp: active.noProp === 'true' ? undefined : 'true' })}
             />
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5">{t('ideologyNote')}</p>
+            <p className="text-xs text-muted mt-1.5">{t('ideologyNote')}</p>
           </FilterSection>
 
           {/* Bechdel */}
@@ -527,7 +533,7 @@ function FilterPanel({
               active={active.bechdel === 'pass'}
               onClick={() => push({ bechdel: active.bechdel === 'pass' ? undefined : 'pass' })}
             />
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5">{t('bechdelNote')}</p>
+            <p className="text-xs text-muted mt-1.5">{t('bechdelNote')}</p>
           </FilterSection>
 
           {/* Compliance */}
@@ -546,7 +552,7 @@ function FilterPanel({
         </>
       )}
 
-      <p className="text-xs text-slate-400 dark:text-slate-500 pt-2 border-t border-slate-100 dark:border-slate-700">
+      <p className="text-xs text-muted pt-2 border-t border-rule/50">
         {t('gamesFound', { count: totalCount })}
       </p>
     </div>
@@ -566,14 +572,14 @@ export function ViewToggle({
 }) {
   const t = useTranslations('filters')
   return (
-    <div className="flex items-center border border-slate-200 dark:border-slate-600 rounded-lg overflow-hidden bg-white dark:bg-slate-800">
+    <div className="flex items-center border border-rule rounded-lg overflow-hidden bg-paper">
       {/* FIX: Översatta aria-labels */}
       <Link
         href={listHref}
         className={`p-2.5 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
           view === 'list'
-            ? 'bg-indigo-600 text-white'
-            : 'text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200'
+            ? 'bg-ink text-paper'
+            : 'text-muted hover:text-ink'
         }`}
         aria-label={t('viewList')}
         aria-current={view === 'list' ? 'true' : undefined}
@@ -584,8 +590,8 @@ export function ViewToggle({
         href={gridHref}
         className={`p-2.5 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
           view === 'grid'
-            ? 'bg-indigo-600 text-white'
-            : 'text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200'
+            ? 'bg-ink text-paper'
+            : 'text-muted hover:text-ink'
         }`}
         aria-label={t('viewGrid')}
         aria-current={view === 'grid' ? 'true' : undefined}
@@ -609,10 +615,10 @@ function FilterSection({
 }) {
   return (
     <div>
-      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">
+      <p className="text-xs font-semibold text-muted uppercase tracking-wide mb-2">
         {title}
         {note && (
-          <span className="ml-1 font-normal normal-case text-slate-400 dark:text-slate-500">
+          <span className="ml-1 font-normal normal-case text-muted">
             ({note})
           </span>
         )}
@@ -635,10 +641,10 @@ function InlineChip({
   return (
     <button
       onClick={onClick}
-      className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors min-h-[32px] whitespace-nowrap ${
+      className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors min-h-[44px] inline-flex items-center whitespace-nowrap ${
         active
-          ? 'bg-indigo-600 text-white border-indigo-600'
-          : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400'
+          ? 'bg-ink text-paper border-ink'
+          : 'bg-paper text-ink/80 border-rule hover:border-ink hover:text-accent'
       }`}
     >
       {label}
@@ -649,11 +655,11 @@ function InlineChip({
 // Aktiv filter-pill med X-knapp (visas på mobil ovanför listan)
 function ActivePill({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700">
+    <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 text-accent border border-accent">
       {label}
       <button
         onClick={onRemove}
-        className="ml-0.5 hover:text-indigo-900 dark:hover:text-indigo-100 transition-colors"
+        className="ml-0.5 hover:text-ink transition-colors"
         aria-label={`Remove ${label}`}
       >
         <X size={11} />

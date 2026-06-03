@@ -4,10 +4,49 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { RUBRIC_DIMENSION_COUNT } from '@/lib/methodology'
+import { sanityClient } from '@/sanity/lib/client'
+import { faqsQuery } from '@/sanity/lib/queries'
+import PortableTextRenderer from '@/components/PortableTextRenderer'
+import type { PortableTextBlock } from '@portabletext/react'
 
-export const metadata: Metadata = {
-  title: 'How it works — LumiKin',
-  description: 'Understand the LumiScore, Benefit Density Score, Risk Intensity Score, and daily time recommendations.',
+// ─── Sanity types ────────────────────────────────────────────────────────────
+
+type SanityFaqItem = {
+  _id: string
+  question: string
+  answer: PortableTextBlock[]
+  category?: string | null
+}
+
+// Walk a portable-text block array, returning a single plain-text string. Used
+// for FAQPage JSON-LD answer text. Drops mark metadata and image blocks; keeps
+// paragraph/list spacing as single spaces.
+function portableToPlain(blocks: PortableTextBlock[] | undefined): string {
+  if (!blocks?.length) return ''
+  const parts: string[] = []
+  for (const block of blocks) {
+    if (!block || block._type !== 'block') continue
+    const children = (block as PortableTextBlock & { children?: Array<{ text?: string }> }).children
+    if (!children) continue
+    parts.push(children.map((c) => c.text ?? '').join(''))
+  }
+  return parts.join(' ').replace(/\s+/g, ' ').trim()
+}
+
+// Categories shown above the hardcoded methodology sections. 'lumiscore' Q&As
+// in Sanity are folded into the methodology block instead (or skipped — the
+// hardcoded LumiScore section is more detailed than what fits portable text).
+const PARENT_INTENT_CATEGORIES = ['general', 'screen-time', 'game-safety']
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'faq' })
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  return {
+    title:       t('metaTitle' as any),
+    description: t('metaDescription' as any),
+  }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 }
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -37,7 +76,7 @@ const SECTIONS: Section[] = [
         q: 'How is the LumiScore calculated?',
         a: (
           <>
-            <code className="bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 px-1.5 py-0.5 rounded text-sm font-mono">
+            <code className="bg-ink/5 text-ink px-1.5 py-0.5 text-sm font-mono">
               LumiScore = 100 × (2 × BDS × Safety) / (BDS + Safety)
             </code>
             <br />
@@ -52,11 +91,11 @@ const SECTIONS: Section[] = [
         q: 'What do the score ranges mean?',
         a: (
           <ul className="space-y-1.5">
-            <li><span className="inline-block w-3 h-3 rounded-full bg-emerald-600 mr-2" />
+            <li><span className="inline-block w-3 h-3 rounded-full bg-ivy mr-2" />
               <strong>70–100 — Recommended.</strong> Strong developmental value, low manipulation design.</li>
-            <li><span className="inline-block w-3 h-3 rounded-full bg-amber-500 mr-2" />
+            <li><span className="inline-block w-3 h-3 rounded-full bg-warm mr-2" />
               <strong>40–69 — Play with awareness.</strong> Worthwhile but has notable risk factors to manage.</li>
-            <li><span className="inline-block w-3 h-3 rounded-full bg-red-600 mr-2" />
+            <li><span className="inline-block w-3 h-3 rounded-full bg-accent mr-2" />
               <strong>0–39 — Use caution.</strong> High risk relative to developmental benefit. Keep sessions short.</li>
           </ul>
         ),
@@ -102,23 +141,23 @@ const SECTIONS: Section[] = [
         a: (
           <div className="space-y-3">
             <div>
-              <p className="font-semibold text-slate-800 dark:text-slate-100">B1 · Cognitive development (50% of BDS)</p>
-              <p className="text-slate-600 dark:text-slate-400 text-sm mt-0.5">
+              <p className="font-semibold text-ink">B1 · Cognitive development (50% of BDS)</p>
+              <p className="text-muted text-sm mt-0.5">
                 Problem solving, spatial awareness, strategic thinking, critical thinking, memory,
                 creativity, reading, math/systems thinking, real-world learning transfer, and
                 adaptive challenge. Scored across 10 dimensions (0–5 each, max 50 points).
               </p>
             </div>
             <div>
-              <p className="font-semibold text-slate-800 dark:text-slate-100">B2 · Social &amp; emotional development (30% of BDS)</p>
-              <p className="text-slate-600 dark:text-slate-400 text-sm mt-0.5">
+              <p className="font-semibold text-ink">B2 · Social &amp; emotional development (30% of BDS)</p>
+              <p className="text-muted text-sm mt-0.5">
                 Teamwork, communication, empathy, emotional regulation, ethical reasoning, and
                 quality of social interaction. Scored across 6 dimensions (max 30 points).
               </p>
             </div>
             <div>
-              <p className="font-semibold text-slate-800 dark:text-slate-100">B3 · Physical &amp; motor development (20% of BDS)</p>
-              <p className="text-slate-600 dark:text-slate-400 text-sm mt-0.5">
+              <p className="font-semibold text-ink">B3 · Physical &amp; motor development (20% of BDS)</p>
+              <p className="text-muted text-sm mt-0.5">
                 Hand-eye coordination, fine motor skills, reaction time, and physical activity
                 (VR/motion). Scored across 4 dimensions (max 20 points).
               </p>
@@ -172,8 +211,8 @@ const SECTIONS: Section[] = [
         a: (
           <div className="space-y-3">
             <div>
-              <p className="font-semibold text-slate-800 dark:text-slate-100">R1 · Dopamine manipulation design (45% of RIS)</p>
-              <p className="text-slate-600 dark:text-slate-400 text-sm mt-0.5">
+              <p className="font-semibold text-ink">R1 · Dopamine manipulation design (45% of RIS)</p>
+              <p className="text-muted text-sm mt-0.5">
                 Variable-ratio reward loops, streak mechanics, loss aversion, FOMO events,
                 artificial stopping barriers (energy systems), re-engagement notifications,
                 near-miss mechanics, infinite scroll design, escalating commitment, and
@@ -181,16 +220,16 @@ const SECTIONS: Section[] = [
               </p>
             </div>
             <div>
-              <p className="font-semibold text-slate-800 dark:text-slate-100">R2 · Monetization pressure (30% of RIS)</p>
-              <p className="text-slate-600 dark:text-slate-400 text-sm mt-0.5">
+              <p className="font-semibold text-ink">R2 · Monetization pressure (30% of RIS)</p>
+              <p className="text-muted text-sm mt-0.5">
                 Spending ceiling, pay-to-win mechanics, currency obfuscation (gem → coin → credit),
                 in-game spending prompts, child-targeting design, ad pressure, subscription pressure,
                 and social spending dynamics. Scored 0–3 each across 8 factors (max 24 points).
               </p>
             </div>
             <div>
-              <p className="font-semibold text-slate-800 dark:text-slate-100">R3 · Social &amp; emotional risk (25% of RIS)</p>
-              <p className="text-slate-600 dark:text-slate-400 text-sm mt-0.5">
+              <p className="font-semibold text-ink">R3 · Social &amp; emotional risk (25% of RIS)</p>
+              <p className="text-muted text-sm mt-0.5">
                 Social obligations (guild events, daily team commitments), competitive toxicity,
                 stranger interaction risk, social comparison mechanics, identity/self-worth tied
                 to in-game status, and privacy risk. Scored 0–3 each across 6 factors (max 18 points).
@@ -252,12 +291,12 @@ const SECTIONS: Section[] = [
             <div className="mt-3 overflow-x-auto">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
-                    <th className="text-left px-3 py-2 font-semibold rounded-tl">RIS range</th>
-                    <th className="text-left px-3 py-2 font-semibold rounded-tr">Base recommendation</th>
+                  <tr className="border-y-2 border-ink text-ink">
+                    <th className="text-left px-3 py-2 text-kicker uppercase font-semibold" style={{ fontVariantCaps: 'all-small-caps' }}>RIS range</th>
+                    <th className="text-left px-3 py-2 text-kicker uppercase font-semibold" style={{ fontVariantCaps: 'all-small-caps' }}>Base recommendation</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                <tbody className="divide-y divide-rule/60">
                   {[
                     ['0.00 – 0.15', 'Up to 120 min'],
                     ['0.16 – 0.30', 'Up to 90 min'],
@@ -265,9 +304,9 @@ const SECTIONS: Section[] = [
                     ['0.51 – 0.70', 'Up to 30 min'],
                     ['0.71 – 1.00', '15 min or not recommended'],
                   ].map(([range, rec]) => (
-                    <tr key={range} className="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                      <td className="px-3 py-2 font-mono text-xs text-slate-600 dark:text-slate-300">{range}</td>
-                      <td className="px-3 py-2 text-slate-700 dark:text-slate-200">{rec}</td>
+                    <tr key={range}>
+                      <td className="px-3 py-2 font-mono text-xs text-muted">{range}</td>
+                      <td className="px-3 py-2 text-ink/80">{rec}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -281,7 +320,7 @@ const SECTIONS: Section[] = [
         a: (
           <>
             Yes — but only under specific conditions:
-            <ul className="mt-2 space-y-1.5 list-disc list-inside text-slate-600 dark:text-slate-400">
+            <ul className="mt-2 space-y-1.5 list-disc list-inside text-ink/80">
               <li>
                 If <strong>BDS ≥ 0.60</strong> (substantial developmental value), the recommendation
                 extends one tier — unless RIS &gt; 0.70, where high risk overrides the benefit extension.
@@ -291,7 +330,7 @@ const SECTIONS: Section[] = [
                 risk), the recommendation drops one tier.
               </li>
             </ul>
-            <p className="mt-2 text-slate-600 dark:text-slate-400">
+            <p className="mt-2 text-ink/80">
               This asymmetry is intentional: benefits can earn a little more time, but they
               cannot override a very high-risk design.
             </p>
@@ -303,7 +342,7 @@ const SECTIONS: Section[] = [
         a: (
           <div className="space-y-1.5">
             <p>Age adjustments are applied on top of the formula-based recommendation:</p>
-            <ul className="mt-2 space-y-1.5 list-disc list-inside text-slate-600 dark:text-slate-400">
+            <ul className="mt-2 space-y-1.5 list-disc list-inside text-ink/80">
               <li><strong>Under 6:</strong> Recommendation is halved and capped at 30 min.</li>
               <li><strong>6–9:</strong> Applied as-is.</li>
               <li><strong>10–12:</strong> As-is, with notes on where co-play is advised vs. independent.</li>
@@ -365,7 +404,7 @@ const SECTIONS: Section[] = [
       {
         q: 'What data does the AI use to score a game?',
         a: (
-          <ul className="space-y-1.5 list-disc list-inside text-slate-600 dark:text-slate-400">
+          <ul className="space-y-1.5 list-disc list-inside text-ink/80">
             <li>Game title, developer, publisher, description, and genre from RAWG</li>
             <li>Platform availability, ESRB/PEGI rating, Metacritic score</li>
             <li>Monetization flags: whether the game has microtransactions, loot boxes, a battle pass, or a subscription</li>
@@ -442,7 +481,7 @@ const SECTIONS: Section[] = [
               want to know about before their child plays. The propaganda/ideology level is scored
               0–3:
             </p>
-            <ul className="mt-2 space-y-1 list-disc list-inside text-slate-600 dark:text-slate-400">
+            <ul className="mt-2 space-y-1 list-disc list-inside text-ink/80">
               <li><strong>0 — Neutral.</strong> No discernible ideological framing (most puzzle, sports, sandbox games).</li>
               <li><strong>1 — Mild.</strong> Common in historical games with a national perspective. Unlikely to concern most parents.</li>
               <li><strong>2 — Notable.</strong> Clear political, nationalist, or religious lens. Worth a conversation.</li>
@@ -491,26 +530,84 @@ export default async function FaqPage({ params }: { params: Promise<{ locale: st
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'faq' })
 
+  // Fetch parent-intent Q&As authored in Sanity Studio. Empty array when none
+  // are published yet — the section just doesn't render. EN-only filter
+  // happens via the query's $locale parameter (faqsQuery in queries.ts).
+  const sanityFaqs: SanityFaqItem[] =
+    (await sanityClient?.fetch(faqsQuery, { locale }).catch(() => null)) ?? []
+  const parentIntentFaqs = sanityFaqs.filter(
+    (f) => f.category && PARENT_INTENT_CATEGORIES.includes(f.category),
+  )
+
+  // FAQPage JSON-LD: combine Sanity Q&As + the methodology Q&As that have
+  // plain-string answers (the React-bodied ones can't safely flatten to text).
+  const hardcodedTextEntries: Array<{ q: string; a: string }> = []
+  for (const section of SECTIONS) {
+    for (const item of section.items) {
+      if (typeof item.a === 'string') {
+        hardcodedTextEntries.push({
+          q: item.q,
+          a: item.a.replace(/\s+/g, ' ').trim(),
+        })
+      }
+    }
+  }
+
+  const faqLdEntries = [
+    ...parentIntentFaqs.map((f) => ({
+      q: f.question,
+      a: portableToPlain(f.answer).slice(0, 800),
+    })),
+    ...hardcodedTextEntries,
+  ].filter((e) => e.a.length > 20)
+
+  const faqLd = faqLdEntries.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqLdEntries.map((e) => ({
+          '@type': 'Question',
+          name: e.q,
+          acceptedAnswer: { '@type': 'Answer', text: e.a },
+        })),
+      }
+    : null
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
+      {faqLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(faqLd)
+              .replace(/</g, '\\u003c')
+              .replace(/>/g, '\\u003e')
+              .replace(/&/g, '\\u0026'),
+          }}
+        />
+      )}
       <main className="max-w-3xl mx-auto px-4 py-12">
         {/* Header */}
-        <div className="mb-10">
-          <p className="text-xs font-semibold uppercase tracking-widest text-indigo-500 dark:text-indigo-400 mb-2">
+        <div className="mb-10 border-b border-ink pb-6">
+          <p
+            className="text-kicker uppercase font-semibold text-accent mb-2"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
             {t('methodology')}
           </p>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 mb-3">{t('title')}</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed">
+          <h1 className="font-serif text-display-sm md:text-display text-ink mb-3">{t('title')}</h1>
+          <p className="font-serif italic text-muted text-lg leading-relaxed">
             {t('subtitle')}
           </p>
 
           {/* Jump links */}
-          <div className="flex flex-wrap gap-2 mt-5">
+          <div className="flex flex-wrap gap-x-5 gap-y-2 mt-6">
             {SECTIONS.map(s => (
               <a
                 key={s.id}
                 href={`#${s.id}`}
-                className="text-sm px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-slate-600 dark:text-slate-300 hover:border-indigo-300 dark:hover:border-indigo-500 hover:text-indigo-700 dark:hover:text-indigo-400 transition-colors"
+                className="text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors"
+                style={{ fontVariantCaps: 'all-small-caps' }}
               >
                 {t(s.headingKey as Parameters<typeof t>[0])}
               </a>
@@ -518,27 +615,53 @@ export default async function FaqPage({ params }: { params: Promise<{ locale: st
           </div>
         </div>
 
+        {/* Parent-intent Q&As (Sanity-authored) */}
+        {parentIntentFaqs.length > 0 && (
+          <section id="parents-ask" className="mb-12">
+            <h2 className="font-serif text-xl text-ink mb-5 pb-2 border-b border-ink">
+              {t('parentsAskHeading')}
+            </h2>
+            <div className="divide-y divide-rule/60">
+              {parentIntentFaqs.map((f) => (
+                <details key={f._id} className="group py-4 open:pb-5">
+                  <summary className="flex items-start justify-between gap-4 cursor-pointer list-none">
+                    <span className="font-serif text-ink group-open:text-accent transition-colors">
+                      {f.question}
+                    </span>
+                    <span className="shrink-0 mt-0.5 text-muted group-open:rotate-45 transition-transform text-lg leading-none">
+                      +
+                    </span>
+                  </summary>
+                  <div className="mt-3 text-ink/80 leading-relaxed text-sm">
+                    <PortableTextRenderer value={f.answer} />
+                  </div>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Sections */}
         <div className="space-y-12">
           {SECTIONS.map(section => (
             <section key={section.id} id={section.id}>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-5 pb-2 border-b border-slate-200 dark:border-slate-700">
+              <h2 className="font-serif text-xl text-ink mb-5 pb-2 border-b border-ink">
                 {t(section.headingKey as Parameters<typeof t>[0])}
               </h2>
 
               {/* Q&A accordion */}
-              <div className="divide-y divide-slate-100 dark:divide-slate-700/50">
+              <div className="divide-y divide-rule/60">
                 {section.items.map(item => (
                   <details key={item.q} className="group py-4 open:pb-5">
                     <summary className="flex items-start justify-between gap-4 cursor-pointer list-none">
-                      <span className="font-medium text-slate-800 dark:text-slate-100 group-open:text-indigo-600 dark:group-open:text-indigo-400 transition-colors">
+                      <span className="font-serif text-ink group-open:text-accent transition-colors">
                         {item.q}
                       </span>
-                      <span className="shrink-0 mt-0.5 text-slate-400 dark:text-slate-500 group-open:rotate-45 transition-transform text-lg leading-none">
+                      <span className="shrink-0 mt-0.5 text-muted group-open:rotate-45 transition-transform text-lg leading-none">
                         +
                       </span>
                     </summary>
-                    <div className="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed text-sm">
+                    <div className="mt-3 text-ink/80 leading-relaxed text-sm">
                       {item.a}
                     </div>
                   </details>
@@ -546,24 +669,27 @@ export default async function FaqPage({ params }: { params: Promise<{ locale: st
               </div>
 
               {/* Research links */}
-              <div className="mt-5 pt-4 border-t border-dashed border-slate-200 dark:border-slate-700">
-                <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-3">
+              <div className="mt-5 pt-4 border-t border-dashed border-rule">
+                <p
+                  className="text-kicker uppercase font-semibold text-muted mb-3"
+                  style={{ fontVariantCaps: 'all-small-caps' }}
+                >
                   {t('research')}
                 </p>
                 <ul className="space-y-2">
                   {section.research.map(r => (
                     <li key={r.url} className="flex items-start gap-2">
-                      <span className="text-indigo-300 dark:text-indigo-600 mt-0.5 shrink-0">↗</span>
+                      <span className="text-accent mt-0.5 shrink-0">↗</span>
                       <span className="text-sm">
                         <a
                           href={r.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 hover:underline font-medium"
+                          className="text-accent hover:underline font-medium"
                         >
                           {r.label}
                         </a>
-                        <span className="text-slate-400 dark:text-slate-500 ml-1.5">{r.authors}</span>
+                        <span className="text-muted ml-1.5">{r.authors}</span>
                       </span>
                     </li>
                   ))}
@@ -574,23 +700,28 @@ export default async function FaqPage({ params }: { params: Promise<{ locale: st
         </div>
 
         {/* CTA */}
-        <div className="mt-14 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-2xl p-8 text-center">
-          <p className="text-sm font-semibold text-indigo-700 dark:text-indigo-400 uppercase tracking-wide mb-2">
+        <div className="mt-14 border-2 border-ink p-8 text-center">
+          <p
+            className="text-kicker uppercase font-semibold text-accent mb-2"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
             {t('readyToFind')}
           </p>
-          <p className="text-slate-600 dark:text-slate-400 mb-5">
+          <p className="font-serif italic text-ink/80 text-lg mb-5">
             {t('readyToFindSub')}
           </p>
           <div className="flex justify-center gap-3">
             <Link
               href={`/${locale}/browse`}
-              className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors"
+              className="px-5 py-2 bg-ink text-paper text-kicker uppercase font-semibold hover:bg-accent transition-colors"
+              style={{ fontVariantCaps: 'all-small-caps' }}
             >
               {t('browseGames')}
             </Link>
             <Link
               href={`/${locale}/discover`}
-              className="px-5 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-lg border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500 hover:text-indigo-700 dark:hover:text-indigo-400 transition-colors"
+              className="px-5 py-2 text-ink text-kicker uppercase font-semibold border border-rule hover:border-ink hover:text-accent transition-colors"
+              style={{ fontVariantCaps: 'all-small-caps' }}
             >
               {t('getRecommendations')}
             </Link>

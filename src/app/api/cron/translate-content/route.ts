@@ -125,8 +125,12 @@ export async function GET(req: Request) {
   let skipped = 0
   let errors = 0
 
-  // Fetch games that need any translation work — either missing locales or
-  // existing rows flagged as needs_retranslate=true by scripts/audit-translations.ts.
+  // Fetch games that need any translation work — missing locale rows,
+  // rows flagged needs_retranslate, OR rows where a specific field is NULL
+  // while the English source on game_scores is populated. The last case
+  // catches the pattern where a new source field was added after a row was
+  // originally translated; without this clause those fields stay NULL
+  // forever. See feedback_translate_cron_field_gaps for context.
   const pending = await db
     .select({
       gameId:                       games.id,
@@ -150,6 +154,13 @@ export async function GET(req: Request) {
            WHERE gt.game_id = ${games.id}
              AND gt.locale = ANY(ARRAY['sv','de','fr','es'])
              AND gt.needs_retranslate = TRUE)
+        OR EXISTS (SELECT 1 FROM game_translations gt
+           WHERE gt.game_id = ${games.id}
+             AND gt.locale = ANY(ARRAY['sv','de','fr','es'])
+             AND (
+               (gt.executive_summary  IS NULL AND ${gameScores.executiveSummary}            IS NOT NULL)
+               OR (gt.time_rec_reasoning IS NULL AND ${gameScores.timeRecommendationReasoning} IS NOT NULL)
+             ))
       )`
     ))
     .orderBy(gameScores.curascore)
@@ -159,7 +170,12 @@ export async function GET(req: Request) {
 
   const processGame = async (row: typeof pending[number]) => {
     const existing = await db
-      .select({ locale: gameTranslations.locale, needsRetranslate: gameTranslations.needsRetranslate })
+      .select({
+        locale:                      gameTranslations.locale,
+        needsRetranslate:            gameTranslations.needsRetranslate,
+        executiveSummary:            gameTranslations.executiveSummary,
+        timeRecommendationReasoning: gameTranslations.timeRecommendationReasoning,
+      })
       .from(gameTranslations)
       .where(and(
         eq(gameTranslations.gameId, row.gameId),
@@ -171,7 +187,20 @@ export async function GET(req: Request) {
       .filter(r => r.needsRetranslate && LOCALES.includes(r.locale as Locale))
       .map(r => r.locale as Locale)
 
-    const targets = Array.from(new Set([...missing, ...retranslate]))
+    // Field-gap detection: a translation row exists but a specific field is
+    // NULL while the English source on game_scores has it. Treat as
+    // retranslate so the next pass fills in the gap. Without this, fields
+    // added after a row was first translated stay NULL forever.
+    const fieldGap: Locale[] = existing
+      .filter(r => LOCALES.includes(r.locale as Locale) && !r.needsRetranslate)
+      .filter(r =>
+        (r.executiveSummary === null            && row.executiveSummary !== null) ||
+        (r.timeRecommendationReasoning === null && row.timeRecommendationReasoning !== null)
+      )
+      .map(r => r.locale as Locale)
+
+    const retranslateAll = Array.from(new Set([...retranslate, ...fieldGap]))
+    const targets        = Array.from(new Set([...missing, ...retranslateAll]))
     if (targets.length === 0) { skipped++; return }
 
     let content: TranslatableContent = {
@@ -211,7 +240,7 @@ export async function GET(req: Request) {
           .set({ needsRetranslate: false, auditedAt: new Date() })
           .where(and(
             eq(gameTranslations.gameId, row.gameId),
-            sql`${gameTranslations.locale} = ANY(${retranslate})`,
+            sql`${gameTranslations.locale} = ANY(${retranslateAll})`,
           ))
       }
       skipped += targets.length
@@ -219,8 +248,9 @@ export async function GET(req: Request) {
     }
 
     const label = [
-      missing.length     ? `new ${missing.join(',')}` : null,
-      retranslate.length ? `retry ${retranslate.join(',')}` : null,
+      missing.length        ? `new ${missing.join(',')}`        : null,
+      retranslate.length    ? `retry ${retranslate.join(',')}`  : null,
+      fieldGap.length       ? `gap ${fieldGap.join(',')}`       : null,
     ].filter(Boolean).join(' | ')
     const dntTerms = [row.title, row.developer, row.publisher]
       .filter((s): s is string => !!s && s.trim().length > 0)
@@ -231,7 +261,7 @@ export async function GET(req: Request) {
     for (const locale of targets) {
       const result = results[locale]
       if (!result) { errors++; continue }
-      const isRetranslate = retranslate.includes(locale)
+      const isRetranslate = retranslateAll.includes(locale)
       if (isRetranslate) {
         await db.update(gameTranslations)
           .set({

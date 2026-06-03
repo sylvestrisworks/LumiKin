@@ -35,40 +35,40 @@ export default function CookieNotice() {
         transition-all duration-400 ease-in-out
         ${leaving ? 'opacity-0 translate-y-6' : 'opacity-100 translate-y-0'}`}
     >
-      <div className="relative bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden">
+      <div className="relative bg-paper border-2 border-ink shadow-xl overflow-hidden">
 
-        {/* XP bar accent at top */}
-        <div className="h-1 w-full bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500" />
+        {/* accent rule at top */}
+        <div className="h-1 w-full bg-accent" />
 
         <div className="px-4 pt-3 pb-4 space-y-2">
 
           {/* Header */}
           <div className="flex items-center gap-2">
             <span className="text-lg leading-none select-none" aria-hidden="true">🍪</span>
-            <p className="text-sm font-black text-slate-900 dark:text-white tracking-tight">
+            <p className="font-serif text-base text-ink tracking-tight">
               {t('title')}
             </p>
           </div>
 
           {/* Body */}
-          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+          <p className="text-xs text-muted leading-relaxed">
             {t.rich('body', {
-              bold: (chunks) => <span className="font-semibold text-slate-700 dark:text-slate-300">{chunks}</span>,
+              bold: (chunks) => <span className="font-semibold text-ink">{chunks}</span>,
             })}
           </p>
 
           {/* Stats row */}
-          <div className="flex gap-3 text-[10px] font-semibold text-slate-400 dark:text-slate-500">
+          <div className="flex gap-3 text-[10px] font-semibold text-muted">
             <span className="flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+              <span className="w-1.5 h-1.5 rounded-full bg-ivy inline-block" />
               {t('statSession')}
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 inline-block" />
+              <span className="w-1.5 h-1.5 rounded-full bg-warm inline-block" />
               {t('statAnalytics')}
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600 inline-block" />
+              <span className="w-1.5 h-1.5 rounded-full bg-rule inline-block" />
               {t('statAds')}
             </span>
           </div>
@@ -76,7 +76,8 @@ export default function CookieNotice() {
           {/* Action */}
           <button
             onClick={dismiss}
-            className="w-full mt-1 py-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-black rounded-xl transition-all"
+            className="w-full mt-1 py-2 bg-ink hover:bg-accent active:scale-95 text-paper text-kicker uppercase font-semibold transition-all"
+            style={{ fontVariantCaps: 'all-small-caps' }}
           >
             {t('accept')}
           </button>

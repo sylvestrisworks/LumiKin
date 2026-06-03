@@ -8,16 +8,15 @@ import { BookOpen } from 'lucide-react'
 
 export const revalidate = 3600
 
-export const metadata: Metadata = {
-  title: 'Parental Guides — Screen Time, Game Safety & More | LumiKin',
-  description: 'In-depth guides for parents on screen time limits, game safety, age-appropriate gaming, and building healthy habits around video games.',
-}
-
-const CATEGORY_COLORS: Record<string, string> = {
-  'screen-time':    'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
-  'game-safety':    'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
-  'age-guide':      'bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300',
-  'parenting-tips': 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'guides' })
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  return {
+    title:       t('metaTitle' as any),
+    description: t('metaDescription' as any),
+  }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 }
 
 type LearnT = Awaited<ReturnType<typeof getTranslations<'learn'>>>
@@ -55,54 +54,60 @@ export default async function GuidesPage() {
     .catch(() => []) ?? []
 
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <main className="min-h-screen bg-paper text-ink">
       <div className="max-w-5xl mx-auto px-4 py-12">
 
-        <div className="mb-8">
-          <nav className="text-xs text-slate-400 dark:text-slate-500 mb-3">
-            <Link href={`/${locale}/learn`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">{t('breadcrumbLearn')}</Link>
+        <div className="mb-10 border-b border-ink pb-6">
+          <nav
+            className="text-kicker uppercase text-muted mb-3"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
+            <Link href={`/${locale}/learn`} className="hover:text-accent transition-colors">{t('breadcrumbLearn')}</Link>
             {' / '}
             <span>{t('breadcrumbCurrent')}</span>
           </nav>
-          <h1 className="text-3xl font-black text-slate-900 dark:text-white">{t('title')}</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">{t('subtitle')}</p>
+          <h1 className="font-serif text-display-sm md:text-display text-ink">{t('title')}</h1>
+          <p className="font-serif italic text-muted mt-2">{t('subtitle')}</p>
         </div>
 
         {guides.length === 0 ? (
-          <div className="text-center py-24 text-slate-400 dark:text-slate-600">
+          <div className="text-center py-24 text-muted">
             <BookOpen size={40} className="mx-auto mb-3 opacity-40" />
-            <p className="font-medium">{t('comingSoon')}</p>
+            <p className="font-serif italic">{t('comingSoon')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {guides.map((guide) => (
-              <Link key={guide._id} href={`/${locale}/guides/${guide.slug.current}`} className="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-700 transition-all">
+              <Link key={guide._id} href={`/${locale}/guides/${guide.slug.current}`} className="group block">
                 {guide.coverImage?.asset ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={urlFor(guide.coverImage)!.width(600).height(300).auto('format').url()}
                     alt={guide.coverImage.alt ?? guide.title}
-                    className="w-full h-40 object-cover"
+                    className="w-full h-40 object-cover mb-3"
                   />
                 ) : (
-                  <div className="w-full h-40 bg-gradient-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/40 dark:to-violet-900/40 flex items-center justify-center">
-                    <BookOpen size={28} className="text-indigo-300 dark:text-indigo-700" />
+                  <div className="w-full h-40 bg-rule/40 flex items-center justify-center mb-3">
+                    <BookOpen size={28} className="text-rule" />
                   </div>
                 )}
-                <div className="p-5">
+                <div>
                   {guide.category && (
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full inline-block mb-2 ${CATEGORY_COLORS[guide.category] ?? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400'}`}>
+                    <span
+                      className="text-kicker uppercase font-semibold text-accent inline-block mb-2"
+                      style={{ fontVariantCaps: 'all-small-caps' }}
+                    >
                       {CATEGORY_KEY[guide.category] ? tLearn(CATEGORY_KEY[guide.category]) : guide.category}
                     </span>
                   )}
-                  <h2 className="font-bold text-slate-900 dark:text-white leading-snug group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">
+                  <h2 className="font-serif text-lg text-ink leading-snug group-hover:text-accent transition-colors">
                     {guide.title}
                   </h2>
                   {guide.excerpt && (
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 line-clamp-2">{guide.excerpt}</p>
+                    <p className="text-sm text-muted mt-2 line-clamp-2">{guide.excerpt}</p>
                   )}
                   {guide.publishedAt && (
-                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-3">{formatDate(guide.publishedAt)}</p>
+                    <p className="text-kicker uppercase text-muted mt-3" style={{ fontVariantCaps: 'all-small-caps' }}>{formatDate(guide.publishedAt)}</p>
                   )}
                 </div>
               </Link>

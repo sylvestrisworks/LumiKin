@@ -1,11 +1,12 @@
 export const revalidate = 3600
 
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import { eq, and } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { games, gameScores, reviews, darkPatterns, complianceStatus, userGames, childProfiles, gameTranslations } from '@/lib/db/schema'
-import GameCard from '@/components/GameCard'
+import { games, gameScores, reviews, darkPatterns, complianceStatus, userGames, childProfiles, gameTranslations, slugRedirects } from '@/lib/db/schema'
+import GameCard from '@/components/GameCardEditorial'
+import GameFAQ from '@/components/GameFAQ'
 import { RelatedGameCard } from '@/components/RelatedGameCard'
 import { GitCompareArrows } from 'lucide-react'
 import { fetchRelatedGames } from '@/lib/related-games'
@@ -291,7 +292,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default async function GamePage({ params }: Props) {
-  const { slug } = await params
+  const { slug, locale: routeLocale } = await params
   const [data, session, t, tGC, locale] = await Promise.all([
     fetchGameData(slug),
     auth(),
@@ -299,9 +300,26 @@ export default async function GamePage({ params }: Props) {
     getTranslations('gameCard'),
     getLocale(),
   ])
-  if (!data) notFound()
+  if (!data) {
+    // Consolidated-duplicate redirect: if this slug was merged into another
+    // game during the DLC/edition cleanup, 301 to the canonical slug.
+    try {
+      const [r] = await db
+        .select({ toSlug: slugRedirects.toSlug })
+        .from(slugRedirects)
+        .where(eq(slugRedirects.fromSlug, slug))
+        .limit(1)
+      if (r?.toSlug) permanentRedirect(`/${routeLocale}/game/${r.toSlug}`)
+    } catch {
+      // table missing or query failed — fall through to 404
+    }
+    notFound()
+  }
 
-  // Overlay translated narrative content when locale is not English
+  // Overlay translated narrative content when locale is not English. Per-field
+  // gap policy: a NULL field in the translation row means the cron hasn't
+  // backfilled it yet — null out the English source instead of leaking it. The
+  // UI renderers already gate on null, so missing fields disappear quietly.
   if (locale !== 'en' && data.game.id) {
     try {
       const [tx] = await db
@@ -310,13 +328,34 @@ export default async function GamePage({ params }: Props) {
         .where(and(eq(gameTranslations.gameId, data.game.id), eq(gameTranslations.locale, locale)))
         .limit(1)
       if (tx) {
-        if (tx.executiveSummary            && data.scores) data.scores = { ...data.scores, executiveSummary: tx.executiveSummary }
-        if (tx.timeRecommendationReasoning && data.scores) data.scores = { ...data.scores, timeRecommendationReasoning: tx.timeRecommendationReasoning }
-        if (tx.benefitsNarrative           && data.review)  data.review = { ...data.review, benefitsNarrative: tx.benefitsNarrative }
-        if (tx.risksNarrative              && data.review)  data.review = { ...data.review, risksNarrative: tx.risksNarrative }
-        if (tx.parentTip                   && data.review)  data.review = { ...data.review, parentTip: tx.parentTip }
-        if (tx.parentTipBenefits           && data.review)  data.review = { ...data.review, parentTipBenefits: tx.parentTipBenefits }
-        if (tx.bechdelNotes                && data.review)  data.review = { ...data.review, bechdelNotes: tx.bechdelNotes }
+        if (data.scores) data.scores = {
+          ...data.scores,
+          executiveSummary:            tx.executiveSummary,
+          timeRecommendationReasoning: tx.timeRecommendationReasoning,
+        }
+        if (data.review) data.review = {
+          ...data.review,
+          benefitsNarrative: tx.benefitsNarrative,
+          risksNarrative:    tx.risksNarrative,
+          parentTip:         tx.parentTip,
+          parentTipBenefits: tx.parentTipBenefits,
+          bechdelNotes:      tx.bechdelNotes,
+        }
+      } else {
+        // No translation row at all — hide translatable narrative fields.
+        if (data.scores) data.scores = {
+          ...data.scores,
+          executiveSummary:            null,
+          timeRecommendationReasoning: null,
+        }
+        if (data.review) data.review = {
+          ...data.review,
+          benefitsNarrative: null,
+          risksNarrative:    null,
+          parentTip:         null,
+          parentTipBenefits: null,
+          bechdelNotes:      null,
+        }
       }
     } catch {
       // game_translations table not yet migrated — skip silently
@@ -441,54 +480,10 @@ export default async function GamePage({ params }: Props) {
     url: `${SITE_URL}/en/game/${game.slug}`,
   } : null
 
-  // FAQ schema only emits on /en/* and when a LumiScore exists. Localized
-  // FAQ Q&A pairs are deferred to Phase E (translation audit).
-  const verdictText =
-      scores?.curascore == null                ? null
-    : scores.curascore >= 70                    ? 'It scores well on developmental benefits with manageable risks.'
-    : scores.curascore >= 50                    ? 'It offers solid benefits but needs parental guidance on the risks.'
-    : scores.curascore >= 35                    ? 'There are notable risks worth knowing before letting kids play.'
-    :                                             'Significant risks make this hard to recommend for younger players.'
-  const ageRatingLine = [game.esrbRating, game.pegiRating].filter(Boolean).join(' · ')
-
-  const faqLd = locale === 'en' && scores?.curascore != null ? {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: `Is ${game.title} safe for kids?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `LumiKin gives ${game.title} a LumiScore of ${scores.curascore}/100${scores.recommendedMinAge != null ? `, recommended for ages ${scores.recommendedMinAge} and up` : ''}. ${verdictText}`,
-        },
-      },
-      ...(scores.recommendedMinAge != null ? [{
-        '@type': 'Question',
-        name: `What age is ${game.title} appropriate for?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `LumiKin's rubric recommends a minimum age of ${scores.recommendedMinAge}+ for ${game.title}${ageRatingLine ? ` (${ageRatingLine})` : ''}, based on benefits, risks, and content review.`,
-        },
-      }] : []),
-      ...(scores.timeRecommendationLabel ? [{
-        '@type': 'Question',
-        name: `How long should kids play ${game.title}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `LumiKin's recommended play time for ${game.title} is ${scores.timeRecommendationLabel}, calibrated to the game's dopamine, monetization, and social-pressure profile.`,
-        },
-      }] : []),
-      ...(data.review?.risksNarrative ? [{
-        '@type': 'Question',
-        name: `What are the main risks of ${game.title}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: data.review.risksNarrative.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 400),
-        },
-      }] : []),
-    ],
-  } : null
+  // Per-game FAQ block (visible Q&A + FAQPage JSON-LD) is rendered by
+  // <GameFAQ /> below — locale-aware, uses translated risksNarrative when
+  // game_translations has overlaid it. Emits on every locale.
+  const ageRatingLine = [game.esrbRating, game.pegiRating].filter(Boolean).join(' · ') || null
 
   return (
     <>
@@ -507,38 +502,35 @@ export default async function GamePage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
         />
       )}
-      {faqLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
-        />
-      )}
 
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <div className="min-h-screen bg-paper text-ink">
         <main className="max-w-2xl lg:max-w-5xl mx-auto px-4 py-6">
 
           {/* Breadcrumb */}
-          <nav className="mb-4 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
-            <a href={`/${locale}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+          <nav
+            className="mb-6 flex items-center gap-1.5 text-kicker uppercase text-muted"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
+            <a href={`/${locale}`} className="hover:text-accent transition-colors">
               {t('navHome')}
             </a>
-            <span aria-hidden>/</span>
-            <a href={`/${locale}/browse`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+            <span aria-hidden className="text-rule">/</span>
+            <a href={`/${locale}/browse`} className="hover:text-accent transition-colors">
               {t('navBrowse')}
             </a>
-            <span aria-hidden>/</span>
+            <span aria-hidden className="text-rule">/</span>
             {canonicalPlatform && (
               <>
                 <a
                   href={`/${locale}/platform/${canonicalPlatform.slug}`}
-                  className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded"
+                  className="hover:text-accent transition-colors"
                 >
                   {canonicalPlatform.label}
                 </a>
-                <span aria-hidden>/</span>
+                <span aria-hidden className="text-rule">/</span>
               </>
             )}
-            <span className="text-slate-700 dark:text-slate-200 truncate">{data.game.title}</span>
+            <span className="text-ink truncate">{data.game.title}</span>
           </nav>
 
           <div className="lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
@@ -546,6 +538,21 @@ export default async function GamePage({ params }: Props) {
             {/* ── Left column: the game card ─────────────────────────────────── */}
             <div className="lg:col-span-8 min-w-0">
               <GameCard {...data} userProfiles={userProfiles} />
+
+              {/* Parent-intent FAQ — visible + FAQPage JSON-LD, all locales */}
+              {scores?.curascore != null && (
+                <div className="mt-4">
+                  <GameFAQ
+                    title={game.title}
+                    score={scores.curascore}
+                    recommendedMinAge={scores.recommendedMinAge ?? null}
+                    timeRecommendationLabel={scores.timeRecommendationLabel ?? null}
+                    risksNarrative={data.review?.risksNarrative ?? null}
+                    ageRatingLine={ageRatingLine}
+                    locale={locale}
+                  />
+                </div>
+              )}
             </div>
 
             {/* ── Right rail: supporting actions + context ───────────────────── */}
@@ -563,7 +570,8 @@ export default async function GamePage({ params }: Props) {
                 <div className="flex items-center gap-2">
                   <a
                     href={`/${locale}/compare?a=${game.slug}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600 hover:text-indigo-700 dark:hover:text-indigo-400 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 text-kicker uppercase font-semibold text-ink border border-rule hover:border-ink hover:text-accent transition-colors"
+                    style={{ fontVariantCaps: 'all-small-caps' }}
                   >
                     <GitCompareArrows size={15} strokeWidth={2.5} aria-hidden />
                     {tGC('compareThis')}
@@ -575,11 +583,11 @@ export default async function GamePage({ params }: Props) {
               {/* Parent Tips */}
               {game.id && (
                 <Suspense fallback={
-                  <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
-                    <div className="h-4 w-24 bg-slate-100 dark:bg-slate-700 rounded animate-pulse mb-3" />
+                  <div className="border-t border-ink pt-4">
+                    <div className="h-3 w-24 bg-rule/40 animate-pulse mb-3" />
                     <div className="space-y-2">
-                      <div className="h-3 bg-slate-100 dark:bg-slate-700 rounded animate-pulse" />
-                      <div className="h-3 w-3/4 bg-slate-100 dark:bg-slate-700 rounded animate-pulse" />
+                      <div className="h-3 bg-rule/30 animate-pulse" />
+                      <div className="h-3 w-3/4 bg-rule/30 animate-pulse" />
                     </div>
                   </div>
                 }>
@@ -593,22 +601,28 @@ export default async function GamePage({ params }: Props) {
                 const sentences = plain.match(/[^.!?]+[.!?]+/g) ?? []
                 const excerpt = sentences.slice(0, 2).join(' ').trim() || plain.slice(0, 220)
                 return (
-                  <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
-                    <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">
+                  <div className="border-t border-ink pt-4">
+                    <h2
+                      className="text-kicker uppercase font-semibold text-muted mb-2"
+                      style={{ fontVariantCaps: 'all-small-caps' }}
+                    >
                       {t('aboutThisGame')}
                     </h2>
-                    <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{excerpt}</p>
+                    <p className="text-sm text-ink/80 leading-relaxed">{excerpt}</p>
                   </div>
                 )
               })()}
 
               {/* Explore more */}
               {relatedGames.length > 0 && (
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
-                  <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">
-                    Explore more
+                <div className="border-t border-ink pt-4">
+                  <h2
+                    className="text-kicker uppercase font-semibold text-muted mb-2"
+                    style={{ fontVariantCaps: 'all-small-caps' }}
+                  >
+                    {tGC('exploreMore')}
                   </h2>
-                  <div className="divide-y divide-slate-100 dark:divide-slate-700">
+                  <div className="divide-y divide-rule/50">
                     {relatedGames.map(g => (
                       <RelatedGameCard key={g.slug} game={g} />
                     ))}

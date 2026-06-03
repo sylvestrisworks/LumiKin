@@ -41,10 +41,10 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
   }
 
   return (
-    <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-50">
+    <header className="bg-paper text-ink border-b border-ink sticky top-0 z-50">
 
       {/* ── Main row ───────────────────────────────────────────────────────── */}
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-3">
+      <div className="max-w-7xl mx-auto px-8 h-14 flex items-center gap-4">
 
         {/* Logo */}
         <a
@@ -56,18 +56,18 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
           <img
             src="/lumikin-logo.svg"
             alt="LumiKin"
-            height={32}
-            width={131}
+            height={28}
+            width={115}
             className="dark:hidden"
-            style={{ height: 32, width: 'auto' }}
+            style={{ height: 28, width: 'auto' }}
           />
           <img
             src="/lumikin-logo-dark.svg"
             alt="LumiKin"
-            height={32}
-            width={131}
+            height={28}
+            width={115}
             className="hidden dark:block"
-            style={{ height: 32, width: 'auto' }}
+            style={{ height: 28, width: 'auto' }}
           />
         </a>
 
@@ -76,24 +76,24 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
           {collapseNavSearch ? (
             <button
               onClick={focusHeroSearch}
-              className="flex items-center justify-center w-10 h-10 rounded-xl text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+              className="flex items-center justify-center w-10 h-10 text-muted hover:text-accent hover:bg-ink/[0.04] transition-colors"
               aria-label={t('search')}
             >
-              <Search size={20} />
+              <Search size={18} />
             </button>
           ) : (
-            <SearchBar placeholder={t('discover') + '…'} />
+            <SearchBar placeholder={t('discover') + '…'} variant="editorial" />
           )}
         </div>
 
         {/* Desktop nav links */}
-        <nav className="hidden sm:flex items-center gap-5 text-sm font-medium text-slate-600 dark:text-slate-300 ml-auto shrink-0">
+        <nav className="hidden sm:flex items-center gap-6 text-kicker uppercase font-semibold ml-auto shrink-0">
           {NAV_LINKS.map(l => (
-            <a key={l.href} href={l.href}
-              className={l.prominent
-                ? 'text-indigo-700 dark:text-indigo-400 font-semibold hover:text-indigo-900 dark:hover:text-indigo-200 transition-colors'
-                : 'hover:text-indigo-700 dark:hover:text-indigo-400 transition-colors'
-              }
+            <a
+              key={l.href}
+              href={l.href}
+              className={(l.prominent ? 'text-accent ' : 'text-ink ') + 'hover:text-accent transition-colors'}
+              style={{ fontVariantCaps: 'all-small-caps' }}
             >
               {l.label}
             </a>
@@ -106,7 +106,7 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
 
         {/* Mobile hamburger */}
         <button
-          className="sm:hidden ml-auto p-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          className="sm:hidden ml-auto p-2.5 text-muted hover:text-ink hover:bg-ink/[0.04] transition-colors"
           onClick={() => setMenuOpen(o => !o)}
           aria-label={menuOpen ? t('closeMenu') : t('openMenu')}
         >
@@ -116,24 +116,28 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
 
       {/* ── Mobile search row ──────────────────────────────────────────────── */}
       <div className="sm:hidden px-4 pb-3">
-        <SearchBar placeholder={t('discover') + '…'} />
+        <SearchBar placeholder={t('discover') + '…'} variant="editorial" />
       </div>
 
       {/* ── Mobile nav dropdown ────────────────────────────────────────────── */}
       {menuOpen && (
-        <nav className="sm:hidden border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900">
+        <nav className="sm:hidden border-t border-ink/30 bg-paper">
           {NAV_LINKS.map(l => (
             <a
               key={l.href}
               href={l.href}
               onClick={() => setMenuOpen(false)}
-              className="flex items-center px-4 py-4 text-sm font-medium text-slate-700 dark:text-slate-300
-                hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-700 dark:hover:text-indigo-400 border-b border-slate-100 dark:border-slate-700 last:border-0 transition-colors"
+              className={
+                'flex items-center px-4 py-4 text-kicker uppercase font-semibold ' +
+                (l.prominent ? 'text-accent ' : 'text-ink ') +
+                'hover:bg-ink/[0.04] hover:text-accent border-b border-ink/20 last:border-0 transition-colors'
+              }
+              style={{ fontVariantCaps: 'all-small-caps' }}
             >
               {l.label}
             </a>
           ))}
-          <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between gap-4">
+          <div className="px-4 py-3 border-t border-ink/30 flex items-center justify-between gap-4">
             <LanguageSwitcher />
             <ThemeToggle />
             {notifSlot}

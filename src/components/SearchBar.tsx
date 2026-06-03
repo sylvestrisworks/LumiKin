@@ -6,13 +6,16 @@ import { useTranslations, useLocale } from 'next-intl'
 import type { GameSummary } from '@/types/game'
 
 type SearchResult = GameSummary & { resultType?: 'game' | 'experience' }
-import { esrbToAge, ageBadgeColor } from '@/lib/ui'
+import { esrbToAge, curascoreTextEditorial } from '@/lib/ui'
 import { localizeGenre } from '@/lib/i18n/genres'
 
 function esrbBadge(rating: string | null) {
   if (!rating) return null
   return (
-    <span className={`text-xs font-black px-1.5 py-0.5 rounded-full text-white ${ageBadgeColor(rating)}`}>
+    <span
+      className="text-kicker uppercase font-semibold text-muted border border-rule px-1.5 py-0.5"
+      style={{ fontVariantCaps: 'all-small-caps' }}
+    >
       {esrbToAge(rating)}
     </span>
   )
@@ -20,8 +23,7 @@ function esrbBadge(rating: string | null) {
 
 function curascoreChip(score: number | null | undefined) {
   if (score == null) return null
-  const bg = score >= 70 ? 'bg-emerald-100 text-emerald-700' : score >= 40 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'
-  return <span className={`text-xs font-black px-1.5 py-0.5 rounded-full ${bg}`}>{score}</span>
+  return <span className={`font-serif text-sm font-semibold tabular-nums ${curascoreTextEditorial(score)}`}>{score}</span>
 }
 
 // Split "The Legend of Zelda: Breath of the Wild" → ["The Legend of Zelda", "Breath of the Wild"]

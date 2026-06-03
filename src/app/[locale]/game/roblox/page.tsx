@@ -6,7 +6,7 @@ import { db } from '@/lib/db'
 import { platformExperiences, experienceScores, games, gameScores } from '@/lib/db/schema'
 import { eq, desc, and, lte, ilike, isNotNull, type SQL } from 'drizzle-orm'
 import ExperienceCard, { type ExperienceSummary } from '@/components/ExperienceCard'
-import { curascoreText } from '@/lib/ui'
+import { curascoreTextEditorial } from '@/lib/ui'
 import RobloxFilters, { type RobloxFilterState } from '@/components/RobloxFilters'
 import { getTranslations } from 'next-intl/server'
 
@@ -110,7 +110,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                 <span className="text-[11px] font-semibold bg-red-500/25 text-red-200 border border-red-400/30 px-2 py-0.5 rounded-full tracking-wide uppercase">{t('platformBadge')}</span>
                 {platformScore?.curascore != null && (
-                  <span className={`text-[11px] font-bold bg-white/10 border border-white/20 px-2 py-0.5 rounded-full ${curascoreText(platformScore.curascore)}`}>
+                  <span className={`text-[11px] font-bold bg-white/10 border border-white/20 px-2 py-0.5 rounded-full ${curascoreTextEditorial(platformScore.curascore)}`}>
                     LumiScore {platformScore.curascore}
                   </span>
                 )}

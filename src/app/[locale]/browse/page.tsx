@@ -675,7 +675,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                       Object.entries(sp as Record<string, string>)
                         .filter(([k]) => k !== 'child' && k !== 'page')
                     ).toString()}`}
-                    className={`text-xs px-3 py-1.5 font-medium border transition-colors ${
+                    className={`text-xs px-3 min-h-[44px] inline-flex items-center font-medium border transition-colors ${
                       !selectedChild
                         ? 'bg-ink border-ink text-paper'
                         : 'border-rule text-ink hover:border-ink hover:text-accent'
@@ -694,7 +694,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                       <a
                         key={p.id}
                         href={`/${locale}/browse?${params.toString()}`}
-                        className={`text-xs px-3 py-1.5 font-medium border transition-colors ${
+                        className={`text-xs px-3 min-h-[44px] inline-flex items-center font-medium border transition-colors ${
                           selectedChild?.id === p.id
                             ? 'bg-accent border-accent text-paper'
                             : 'border-rule text-ink hover:border-ink hover:text-accent'
@@ -776,7 +776,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                     Object.entries(sp as Record<string, string>)
                       .filter(([k]) => k !== 'child' && k !== 'page')
                   ).toString()}`}
-                  className={`text-xs px-3 py-1.5 font-medium border transition-colors ${
+                  className={`text-xs px-3 min-h-[44px] inline-flex items-center font-medium border transition-colors ${
                     !selectedChild
                       ? 'bg-ink border-ink text-paper'
                       : 'border-rule text-ink hover:border-ink hover:text-accent'
@@ -795,7 +795,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                     <a
                       key={p.id}
                       href={`/${locale}/browse?${childParams.toString()}`}
-                      className={`text-xs px-3 py-1.5 font-medium border transition-colors ${
+                      className={`text-xs px-3 min-h-[44px] inline-flex items-center font-medium border transition-colors ${
                         selectedChild?.id === p.id
                           ? 'bg-accent border-accent text-paper'
                           : 'border-rule text-ink hover:border-ink hover:text-accent'
@@ -958,7 +958,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                 {currentPage > 1 && (
                   <Link
                     href={pageUrl(filters, currentPage - 1, locale, childIdParam ?? undefined)}
-                    className="px-3 sm:px-4 py-2 text-kicker uppercase font-semibold text-ink border border-rule hover:border-ink hover:text-accent transition-colors"
+                    className="px-3 sm:px-4 min-h-[44px] inline-flex items-center text-kicker uppercase font-semibold text-ink border border-rule hover:border-ink hover:text-accent transition-colors"
                     style={{ fontVariantCaps: 'all-small-caps' }}
                   >
                     ← {t('prevPage')}
@@ -979,7 +979,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                       <Link
                         key={p}
                         href={pageUrl(filters, p as number, locale, childIdParam ?? undefined)}
-                        className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-xs sm:text-sm font-semibold border transition-colors ${
+                        className={`w-11 h-11 flex items-center justify-center text-xs sm:text-sm font-semibold border transition-colors ${
                           p === currentPage
                             ? 'bg-ink border-ink text-paper'
                             : 'border-rule text-ink hover:border-ink hover:text-accent'
@@ -994,7 +994,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                 {currentPage < totalPages && (
                   <Link
                     href={pageUrl(filters, currentPage + 1, locale, childIdParam ?? undefined)}
-                    className="px-3 sm:px-4 py-2 text-kicker uppercase font-semibold text-ink border border-rule hover:border-ink hover:text-accent transition-colors"
+                    className="px-3 sm:px-4 min-h-[44px] inline-flex items-center text-kicker uppercase font-semibold text-ink border border-rule hover:border-ink hover:text-accent transition-colors"
                     style={{ fontVariantCaps: 'all-small-caps' }}
                   >
                     {t('nextPage')} →

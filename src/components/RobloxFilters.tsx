@@ -20,7 +20,7 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 text-xs font-semibold px-3 py-1.5 border transition-colors ${
+      className={`shrink-0 text-xs font-semibold px-3 min-h-[44px] inline-flex items-center border transition-colors ${
         active
           ? 'bg-ink text-paper border-ink'
           : 'text-ink border-rule hover:border-ink hover:text-accent'

@@ -95,7 +95,7 @@ export default function NotificationsPage() {
                   <p className="text-xs text-muted mt-0.5 leading-relaxed">
                     {n.body}
                   </p>
-                  <p className="text-[10px] text-rule mt-1">
+                  <p className="text-[10px] text-muted mt-1">
                     {timeAgo(n.createdAt)}
                   </p>
                 </div>

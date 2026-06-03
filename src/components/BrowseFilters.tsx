@@ -641,7 +641,7 @@ function InlineChip({
   return (
     <button
       onClick={onClick}
-      className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors min-h-[32px] whitespace-nowrap ${
+      className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors min-h-[44px] inline-flex items-center whitespace-nowrap ${
         active
           ? 'bg-ink text-paper border-ink'
           : 'bg-paper text-ink/80 border-rule hover:border-ink hover:text-accent'

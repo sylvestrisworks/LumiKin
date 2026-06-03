@@ -41,7 +41,7 @@ function PlatformPickerInner({ current }: { current: string[] }) {
           <button
             key={p.value}
             onClick={() => toggle(p.value)}
-            className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold border transition-all ${
+            className={`shrink-0 flex items-center gap-1.5 px-3 min-h-[44px] text-sm font-semibold border transition-all ${
               active
                 ? 'bg-ink text-paper border-ink'
                 : 'text-ink border-rule hover:border-ink hover:text-accent'

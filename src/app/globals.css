@@ -14,7 +14,7 @@
   --muted:   92  84  74;
   --accent: 200  16  46;
   --ivy:     31 107  58;
-  --warm:   184 112  42;
+  --warm:   148  89  28; /* darkened from 184 112 42 → ~5:1 on paper (was 3.5:1, failed AA) */
 }
 .evening {
   --paper:   20  17  15;

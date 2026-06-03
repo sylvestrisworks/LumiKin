@@ -266,7 +266,7 @@ export default async function LibraryPage({
               <span className="text-kicker uppercase text-muted w-14 shrink-0" style={{ fontVariantCaps: 'all-small-caps' }}>View for:</span>
               <a
                 href={libUrl({ child: null })}
-                className={`text-xs px-3 py-1.5 font-medium border transition-colors ${
+                className={`text-xs px-3 min-h-[44px] inline-flex items-center font-medium border transition-colors ${
                   !selectedChild
                     ? 'bg-ink border-ink text-paper'
                     : 'border-rule text-ink hover:border-ink hover:text-accent'
@@ -281,7 +281,7 @@ export default async function LibraryPage({
                   <a
                     key={p.id}
                     href={libUrl({ child: p.id })}
-                    className={`text-xs px-3 py-1.5 font-medium border transition-colors ${
+                    className={`text-xs px-3 min-h-[44px] inline-flex items-center font-medium border transition-colors ${
                       isActive
                         ? 'bg-accent border-accent text-paper'
                         : 'border-rule text-ink hover:border-ink hover:text-accent'
@@ -301,7 +301,7 @@ export default async function LibraryPage({
               <a
                 key={s}
                 href={libUrl({ sort: s })}
-                className={`text-xs px-3 py-1.5 font-medium border transition-colors ${
+                className={`text-xs px-3 min-h-[44px] inline-flex items-center font-medium border transition-colors ${
                   sortKey === s
                     ? 'bg-accent border-accent text-paper'
                     : 'border-rule text-ink hover:border-ink hover:text-accent'

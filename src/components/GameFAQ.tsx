@@ -98,29 +98,30 @@ export default async function GameFAQ(props: GameFAQProps) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson }} />
       <section
         aria-labelledby="game-faq-heading"
-        className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-5"
+        className="border-t border-ink pt-4"
       >
         <h2
           id="game-faq-heading"
-          className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3"
+          className="text-kicker uppercase font-semibold text-muted mb-3"
+          style={{ fontVariantCaps: 'all-small-caps' }}
         >
           {t('heading')}
         </h2>
-        <div className="divide-y divide-slate-100 dark:divide-slate-700/50">
+        <div className="divide-y divide-rule/60">
           {qa.map(({ q, a }, i) => (
             <details key={q} className="group py-3 open:pb-4" open={i === 0}>
               <summary className="flex items-start justify-between gap-3 cursor-pointer list-none">
-                <span className="font-medium text-sm text-slate-800 dark:text-slate-100 group-open:text-indigo-600 dark:group-open:text-indigo-400 transition-colors">
+                <span className="font-serif text-sm text-ink group-open:text-accent transition-colors">
                   {q}
                 </span>
                 <span
                   aria-hidden
-                  className="shrink-0 mt-0.5 text-slate-400 dark:text-slate-500 group-open:rotate-45 transition-transform text-lg leading-none"
+                  className="shrink-0 mt-0.5 text-muted group-open:rotate-45 transition-transform text-lg leading-none"
                 >
                   +
                 </span>
               </summary>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{a}</p>
+              <p className="mt-2 text-sm text-ink/80 leading-relaxed">{a}</p>
             </details>
           ))}
         </div>

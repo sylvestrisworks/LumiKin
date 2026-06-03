@@ -94,7 +94,7 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
   const [stats, recentScores] = await Promise.all([fetchSiteStats(), fetchRecentScores()])
 
   return (
-    <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="bg-paper text-ink">
       <PlausibleGoal goal="partners_page_view" />
       <script
         type="application/ld+json"
@@ -107,13 +107,13 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
 
       {/* ── Hero ─────────────────────────────────────────────────────────────── */}
       <section className="max-w-5xl mx-auto px-6 pt-20 pb-16">
-        <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-6">
+        <p className="text-kicker uppercase font-semibold text-muted mb-6">
           LumiKin for Business
         </p>
-        <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight max-w-3xl">
+        <h1 className="font-serif text-display sm:text-display-lg tracking-tight leading-tight max-w-3xl">
           Child-safety ratings for every game — including the ones nobody else has rated yet.
         </h1>
-        <p className="mt-6 text-lg text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
+        <p className="mt-6 text-lg text-muted max-w-2xl leading-relaxed">
           LumiKin scores games on developmental benefits and design risks using a structured,
           versioned methodology. We deliver those scores via API so your product can make
           defensible, evidence-based filtering and recommendation decisions at scale.
@@ -121,13 +121,15 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
         <div className="mt-8 flex flex-wrap gap-3">
           <a
             href="#contact"
-            className="inline-flex items-center rounded-md bg-slate-900 dark:bg-slate-100 px-5 py-2.5 text-sm font-semibold text-white dark:text-slate-900 hover:bg-slate-700 dark:hover:bg-slate-300 transition-colors"
+            className="inline-flex items-center bg-ink px-5 py-2.5 text-kicker uppercase font-semibold text-paper hover:bg-accent transition-colors"
+            style={{ fontVariantCaps: 'all-small-caps' }}
           >
             Get in touch
           </a>
           <a
             href="#api-preview"
-            className="inline-flex items-center rounded-md border border-slate-200 dark:border-slate-700 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
+            className="inline-flex items-center border border-rule px-5 py-2.5 text-kicker uppercase font-semibold text-ink hover:border-ink hover:text-accent transition-colors"
+            style={{ fontVariantCaps: 'all-small-caps' }}
           >
             See the API
           </a>
@@ -142,19 +144,19 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
 
       {/* ── Who this is for ───────────────────────────────────────────────────── */}
       <section className="max-w-5xl mx-auto px-6 py-20">
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-10">
+        <h2 className="text-kicker uppercase font-semibold text-muted mb-10">
           Who this is for
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {WHO_CARDS.map(({ heading, body }) => (
             <div
               key={heading}
-              className="rounded-lg border border-slate-200 dark:border-slate-800 p-6 flex flex-col gap-3"
+              className="border border-rule p-6 flex flex-col gap-3"
             >
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100 leading-snug">
+              <h3 className="font-serif text-lg text-ink leading-snug">
                 {heading}
               </h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+              <p className="text-sm text-muted leading-relaxed">
                 {body}
               </p>
             </div>
@@ -163,12 +165,12 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
       </section>
 
       {/* ── Methodology ───────────────────────────────────────────────────────── */}
-      <section className="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+      <section className="border-t border-ink">
         <div className="max-w-5xl mx-auto px-6 py-20">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-8">
+          <h2 className="text-kicker uppercase font-semibold text-muted mb-8">
             Methodology
           </h2>
-          <div className="max-w-2xl space-y-5 text-slate-600 dark:text-slate-300 leading-relaxed">
+          <div className="max-w-2xl space-y-5 text-ink/80 leading-relaxed">
             <p>
               Every game is evaluated against the LumiKin rubric — a structured framework
               covering ten cognitive dimensions (problem solving, spatial awareness, strategic
@@ -198,14 +200,14 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
             {/* TODO (Step 11): link to /methodology once page exists */}
             <a
               href={`/${locale}/methodology`}
-              className="text-sm font-semibold text-slate-900 dark:text-slate-100 underline underline-offset-4 hover:no-underline"
+              className="text-sm font-semibold text-accent underline underline-offset-4 hover:no-underline"
             >
               Read the full methodology →
             </a>
             <a
               href={`/lumikin-methodology-v${CURRENT_METHODOLOGY_VERSION}.pdf`}
               download
-              className="text-sm font-semibold text-slate-900 dark:text-slate-100 underline underline-offset-4 hover:no-underline"
+              className="text-sm font-semibold text-accent underline underline-offset-4 hover:no-underline"
             >
               Download methodology PDF →
             </a>
@@ -216,10 +218,10 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
       {/* ── API preview ───────────────────────────────────────────────────────── */}
       <section id="api-preview" className="max-w-5xl mx-auto px-6 py-20">
         <div className="flex flex-wrap items-baseline gap-4 mb-8">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+          <h2 className="text-kicker uppercase font-semibold text-muted">
             API preview
           </h2>
-          <span className="text-xs font-medium bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded">
+          <span className="text-kicker uppercase font-semibold border border-warm text-warm px-2 py-0.5" style={{ fontVariantCaps: 'all-small-caps' }}>
             Launching Q2 2026
           </span>
         </div>
@@ -227,14 +229,14 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
       </section>
 
       {/* ── Pricing ───────────────────────────────────────────────────────────── */}
-      <section className="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+      <section className="border-t border-ink">
         <div className="max-w-5xl mx-auto px-6 py-16">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
+          <h2 className="text-kicker uppercase font-semibold text-muted mb-4">
             Pricing
           </h2>
-          <p className="text-slate-600 dark:text-slate-300 text-base">
+          <p className="text-ink/80 text-base">
             Pricing scales with query volume and coverage needs.{' '}
-            <a href="#contact" className="font-semibold text-slate-900 dark:text-slate-100 underline underline-offset-4 hover:no-underline">
+            <a href="#contact" className="font-semibold text-accent underline underline-offset-4 hover:no-underline">
               Get in touch to discuss.
             </a>
           </p>
@@ -243,10 +245,10 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
 
       {/* ── Contact ───────────────────────────────────────────────────────────── */}
       <section id="contact" className="max-w-5xl mx-auto px-6 py-20">
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">
+        <h2 className="text-kicker uppercase font-semibold text-muted mb-3">
           Contact
         </h2>
-        <p className="text-slate-500 dark:text-slate-400 text-sm mb-10 max-w-lg">
+        <p className="text-muted text-sm mb-10 max-w-lg">
           Tell us what you're building. We'll follow up within one business day.
         </p>
         <div className="max-w-2xl">
@@ -257,16 +259,16 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
       {/* ── B2B footer links ──────────────────────────────────────────────────── */}
       {/* Sits above the global locale footer. The shared footer has parent-facing links; */}
       {/* these are the B2B-specific ones. Split the global footer properly in a later step. */}
-      <div className="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
-        <div className="max-w-5xl mx-auto px-6 py-8 flex flex-wrap gap-x-8 gap-y-3 text-sm text-slate-500 dark:text-slate-400">
+      <div className="border-t border-ink">
+        <div className="max-w-5xl mx-auto px-6 py-8 flex flex-wrap gap-x-8 gap-y-3 text-sm text-muted">
           {/* TODO (Step 11): /methodology */}
-          <a href={`/${locale}/methodology`} className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
+          <a href={`/${locale}/methodology`} className="hover:text-accent transition-colors">
             Methodology
           </a>
-          <a href={`/${locale}/press`} className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
+          <a href={`/${locale}/press`} className="hover:text-accent transition-colors">
             Press kit
           </a>
-          <a href={`/${locale}/browse`} className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
+          <a href={`/${locale}/browse`} className="hover:text-accent transition-colors">
             Game database
           </a>
         </div>

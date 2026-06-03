@@ -50,11 +50,12 @@ export default function ShareButton({ title, url }: Props) {
       {/* Copy link */}
       <button
         onClick={copyLink}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+        className={`flex items-center gap-1.5 px-3 py-1.5 text-kicker uppercase font-semibold border transition-all ${
           copied
-            ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
-            : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-slate-400 hover:text-slate-800 dark:hover:border-slate-500 dark:hover:text-slate-100'
+            ? 'border-ivy text-ivy'
+            : 'border-rule text-ink hover:border-ink hover:text-accent'
         }`}
+        style={{ fontVariantCaps: 'all-small-caps' }}
         title={t('copyLink')}
       >
         {copied ? `✓ ${t('copied')}` : `🔗 ${t('copyLink')}`}
@@ -64,7 +65,8 @@ export default function ShareButton({ title, url }: Props) {
       {hasNativeShare && (
         <button
           onClick={nativeShare}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-slate-400 hover:text-slate-800 dark:hover:border-slate-500 dark:hover:text-slate-100 transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-kicker uppercase font-semibold border border-rule text-ink hover:border-ink hover:text-accent transition-all"
+          style={{ fontVariantCaps: 'all-small-caps' }}
           title={t('share')}
         >
           ↗ {t('share')}

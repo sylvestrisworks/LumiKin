@@ -35,9 +35,9 @@ function Timebar({ actual, recommended }: { actual: number; recommended: number 
   const pct = Math.min((actual / recommended) * 100, 100)
   const over = actual > recommended
   return (
-    <div className="mt-1.5 h-1 w-full rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
+    <div className="mt-1.5 h-1 w-full bg-rule/30 overflow-hidden">
       <div
-        className={`h-full rounded-full transition-all ${over ? 'bg-red-400' : 'bg-emerald-400'}`}
+        className={`h-full transition-all ${over ? 'bg-accent' : 'bg-ivy'}`}
         style={{ width: `${pct}%` }}
       />
     </div>
@@ -62,10 +62,10 @@ export default function NintendoPlaytimeWidget() {
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
-        <div className="h-4 w-40 bg-slate-100 dark:bg-slate-700 rounded animate-pulse mb-3" />
+      <div className="border border-rule px-5 py-4">
+        <div className="h-4 w-40 bg-rule/30 rounded animate-pulse mb-3" />
         <div className="space-y-2">
-          {[1,2,3].map(i => <div key={i} className="h-10 bg-slate-50 dark:bg-slate-700/50 rounded-xl animate-pulse" />)}
+          {[1,2,3].map(i => <div key={i} className="h-10 bg-rule/20 animate-pulse" />)}
         </div>
       </div>
     )
@@ -73,17 +73,17 @@ export default function NintendoPlaytimeWidget() {
 
   if (!data?.connected) {
     return (
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4 flex items-center justify-between">
+      <div className="border border-rule px-5 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Icon name="switch" size={24} aria-hidden="true" />
           <div>
-            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">Nintendo Switch</p>
-            <p className="text-xs text-slate-400 dark:text-slate-500">{tCommon('loading')}</p>
+            <p className="text-sm font-semibold text-ink/80">Nintendo Switch</p>
+            <p className="text-xs text-muted">{tCommon('loading')}</p>
           </div>
         </div>
         <Link
           href={`/${locale}/settings/nintendo`}
-          className="text-xs px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-colors"
+          className="text-kicker uppercase px-3 py-1.5 bg-ink hover:bg-accent text-paper font-semibold transition-colors" style={{ fontVariantCaps: 'all-small-caps' }}
         >
           {t('connect')}
         </Link>
@@ -93,15 +93,15 @@ export default function NintendoPlaytimeWidget() {
 
   if (data.rows.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
+      <div className="border border-rule px-5 py-4">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
             <Icon name="switch" size={16} aria-hidden="true" />
-            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{t('title')}</p>
+            <p className="text-sm font-semibold text-ink/80">{t('title')}</p>
           </div>
-          <Link href={`/${locale}/settings/nintendo`} className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">settings</Link>
+          <Link href={`/${locale}/settings/nintendo`} className="text-xs text-muted hover:text-accent">settings</Link>
         </div>
-        <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
+        <p className="text-xs text-muted mt-2">
           {t('noData')}{' '}
           {data.lastSyncedAt ? 'Next sync runs tonight at 04:30 UTC.' : 'First sync runs tonight at 04:30 UTC.'}
         </p>
@@ -112,17 +112,17 @@ export default function NintendoPlaytimeWidget() {
   const totalMinutes = data.rows.reduce((s, r) => s + r.totalMinutes, 0)
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4 space-y-3">
+    <div className="border border-rule px-5 py-4 space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Icon name="switch" size={16} aria-hidden="true" />
-          <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{t('title')}</p>
-          <span className="text-xs text-slate-400 dark:text-slate-500 font-normal">{t('last7Days')}</span>
+          <p className="text-sm font-semibold text-ink/80">{t('title')}</p>
+          <span className="text-xs text-muted font-normal">{t('last7Days')}</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{formatTime(totalMinutes)} total</span>
-          <Link href={`/${locale}/settings/nintendo`} className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">settings</Link>
+          <span className="text-xs font-semibold text-muted">{formatTime(totalMinutes)} total</span>
+          <Link href={`/${locale}/settings/nintendo`} className="text-xs text-muted hover:text-accent">settings</Link>
         </div>
       </div>
 
@@ -146,10 +146,10 @@ export default function NintendoPlaytimeWidget() {
             <li key={row.appId}>
               <GameWrapper>
                 {/* Icon */}
-                <div className="w-9 h-9 rounded-lg overflow-hidden shrink-0 bg-slate-100 dark:bg-slate-700">
+                <div className="w-9 h-9 rounded-lg overflow-hidden shrink-0 bg-rule/30">
                   {row.appImageUrl
                     ? <img src={row.appImageUrl} alt={row.appTitle} className="w-full h-full object-cover" />
-                    : <div className="w-full h-full flex items-center justify-center text-xs font-bold text-slate-400">
+                    : <div className="w-full h-full flex items-center justify-center text-xs font-serif text-muted">
                         {row.appTitle.slice(0, 2).toUpperCase()}
                       </div>
                   }
@@ -157,7 +157,7 @@ export default function NintendoPlaytimeWidget() {
 
                 {/* Title + bar */}
                 <div className="flex-1 min-w-0">
-                  <p className={`text-xs font-medium truncate ${row.slug ? 'text-slate-700 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400' : 'text-slate-600 dark:text-slate-300'}`}>
+                  <p className={`text-xs font-medium truncate ${row.slug ? 'text-ink/80 group-hover:text-accent' : 'text-ink/80'}`}>
                     {row.appTitle}
                   </p>
                   <Timebar actual={row.totalMinutes} recommended={row.timeRecommendationMinutes} />
@@ -165,11 +165,11 @@ export default function NintendoPlaytimeWidget() {
 
                 {/* Time + over indicator */}
                 <div className="text-right shrink-0">
-                  <p className={`text-xs font-semibold ${over ? 'text-red-500 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                  <p className={`text-xs font-semibold ${over ? 'text-accent' : 'text-muted'}`}>
                     {formatTime(row.totalMinutes)}
                   </p>
                   {row.timeRecommendationMinutes != null && (
-                    <p className="text-[10px] text-slate-300 dark:text-slate-600">
+                    <p className="text-[10px] text-rule">
                       / {formatTime(row.timeRecommendationMinutes)}
                     </p>
                   )}
@@ -182,7 +182,7 @@ export default function NintendoPlaytimeWidget() {
 
       {/* Legend */}
       {data.rows.some(r => r.timeRecommendationMinutes != null) && (
-        <p className="text-[10px] text-slate-400 dark:text-slate-600 border-t border-slate-100 dark:border-slate-700 pt-2">
+        <p className="text-[10px] text-muted border-t border-rule/50 pt-2">
           Bar shows weekly play vs LumiKin recommended time. Red = over recommendation.
         </p>
       )}

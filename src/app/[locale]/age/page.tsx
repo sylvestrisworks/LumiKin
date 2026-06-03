@@ -22,35 +22,38 @@ export default async function AgeHubIndex({ params }: Props) {
   const t = await getTranslations({ locale, namespace: 'ageHub' })
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
       <div className="max-w-4xl mx-auto px-4 py-10 sm:py-14">
-        <header className="text-center mb-8 sm:mb-10">
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+        <header className="text-center mb-10 border-b border-ink pb-6">
+          <h1 className="font-serif text-display-sm sm:text-display text-ink tracking-tight">
             {t('indexTitle')}
           </h1>
-          <p className="mt-2 text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
+          <p className="mt-2 font-serif italic text-sm sm:text-base text-muted max-w-xl mx-auto">
             {t('indexSubtitle')}
           </p>
         </header>
 
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-2 sm:gap-3">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-px bg-rule border border-rule">
           {AGES.map(age => (
             <Link
               key={age}
               href={`/${locale}/age/${age}`}
-              className="flex flex-col items-center justify-center aspect-square rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/40 dark:hover:bg-indigo-900/20 hover:shadow-sm transition-all group"
+              className="flex flex-col items-center justify-center aspect-square bg-paper hover:bg-ink/[0.03] transition-colors group"
             >
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 leading-none">
+              <span className="font-serif text-2xl sm:text-3xl text-ink group-hover:text-accent leading-none">
                 {age}
               </span>
-              <span className="text-[10px] sm:text-xs font-medium text-slate-400 dark:text-slate-500 mt-1 uppercase tracking-wide">
+              <span
+                className="text-kicker uppercase font-semibold text-muted mt-1"
+                style={{ fontVariantCaps: 'all-small-caps' }}
+              >
                 {t('yearsOld')}
               </span>
             </Link>
           ))}
         </div>
 
-        <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-8 max-w-md mx-auto">
+        <p className="text-center text-xs text-muted mt-8 max-w-md mx-auto">
           {t('indexFooter')}
         </p>
       </div>

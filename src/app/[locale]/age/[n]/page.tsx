@@ -158,50 +158,58 @@ export default async function AgePage({ params, searchParams }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
       />
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
 
-        <nav className="mb-4 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
-          <Link href={`/${locale}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+        <nav
+          className="mb-6 flex items-center gap-1.5 text-kicker uppercase text-muted"
+          style={{ fontVariantCaps: 'all-small-caps' }}
+        >
+          <Link href={`/${locale}`} className="hover:text-accent transition-colors">
             {tNav('navHome')}
           </Link>
-          <span aria-hidden>/</span>
-          <Link href={`/${locale}/age`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+          <span aria-hidden className="text-rule">/</span>
+          <Link href={`/${locale}/age`} className="hover:text-accent transition-colors">
             {t('indexTitle')}
           </Link>
-          <span aria-hidden>/</span>
-          <span className="text-slate-700 dark:text-slate-200 truncate">{t('ageLink', { age })}</span>
+          <span aria-hidden className="text-rule">/</span>
+          <span className="text-ink truncate">{t('ageLink', { age })}</span>
         </nav>
 
-        <header className="text-center mb-8">
-          <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
+        <header className="text-center mb-10 border-b border-ink pb-6">
+          <p
+            className="text-kicker uppercase font-semibold text-accent"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
             {t('eyebrow')}
           </p>
-          <h1 className="mt-2 text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="mt-2 font-serif text-display-sm sm:text-display text-ink tracking-tight">
             {t('title', { age })}
           </h1>
-          <p className="mt-2 text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="mt-2 font-serif italic text-sm sm:text-base text-muted max-w-2xl mx-auto">
             {t('subtitle', { age })}
           </p>
 
-          <div className="mt-4 flex items-center justify-center gap-3 text-xs">
+          <div className="mt-5 flex items-center justify-center gap-4 text-xs">
             <Link
               href={strict ? `/${locale}/age/${age}` : `/${locale}/age/${age}?strict=1`}
-              className={`px-3 py-1.5 rounded-full border font-medium transition-colors ${
+              className={`px-3 py-1.5 text-kicker uppercase font-semibold border transition-colors ${
                 strict
-                  ? 'bg-indigo-600 border-indigo-600 text-white'
-                  : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-indigo-300'
+                  ? 'bg-ink border-ink text-paper'
+                  : 'border-rule text-ink hover:border-ink hover:text-accent'
               }`}
+              style={{ fontVariantCaps: 'all-small-caps' }}
             >
               {strict ? t('strictOn', { age }) : t('strictOff', { age })}
             </Link>
             <Link
               href={`/${locale}/browse?age=${esrbBand}`}
-              className="text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400"
+              className="text-kicker uppercase text-muted hover:text-accent"
+              style={{ fontVariantCaps: 'all-small-caps' }}
             >
               {t('openInBrowse')}
             </Link>
@@ -210,23 +218,27 @@ export default async function AgePage({ params, searchParams }: Props) {
 
         {/* Perfect fit shelf */}
         {perfectFit.length === 0 ? (
-          <div className="text-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
+          <div className="text-center py-16 border border-rule">
             <p className="text-4xl mb-3">🎮</p>
-            <p className="font-semibold text-slate-700 dark:text-slate-200">{t('noGames')}</p>
+            <p className="font-serif text-lg text-ink">{t('noGames')}</p>
             <Link
               href={`/${locale}/age`}
-              className="mt-4 inline-block text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline"
+              className="mt-4 inline-block text-kicker uppercase font-semibold text-accent hover:underline"
+              style={{ fontVariantCaps: 'all-small-caps' }}
             >
               {t('tryAnotherAge')}
             </Link>
           </div>
         ) : (
           <section className="mb-10">
-            <div className="flex items-baseline justify-between mb-3">
-              <h2 className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100">
+            <div className="flex items-baseline justify-between mb-4 border-t border-ink pt-4">
+              <h2
+                className="text-kicker uppercase font-semibold text-muted"
+                style={{ fontVariantCaps: 'all-small-caps' }}
+              >
                 {t('perfectFit')}
               </h2>
-              <span className="text-[11px] text-slate-400 dark:text-slate-500">
+              <span className="text-[11px] text-muted">
                 {t('perfectFitNote', { age })}
               </span>
             </div>
@@ -241,12 +253,15 @@ export default async function AgePage({ params, searchParams }: Props) {
         {/* Slight stretch shelf */}
         {!strict && stretch.length > 0 && (
           <section className="mb-10">
-            <div className="flex items-baseline justify-between mb-3">
-              <h2 className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100">
+            <div className="flex items-baseline justify-between mb-4 border-t border-ink pt-4">
+              <h2
+                className="text-kicker uppercase font-semibold text-muted"
+                style={{ fontVariantCaps: 'all-small-caps' }}
+              >
                 {t('stretchPicks')}
               </h2>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3 max-w-2xl">
+            <p className="text-xs text-muted mb-3 max-w-2xl">
               {t('stretchNote', { age })}
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2 sm:gap-3">
@@ -258,16 +273,20 @@ export default async function AgePage({ params, searchParams }: Props) {
         )}
 
         {/* Other ages */}
-        <section className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700">
-          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3 text-center">
+        <section className="mt-12 pt-8 border-t border-ink">
+          <p
+            className="text-kicker uppercase font-semibold text-muted mb-4 text-center"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
             {t('switchAge')}
           </p>
-          <div className="flex flex-wrap justify-center gap-2">
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
             {otherAges.map(a => (
               <Link
                 key={a}
                 href={`/${locale}/age/${a}`}
-                className="text-sm px-3.5 py-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400 transition-colors font-medium"
+                className="text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors"
+                style={{ fontVariantCaps: 'all-small-caps' }}
               >
                 {t('ageLink', { age: a })}
               </Link>

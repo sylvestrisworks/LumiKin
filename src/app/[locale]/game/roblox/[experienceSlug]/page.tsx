@@ -20,31 +20,31 @@ function pct(v: number | null, max = 1) { return `${Math.round(((v ?? 0) / max) 
 
 function getVerdict(score: number | null) {
   const s = score ?? 0
-  if (s >= 70) return { labelKey: 'verdictGreat',   color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/30',  ring: '#10b981' }
-  if (s >= 50) return { labelKey: 'verdictGood',    color: 'text-teal-600 dark:text-teal-400',       bg: 'bg-teal-50 dark:bg-teal-900/30',        ring: '#14b8a6' }
-  if (s >= 35) return { labelKey: 'verdictCaution', color: 'text-amber-600 dark:text-amber-400',     bg: 'bg-amber-50 dark:bg-amber-900/30',      ring: '#f59e0b' }
-  return              { labelKey: 'verdictAvoid',   color: 'text-red-600 dark:text-red-400',         bg: 'bg-red-50 dark:bg-red-900/30',          ring: '#ef4444' }
+  if (s >= 70) return { labelKey: 'verdictGreat',   color: 'text-ivy',    bg: '',  ring: 'rgb(var(--ivy))' }
+  if (s >= 50) return { labelKey: 'verdictGood',    color: 'text-ivy',    bg: '',  ring: 'rgb(var(--ivy))' }
+  if (s >= 35) return { labelKey: 'verdictCaution', color: 'text-warm',   bg: '',  ring: 'rgb(var(--warm))' }
+  return              { labelKey: 'verdictAvoid',   color: 'text-accent', bg: '',  ring: 'rgb(var(--accent))' }
 }
 
 function benefitBarColor(v: number, max = 3) {
   const f = v / max
-  if (f >= 0.67) return 'bg-emerald-400'
-  if (f >= 0.34) return 'bg-blue-400'
-  return 'bg-slate-300 dark:bg-slate-600'
+  if (f >= 0.67) return 'bg-ivy'
+  if (f >= 0.34) return 'bg-ivy/60'
+  return 'bg-rule'
 }
 
 function riskBarColor(v: number, max = 3) {
   const f = v / max
-  if (f >= 0.67) return 'bg-red-600'
-  if (f >= 0.34) return 'bg-orange-500'
-  return 'bg-yellow-400'
+  if (f >= 0.67) return 'bg-accent'
+  if (f >= 0.34) return 'bg-warm'
+  return 'bg-warm/50'
 }
 
 function riskLevel(v: number, max = 3) {
   const f = v / max
-  if (f < 0.34) return { labelKey: 'riskLow',      cls: 'bg-yellow-100 dark:bg-yellow-900/50 border border-yellow-300 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200' }
-  if (f < 0.67) return { labelKey: 'riskModerate', cls: 'bg-orange-100 dark:bg-orange-900/50 border border-orange-300 dark:border-orange-600 text-orange-800 dark:text-orange-200' }
-  return               { labelKey: 'riskHigh',     cls: 'bg-red-100 dark:bg-red-900/50 border border-red-300 dark:border-red-600 text-red-800 dark:text-red-200' }
+  if (f < 0.34) return { labelKey: 'riskLow',      cls: 'border border-rule text-muted' }
+  if (f < 0.67) return { labelKey: 'riskModerate', cls: 'border border-warm text-warm' }
+  return               { labelKey: 'riskHigh',     cls: 'border border-accent text-accent' }
 }
 
 function formatCount(n: number | null): string {
@@ -67,7 +67,7 @@ function HorseshoeRing({ score, ring }: { score: number; ring: string }) {
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} style={{ transform: 'rotate(135deg)' }} aria-hidden="true">
         <circle cx={cx} cy={cy} r={r} fill="none" stroke="currentColor"
-          className="text-slate-200 dark:text-slate-700"
+          className="text-rule/50"
           strokeWidth={stroke} strokeLinecap="round"
           strokeDasharray={`${totalArc} ${gap}`} />
         <circle cx={cx} cy={cy} r={r} fill="none"
@@ -75,8 +75,8 @@ function HorseshoeRing({ score, ring }: { score: number; ring: string }) {
           strokeDasharray={`${filled} ${circ - filled}`} />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center pb-4">
-        <span className="text-5xl font-black tracking-tighter leading-none" style={{ color: ring }}>{score}</span>
-        <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mt-1">/ 100</span>
+        <span className="font-serif text-5xl tracking-tighter leading-none" style={{ color: ring }}>{score}</span>
+        <span className="text-xs font-bold text-muted mt-1">/ 100</span>
       </div>
     </div>
   )
@@ -88,11 +88,11 @@ function BenefitBar({ label, value, max = 3 }: { label: string; value: number | 
   const v = value ?? 0
   return (
     <div className="flex items-center gap-3">
-      <span className="w-28 text-sm text-slate-600 dark:text-slate-300 shrink-0">{label}</span>
-      <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
-        <div className={`h-full rounded-full transition-all ${benefitBarColor(v, max)}`} style={{ width: pct(v, max) }} />
+      <span className="w-28 text-sm text-ink/80 shrink-0">{label}</span>
+      <div className="flex-1 bg-rule/30 h-2.5 overflow-hidden">
+        <div className={`h-full transition-all ${benefitBarColor(v, max)}`} style={{ width: pct(v, max) }} />
       </div>
-      <span className="w-10 text-right text-xs font-medium text-slate-700 dark:text-slate-300 shrink-0">{v}/{max}</span>
+      <span className="w-10 text-right text-xs font-medium text-ink/80 shrink-0">{v}/{max}</span>
     </div>
   )
 }
@@ -105,11 +105,11 @@ function RiskMeter({ label, levelLabel, value, max = 3 }: { label: string; level
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</span>
-        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full shrink-0 ${level.cls}`}>{levelLabel}</span>
+        <span className="text-sm font-medium text-ink/80">{label}</span>
+        <span className={`text-kicker uppercase font-semibold px-2.5 py-0.5 shrink-0 ${level.cls}`} style={{ fontVariantCaps: 'all-small-caps' }}>{levelLabel}</span>
       </div>
-      <div className="bg-slate-100 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
-        <div className={`h-full rounded-full transition-all ${riskBarColor(v, max)}`} style={{ width: pct(v, max) }} />
+      <div className="bg-rule/30 h-3 overflow-hidden">
+        <div className={`h-full transition-all ${riskBarColor(v, max)}`} style={{ width: pct(v, max) }} />
       </div>
     </div>
   )
@@ -358,18 +358,18 @@ export default async function ExperiencePage({ params }: Props) {
       {reviewLd && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(reviewLd) }} />
       )}
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-4">
 
         {/* Breadcrumb */}
-        <nav className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
-          <Link href={`/${locale}/game/roblox`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">{t('title')}</Link>
-          <span>/</span>
-          <span className="text-slate-600 dark:text-slate-300 truncate">{exp.title}</span>
+        <nav className="text-kicker uppercase text-muted flex items-center gap-1.5" style={{ fontVariantCaps: 'all-small-caps' }}>
+          <Link href={`/${locale}/game/roblox`} className="hover:text-accent transition-colors">{t('title')}</Link>
+          <span className="text-rule">/</span>
+          <span className="text-ink truncate">{exp.title}</span>
         </nav>
 
         {/* ── Hero card ──────────────────────────────────────────────────────── */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+        <div className="border border-rule overflow-hidden">
           {exp.thumbnailUrl && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={exp.thumbnailUrl} alt="" className="w-full h-40 object-cover" />
@@ -385,16 +385,16 @@ export default async function ExperiencePage({ params }: Props) {
               )}
 
               <div className="flex-1 min-w-0 pt-1">
-                <h1 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">{exp.title}</h1>
+                <h1 className="font-serif text-2xl text-ink leading-tight">{exp.title}</h1>
                 {exp.creatorName && (
-                  <p className="text-sm text-slate-400 mt-0.5">{t('byCreator', { creator: exp.creatorName })}</p>
+                  <p className="text-sm text-muted mt-0.5">{t('byCreator', { creator: exp.creatorName })}</p>
                 )}
 
                 {/* Stats */}
-                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-xs text-slate-400 dark:text-slate-500">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-xs text-muted">
                   {exp.activePlayers != null && (
                     <span className="flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-ivy inline-block" />
                       {t('playingNow', { count: formatCount(exp.activePlayers) })}
                     </span>
                   )}
@@ -405,10 +405,10 @@ export default async function ExperiencePage({ params }: Props) {
 
                 {/* Time recommendation */}
                 {displayScore?.timeRecommendationLabel && (
-                  <div className={`mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-sm font-semibold ${
-                    displayScore.timeRecommendationColor === 'green'  ? 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400' :
-                    displayScore.timeRecommendationColor === 'amber'  ? 'bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400' :
-                                                                        'bg-red-50 border-red-200 text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400'
+                  <div className={`mt-3 inline-flex items-center gap-2 px-3 py-1.5 border text-sm font-semibold ${
+                    displayScore.timeRecommendationColor === 'green'  ? 'border-ivy text-ivy' :
+                    displayScore.timeRecommendationColor === 'amber'  ? 'border-warm text-warm' :
+                                                                        'border-accent text-accent'
                   }`}>
                     <span>{t('recommended', { label: displayScore.timeRecommendationLabel })}</span>
                     {displayScore.recommendedMinAge != null && (
@@ -435,15 +435,15 @@ export default async function ExperiencePage({ params }: Props) {
 
         {/* ── Summary ────────────────────────────────────────────────────────── */}
         {displayScore?.summary && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
-            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed italic">"{displayScore.summary}"</p>
+          <div className="border-l-2 border-accent pl-4 py-1">
+            <p className="font-serif text-base text-ink leading-relaxed italic">"{displayScore.summary}"</p>
           </div>
         )}
 
         {/* ── Benefits ───────────────────────────────────────────────────────── */}
         {displayScore && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-5 space-y-4">
-            <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+          <div className="border border-rule px-5 py-5 space-y-4">
+            <h2 className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>
               {t('whatChildDevelops')}
             </h2>
 
@@ -454,9 +454,9 @@ export default async function ExperiencePage({ params }: Props) {
             </div>
 
             {displayScore.benefitsNarrative && (
-              <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-4 mt-2">
-                <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300 mb-1">{t('whatChildDevelops')}</p>
-                <p className="text-sm text-emerald-900 dark:text-emerald-200 leading-relaxed">{displayScore.benefitsNarrative}</p>
+              <div className="border-l-2 border-ivy pl-4 py-1 mt-2">
+                <p className="text-kicker uppercase font-semibold text-ivy mb-1" style={{ fontVariantCaps: 'all-small-caps' }}>{t('whatChildDevelops')}</p>
+                <p className="text-sm text-ink/85 leading-relaxed">{displayScore.benefitsNarrative}</p>
               </div>
             )}
           </div>
@@ -464,8 +464,8 @@ export default async function ExperiencePage({ params }: Props) {
 
         {/* ── Risks ──────────────────────────────────────────────────────────── */}
         {displayScore && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-5 space-y-4">
-            <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+          <div className="border border-rule px-5 py-5 space-y-4">
+            <h2 className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>
               {t('watchOutFor')}
             </h2>
 
@@ -479,9 +479,9 @@ export default async function ExperiencePage({ params }: Props) {
             </div>
 
             {displayScore.risksNarrative && (
-              <div className="bg-slate-50 dark:bg-slate-700/50 rounded-2xl p-4 mt-2">
-                <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">{t('watchOutFor')}</p>
-                <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{displayScore.risksNarrative}</p>
+              <div className="border-l-2 border-warm pl-4 py-1 mt-2">
+                <p className="text-kicker uppercase font-semibold text-warm mb-1" style={{ fontVariantCaps: 'all-small-caps' }}>{t('watchOutFor')}</p>
+                <p className="text-sm text-ink/85 leading-relaxed">{displayScore.risksNarrative}</p>
               </div>
             )}
           </div>
@@ -489,7 +489,7 @@ export default async function ExperiencePage({ params }: Props) {
 
         {/* ── Scoring method note (Fix 8) ────────────────────────────────────── */}
         {displayScore && (
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed px-1">
+          <p className="text-[11px] text-muted leading-relaxed px-1">
             {t('scoringNote', { count: RUBRIC_DIMENSION_COUNT })}
           </p>
         )}
@@ -509,16 +509,16 @@ export default async function ExperiencePage({ params }: Props) {
 
         {/* ── Parent tip ─────────────────────────────────────────────────────── */}
         {displayScore?.parentTip && (
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl px-5 py-4">
-            <p className="text-xs font-black uppercase tracking-widest text-blue-700 dark:text-blue-400 mb-1">{t('parentTip')}</p>
-            <p className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">{displayScore.parentTip}</p>
+          <div className="border-l-2 border-accent pl-4 py-1">
+            <p className="text-kicker uppercase font-semibold text-accent mb-1" style={{ fontVariantCaps: 'all-small-caps' }}>{t('parentTip')}</p>
+            <p className="font-serif text-sm text-ink/85 leading-relaxed italic">{displayScore.parentTip}</p>
           </div>
         )}
 
         {/* ── No score / pending ─────────────────────────────────────────────── */}
         {!displayScore && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-8 text-center text-slate-500 dark:text-slate-400">
-            <p className="font-medium">
+          <div className="border border-rule px-5 py-8 text-center text-muted">
+            <p className="font-serif text-ink">
               {isPending ? tCommon('notEnoughInfo') : t('ratingInProgress')}
             </p>
             <p className="text-xs mt-1">
@@ -529,28 +529,29 @@ export default async function ExperiencePage({ params }: Props) {
 
         {/* ── Roblox platform parent guide ───────────────────────────────────── */}
         <details className="group/panel">
-          <summary className="flex items-center justify-between gap-2 cursor-pointer list-none select-none py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+          <summary className="flex items-center justify-between gap-2 cursor-pointer list-none select-none py-2 text-kicker uppercase font-semibold text-muted hover:text-ink transition-colors" style={{ fontVariantCaps: 'all-small-caps' }}>
             <span className="flex items-center gap-1.5">
-              <span className="text-red-400">ℹ</span>
+              <span className="text-accent">ℹ</span>
               {t('parentGuideTitle')}
             </span>
-            <span className="transition-transform group-open/panel:rotate-180 text-slate-300 dark:text-slate-600">▾</span>
+            <span className="transition-transform group-open/panel:rotate-180 text-rule">▾</span>
           </summary>
-          <div className="mt-2 rounded-xl border border-red-100 dark:border-red-900/40 bg-red-50/60 dark:bg-red-950/30 px-4 py-3 text-xs text-slate-600 dark:text-slate-400 space-y-2.5 leading-relaxed">
-            <p className="font-semibold text-slate-700 dark:text-slate-300 text-[11px] uppercase tracking-wide">{t('parentGuideBottomLine')}</p>
-            <p>{t.rich('parentGuidePara1', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
-            <p>{t.rich('parentGuidePara2', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
-            <p>{t.rich('parentGuidePara3', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
-            <p>{t.rich('parentGuidePara4', { strong: (chunks) => <strong className="text-slate-700 dark:text-slate-200">{chunks}</strong> })}</p>
-            <p className="pt-0.5 border-t border-red-100 dark:border-red-900/40 text-slate-500 dark:text-slate-400">
-              {t.rich('parentGuideAction', { strong: (chunks) => <strong className="text-slate-600 dark:text-slate-300">{chunks}</strong> })}
+          <div className="mt-2 border-l-2 border-rule pl-4 py-1 text-xs text-ink/70 space-y-2.5 leading-relaxed">
+            <p className="font-semibold text-ink text-[11px] uppercase tracking-wide">{t('parentGuideBottomLine')}</p>
+            <p>{t.rich('parentGuidePara1', { strong: (chunks) => <strong className="text-ink">{chunks}</strong> })}</p>
+            <p>{t.rich('parentGuidePara2', { strong: (chunks) => <strong className="text-ink">{chunks}</strong> })}</p>
+            <p>{t.rich('parentGuidePara3', { strong: (chunks) => <strong className="text-ink">{chunks}</strong> })}</p>
+            <p>{t.rich('parentGuidePara4', { strong: (chunks) => <strong className="text-ink">{chunks}</strong> })}</p>
+            <p className="pt-0.5 border-t border-rule/60 text-muted">
+              {t.rich('parentGuideAction', { strong: (chunks) => <strong className="text-ink">{chunks}</strong> })}
             </p>
           </div>
         </details>
 
         <Link
           href={`/${locale}/game/roblox`}
-          className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          className="inline-flex items-center gap-1.5 text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors"
+          style={{ fontVariantCaps: 'all-small-caps' }}
         >
           {t('backToRoblox')}
         </Link>

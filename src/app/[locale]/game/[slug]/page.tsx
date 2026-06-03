@@ -503,31 +503,34 @@ export default async function GamePage({ params }: Props) {
         />
       )}
 
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <div className="min-h-screen bg-paper text-ink">
         <main className="max-w-2xl lg:max-w-5xl mx-auto px-4 py-6">
 
           {/* Breadcrumb */}
-          <nav className="mb-4 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
-            <a href={`/${locale}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+          <nav
+            className="mb-6 flex items-center gap-1.5 text-kicker uppercase text-muted"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
+            <a href={`/${locale}`} className="hover:text-accent transition-colors">
               {t('navHome')}
             </a>
-            <span aria-hidden>/</span>
-            <a href={`/${locale}/browse`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+            <span aria-hidden className="text-rule">/</span>
+            <a href={`/${locale}/browse`} className="hover:text-accent transition-colors">
               {t('navBrowse')}
             </a>
-            <span aria-hidden>/</span>
+            <span aria-hidden className="text-rule">/</span>
             {canonicalPlatform && (
               <>
                 <a
                   href={`/${locale}/platform/${canonicalPlatform.slug}`}
-                  className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded"
+                  className="hover:text-accent transition-colors"
                 >
                   {canonicalPlatform.label}
                 </a>
-                <span aria-hidden>/</span>
+                <span aria-hidden className="text-rule">/</span>
               </>
             )}
-            <span className="text-slate-700 dark:text-slate-200 truncate">{data.game.title}</span>
+            <span className="text-ink truncate">{data.game.title}</span>
           </nav>
 
           <div className="lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
@@ -567,7 +570,8 @@ export default async function GamePage({ params }: Props) {
                 <div className="flex items-center gap-2">
                   <a
                     href={`/${locale}/compare?a=${game.slug}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600 hover:text-indigo-700 dark:hover:text-indigo-400 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 text-kicker uppercase font-semibold text-ink border border-rule hover:border-ink hover:text-accent transition-colors"
+                    style={{ fontVariantCaps: 'all-small-caps' }}
                   >
                     <GitCompareArrows size={15} strokeWidth={2.5} aria-hidden />
                     {tGC('compareThis')}
@@ -579,11 +583,11 @@ export default async function GamePage({ params }: Props) {
               {/* Parent Tips */}
               {game.id && (
                 <Suspense fallback={
-                  <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
-                    <div className="h-4 w-24 bg-slate-100 dark:bg-slate-700 rounded animate-pulse mb-3" />
+                  <div className="border-t border-ink pt-4">
+                    <div className="h-3 w-24 bg-rule/40 animate-pulse mb-3" />
                     <div className="space-y-2">
-                      <div className="h-3 bg-slate-100 dark:bg-slate-700 rounded animate-pulse" />
-                      <div className="h-3 w-3/4 bg-slate-100 dark:bg-slate-700 rounded animate-pulse" />
+                      <div className="h-3 bg-rule/30 animate-pulse" />
+                      <div className="h-3 w-3/4 bg-rule/30 animate-pulse" />
                     </div>
                   </div>
                 }>
@@ -597,22 +601,28 @@ export default async function GamePage({ params }: Props) {
                 const sentences = plain.match(/[^.!?]+[.!?]+/g) ?? []
                 const excerpt = sentences.slice(0, 2).join(' ').trim() || plain.slice(0, 220)
                 return (
-                  <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
-                    <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">
+                  <div className="border-t border-ink pt-4">
+                    <h2
+                      className="text-kicker uppercase font-semibold text-muted mb-2"
+                      style={{ fontVariantCaps: 'all-small-caps' }}
+                    >
                       {t('aboutThisGame')}
                     </h2>
-                    <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{excerpt}</p>
+                    <p className="text-sm text-ink/80 leading-relaxed">{excerpt}</p>
                   </div>
                 )
               })()}
 
               {/* Explore more */}
               {relatedGames.length > 0 && (
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4">
-                  <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">
-                    Explore more
+                <div className="border-t border-ink pt-4">
+                  <h2
+                    className="text-kicker uppercase font-semibold text-muted mb-2"
+                    style={{ fontVariantCaps: 'all-small-caps' }}
+                  >
+                    {tGC('exploreMore')}
                   </h2>
-                  <div className="divide-y divide-slate-100 dark:divide-slate-700">
+                  <div className="divide-y divide-rule/50">
                     {relatedGames.map(g => (
                       <RelatedGameCard key={g.slug} game={g} />
                     ))}

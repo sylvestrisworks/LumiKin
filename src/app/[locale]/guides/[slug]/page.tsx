@@ -70,45 +70,51 @@ export default async function GuidePage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <main className="min-h-screen bg-paper text-ink">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026') }}
       />
       <div className="max-w-2xl mx-auto px-4 py-10">
 
-        <nav className="mb-6 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
-          <Link href={`/${locale}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+        <nav
+          className="mb-6 flex items-center gap-1.5 text-kicker uppercase text-muted"
+          style={{ fontVariantCaps: 'all-small-caps' }}
+        >
+          <Link href={`/${locale}`} className="hover:text-accent transition-colors">
             {tNav('navHome')}
           </Link>
-          <span aria-hidden>/</span>
-          <Link href={`/${locale}/learn`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+          <span aria-hidden className="text-rule">/</span>
+          <Link href={`/${locale}/learn`} className="hover:text-accent transition-colors">
             {tGuides('breadcrumbLearn')}
           </Link>
-          <span aria-hidden>/</span>
-          <Link href={`/${locale}/guides`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-1 py-0.5 -mx-1 rounded">
+          <span aria-hidden className="text-rule">/</span>
+          <Link href={`/${locale}/guides`} className="hover:text-accent transition-colors">
             {tGuides('breadcrumbCurrent')}
           </Link>
-          <span aria-hidden>/</span>
-          <span className="text-slate-700 dark:text-slate-200 truncate">{guide.title}</span>
+          <span aria-hidden className="text-rule">/</span>
+          <span className="text-ink truncate">{guide.title}</span>
         </nav>
 
         {/* ── Meta ─────────────────────────────────────────────────────── */}
-        <div className="mb-6">
+        <div className="mb-6 border-b border-ink pb-6">
           {guide.category && (
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 mb-3">
+            <span
+              className="inline-flex items-center gap-1.5 text-kicker uppercase font-semibold text-accent mb-3"
+              style={{ fontVariantCaps: 'all-small-caps' }}
+            >
               <Tag size={11} />
               {CATEGORY_LABELS[guide.category] ?? guide.category}
             </span>
           )}
-          <h1 className="text-3xl font-black text-slate-900 dark:text-white leading-tight mb-3">
+          <h1 className="font-serif text-display-sm md:text-display text-ink leading-tight mb-3">
             {guide.title}
           </h1>
           {guide.excerpt && (
-            <p className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed">{guide.excerpt}</p>
+            <p className="font-serif italic text-lg text-muted leading-relaxed">{guide.excerpt}</p>
           )}
           {guide.publishedAt && (
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 mt-3">
+            <div className="flex items-center gap-1.5 text-kicker uppercase text-muted mt-3" style={{ fontVariantCaps: 'all-small-caps' }}>
               <CalendarDays size={12} />
               {formatDate(guide.publishedAt)}
             </div>
@@ -121,19 +127,23 @@ export default async function GuidePage({ params }: Props) {
           <img
             src={urlFor(guide.coverImage)!.width(800).auto('format').url()}
             alt={guide.coverImage.alt ?? guide.title}
-            className="w-full rounded-2xl mb-8 shadow-sm"
+            className="w-full mb-8"
           />
         )}
 
         {/* ── Body ─────────────────────────────────────────────────────── */}
         {guide.body && (
-          <article className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 px-6 py-8 shadow-sm">
+          <article className="max-w-prose">
             <PortableTextRenderer value={guide.body} />
           </article>
         )}
 
-        <div className="mt-8">
-          <Link href={`/${locale}/guides`} className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
+        <div className="mt-10 border-t border-ink pt-4">
+          <Link
+            href={`/${locale}/guides`}
+            className="text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
             ← Back to Guides
           </Link>
         </div>

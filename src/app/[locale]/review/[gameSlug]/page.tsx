@@ -150,15 +150,15 @@ export default async function ReviewPage({ params }: { params: { gameSlug: strin
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-ink/[0.03]">
       {/* Top bar */}
-      <header className="bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+      <header className="bg-paper border-b border-rule px-4 py-3 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center gap-3">
-          <a href="/review" className="text-slate-400 hover:text-slate-600 text-sm">
+          <a href="/review" className="text-muted hover:text-ink/80 text-sm">
             ← All games
           </a>
-          <span className="text-slate-300">/</span>
-          <span className="text-sm font-semibold text-slate-800">{game.title}</span>
+          <span className="text-rule">/</span>
+          <span className="text-sm font-semibold text-ink">{game.title}</span>
           {existing && (
             <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">
               Editing existing review
@@ -166,7 +166,7 @@ export default async function ReviewPage({ params }: { params: { gameSlug: strin
           )}
         </div>
         <a href={`/game/${game.slug}`} target="_blank" rel="noopener noreferrer"
-          className="text-xs text-indigo-600 hover:underline">
+          className="text-xs text-accent hover:underline">
           View public page ↗
         </a>
       </header>

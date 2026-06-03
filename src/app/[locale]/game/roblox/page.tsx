@@ -86,11 +86,11 @@ export default async function RobloxHubPage({ searchParams }: Props) {
   const unscored = experiences.filter(e => e.curascore == null)
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
 
         {/* Platform header */}
-        <div className="relative rounded-2xl overflow-hidden border border-slate-700 shadow-lg bg-slate-900">
+        <div className="relative overflow-hidden border-2 border-ink bg-slate-900">
           {roblox?.backgroundImage && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -155,7 +155,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 text-slate-400">
+            <div className="text-center py-16 text-muted">
               {t('noFilterMatch')}
             </div>
           )
@@ -164,7 +164,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
             {/* Rated experiences grid */}
             {scored.length > 0 && (
               <section>
-                <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+                <h2 className="text-kicker uppercase font-semibold text-muted mb-3 border-t border-ink pt-4" style={{ fontVariantCaps: 'all-small-caps' }}>
                   {t('rated')}
                 </h2>
                 <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
@@ -180,7 +180,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
             {/* Unscored experiences (awaiting AI review) */}
             {unscored.length > 0 && (
               <section>
-                <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+                <h2 className="text-kicker uppercase font-semibold text-muted mb-3 border-t border-ink pt-4" style={{ fontVariantCaps: 'all-small-caps' }}>
                   {t('awaitingRating')}
                 </h2>
                 <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none">
@@ -194,7 +194,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
             )}
 
             {experiences.length === 0 && (
-              <div className="text-center py-16 text-slate-400">
+              <div className="text-center py-16 text-muted">
                 {t('noIndexed')}
               </div>
             )}

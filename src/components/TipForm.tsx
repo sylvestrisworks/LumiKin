@@ -16,9 +16,9 @@ export default function TipForm({ gameId }: { gameId: number }) {
   const [submitted, setSubmitted] = useState(false)
 
   const TYPE_CONFIG: Record<TipType, { labelKey: 'typePraise' | 'typeTip' | 'typeWarning'; icon: string; color: string }> = {
-    praise:  { labelKey: 'typePraise',  icon: '★', color: 'bg-emerald-50 border-emerald-300 text-emerald-700' },
-    tip:     { labelKey: 'typeTip',     icon: '💡', color: 'bg-indigo-50 border-indigo-300 text-indigo-700' },
-    warning: { labelKey: 'typeWarning', icon: '⚠',  color: 'bg-amber-50 border-amber-300 text-amber-700' },
+    praise:  { labelKey: 'typePraise',  icon: '★', color: 'border-ivy text-ivy' },
+    tip:     { labelKey: 'typeTip',     icon: '💡', color: 'border-ink text-ink' },
+    warning: { labelKey: 'typeWarning', icon: '⚠',  color: 'border-warm text-warm' },
   }
 
   const remaining = 280 - content.length
@@ -48,7 +48,7 @@ export default function TipForm({ gameId }: { gameId: number }) {
 
   if (submitted) {
     return (
-      <div className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3">
+      <div className="text-sm text-ivy border-l-2 border-ivy pl-3 py-2">
         {t('thankYou')}
       </div>
     )
@@ -62,8 +62,8 @@ export default function TipForm({ gameId }: { gameId: number }) {
             key={key}
             type="button"
             onClick={() => setTipType(key)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-              tipType === key ? cfg.color : 'bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-500'
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border transition-all ${
+              tipType === key ? cfg.color : 'border-rule text-muted hover:border-ink'
             }`}
           >
             <span>{cfg.icon}</span> {t(cfg.labelKey)}
@@ -81,19 +81,20 @@ export default function TipForm({ gameId }: { gameId: number }) {
                                     t('placeholderTip')
           }
           rows={3}
-          className="w-full text-sm border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 rounded-xl px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent placeholder:text-slate-400 dark:placeholder:text-slate-500"
+          className="w-full text-sm border border-rule bg-paper text-ink px-4 py-3 resize-none focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink placeholder:text-muted"
         />
-        <span className={`absolute bottom-3 right-3 text-[11px] font-medium ${remaining < 20 ? 'text-red-500' : 'text-slate-400'}`}>
+        <span className={`absolute bottom-3 right-3 text-[11px] font-medium ${remaining < 20 ? 'text-accent' : 'text-muted'}`}>
           {remaining}
         </span>
       </div>
 
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p className="text-xs text-accent">{error}</p>}
 
       <button
         type="submit"
         disabled={loading || !content.trim()}
-        className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="px-4 py-2 bg-ink text-paper text-kicker uppercase font-semibold hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        style={{ fontVariantCaps: 'all-small-caps' }}
       >
         {loading ? t('posting') : t('postTip')}
       </button>

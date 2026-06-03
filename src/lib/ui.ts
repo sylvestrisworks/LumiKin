@@ -56,3 +56,15 @@ export function curascoreText(score: number | null | undefined): string {
   if (score >= 40) return 'text-amber-600'
   return 'text-red-600'
 }
+
+/**
+ * Editorial verdict color for a curascore number — maps to the paper-and-ink
+ * palette (ivy / warm / accent). Thresholds mirror `lumiScoreVerdict` in
+ * GameCardEditorial so the related-games rail agrees with the detail card.
+ */
+export function curascoreTextEditorial(score: number | null | undefined): string {
+  if (score == null) return 'text-muted'
+  if (score >= 50) return 'text-ivy'
+  if (score >= 35) return 'text-warm'
+  return 'text-accent'
+}

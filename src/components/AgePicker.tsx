@@ -31,7 +31,7 @@ function AgePickerInner({ current }: { current?: string }) {
   const activeIndex = AGE_SEGMENTS.findIndex(s => s.value === current)
 
   return (
-    <div className="bg-slate-100 dark:bg-slate-800 rounded-2xl p-1.5 grid grid-cols-2 sm:flex gap-1">
+    <div className="border border-rule p-1.5 grid grid-cols-2 sm:flex gap-1">
       {AGE_SEGMENTS.map((seg, i) => {
         const isActive = current === seg.value
         const isPast   = activeIndex >= 0 && i < activeIndex
@@ -41,19 +41,19 @@ function AgePickerInner({ current }: { current?: string }) {
             key={seg.value}
             onClick={() => select(seg.value)}
             // FIX: min-h-[44px] för att uppfylla Apples riktlinje för touch-targets
-            className={`flex-1 flex flex-col items-center justify-center min-h-[44px] py-2 px-1 rounded-xl text-center transition-all duration-200 ${
+            className={`flex-1 flex flex-col items-center justify-center min-h-[44px] py-2 px-1 text-center transition-all duration-200 ${
               isActive
-                ? 'bg-indigo-600 text-white shadow-sm'
+                ? 'bg-ink text-paper'
                 : isPast
-                ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-900/60'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/60 dark:hover:bg-slate-700/60'
+                ? 'text-accent hover:bg-ink/[0.04]'
+                : 'text-muted hover:text-ink hover:bg-ink/[0.03]'
             }`}
           >
-            <span className={`text-xs sm:text-sm font-black tracking-tight leading-none ${isActive ? 'text-white' : ''}`}>
+            <span className="font-serif text-xs sm:text-sm tracking-tight leading-none">
               {seg.label}
             </span>
             <span className={`text-[10px] mt-0.5 font-medium leading-none ${
-              isActive ? 'text-indigo-200' : 'text-slate-400 dark:text-slate-500'
+              isActive ? 'text-paper/70' : 'text-muted'
             }`}>
               {seg.sub}
             </span>
@@ -66,7 +66,7 @@ function AgePickerInner({ current }: { current?: string }) {
 
 export default function AgePicker({ current }: { current?: string }) {
   return (
-    <Suspense fallback={<div className="h-14 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />}>
+    <Suspense fallback={<div className="h-14 bg-rule/30 animate-pulse" />}>
       <AgePickerInner current={current} />
     </Suspense>
   )

@@ -42,7 +42,7 @@ export default function FeedbackForm({ gameSlug }: { gameSlug: string }) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="text-xs text-slate-400 hover:text-indigo-600 transition-colors underline underline-offset-2"
+        className="text-xs text-muted hover:text-accent transition-colors underline underline-offset-2"
       >
         {t('triggerLabel')}
       </button>
@@ -51,17 +51,17 @@ export default function FeedbackForm({ gameSlug }: { gameSlug: string }) {
 
   if (state === 'done') {
     return (
-      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl px-5 py-4 text-sm text-emerald-800">
+      <div className="border-l-2 border-ivy pl-4 py-2 text-sm text-ivy">
         {t('thanks')}
       </div>
     )
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+    <div className="border border-rule p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-slate-800">{t('title')}</h3>
-        <button onClick={() => setOpen(false)} className="text-slate-400 hover:text-slate-600 text-lg leading-none">×</button>
+        <h3 className="font-serif text-base text-ink">{t('title')}</h3>
+        <button onClick={() => setOpen(false)} className="text-muted hover:text-ink text-lg leading-none">×</button>
       </div>
 
       <form onSubmit={submit} className="space-y-4">
@@ -75,9 +75,9 @@ export default function FeedbackForm({ gameSlug }: { gameSlug: string }) {
                 value={opt.value}
                 checked={type === opt.value}
                 onChange={() => setType(opt.value)}
-                className="text-indigo-600 focus:ring-indigo-400"
+                className="accent-ink focus:ring-ink"
               />
-              <span className="text-sm text-slate-700 group-hover:text-slate-900">{t(opt.labelKey)}</span>
+              <span className="text-sm text-ink/80 group-hover:text-ink">{t(opt.labelKey)}</span>
             </label>
           ))}
         </div>
@@ -89,31 +89,32 @@ export default function FeedbackForm({ gameSlug }: { gameSlug: string }) {
           placeholder={t('placeholder')}
           maxLength={1000}
           rows={3}
-          className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2.5 resize-none
-            focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder:text-slate-400"
+          className="w-full text-sm border border-rule bg-paper text-ink px-3 py-2.5 resize-none
+            focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink placeholder:text-muted"
         />
 
         {state === 'error' && (
-          <p className="text-xs text-red-600">{t('errorRetry')}</p>
+          <p className="text-xs text-accent">{t('errorRetry')}</p>
         )}
 
         <div className="flex items-center gap-3">
           <button
             type="submit"
             disabled={!type || state === 'submitting'}
-            className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-xl
-              hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 bg-ink text-paper text-kicker uppercase font-semibold
+              hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            style={{ fontVariantCaps: 'all-small-caps' }}
           >
             {state === 'submitting' ? t('submitting') : t('submit')}
           </button>
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="text-sm text-slate-500 hover:text-slate-700 transition-colors"
+            className="text-sm text-muted hover:text-ink transition-colors"
           >
             {t('cancel')}
           </button>
-          <span className="ml-auto text-xs text-slate-400">{t('anonymous')}</span>
+          <span className="ml-auto text-xs text-muted">{t('anonymous')}</span>
         </div>
       </form>
     </div>

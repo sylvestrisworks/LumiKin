@@ -51,20 +51,20 @@ function ScoreSlider({
 
   const labelColor =
     max === 5
-      ? value === 0 ? 'text-slate-400' : value <= 2 ? 'text-blue-600' : 'text-emerald-700'
-      : value === 0 ? 'text-slate-400' : value === 1 ? 'text-amber-600' : value === 2 ? 'text-orange-600' : 'text-red-600'
+      ? value === 0 ? 'text-muted' : value <= 2 ? 'text-blue-600' : 'text-emerald-700'
+      : value === 0 ? 'text-muted' : value === 1 ? 'text-amber-600' : value === 2 ? 'text-orange-600' : 'text-red-600'
 
   return (
     <div className="group">
       <div className="flex items-center gap-3">
         <div className="w-44 shrink-0">
-          <p className="text-sm text-slate-700 leading-tight">{label}</p>
+          <p className="text-sm text-ink/80 leading-tight">{label}</p>
           {description && (
-            <p className="text-xs text-slate-400 leading-tight mt-0.5 hidden group-hover:block">{description}</p>
+            <p className="text-xs text-muted leading-tight mt-0.5 hidden group-hover:block">{description}</p>
           )}
         </div>
         <div className="flex-1 relative flex items-center">
-          <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-rule/30 rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-100"
               style={{ width: `${trackPct}%`, backgroundColor: fillColor }}
@@ -82,7 +82,7 @@ function ScoreSlider({
           />
         </div>
         <div className="w-28 shrink-0 text-right">
-          <span className="text-xs font-bold text-slate-500">{value}/{max}</span>
+          <span className="text-xs font-bold text-muted">{value}/{max}</span>
           {' '}
           <span className={`text-xs font-semibold ${labelColor}`}>{levelLabel}</span>
         </div>
@@ -108,27 +108,27 @@ function Section({
 }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <div className="border border-slate-200 rounded-xl overflow-hidden">
+    <div className="border border-rule rounded-xl overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 hover:bg-slate-100 transition-colors text-left"
+        className="w-full flex items-center justify-between px-4 py-3 bg-ink/[0.03] hover:bg-ink/[0.04] transition-colors text-left"
       >
         <div>
-          <span className="font-semibold text-slate-800">{title}</span>
-          {subtitle && <span className="text-xs text-slate-500 ml-2">{subtitle}</span>}
+          <span className="font-semibold text-ink">{title}</span>
+          {subtitle && <span className="text-xs text-muted ml-2">{subtitle}</span>}
         </div>
         <div className="flex items-center gap-2">
           {badge}
           <svg
-            className={`w-4 h-4 text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`}
+            className={`w-4 h-4 text-muted transition-transform ${open ? 'rotate-180' : ''}`}
             fill="none" stroke="currentColor" viewBox="0 0 24 24"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </div>
       </button>
-      {open && <div className="px-4 py-4 space-y-3 bg-white">{children}</div>}
+      {open && <div className="px-4 py-4 space-y-3 bg-paper">{children}</div>}
     </div>
   )
 }
@@ -138,7 +138,7 @@ function Section({
 function ScoreBadge({ value, higherIsBetter = true }: { value: number; higherIsBetter?: boolean }) {
   const pct = Math.round(value * 100)
   const color = higherIsBetter
-    ? pct >= 60 ? 'bg-emerald-100 text-emerald-800' : pct >= 30 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-600'
+    ? pct >= 60 ? 'bg-emerald-100 text-emerald-800' : pct >= 30 ? 'bg-blue-100 text-blue-800' : 'bg-rule/30 text-ink/80'
     : pct <= 30 ? 'bg-emerald-100 text-emerald-800' : pct <= 60 ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-700'
   return <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${color}`}>{pct}</span>
 }
@@ -164,18 +164,18 @@ function NumInput({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <label className="w-52 text-sm text-slate-700 shrink-0">{label}</label>
+      <label className="w-52 text-sm text-ink/80 shrink-0">{label}</label>
       <div className="flex items-center gap-1">
-        {prefix && <span className="text-sm text-slate-500">{prefix}</span>}
+        {prefix && <span className="text-sm text-muted">{prefix}</span>}
         <input
           type="number"
           min={min}
           value={value ?? ''}
           placeholder={placeholder}
           onChange={e => onChange(e.target.value === '' ? null : parseFloat(e.target.value))}
-          className="w-24 px-2.5 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          className="w-24 px-2.5 py-1.5 text-sm border border-rule rounded-lg focus:outline-none focus:ring-2 focus:ring-ink"
         />
-        {suffix && <span className="text-sm text-slate-500">{suffix}</span>}
+        {suffix && <span className="text-sm text-muted">{suffix}</span>}
       </div>
     </div>
   )
@@ -409,13 +409,13 @@ export default function ReviewForm({ game, existingReview }: Props) {
       <div className="flex-1 min-w-0 pb-24">
 
         {/* Sticky score summary bar */}
-        <div className="sticky top-14 z-30 bg-white border-b border-slate-200 px-4 py-2.5 flex items-center gap-4 shadow-sm">
+        <div className="sticky top-14 z-30 bg-paper border-b border-rule px-4 py-2.5 flex items-center gap-4 shadow-sm">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-500">BDS</span>
+            <span className="text-xs font-semibold text-muted">BDS</span>
             <ScoreBadge value={computed.bds} higherIsBetter />
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-500">RIS</span>
+            <span className="text-xs font-semibold text-muted">RIS</span>
             <ScoreBadge value={computed.ris} higherIsBetter={false} />
           </div>
           <div className="flex items-center gap-2">
@@ -430,7 +430,7 @@ export default function ReviewForm({ game, existingReview }: Props) {
           <button
             type="button"
             onClick={() => setPreviewOpen(o => !o)}
-            className="ml-auto lg:hidden text-xs text-indigo-600 font-medium border border-indigo-200 px-3 py-1 rounded-lg"
+            className="ml-auto lg:hidden text-xs text-accent font-medium border border-indigo-200 px-3 py-1 rounded-lg"
           >
             {previewOpen ? 'Hide preview' : 'Preview card'}
           </button>
@@ -438,7 +438,7 @@ export default function ReviewForm({ game, existingReview }: Props) {
 
         {/* Mobile preview panel */}
         {previewOpen && (
-          <div className="lg:hidden px-4 py-4 bg-slate-100 border-b border-slate-200">
+          <div className="lg:hidden px-4 py-4 bg-rule/30 border-b border-rule">
             <GameCard {...gameCardProps} />
           </div>
         )}
@@ -451,7 +451,7 @@ export default function ReviewForm({ game, existingReview }: Props) {
             subtitle="10 items · max 50"
             badge={<ScoreBadge value={computed.cognitiveScore} higherIsBetter />}
           >
-            <p className="text-xs text-slate-500 mb-3">
+            <p className="text-xs text-muted mb-3">
               Rate 0–5: 0 = not present, 5 = exceptional, a primary focus of gameplay
             </p>
             {([
@@ -534,7 +534,7 @@ export default function ReviewForm({ game, existingReview }: Props) {
             badge={<ScoreBadge value={computed.dopamineRisk} higherIsBetter={false} />}
             defaultOpen={false}
           >
-            <p className="text-xs text-slate-500 mb-3">
+            <p className="text-xs text-muted mb-3">
               Rate 0–3: 0 = absent, 1 = mild, 2 = moderate, 3 = severe engagement mechanics
             </p>
             {([
@@ -621,7 +621,7 @@ export default function ReviewForm({ game, existingReview }: Props) {
             badge={<ScoreBadge value={computed.contentRisk} higherIsBetter={false} />}
             defaultOpen={false}
           >
-            <p className="text-xs text-slate-500 mb-3">
+            <p className="text-xs text-muted mb-3">
               Content risk is shown to parents separately. It does not affect time recommendations.
             </p>
             {([
@@ -670,18 +670,18 @@ export default function ReviewForm({ game, existingReview }: Props) {
                     type="checkbox"
                     checked={form.hasNaturalStoppingPoints}
                     onChange={e => setScore('hasNaturalStoppingPoints', e.target.checked)}
-                    className="rounded border-slate-300 text-indigo-600"
+                    className="rounded border-rule text-accent"
                   />
-                  <span className="text-sm text-slate-700">Has natural stopping points</span>
+                  <span className="text-sm text-ink/80">Has natural stopping points</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={form.penalizesBreaks}
                     onChange={e => setScore('penalizesBreaks', e.target.checked)}
-                    className="rounded border-slate-300 text-indigo-600"
+                    className="rounded border-rule text-accent"
                   />
-                  <span className="text-sm text-slate-700">Penalises breaks</span>
+                  <span className="text-sm text-ink/80">Penalises breaks</span>
                 </label>
               </div>
             </div>
@@ -696,14 +696,14 @@ export default function ReviewForm({ game, existingReview }: Props) {
                 ['parentTip',         'Parent tip',               'One actionable suggestion (e.g., "Play together the first session", "Set a timer before starting").'],
               ].map(([key, label, placeholder]) => (
                 <div key={key}>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>
+                  <label className="block text-sm font-medium text-ink/80 mb-1">{label}</label>
                   <textarea
                     value={(form[key as keyof FormState] as string) ?? ''}
                     onChange={e => setScore(key as keyof FormState, e.target.value as never)}
                     placeholder={placeholder}
                     rows={3}
-                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg resize-y
-                      focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder:text-slate-300"
+                    className="w-full px-3 py-2 text-sm border border-rule rounded-lg resize-y
+                      focus:outline-none focus:ring-2 focus:ring-ink placeholder:text-rule"
                   />
                 </div>
               ))}
@@ -722,7 +722,7 @@ export default function ReviewForm({ game, existingReview }: Props) {
               type="button"
               disabled={saving}
               onClick={() => handleSubmit('approved')}
-              className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl
+              className="flex-1 py-3 bg-ink hover:bg-accent text-white font-semibold rounded-xl
                 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm"
             >
               {saving ? 'Saving…' : '✓ Publish review'}
@@ -731,7 +731,7 @@ export default function ReviewForm({ game, existingReview }: Props) {
               type="button"
               disabled={saving}
               onClick={() => handleSubmit('draft')}
-              className="px-5 py-3 border border-slate-300 hover:border-slate-400 text-slate-700 font-medium
+              className="px-5 py-3 border border-rule hover:border-ink text-ink/80 font-medium
                 rounded-xl transition-colors disabled:opacity-60 text-sm"
             >
               Save draft
@@ -750,21 +750,21 @@ export default function ReviewForm({ game, existingReview }: Props) {
       <div className="hidden lg:block w-96 shrink-0">
         <div className="sticky top-20 overflow-y-auto max-h-[calc(100vh-5rem)] pb-8 space-y-4">
           <div className="flex items-center justify-between px-1">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Live preview</p>
+            <p className="text-xs font-semibold text-muted uppercase tracking-wide">Live preview</p>
             <div className="flex items-center gap-2">
               <div className={`w-2 h-2 rounded-full animate-pulse ${
                 computed.timeRecommendation.color === 'green' ? 'bg-emerald-500' :
                 computed.timeRecommendation.color === 'amber' ? 'bg-amber-500' : 'bg-red-500'
               }`} />
-              <span className="text-xs text-slate-400">Updates as you score</span>
+              <span className="text-xs text-muted">Updates as you score</span>
             </div>
           </div>
 
           <GameCard {...gameCardProps} />
 
           {/* Score summary */}
-          <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-2.5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Score summary</p>
+          <div className="bg-paper rounded-xl border border-rule p-4 space-y-2.5">
+            <p className="text-xs font-semibold text-muted uppercase tracking-wide">Score summary</p>
             {[
               { label: 'Cognitive (B1)',  value: computed.cognitiveScore,       good: true  },
               { label: 'Social (B2)',     value: computed.socialEmotionalScore,  good: true  },
@@ -777,12 +777,12 @@ export default function ReviewForm({ game, existingReview }: Props) {
               { label: 'RIS',            value: computed.ris,                   good: false },
             ].map(({ label, value, good }) => (
               <div key={label} className="flex items-center gap-2">
-                <span className="text-xs text-slate-600 w-36 shrink-0">{label}</span>
-                <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                <span className="text-xs text-ink/80 w-36 shrink-0">{label}</span>
+                <div className="flex-1 bg-rule/30 rounded-full h-1.5 overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-200 ${
                       good
-                        ? value >= 0.6 ? 'bg-emerald-500' : value >= 0.3 ? 'bg-blue-400' : 'bg-slate-300'
+                        ? value >= 0.6 ? 'bg-emerald-500' : value >= 0.3 ? 'bg-blue-400' : 'bg-rule'
                         : value >= 0.6 ? 'bg-red-500' : value >= 0.3 ? 'bg-amber-400' : 'bg-emerald-400'
                     }`}
                     style={{ width: `${Math.round(value * 100)}%` }}
@@ -790,7 +790,7 @@ export default function ReviewForm({ game, existingReview }: Props) {
                 </div>
                 <span className={`text-xs font-bold w-8 text-right shrink-0 ${
                   good
-                    ? value >= 0.6 ? 'text-emerald-700' : value >= 0.3 ? 'text-blue-600' : 'text-slate-400'
+                    ? value >= 0.6 ? 'text-emerald-700' : value >= 0.3 ? 'text-blue-600' : 'text-muted'
                     : value >= 0.6 ? 'text-red-700' : value >= 0.3 ? 'text-amber-600' : 'text-emerald-600'
                 }`}>
                   {Math.round(value * 100)}

@@ -25,13 +25,13 @@ export default function BetaBanner() {
 
   return (
     <div className="fixed bottom-0 inset-x-0 z-50 px-4 pb-4 pointer-events-none">
-      <div className="max-w-2xl mx-auto bg-slate-900 dark:bg-slate-800 text-white rounded-2xl shadow-xl px-5 py-4 flex items-center gap-4 pointer-events-auto border border-slate-700">
+      <div className="max-w-2xl mx-auto bg-ink text-paper px-5 py-4 flex items-center gap-4 pointer-events-auto border-t-2 border-accent">
         <span className="text-lg">🚧</span>
-        <p className="flex-1 text-sm text-slate-200">
-          <span className="font-semibold text-white">{t('betaTitle')}</span> &mdash; {t('betaBody')}{' '}
+        <p className="flex-1 text-sm text-paper/80">
+          <span className="font-serif text-paper">{t('betaTitle')}</span> &mdash; {t('betaBody')}{' '}
           <a
             href="/review/feedback"
-            className="underline text-indigo-400 hover:text-indigo-300 transition-colors"
+            className="underline text-paper hover:text-accent transition-colors"
           >
             {t('shareFeedback')}
           </a>
@@ -39,7 +39,7 @@ export default function BetaBanner() {
         <button
           onClick={dismiss}
           aria-label="Dismiss"
-          className="shrink-0 text-slate-400 hover:text-white transition-colors"
+          className="shrink-0 text-paper/60 hover:text-paper transition-colors"
         >
           <X size={18} />
         </button>

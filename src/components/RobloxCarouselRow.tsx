@@ -3,7 +3,7 @@
 import { useRef } from 'react'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import { curascoreBg } from '@/lib/ui'
+import { curascoreTextEditorial } from '@/lib/ui'
 import { CONFIDENCE_THRESHOLD } from '@/lib/scoring/experience-risk'
 import type { ExperienceSummary } from '@/components/ExperienceCard'
 import Icon from '@/components/Icon'
@@ -28,7 +28,7 @@ function RobloxTile({ exp }: { exp: ExperienceSummary }) {
       className={`group/tile shrink-0 w-36 sm:w-44 snap-start ${isPending ? 'grayscale opacity-75 hover:opacity-100 hover:grayscale-0 transition-all' : ''}`}
     >
       {/* Image */}
-      <div className="relative w-full h-24 sm:h-28 rounded-xl overflow-hidden bg-red-100 dark:bg-red-900/40">
+      <div className="relative w-full h-24 sm:h-28 overflow-hidden bg-rule/30">
         {exp.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -37,25 +37,17 @@ function RobloxTile({ exp }: { exp: ExperienceSummary }) {
             className="w-full h-full object-cover group-hover/tile:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-red-100 to-orange-200 dark:from-red-900/40 dark:to-orange-900/40">
-            <span className="text-2xl font-black text-red-300 dark:text-red-500 select-none">
+          <div className="w-full h-full flex items-center justify-center bg-rule/40">
+            <span className="text-2xl font-serif text-muted select-none">
               {exp.title.slice(0, 2).toUpperCase()}
             </span>
           </div>
         )}
 
-        {!isPending && exp.curascore != null && (
-          <span
-            className={`absolute top-1.5 right-1.5 ${curascoreBg(exp.curascore)} text-white text-[10px] font-black px-1.5 py-0.5 rounded-full leading-none`}
-            title="LumiScore"
-          >
-            {exp.curascore}
-          </span>
-        )}
-
         {!isPending && exp.recommendedMinAge != null && (
           <span
-            className="absolute bottom-1.5 left-1.5 bg-slate-700 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none"
+            className="absolute bottom-1.5 left-1.5 bg-paper text-ink text-kicker uppercase font-semibold px-1.5 py-0.5 leading-none"
+            style={{ fontVariantCaps: 'all-small-caps' }}
             title={`Recommended age ${exp.recommendedMinAge}+`}
           >
             {exp.recommendedMinAge}+
@@ -65,20 +57,27 @@ function RobloxTile({ exp }: { exp: ExperienceSummary }) {
         {/* Active players — bottom right */}
         {exp.activePlayers != null && exp.activePlayers > 0 && (
           <span
-            className="absolute bottom-1.5 right-1.5 bg-black/60 text-white text-[9px] font-semibold px-1 py-0.5 rounded leading-none flex items-center gap-0.5"
+            className="absolute bottom-1.5 right-1.5 bg-ink/70 text-paper text-[9px] font-semibold px-1 py-0.5 leading-none flex items-center gap-0.5"
             title={`${formatCount(exp.activePlayers)} playing now`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block shrink-0" />
+            <span className="w-1.5 h-1.5 rounded-full bg-ivy inline-block shrink-0" />
             {formatCount(exp.activePlayers)}
           </span>
         )}
       </div>
 
       {/* Title + creator */}
-      <p className="mt-2 text-xs font-semibold text-slate-800 dark:text-slate-100 truncate group-hover/tile:text-indigo-700 dark:group-hover/tile:text-indigo-400 transition-colors leading-tight">
-        {exp.title}
-      </p>
-      <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
+      <div className="mt-2 flex items-start justify-between gap-2">
+        <p className="text-xs font-serif text-ink truncate group-hover/tile:text-accent transition-colors leading-tight">
+          {exp.title}
+        </p>
+        {!isPending && exp.curascore != null && (
+          <span className={`font-serif text-xs font-semibold tabular-nums leading-none shrink-0 ${curascoreTextEditorial(exp.curascore)}`} title="LumiScore">
+            {exp.curascore}
+          </span>
+        )}
+      </div>
+      <p className="text-[10px] text-muted truncate mt-0.5">
         {isPending ? tCommon('notEnoughInfo') : (exp.creatorName ?? '')}
       </p>
     </Link>
@@ -96,7 +95,7 @@ function Arrow({ dir, onClick, label }: { dir: 'left' | 'right'; onClick: () => 
         ${dir === 'left' ? 'left-0 justify-start pl-1' : 'right-0 justify-end pr-1'}
         transition-opacity`}
     >
-      <span className="w-8 h-8 rounded-full bg-white/95 dark:bg-slate-800/95 shadow-md border border-slate-200 dark:border-slate-600 flex items-center justify-center text-lg text-slate-600 dark:text-slate-300 hover:text-indigo-700 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-500 transition-colors select-none leading-none">
+      <span className="w-8 h-8 rounded-full bg-paper shadow-md border border-rule flex items-center justify-center text-lg text-ink hover:text-accent hover:border-ink transition-colors select-none leading-none">
         {dir === 'left' ? '‹' : '›'}
       </span>
     </button>
@@ -120,13 +119,14 @@ export default function RobloxCarouselRow({ experiences }: { experiences: Experi
   return (
     <section className="pt-10">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+        <h2 className="text-lg font-serif text-ink flex items-center gap-2">
           <Icon name="roblox" size={20} aria-hidden="true" />
           <span>{t('carouselTitle')}</span>
         </h2>
         <Link
           href={`/${locale}/game/roblox`}
-          className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors shrink-0 px-2 py-1 -mr-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-950/40"
+          className="text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors shrink-0"
+          style={{ fontVariantCaps: 'all-small-caps' }}
         >
           {tc('seeAll')}
         </Link>

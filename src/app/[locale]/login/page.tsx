@@ -38,47 +38,45 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center px-4 transition-colors">
+    <div className="min-h-screen bg-paper text-ink flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <a href="/" className="text-2xl font-extrabold text-indigo-700 dark:text-indigo-400">LumiKin</a>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">Reviewer sign-in</p>
+          <a href="/" className="font-serif text-3xl text-ink">LumiKin</a>
+          <p className="font-serif italic text-muted mt-1 text-sm">Reviewer sign-in</p>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+        <div className="border border-rule p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
+              <label className="block text-kicker uppercase font-semibold text-muted mb-1" style={{ fontVariantCaps: 'all-small-caps' }}>Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
                 autoComplete="email"
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-sm
-                  placeholder:text-slate-400 dark:placeholder:text-slate-500
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
-                  transition-colors"
+                className="w-full px-3 py-2.5 border border-rule bg-paper text-ink text-sm
+                  placeholder:text-muted
+                  focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Password</label>
+              <label className="block text-kicker uppercase font-semibold text-muted mb-1" style={{ fontVariantCaps: 'all-small-caps' }}>Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-sm
-                  placeholder:text-slate-400 dark:placeholder:text-slate-500
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
-                  transition-colors"
+                className="w-full px-3 py-2.5 border border-rule bg-paper text-ink text-sm
+                  placeholder:text-muted
+                  focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink"
               />
             </div>
 
             {error && (
-              <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg px-3 py-2">
+              <p className="text-sm text-accent border border-accent px-3 py-2">
                 {error}
               </p>
             )}
@@ -86,16 +84,17 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white text-sm font-semibold
-                rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full py-2.5 bg-ink hover:bg-accent text-paper text-kicker uppercase font-semibold
+                transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              style={{ fontVariantCaps: 'all-small-caps' }}
             >
               {loading ? 'Signing in…' : 'Sign in'}
             </button>
           </form>
         </div>
 
-        <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-4">
-          <a href="/" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">← Back to LumiKin</a>
+        <p className="text-center text-kicker uppercase text-muted mt-4" style={{ fontVariantCaps: 'all-small-caps' }}>
+          <a href="/" className="hover:text-accent transition-colors">← Back to LumiKin</a>
         </p>
       </div>
     </div>

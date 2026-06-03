@@ -103,24 +103,24 @@ export default function ProfileManager({ initialProfiles }: Props) {
           return (
             <div
               key={p.id}
-              className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 shadow-sm"
+              className="flex items-center gap-2 bg-paper border border-rule rounded-xl px-4 py-2.5 shadow-sm"
             >
-              <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-600 shrink-0">
+              <div className="w-7 h-7 rounded-full bg-ink/10 flex items-center justify-center text-xs font-serif text-ink shrink-0">
                 {p.name[0].toUpperCase()}
               </div>
               <div className="text-sm">
-                <span className="font-semibold text-slate-800 dark:text-slate-100">{p.name}</span>
-                <span className="text-slate-400 dark:text-slate-500 ml-1.5 text-xs">{age}y</span>
+                <span className="font-semibold text-ink">{p.name}</span>
+                <span className="text-muted ml-1.5 text-xs">{age}y</span>
               </div>
               <button
                 onClick={() => openEdit(p)}
-                className="text-xs text-slate-400 dark:text-slate-500 hover:text-indigo-600 transition-colors ml-1"
+                className="text-xs text-muted hover:text-accent transition-colors ml-1"
               >
                 Edit
               </button>
               <button
                 onClick={() => remove(p.id, p.name)}
-                className="text-xs text-slate-300 hover:text-red-500 transition-colors"
+                className="text-xs text-rule hover:text-accent transition-colors"
               >
                 ✕
               </button>
@@ -130,8 +130,8 @@ export default function ProfileManager({ initialProfiles }: Props) {
 
         <button
           onClick={openAdd}
-          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600
-            text-sm text-slate-500 dark:text-slate-400 hover:border-indigo-400 hover:text-indigo-600 transition-colors"
+          className="flex items-center gap-1.5 px-4 py-2.5 border-2 border-dashed border-rule
+            text-sm text-muted hover:border-ink hover:text-accent transition-colors"
         >
           {t('addButton')}
         </button>
@@ -140,36 +140,36 @@ export default function ProfileManager({ initialProfiles }: Props) {
       {/* Modal form */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md p-6 space-y-5 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">
+          <div className="bg-paper rounded-2xl shadow-xl w-full max-w-md p-6 space-y-5 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-lg font-bold text-ink">
               {editing ? t('editProfile', { name: editing.name }) : t('addProfile')}
             </h2>
 
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('name')}</label>
+              <label className="block text-sm font-medium text-ink/80 mb-1">{t('name')}</label>
               <input
                 type="text"
                 value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder={t('namePlaceholder')}
-                className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                className="w-full px-3 py-2 rounded-lg border border-rule bg-paper text-ink text-sm focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink placeholder:text-muted"
               />
             </div>
 
             {/* Birth date */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('dateOfBirth')}</label>
+              <label className="block text-sm font-medium text-ink/80 mb-1">{t('dateOfBirth')}</label>
               <input
                 type="date"
                 value={form.birthDate}
                 max={today}
                 min="2000-01-01"
                 onChange={e => setForm(f => ({ ...f, birthDate: e.target.value }))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-rule bg-paper text-ink text-sm focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink"
               />
               {form.birthDate && (
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                <p className="text-xs text-muted mt-1">
                   Age: {calcAge(form.birthDate)} years old
                 </p>
               )}
@@ -177,7 +177,7 @@ export default function ProfileManager({ initialProfiles }: Props) {
 
             {/* Platforms */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t('platforms')}</label>
+              <label className="block text-sm font-medium text-ink/80 mb-2">{t('platforms')}</label>
               <div className="flex flex-wrap gap-2">
                 {PLATFORM_OPTIONS.map(p => (
                   <button
@@ -186,8 +186,8 @@ export default function ProfileManager({ initialProfiles }: Props) {
                     onClick={() => toggleMulti('platforms', p)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                       form.platforms.includes(p)
-                        ? 'bg-indigo-600 text-white border-indigo-600'
-                        : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-500 hover:border-indigo-400'
+                        ? 'bg-ink text-paper border-ink'
+                        : 'bg-paper text-ink/80 border-rule hover:border-ink'
                     }`}
                   >
                     {p}
@@ -198,8 +198,8 @@ export default function ProfileManager({ initialProfiles }: Props) {
 
             {/* Focus skills */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('focusSkills')} <span className="text-slate-400 dark:text-slate-500 font-normal">(optional)</span>
+              <label className="block text-sm font-medium text-ink/80 mb-2">
+                {t('focusSkills')} <span className="text-muted font-normal">(optional)</span>
               </label>
               <div className="flex flex-wrap gap-2">
                 {SKILL_OPTIONS.map(s => (
@@ -209,8 +209,8 @@ export default function ProfileManager({ initialProfiles }: Props) {
                     onClick={() => toggleMulti('focusSkills', s.value)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                       form.focusSkills.includes(s.value)
-                        ? 'bg-emerald-600 text-white border-emerald-600'
-                        : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-500 hover:border-emerald-400'
+                        ? 'bg-ivy text-paper border-ivy'
+                        : 'bg-paper text-ink/80 border-rule hover:border-ivy'
                     }`}
                   >
                     {s.label}
@@ -219,19 +219,20 @@ export default function ProfileManager({ initialProfiles }: Props) {
               </div>
             </div>
 
-            {error && <p className="text-sm text-red-600">{error}</p>}
+            {error && <p className="text-sm text-accent">{error}</p>}
 
             <div className="flex justify-end gap-3 pt-1">
               <button
                 onClick={() => setShowForm(false)}
-                className="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 transition-colors"
+                className="px-4 py-2 text-sm text-ink/80 hover:text-ink transition-colors"
               >
                 {t('cancel')}
               </button>
               <button
                 onClick={save}
                 disabled={saving}
-                className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-60"
+                className="px-5 py-2 bg-ink hover:bg-accent text-paper text-kicker uppercase font-semibold transition-colors disabled:opacity-60"
+                style={{ fontVariantCaps: 'all-small-caps' }}
               >
                 {saving ? t('saving') : t('save')}
               </button>

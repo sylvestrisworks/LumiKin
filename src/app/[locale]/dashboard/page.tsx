@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
 import { childProfiles, userGames, games, gameScores } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { curascoreBg } from '@/lib/ui'
+import { curascoreTextEditorial } from '@/lib/ui'
 import Icon from '@/components/Icon'
 import { calcAge } from '@/lib/age'
 import ProfileManager from '@/components/ProfileManager'
@@ -90,25 +90,25 @@ export default async function FamilyDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
 
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between border-b border-ink pb-6">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{t('title')}</h1>
-            <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">{t('signedInAs', { email: session.user.email ?? '' })}</p>
+            <h1 className="font-serif text-display-sm text-ink">{t('title')}</h1>
+            <p className="text-muted text-sm mt-1">{t('signedInAs', { email: session.user.email ?? '' })}</p>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <a href={`/${locale}/library`} className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-300 hover:border-indigo-300 hover:text-indigo-700 transition-colors text-xs font-medium">
+            <a href={`/${locale}/library`} className="flex items-center gap-1.5 px-3 py-1.5 border border-rule text-ink hover:border-ink hover:text-accent transition-colors text-kicker uppercase font-semibold" style={{ fontVariantCaps: 'all-small-caps' }}>
               <Icon name="pc" size={14} aria-hidden="true" /> {t('owned', { count: owned.length })}
             </a>
             {wlCount > 0 && (
-              <a href={`/${locale}/library`} className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-300 hover:border-amber-300 hover:text-amber-600 transition-colors text-xs font-medium">
+              <a href={`/${locale}/library`} className="flex items-center gap-1.5 px-3 py-1.5 border border-rule text-ink hover:border-ink hover:text-warm transition-colors text-kicker uppercase font-semibold" style={{ fontVariantCaps: 'all-small-caps' }}>
                 ★ {t('wishlisted', { count: wlCount })}
               </a>
             )}
-            <a href={`/${locale}/notifications`} className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-300 hover:border-indigo-300 hover:text-indigo-700 transition-colors text-xs font-medium">
+            <a href={`/${locale}/notifications`} className="flex items-center gap-1.5 px-3 py-1.5 border border-rule text-ink hover:border-ink hover:text-accent transition-colors text-kicker uppercase font-semibold" style={{ fontVariantCaps: 'all-small-caps' }}>
               🔔 {t('notifications')}
             </a>
           </div>
@@ -136,17 +136,17 @@ export default async function FamilyDashboard() {
           const healthScore = libHealthScore(childGames)
 
           return (
-            <section key={profile.id} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+            <section key={profile.id} className="border border-rule overflow-hidden">
 
               {/* Child header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-rule">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-base font-bold text-indigo-600 shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-ink/10 flex items-center justify-center text-base font-serif text-ink shrink-0">
                     {profile.name[0].toUpperCase()}
                   </div>
                   <div>
-                    <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">{profile.name}</h2>
-                    <p className="text-xs text-slate-400 dark:text-slate-500">
+                    <h2 className="font-serif text-lg text-ink">{profile.name}</h2>
+                    <p className="text-xs text-muted">
                       {t('age', { age })}
                       {(profile.platforms as string[]).length > 0 && ` · ${(profile.platforms as string[]).join(', ')}`}
                     </p>
@@ -156,15 +156,12 @@ export default async function FamilyDashboard() {
                 {/* Library health score */}
                 {healthScore != null ? (
                   <div className="text-right">
-                    <div className={`text-3xl font-black ${
-                      healthScore >= 70 ? 'text-emerald-600' :
-                      healthScore >= 50 ? 'text-amber-500' : 'text-red-500'
-                    }`}>{healthScore}</div>
-                    <div className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wide mt-0.5">{t('libraryScore')}</div>
+                    <div className={`font-serif text-3xl ${curascoreTextEditorial(healthScore)}`}>{healthScore}</div>
+                    <div className="text-kicker uppercase text-muted mt-0.5" style={{ fontVariantCaps: 'all-small-caps' }}>{t('libraryScore')}</div>
                   </div>
                 ) : owned.length > 0 ? (
                   <div className="text-right">
-                    <div className="text-xs text-slate-400 dark:text-slate-500">{t('noGamesMatchChild')}</div>
+                    <div className="text-xs text-muted">{t('noGamesMatchChild')}</div>
                   </div>
                 ) : null}
               </div>
@@ -174,18 +171,18 @@ export default async function FamilyDashboard() {
                 {childGames.length > 0 ? (
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">{t('fromYourLibrary')}</h3>
-                      <a href={`/${locale}/library?child=${profile.id}`} className="text-xs text-indigo-600 hover:underline">{t('gamesCount', { count: childGames.length })}</a>
+                      <h3 className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>{t('fromYourLibrary')}</h3>
+                      <a href={`/${locale}/library?child=${profile.id}`} className="text-xs text-accent hover:underline">{t('gamesCount', { count: childGames.length })}</a>
                     </div>
                     <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                       {childGames.slice(0, 12).map(g => (
-                        <a key={g.slug} href={`/${locale}/game/${g.slug}`} className="relative shrink-0 w-20 h-20 rounded-xl overflow-hidden bg-slate-100 hover:ring-2 hover:ring-indigo-400 transition-all">
+                        <a key={g.slug} href={`/${locale}/game/${g.slug}`} className="relative shrink-0 w-20 h-20 overflow-hidden bg-rule/30 hover:ring-1 hover:ring-ink transition-all">
                           {g.backgroundImage
                             ? <img src={g.backgroundImage} alt={g.title} className="w-full h-full object-cover" />
-                            : <div className="w-full h-full bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center text-xs font-bold text-indigo-300">{g.title.slice(0,2).toUpperCase()}</div>
+                            : <div className="w-full h-full bg-rule/40 flex items-center justify-center text-xs font-serif text-muted">{g.title.slice(0,2).toUpperCase()}</div>
                           }
                           {g.curascore != null && (
-                            <span className={`absolute bottom-1 right-1 text-[9px] font-black text-white px-1 py-0.5 rounded-full ${curascoreBg(g.curascore)}`}>
+                            <span className={`absolute bottom-1 right-1 text-[10px] font-serif font-semibold bg-paper px-1 py-0.5 leading-none ${curascoreTextEditorial(g.curascore)}`}>
                               {g.curascore}
                             </span>
                           )}
@@ -194,9 +191,9 @@ export default async function FamilyDashboard() {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-400 dark:text-slate-500">
+                  <p className="text-sm text-muted">
                     {t('noGamesInLibrary', { name: profile.name })}{' '}
-                    <a href={`/${locale}/browse?child=${profile.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline">{t('browseForChild', { name: profile.name })}</a>
+                    <a href={`/${locale}/browse?child=${profile.id}`} className="text-accent hover:underline">{t('browseForChild', { name: profile.name })}</a>
                   </p>
                 )}
               </div>
@@ -205,10 +202,10 @@ export default async function FamilyDashboard() {
         })}
 
         {profiles.length === 0 && (
-          <div className="text-center py-20 text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
-            <p className="mb-3 flex justify-center"><Icon name="family" size={48} aria-hidden="true" className="text-slate-300 dark:text-slate-600" /></p>
-            <p className="font-medium text-slate-600 dark:text-slate-400 text-lg">{t('addChildCta')}</p>
-            <p className="text-sm mt-2 max-w-sm mx-auto text-slate-400 dark:text-slate-500">
+          <div className="text-center py-20 border border-rule">
+            <p className="mb-3 flex justify-center"><Icon name="family" size={48} aria-hidden="true" className="text-rule" /></p>
+            <p className="font-serif text-ink text-lg">{t('addChildCta')}</p>
+            <p className="text-sm mt-2 max-w-sm mx-auto text-muted">
               {t('addChildDesc')}
             </p>
           </div>

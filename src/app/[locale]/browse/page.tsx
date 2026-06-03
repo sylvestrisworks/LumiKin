@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { eq, desc, asc, sql, and, lte, gte, gt, ilike, inArray, isNull, isNotNull, or, type SQL } from 'drizzle-orm'
-import { curascoreBg } from '@/lib/ui'
+import { curascoreTextEditorial } from '@/lib/ui'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { games, gameScores, childProfiles, platformExperiences, experienceScores } from '@/lib/db/schema'
@@ -629,7 +629,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
   ].filter(Boolean).length
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
 
         {/* ── Search bar — always visible ────────────────────────────────── */}
@@ -648,7 +648,8 @@ export default async function BrowsePage({ params, searchParams }: Props) {
               {!uid && (
                 <Link
                   href={`/${locale}/account`}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-sm font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 border border-ink text-ink text-kicker uppercase font-semibold hover:bg-ink hover:text-paper transition-colors"
+                  style={{ fontVariantCaps: 'all-small-caps' }}
                 >
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {t('tellAboutKid' as any)}
@@ -658,7 +659,8 @@ export default async function BrowsePage({ params, searchParams }: Props) {
               {uid && profiles.length === 0 && (
                 <Link
                   href={`/${locale}/account`}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-sm font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 border border-ink text-ink text-kicker uppercase font-semibold hover:bg-ink hover:text-paper transition-colors"
+                  style={{ fontVariantCaps: 'all-small-caps' }}
                 >
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {t('addFirstKid' as any)}
@@ -667,16 +669,16 @@ export default async function BrowsePage({ params, searchParams }: Props) {
               )}
               {uid && profiles.length > 0 && (
                 <div className="flex items-center gap-2 flex-wrap justify-center">
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{t('forChild')}</span>
+                  <span className="text-kicker uppercase text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>{t('forChild')}</span>
                   <a
                     href={`/${locale}/browse?${new URLSearchParams(
                       Object.entries(sp as Record<string, string>)
                         .filter(([k]) => k !== 'child' && k !== 'page')
                     ).toString()}`}
-                    className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                    className={`text-xs px-3 py-1.5 font-medium border transition-colors ${
                       !selectedChild
-                        ? 'bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900'
-                        : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-500'
+                        ? 'bg-ink border-ink text-paper'
+                        : 'border-rule text-ink hover:border-ink hover:text-accent'
                     }`}
                   >
                     {t('forEveryone')}
@@ -692,10 +694,10 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                       <a
                         key={p.id}
                         href={`/${locale}/browse?${params.toString()}`}
-                        className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                        className={`text-xs px-3 py-1.5 font-medium border transition-colors ${
                           selectedChild?.id === p.id
-                            ? 'bg-indigo-600 text-white'
-                            : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400'
+                            ? 'bg-accent border-accent text-paper'
+                            : 'border-rule text-ink hover:border-ink hover:text-accent'
                         }`}
                       >
                         {p.name} <span className="opacity-70">({age})</span>
@@ -710,13 +712,13 @@ export default async function BrowsePage({ params, searchParams }: Props) {
               <Suspense>
                 <PlatformPicker current={shelfPlatforms} />
               </Suspense>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                <Link href={`/${locale}/age`} className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium">
+              <p className="text-xs text-muted">
+                <Link href={`/${locale}/age`} className="text-accent hover:underline font-medium">
                   {t('byAgeLink')}
                 </Link>
               </p>
               {(filters.platforms.length > 0 || filters.age !== undefined) && (
-                <a href={`/${locale}/browse`} className="inline-block text-xs text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors">
+                <a href={`/${locale}/browse`} className="inline-block text-kicker uppercase text-muted hover:text-accent transition-colors" style={{ fontVariantCaps: 'all-small-caps' }}>
                   {t('clearFiltersShort')}
                 </a>
               )}
@@ -767,17 +769,17 @@ export default async function BrowsePage({ params, searchParams }: Props) {
             {profiles.length > 0 && (
               <div className="flex items-center gap-2 flex-wrap mb-4">
                 {/* FIX: "For:" översatt */}
-                <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">{t('forChild')}</span>
+                <span className="text-kicker uppercase text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>{t('forChild')}</span>
                 {/* FIX: "Everyone" översatt */}
                 <a
                   href={`/${locale}/browse?${new URLSearchParams(
                     Object.entries(sp as Record<string, string>)
                       .filter(([k]) => k !== 'child' && k !== 'page')
                   ).toString()}`}
-                  className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                  className={`text-xs px-3 py-1.5 font-medium border transition-colors ${
                     !selectedChild
-                      ? 'bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900'
-                      : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-500'
+                      ? 'bg-ink border-ink text-paper'
+                      : 'border-rule text-ink hover:border-ink hover:text-accent'
                   }`}
                 >
                   {t('forEveryone')}
@@ -793,10 +795,10 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                     <a
                       key={p.id}
                       href={`/${locale}/browse?${childParams.toString()}`}
-                      className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                      className={`text-xs px-3 py-1.5 font-medium border transition-colors ${
                         selectedChild?.id === p.id
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400'
+                          ? 'bg-accent border-accent text-paper'
+                          : 'border-rule text-ink hover:border-ink hover:text-accent'
                       }`}
                     >
                       {p.name} <span className="opacity-70">({age})</span>
@@ -808,7 +810,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
 
             {/* Back to browse */}
             <div className="mb-3">
-              <Link href={`/${locale}/browse`} className="text-xs text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+              <Link href={`/${locale}/browse`} className="text-kicker uppercase text-muted hover:text-accent transition-colors" style={{ fontVariantCaps: 'all-small-caps' }}>
                 ← {t('backToBrowse')}
               </Link>
             </div>
@@ -816,10 +818,10 @@ export default async function BrowsePage({ params, searchParams }: Props) {
             {/* Header row */}
             <div className="flex items-center justify-between mb-4 gap-3">
               <div>
-                <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">
+                <h1 className="font-serif text-xl sm:text-2xl text-ink">
                   {t('title')}
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                <p className="text-xs sm:text-sm text-muted mt-0.5">
                   {t('gamesCount', { count: total })}
                   {activeFilterCount > 0 && ` · ${t('filtersActive', { count: activeFilterCount })}`}
                   {totalPages > 1 && ` · ${t('pageOf', { current: currentPage, total: totalPages })}`}
@@ -835,7 +837,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
             {/* Browse by UGC platform */}
             {ugcPlatforms.length > 0 && (
               <div className="flex items-center gap-2 flex-wrap mb-4">
-                <span className="text-xs text-slate-400 dark:text-slate-500 font-medium shrink-0">
+                <span className="text-kicker uppercase text-muted shrink-0" style={{ fontVariantCaps: 'all-small-caps' }}>
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {t('alsoOn' as any)}
                 </span>
@@ -843,7 +845,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                   <Link
                     key={p.slug}
                     href={`/${locale}/platform/${DB_TO_URL[p.slug] ?? p.slug}`}
-                    className="text-xs px-3 py-1.5 rounded-full font-medium bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400 transition-colors"
+                    className="text-xs px-3 py-1.5 font-medium border border-rule text-ink hover:border-ink hover:text-accent transition-colors"
                   >
                     {p.title}
                   </Link>
@@ -852,10 +854,10 @@ export default async function BrowsePage({ params, searchParams }: Props) {
             )}
 
             {rows.length === 0 ? (
-              <div className="text-center py-16 sm:py-20 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
+              <div className="text-center py-16 sm:py-20 border border-rule">
                 <p className="text-4xl mb-3">🔍</p>
-                <p className="font-semibold text-slate-700 dark:text-slate-200">{t('noGames')}</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto px-4">
+                <p className="font-serif text-lg text-ink">{t('noGames')}</p>
+                <p className="text-sm text-muted mt-1 max-w-xs mx-auto px-4">
                   {t('noGamesSub')}
                   {(filters.risk || filters.time || filters.benefits.length > 0) && (
                     <> {t('noGamesRisk')}</>
@@ -863,7 +865,8 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                 </p>
                 <Link
                   href={`/${locale}/browse`}
-                  className="mt-4 inline-block text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 hover:underline"
+                  className="mt-4 inline-block text-kicker uppercase font-semibold text-accent hover:underline"
+                  style={{ fontVariantCaps: 'all-small-caps' }}
                 >
                   {t('clearAllFilters')}
                 </Link>
@@ -895,19 +898,16 @@ export default async function BrowsePage({ params, searchParams }: Props) {
               </div>
             ) : (
               /* ── List view ──────────────────────────────────────────────── */
-              <ol className="divide-y divide-slate-100 dark:divide-slate-700/50">
+              <ol className="divide-y divide-rule/60">
                 {rows.map(row => {
                   const score    = row.curascore
-                  const badgeCls = score == null
-                    ? 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
-                    : `${curascoreBg(score)} text-white`
                   return (
                     <li key={row.slug}>
                       <Link
                         href={`/${locale}/game/${row.slug}`}
-                        className="flex items-center gap-3 sm:gap-4 py-2.5 sm:py-3 px-1 sm:px-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-slate-700/60 hover:translate-x-0.5 transition-all group"
+                        className="flex items-center gap-3 sm:gap-4 py-2.5 sm:py-3 px-1 sm:px-2 hover:translate-x-0.5 transition-transform group"
                       >
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden shrink-0 bg-indigo-100 dark:bg-indigo-900/40">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 overflow-hidden shrink-0 bg-rule/30">
                           {row.backgroundImage ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
@@ -916,21 +916,21 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/40 dark:to-violet-900/40">
-                              <span className="text-xs font-black text-indigo-300 dark:text-indigo-500">
+                            <div className="w-full h-full flex items-center justify-center bg-rule/40">
+                              <span className="text-xs font-serif text-muted">
                                 {row.title.slice(0, 2).toUpperCase()}
                               </span>
                             </div>
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">
+                          <p className="font-serif text-sm text-ink truncate group-hover:text-accent transition-colors">
                             {row.title}
                           </p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                          <p className="text-xs text-muted truncate mt-0.5">
                             {(row.genres as string[])[0] ?? row.developer ?? ''}
                             {row.esrbRating && (
-                              <span className="ml-2 text-slate-400 dark:text-slate-500">
+                              <span className="ml-2 text-muted">
                                 {row.esrbRating}
                               </span>
                             )}
@@ -938,12 +938,12 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                         </div>
                         {/* FIX: "min/day" hämtas nu från i18n */}
                         {row.timeRecommendationMinutes != null && (
-                          <span className="text-xs text-slate-400 dark:text-slate-500 shrink-0 hidden sm:block">
+                          <span className="text-xs text-muted shrink-0 hidden sm:block">
                             {row.timeRecommendationMinutes} {tg('minDay')}
                           </span>
                         )}
-                        <span className={`text-center text-xs font-black px-1.5 sm:px-2 py-1 rounded-full shrink-0 ${badgeCls}`}>
-                          {score != null ? <>{score}<span className="text-[9px] font-bold opacity-70">/100</span></> : '—'}
+                        <span className={`text-center font-serif text-base font-semibold tabular-nums shrink-0 ${curascoreTextEditorial(score)}`}>
+                          {score != null ? <>{score}<span className="text-[9px] text-muted ml-0.5">/100</span></> : '—'}
                         </span>
                       </Link>
                     </li>
@@ -958,7 +958,8 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                 {currentPage > 1 && (
                   <Link
                     href={pageUrl(filters, currentPage - 1, locale, childIdParam ?? undefined)}
-                    className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400 transition-colors"
+                    className="px-3 sm:px-4 py-2 text-kicker uppercase font-semibold text-ink border border-rule hover:border-ink hover:text-accent transition-colors"
+                    style={{ fontVariantCaps: 'all-small-caps' }}
                   >
                     ← {t('prevPage')}
                   </Link>
@@ -973,15 +974,15 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                   }, [])
                   .map((p, idx) =>
                     p === '…' ? (
-                      <span key={`ellipsis-${idx}`} className="px-1.5 sm:px-2 text-slate-400 dark:text-slate-500 text-xs sm:text-sm">…</span>
+                      <span key={`ellipsis-${idx}`} className="px-1.5 sm:px-2 text-muted text-xs sm:text-sm">…</span>
                     ) : (
                       <Link
                         key={p}
                         href={pageUrl(filters, p as number, locale, childIdParam ?? undefined)}
-                        className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-xs sm:text-sm font-semibold rounded-lg transition-colors ${
+                        className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-xs sm:text-sm font-semibold border transition-colors ${
                           p === currentPage
-                            ? 'bg-indigo-600 text-white'
-                            : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400'
+                            ? 'bg-ink border-ink text-paper'
+                            : 'border-rule text-ink hover:border-ink hover:text-accent'
                         }`}
                       >
                         {p}
@@ -993,7 +994,8 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                 {currentPage < totalPages && (
                   <Link
                     href={pageUrl(filters, currentPage + 1, locale, childIdParam ?? undefined)}
-                    className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400 transition-colors"
+                    className="px-3 sm:px-4 py-2 text-kicker uppercase font-semibold text-ink border border-rule hover:border-ink hover:text-accent transition-colors"
+                    style={{ fontVariantCaps: 'all-small-caps' }}
                   >
                     {t('nextPage')} →
                   </Link>

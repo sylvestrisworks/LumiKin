@@ -19,25 +19,27 @@ export default function GameError({
   }, [error])
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-paper text-ink flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center">
-        <p className="mb-4 flex justify-center"><Icon name="warning" size={48} aria-hidden="true" className="text-amber-500" /></p>
-        <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+        <p className="mb-4 flex justify-center"><Icon name="warning" size={48} aria-hidden="true" className="text-warm" /></p>
+        <h1 className="font-serif text-display-sm text-ink mb-2">
           {t('error')}
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+        <p className="text-sm text-muted mb-6">
           {t('errorGameBody')}
         </p>
         <div className="flex items-center justify-center gap-3">
           <button
             onClick={reset}
-            className="px-4 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+            className="px-4 py-2 text-kicker uppercase font-semibold bg-ink hover:bg-accent text-paper transition-colors"
+            style={{ fontVariantCaps: 'all-small-caps' }}
           >
             {t('tryAgain')}
           </button>
           <Link
             href="/"
-            className="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            className="px-4 py-2 text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors"
+            style={{ fontVariantCaps: 'all-small-caps' }}
           >
             {t('goHome')}
           </Link>

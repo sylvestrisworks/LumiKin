@@ -33,8 +33,8 @@ export default function ContactForm() {
 
   if (state === 'success') {
     return (
-      <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-8">
-        <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+      <div className="border border-rule p-8">
+        <p className="font-serif text-lg text-ink">
           Thanks — I'll be in touch within two business days.
         </p>
       </div>
@@ -42,9 +42,9 @@ export default function ContactForm() {
   }
 
   const inputClass =
-    'rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100'
+    'border border-rule bg-paper px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink'
   const labelClass =
-    'text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400'
+    'text-kicker uppercase font-semibold text-muted'
 
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -97,7 +97,7 @@ export default function ContactForm() {
       </div>
 
       {state === 'error' && (
-        <div className="sm:col-span-2 rounded-md border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950 px-4 py-3 text-sm text-red-700 dark:text-red-300">
+        <div className="sm:col-span-2 border border-accent px-4 py-3 text-sm text-accent">
           Something went wrong. Email{' '}
           <a
             href={`mailto:${FALLBACK_EMAIL}`}
@@ -113,7 +113,8 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={state === 'submitting'}
-          className="inline-flex items-center gap-2 rounded-md bg-slate-900 dark:bg-slate-100 px-6 py-3 text-sm font-semibold text-white dark:text-slate-900 hover:bg-slate-700 dark:hover:bg-slate-300 disabled:opacity-50 transition-colors"
+          className="inline-flex items-center gap-2 bg-ink px-6 py-3 text-kicker uppercase font-semibold text-paper hover:bg-accent disabled:opacity-50 transition-colors"
+          style={{ fontVariantCaps: 'all-small-caps' }}
         >
           {state === 'submitting' ? 'Sending…' : 'Get in touch'}
         </button>

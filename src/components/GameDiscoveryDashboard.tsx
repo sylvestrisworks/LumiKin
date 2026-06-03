@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useTranslations, useLocale } from 'next-intl'
 import { ArrowRight, ChevronDown, ChevronUp, Sparkles, Ban, Users, Timer, Brain, Star, Leaf, BookOpen, Monitor } from 'lucide-react'
 import GameCompactCard from './GameCompactCard'
-import { curascoreGradient, curascoreRing, curascoreBg } from '@/lib/ui'
+import { curascoreTextEditorial } from '@/lib/ui'
 import type { GameSummary, SwapPair, CatalogStats } from '@/types/game'
 
 // ─── Static data ──────────────────────────────────────────────────────────────
@@ -37,9 +37,9 @@ const DID_YOU_KNOW = [
 ]
 
 const SCORE_ZONES = [
-  { min: 0,  max: 40,  labelKey: 'zoneCautionLabel',  color: 'bg-red-500',     textColor: 'text-red-600 dark:text-red-400',    descKey: 'zoneCautionDesc'  },
-  { min: 41, max: 65,  labelKey: 'zoneModerateLabel', color: 'bg-amber-400',   textColor: 'text-amber-600 dark:text-amber-400',  descKey: 'zoneModerateDesc' },
-  { min: 66, max: 100, labelKey: 'zoneGreatLabel',    color: 'bg-emerald-500', textColor: 'text-emerald-600 dark:text-emerald-400', descKey: 'zoneGreatDesc'   },
+  { min: 0,  max: 40,  labelKey: 'zoneCautionLabel',  color: 'bg-accent', textColor: 'text-accent', descKey: 'zoneCautionDesc'  },
+  { min: 41, max: 65,  labelKey: 'zoneModerateLabel', color: 'bg-warm',   textColor: 'text-warm',   descKey: 'zoneModerateDesc' },
+  { min: 66, max: 100, labelKey: 'zoneGreatLabel',    color: 'bg-ivy',    textColor: 'text-ivy',    descKey: 'zoneGreatDesc'   },
 ]
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -48,12 +48,12 @@ type T = ReturnType<typeof useTranslations<'discover'>>
 
 function LumiScoreScale({ t }: { t: T }) {
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
-      <p className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">{t('whatMeansCurascore')}</p>
+    <div className="bg-paper rounded-2xl border border-rule shadow-sm p-5">
+      <p className="text-xs font-bold uppercase tracking-widest text-muted mb-3">{t('whatMeansCurascore')}</p>
       <div className="flex h-3 rounded-full overflow-hidden gap-0.5 mb-4">
-        <div className="bg-red-500 flex-[40]" />
-        <div className="bg-amber-400 flex-[25]" />
-        <div className="bg-emerald-500 flex-[35]" />
+        <div className="bg-accent flex-[40]" />
+        <div className="bg-warm flex-[25]" />
+        <div className="bg-ivy flex-[35]" />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {SCORE_ZONES.map(z => (
@@ -61,9 +61,9 @@ function LumiScoreScale({ t }: { t: T }) {
             <div className="flex items-center gap-1.5 mb-1">
               <div className={`w-2.5 h-2.5 rounded-full ${z.color}`} />
               <span className={`text-xs font-black ${z.textColor}`}>{t(z.labelKey as Parameters<T>[0])}</span>
-              <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">{z.min}–{z.max}</span>
+              <span className="text-xs text-muted font-medium">{z.min}–{z.max}</span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-snug">{t(z.descKey as Parameters<T>[0])}</p>
+            <p className="text-xs text-muted leading-snug">{t(z.descKey as Parameters<T>[0])}</p>
           </div>
         ))}
       </div>
@@ -73,17 +73,17 @@ function LumiScoreScale({ t }: { t: T }) {
 
 function StatStrip({ stats, t }: { stats: CatalogStats; t: T }) {
   const items = [
-    { value: `${stats.totalScored}`,        label: t('statGamesReviewed'), color: 'text-indigo-600 dark:text-indigo-400' },
-    { value: `${stats.lootBoxFreePct}%`,    label: t('statNoLootBoxes'),   color: 'text-emerald-600 dark:text-emerald-400' },
-    { value: `${stats.avgCurascoreE}`,      label: t('statAvgScoreE'),     color: 'text-amber-600 dark:text-amber-400' },
-    { value: `${stats.greenCount}`,         label: t('statGamesGreat'),    color: 'text-emerald-600 dark:text-emerald-400' },
+    { value: `${stats.totalScored}`,        label: t('statGamesReviewed'), color: 'text-accent' },
+    { value: `${stats.lootBoxFreePct}%`,    label: t('statNoLootBoxes'),   color: 'text-ivy' },
+    { value: `${stats.avgCurascoreE}`,      label: t('statAvgScoreE'),     color: 'text-warm' },
+    { value: `${stats.greenCount}`,         label: t('statGamesGreat'),    color: 'text-ivy' },
   ]
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
       {items.map(s => (
-        <div key={s.label} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm px-3 sm:px-4 py-3 text-center">
+        <div key={s.label} className="bg-paper rounded-2xl border border-rule shadow-sm px-3 sm:px-4 py-3 text-center">
           <p className={`text-xl sm:text-2xl font-black tracking-tight ${s.color}`}>{s.value}</p>
-          <p className="text-xs text-slate-400 dark:text-slate-500 font-medium mt-0.5 leading-tight">{s.label}</p>
+          <p className="text-xs text-muted font-medium mt-0.5 leading-tight">{s.label}</p>
         </div>
       ))}
     </div>
@@ -95,30 +95,30 @@ function DidYouKnow() {
   const [idx, setIdx] = useState(0)
   const item = DID_YOU_KNOW[idx]
   return (
-    <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-2xl p-5">
+    <div className="border-l-2 border-accent pl-5 py-2">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-black uppercase tracking-widest text-indigo-400 dark:text-indigo-500">{t('didYouKnow')}</p>
+        <p className="text-xs font-black uppercase tracking-widest text-accent">{t('didYouKnow')}</p>
         <div className="flex gap-1">
           {DID_YOU_KNOW.map((_, i) => (
             <button
               key={i}
               onClick={() => setIdx(i)}
-              className={`w-1.5 h-1.5 rounded-full transition-colors ${i === idx ? 'bg-indigo-500' : 'bg-indigo-200 dark:bg-indigo-700 hover:bg-indigo-300 dark:hover:bg-indigo-600'}`}
+              className={`w-1.5 h-1.5 rounded-full transition-colors ${i === idx ? 'bg-accent' : 'bg-rule hover:bg-ink'}`}
               aria-label={`Fact ${i + 1}`}
             />
           ))}
         </div>
       </div>
-      <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">&ldquo;{item.fact}&rdquo;</p>
-      <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 italic">— {item.source}</p>
+      <p className="text-sm text-ink/80 leading-relaxed">&ldquo;{item.fact}&rdquo;</p>
+      <p className="text-xs text-muted mt-2 italic">— {item.source}</p>
       <div className="flex gap-2 mt-3">
         <button
           onClick={() => setIdx(i => (i - 1 + DID_YOU_KNOW.length) % DID_YOU_KNOW.length)}
-          className="text-xs text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-semibold transition-colors"
+          className="text-xs text-accent hover:underline font-semibold transition-colors"
         >{t('prev')}</button>
         <button
           onClick={() => setIdx(i => (i + 1) % DID_YOU_KNOW.length)}
-          className="text-xs text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-semibold transition-colors"
+          className="text-xs text-accent hover:underline font-semibold transition-colors"
         >{t('next')}</button>
       </div>
     </div>
@@ -135,69 +135,69 @@ function SafeSwap({ swap }: { swap: SwapPair }) {
     general:      'riskGeneral',
   }
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+    <div className="bg-paper rounded-2xl shadow-sm border border-rule overflow-hidden">
       {/* Header */}
       <div className="px-5 pt-5 pb-3">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">{t('safeSwap')}</span>
+          <span className="text-xs font-black uppercase tracking-widest text-muted">{t('safeSwap')}</span>
           <span className={`text-xs font-bold px-2 py-0.5 rounded-full text-white ${
-            swap.from.riskType === 'monetization' ? 'bg-red-500' :
+            swap.from.riskType === 'monetization' ? 'bg-accent' :
             swap.from.riskType === 'dopamine'     ? 'bg-orange-500' :
-            swap.from.riskType === 'social'        ? 'bg-purple-500' : 'bg-slate-500'
+            swap.from.riskType === 'social'        ? 'bg-warm' : 'bg-muted'
           }`}>{t(RISK_LABELS[swap.from.riskType])}</span>
         </div>
-        <p className="text-lg font-black tracking-tight text-slate-800 dark:text-slate-100">
+        <p className="text-lg font-black tracking-tight text-ink">
           {t('safeSwapAskingFor')}{' '}
-          <Link href={swap.from.href} className="text-red-500 dark:text-red-400 hover:underline">{swap.from.title}</Link>?
+          <Link href={swap.from.href} className="text-accent hover:underline">{swap.from.title}</Link>?
         </p>
       </div>
 
       {/* Risk explanation toggle */}
       <button
         onClick={() => setExpanded(e => !e)}
-        className="w-full flex items-center justify-between px-5 py-2.5 bg-red-50 dark:bg-red-900/20 border-y border-red-100 dark:border-red-800 text-left hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-2.5 border-y border-rule/50 text-left hover:bg-ink/[0.03] transition-colors"
       >
-        <span className="text-xs font-semibold text-red-700 dark:text-red-400">{t('safeSwapWhyConcern')}</span>
-        {expanded ? <ChevronUp size={14} className="text-red-400 dark:text-red-500" /> : <ChevronDown size={14} className="text-red-400 dark:text-red-500" />}
+        <span className="text-xs font-semibold text-accent">{t('safeSwapWhyConcern')}</span>
+        {expanded ? <ChevronUp size={14} className="text-accent" /> : <ChevronDown size={14} className="text-accent" />}
       </button>
       {expanded && (
-        <div className="px-5 py-3 bg-red-50/50 dark:bg-red-900/10 border-b border-red-100 dark:border-red-800">
-          <p className="text-sm text-red-800 dark:text-red-300 leading-relaxed">{swap.from.riskExplanation}</p>
+        <div className="px-5 py-3 border-b border-rule/50">
+          <p className="text-sm text-ink/85 leading-relaxed">{swap.from.riskExplanation}</p>
         </div>
       )}
 
       {/* Risky game score */}
-      <div className="px-5 py-4 flex items-center gap-4 border-b border-slate-100 dark:border-slate-700">
-        <div className={`flex items-baseline gap-1 px-3 py-1.5 rounded-xl border shrink-0 ${curascoreRing(swap.from.curascore)}`}>
-          <span className={`text-2xl font-black bg-gradient-to-br ${curascoreGradient(swap.from.curascore)} bg-clip-text text-transparent`}>
+      <div className="px-5 py-4 flex items-center gap-4 border-b border-rule/50">
+        <div className="flex items-baseline gap-1 px-3 py-1.5 border border-rule shrink-0">
+          <span className={`font-serif text-2xl ${curascoreTextEditorial(swap.from.curascore)}`}>
             {swap.from.curascore}
           </span>
-          <span className="text-xs text-slate-400 dark:text-slate-500">/100</span>
+          <span className="text-xs text-muted">/100</span>
         </div>
         <div>
-          <p className="font-bold text-slate-800 dark:text-slate-100 text-sm">{swap.from.title}</p>
-          <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">{swap.from.reason}</p>
+          <p className="font-bold text-ink text-sm">{swap.from.title}</p>
+          <p className="text-xs text-accent mt-0.5">{swap.from.reason}</p>
         </div>
       </div>
 
       {/* Alternatives */}
       <div className="px-5 py-4">
-        <p className="text-xs font-black uppercase tracking-widest text-emerald-500 dark:text-emerald-400 mb-3">{t('safeSwapBetterAlt')}</p>
+        <p className="text-kicker uppercase font-semibold text-ivy mb-3" style={{ fontVariantCaps: 'all-small-caps' }}>{t('safeSwapBetterAlt')}</p>
         <div className="space-y-3">
           {swap.alternatives.map((alt) => (
             <Link
               key={alt.href}
               href={alt.href}
-              className="flex items-center gap-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 hover:border-emerald-300 dark:hover:border-emerald-600 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors group"
+              className="flex items-center gap-4 p-3 border border-ivy/40 hover:border-ivy transition-colors group"
             >
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-black shrink-0 ${curascoreBg(alt.curascore)}`}>
+              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-ink text-paper text-xs font-serif shrink-0">
                 {alt.curascore}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-slate-800 dark:text-slate-100 text-sm truncate group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">{alt.title}</p>
-                <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-0.5 line-clamp-1">{alt.reason}</p>
+                <p className="font-bold text-ink text-sm truncate group-hover:text-accent transition-colors">{alt.title}</p>
+                <p className="text-xs text-ivy mt-0.5 line-clamp-1">{alt.reason}</p>
               </div>
-              <ArrowRight size={14} className="text-slate-300 dark:text-slate-600 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 shrink-0 transition-colors" />
+              <ArrowRight size={14} className="text-rule group-hover:text-accent shrink-0 transition-colors" />
             </Link>
           ))}
         </div>
@@ -243,29 +243,29 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
     : activeGenre ? activeGenre : t('topRatedGames')
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-paper text-ink">
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
 
         {/* ── 1. HEADER ───────────────────────────────────────────────────────── */}
         <div className="space-y-5">
           <div>
-            <p className="text-xs font-black uppercase tracking-widest text-indigo-400 dark:text-indigo-500 mb-1">
+            <p className="text-xs font-black uppercase tracking-widest text-accent mb-1">
               {t('tagline')}
             </p>
-            <h1 className="text-2xl sm:text-4xl font-black tracking-tighter text-slate-900 dark:text-slate-100 leading-none">
+            <h1 className="text-2xl sm:text-4xl font-black tracking-tighter text-ink leading-none">
               {t('heading')}
             </h1>
           </div>
           {/* Age filter */}
-          <div className="bg-slate-100 dark:bg-slate-800 rounded-2xl p-1.5 grid grid-cols-2 sm:flex gap-1">
+          <div className="border border-rule p-1.5 grid grid-cols-2 sm:flex gap-1">
             {AGE_SEGMENTS.map((seg) => (
               <button
                 key={seg.value}
                 onClick={() => setActiveAge(activeAge === seg.value ? null : seg.value)}
                 className={`flex-1 py-2.5 text-xs sm:text-sm font-black tracking-tight rounded-xl transition-all duration-200 ${
                   activeAge === seg.value
-                    ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
-                    : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+                    ? 'bg-ink text-paper'
+                    : 'text-muted hover:text-ink'
                 }`}
               >
                 {tAge(seg.labelKey as Parameters<typeof tAge>[0])}
@@ -290,8 +290,8 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
               className={`shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold
                 border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm
                 ${activeCategory === pill.labelKey
-                  ? 'bg-indigo-100 dark:bg-indigo-900/40 border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 -translate-y-0.5 shadow-sm'
-                  : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-indigo-200 dark:hover:border-indigo-700 hover:text-indigo-600 dark:hover:text-indigo-400'
+                  ? 'bg-ink border-ink text-paper -translate-y-0.5'
+                  : 'bg-paper border-rule text-ink/80 hover:border-ink hover:text-accent'
                 }`}
             >
               <pill.icon size={16} aria-hidden="true" />
@@ -303,8 +303,8 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
         {/* ── 5. DISCOVERY GRID ───────────────────────────────────────────────── */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-slate-100">{gridTitle}</h2>
-            <Link href={browseHref} className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors flex items-center gap-1">
+            <h2 className="text-xl font-black tracking-tight text-ink">{gridTitle}</h2>
+            <Link href={browseHref} className="text-xs font-semibold text-accent hover:underline transition-colors flex items-center gap-1">
               {t('seeAll')} <ArrowRight size={13} strokeWidth={2.5} />
             </Link>
           </div>
@@ -316,8 +316,8 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
                 onClick={() => setActiveGenre(null)}
                 className={`shrink-0 px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
                   activeGenre === null
-                    ? 'bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900 border-slate-800 dark:border-slate-200'
-                    : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500'
+                    ? 'bg-ink text-paper border-ink'
+                    : 'bg-paper text-muted border-rule hover:border-ink'
                 }`}
               >
                 {t('allGenres')}
@@ -328,8 +328,8 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
                   onClick={() => setActiveGenre(activeGenre === g ? null : g)}
                   className={`shrink-0 px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
                     activeGenre === g
-                      ? 'bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900 border-slate-800 dark:border-slate-200'
-                      : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500'
+                      ? 'bg-ink text-paper border-ink'
+                      : 'bg-paper text-muted border-rule hover:border-ink'
                   }`}
                 >
                   {g}
@@ -347,12 +347,12 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700">
-              <p className="mb-2 flex justify-center"><Monitor size={36} aria-hidden="true" className="text-slate-300 dark:text-slate-600" /></p>
-              <p className="font-semibold text-slate-600 dark:text-slate-300">{t('noMatchFilters')}</p>
+            <div className="text-center py-12 bg-paper rounded-2xl border border-rule">
+              <p className="mb-2 flex justify-center"><Monitor size={36} aria-hidden="true" className="text-rule" /></p>
+              <p className="font-semibold text-ink/80">{t('noMatchFilters')}</p>
               <button
                 onClick={() => { setActiveAge(null); setActiveGenre(null) }}
-                className="mt-3 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+                className="mt-3 text-sm text-accent hover:underline"
               >
                 {t('clearFilters')}
               </button>
@@ -367,14 +367,15 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
         <DidYouKnow />
 
         {/* ── 8. FOOTER CTA ───────────────────────────────────────────────────── */}
-        <div className="bg-indigo-600 dark:bg-indigo-700 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div className="bg-ink p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <div>
             <p className="text-white font-black tracking-tight text-base sm:text-lg">{t('gamesRated', { count: stats.totalScored })}</p>
-            <p className="text-indigo-200 text-sm mt-0.5">{t('groundedResearch')}</p>
+            <p className="text-paper/70 text-sm mt-0.5">{t('groundedResearch')}</p>
           </div>
           <Link
             href={`/${locale}/browse`}
-            className="shrink-0 bg-white text-indigo-700 font-black text-sm px-6 py-3 rounded-xl hover:bg-indigo-50 transition-colors flex items-center gap-2"
+            className="shrink-0 bg-paper text-ink text-kicker uppercase font-semibold px-6 py-3 hover:bg-accent hover:text-paper transition-colors flex items-center gap-2"
+            style={{ fontVariantCaps: 'all-small-caps' }}
           >
             {t('browseAll')} <ArrowRight size={15} strokeWidth={2.5} />
           </Link>

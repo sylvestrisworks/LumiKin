@@ -15,16 +15,16 @@ export default async function ParentTips({ gameId, uid }: Props) {
 
   if (!uid) {
     return (
-      <div className="mt-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4 space-y-3">
-        <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+      <div className="mt-4 border-t border-ink pt-4 space-y-3">
+        <h2
+          className="text-kicker uppercase font-semibold text-muted"
+          style={{ fontVariantCaps: 'all-small-caps' }}
+        >
           {t('heading')}
         </h2>
-        <div className="bg-slate-50 dark:bg-slate-700/40 border border-slate-100 dark:border-slate-700 rounded-xl px-4 py-3 flex items-start gap-2">
-          <span aria-hidden className="text-slate-400 dark:text-slate-500">🔒</span>
-          <p className="text-sm text-slate-600 dark:text-slate-300 leading-snug">
-            <a href="/login" className="text-indigo-600 hover:underline font-medium">{t('signIn')}</a>{' '}{t('signInToView')}
-          </p>
-        </div>
+        <p className="text-sm text-ink/80 leading-snug border-l-2 border-rule pl-3">
+          <a href="/login" className="text-accent hover:underline font-medium">{t('signIn')}</a>{' '}{t('signInToView')}
+        </p>
       </div>
     )
   }
@@ -55,15 +55,18 @@ export default async function ParentTips({ gameId, uid }: Props) {
 
   type TipType = 'praise' | 'tip' | 'warning'
   const TYPE_CONFIG: Record<TipType, { labelKey: 'typePraise' | 'typeTip' | 'typeWarning'; icon: string; className: string }> = {
-    praise:  { labelKey: 'typePraise',  icon: '★', className: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
-    tip:     { labelKey: 'typeTip',     icon: '💡', className: 'text-indigo-700 bg-indigo-50 border-indigo-200' },
-    warning: { labelKey: 'typeWarning', icon: '⚠',  className: 'text-amber-700 bg-amber-50 border-amber-200' },
+    praise:  { labelKey: 'typePraise',  icon: '★', className: 'text-ivy' },
+    tip:     { labelKey: 'typeTip',     icon: '💡', className: 'text-muted' },
+    warning: { labelKey: 'typeWarning', icon: '⚠',  className: 'text-warm' },
   }
 
   return (
-    <div className="mt-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-5 py-4 space-y-4">
-      <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-        {t('heading')} {tips.length > 0 && <span className="text-slate-400 dark:text-slate-500 normal-case font-normal">· {tips.length}</span>}
+    <div className="mt-4 border-t border-ink pt-4 space-y-4">
+      <h2
+        className="text-kicker uppercase font-semibold text-muted"
+        style={{ fontVariantCaps: 'all-small-caps' }}
+      >
+        {t('heading')} {tips.length > 0 && <span className="text-muted normal-case font-normal">· {tips.length}</span>}
       </h2>
 
       {tips.length > 0 ? (
@@ -81,12 +84,15 @@ export default async function ParentTips({ gameId, uid }: Props) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${cfg.className}`}>
+                    <span
+                      className={`text-kicker uppercase font-semibold ${cfg.className}`}
+                      style={{ fontVariantCaps: 'all-small-caps' }}
+                    >
                       {cfg.icon} {t(cfg.labelKey)}
                     </span>
-                    <span className="text-[11px] text-slate-400 dark:text-slate-500">{tip.authorName}</span>
+                    <span className="text-[11px] text-muted">{tip.authorName}</span>
                   </div>
-                  <p className="text-sm text-slate-700 dark:text-slate-300 leading-snug">{tip.content}</p>
+                  <p className="text-sm text-ink/85 leading-snug">{tip.content}</p>
                 </div>
               </li>
             )
@@ -94,16 +100,21 @@ export default async function ParentTips({ gameId, uid }: Props) {
         </ul>
       ) : (
         <div className="space-y-3">
-          <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-xl px-4 py-3">
-            <p className="text-xs font-semibold text-indigo-700 dark:text-indigo-400 mb-1">💡 LumiKin</p>
-            <p className="text-sm text-indigo-900 dark:text-indigo-200 leading-snug">{t('editorialFallback')}</p>
+          <div className="border-l-2 border-accent pl-3">
+            <p
+              className="text-kicker uppercase font-semibold text-accent mb-1"
+              style={{ fontVariantCaps: 'all-small-caps' }}
+            >
+              LumiKin
+            </p>
+            <p className="text-sm text-ink/85 leading-snug font-serif italic">{t('editorialFallback')}</p>
           </div>
-          <p className="text-xs text-slate-400 dark:text-slate-500">{t('noTips')}</p>
+          <p className="text-xs text-muted">{t('noTips')}</p>
         </div>
       )}
 
-      <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
-        <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{t('sharePrompt')}</p>
+      <div className="pt-3 border-t border-rule/50">
+        <p className="text-xs text-muted mb-3">{t('sharePrompt')}</p>
         <TipForm gameId={gameId} />
       </div>
     </div>

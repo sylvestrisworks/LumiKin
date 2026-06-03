@@ -41,10 +41,10 @@ function PlatformPickerInner({ current }: { current: string[] }) {
           <button
             key={p.value}
             onClick={() => toggle(p.value)}
-            className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border transition-all ${
+            className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold border transition-all ${
               active
-                ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
-                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-indigo-300 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400'
+                ? 'bg-ink text-paper border-ink'
+                : 'text-ink border-rule hover:border-ink hover:text-accent'
             }`}
           >
             <Icon name={p.iconName} size={16} label={p.label} />

@@ -18,10 +18,10 @@ function relativeTime(iso: string | null): string {
 }
 
 function scorePillClass(score: number | null): string {
-  if (score === null) return 'text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800'
-  if (score >= 60) return 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30'
-  if (score >= 40) return 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30'
-  return 'text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/30'
+  if (score === null) return 'text-muted'
+  if (score >= 60) return 'text-ivy'
+  if (score >= 40) return 'text-warm'
+  return 'text-accent'
 }
 
 export default function RecentlyScored({ scores, locale }: Props) {
@@ -29,28 +29,28 @@ export default function RecentlyScored({ scores, locale }: Props) {
 
   return (
     <section className="max-w-5xl mx-auto px-6 py-12">
-      <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-6">
+      <p className="text-kicker uppercase font-semibold text-muted mb-6" style={{ fontVariantCaps: 'all-small-caps' }}>
         Recently scored
       </p>
-      <div className="divide-y divide-slate-100 dark:divide-slate-800">
+      <div className="divide-y divide-rule/50">
         {scores.map((s) => (
           <Link
             key={s.game_id}
             href={`/${locale}/game/${s.slug}`}
-            className="flex items-center gap-3 py-3 -mx-3 px-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group"
+            className="flex items-center gap-3 py-3 -mx-3 px-3 hover:bg-ink/[0.03] transition-colors group"
           >
-            <span className="flex-1 min-w-0 text-sm font-medium text-slate-900 dark:text-slate-100 truncate group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors">
+            <span className="flex-1 min-w-0 text-sm font-serif text-ink truncate group-hover:text-accent transition-colors">
               {s.name}
             </span>
             {s.platform && (
-              <span className="hidden sm:inline-block shrink-0 text-xs font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+              <span className="hidden sm:inline-block shrink-0 text-kicker uppercase text-muted px-2 py-0.5" style={{ fontVariantCaps: 'all-small-caps' }}>
                 {s.platform}
               </span>
             )}
-            <span className={`shrink-0 text-sm font-black tabular-nums px-2.5 py-0.5 rounded ${scorePillClass(s.score)}`}>
+            <span className={`shrink-0 font-serif text-sm font-semibold tabular-nums ${scorePillClass(s.score)}`}>
               {s.score !== null ? Math.round(s.score) : '—'}
             </span>
-            <span className="shrink-0 text-xs text-slate-400 dark:text-slate-500 w-16 text-right tabular-nums">
+            <span className="shrink-0 text-xs text-muted w-16 text-right tabular-nums">
               {relativeTime(s.scored_at)}
             </span>
           </Link>

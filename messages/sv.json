@@ -1,5 +1,12 @@
 {
   "nav": {
+    "byAge": "Efter ålder",
+    "platforms": "Plattformar",
+    "myLibrary": "Mitt bibliotek",
+    "familyDashboard": "Familjepanel",
+    "account": "Konto",
+    "signOut": "Logga ut",
+    "signIn": "Logga in",
     "brand": "LumiKin",
     "brandSub": "",
     "discover": "Upptäck",
@@ -153,6 +160,7 @@
     "loading": "Laddar resultat"
   },
   "browse": {
+    "findPicks": "Få vägledda förslag →",
     "title": "Utforska spel",
     "searchPlaceholder": "Sök spel…",
     "searchButton": "Sök",

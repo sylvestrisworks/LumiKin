@@ -1,5 +1,12 @@
 {
   "nav": {
+    "byAge": "By Age",
+    "platforms": "Platforms",
+    "myLibrary": "My Library",
+    "familyDashboard": "Family Dashboard",
+    "account": "Account",
+    "signOut": "Sign out",
+    "signIn": "Sign in",
     "brand": "LumiKin",
     "brandSub": "",
     "discover": "Discover",
@@ -120,6 +127,7 @@
     "loading": "Loading results"
   },
   "browse": {
+    "findPicks": "Get guided picks →",
     "title": "Browse games",
     "searchPlaceholder": "Search games…",
     "searchButton": "Search",

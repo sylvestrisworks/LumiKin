@@ -1,44 +1,26 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Menu, X, Search } from 'lucide-react'
+import { useState } from 'react'
+import { Menu, X } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
-import { usePathname } from 'next/navigation'
 import SearchBar from './SearchBar'
 import LanguageSwitcher from './LanguageSwitcher'
-import ThemeToggle from './ThemeToggle'
 
 export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.ReactNode; notifSlot?: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [atTop, setAtTop]       = useState(true)
   const t      = useTranslations('nav')
   const locale = useLocale()
-  const pathname = usePathname()
 
-  const isHomepage = pathname === `/${locale}` || pathname === `/${locale}/`
-
-  useEffect(() => {
-    if (!isHomepage) return
-    const onScroll = () => setAtTop(window.scrollY < 220)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [isHomepage])
-
-  const collapseNavSearch = isHomepage && atTop
-
+  // Primary nav maps to how parents actually arrive: explore the catalogue,
+  // by their child's age, by platform ("is Roblox ok?"), or read guidance.
+  // Personal destinations (library, family dashboard, account) live in the
+  // account menu so logged-out visitors never hit dead-ends.
   const NAV_LINKS: { href: string; label: string; prominent?: boolean }[] = [
-    { href: `/${locale}/browse`,     label: t('browse'),   prominent: true  },
-    { href: `/${locale}/discover`,   label: t('discover')                   },
-    { href: `/${locale}/learn`,      label: t('learn')                      },
-    { href: `/${locale}/dashboard`,  label: t('library')                    },
+    { href: `/${locale}/browse`,   label: t('browse'),    prominent: true },
+    { href: `/${locale}/age`,      label: t('byAge')                      },
+    { href: `/${locale}/platform`, label: t('platforms')                  },
+    { href: `/${locale}/learn`,    label: t('learn')                      },
   ]
-
-  function focusHeroSearch() {
-    const heroInput = document.querySelector<HTMLInputElement>('.hero-gradient input[type="text"]')
-    heroInput?.focus()
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
 
   return (
     <header className="bg-paper text-ink border-b border-ink sticky top-0 z-50">
@@ -68,17 +50,7 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
 
         {/* Search — hidden on mobile (shown in second row) */}
         <div className="hidden sm:flex flex-1 max-w-md items-center">
-          {collapseNavSearch ? (
-            <button
-              onClick={focusHeroSearch}
-              className="flex items-center justify-center w-10 h-10 text-muted hover:text-accent hover:bg-ink/[0.04] transition-colors"
-              aria-label={t('search')}
-            >
-              <Search size={18} />
-            </button>
-          ) : (
-            <SearchBar placeholder={t('discover') + '…'} variant="editorial" />
-          )}
+          <SearchBar placeholder={t('discover') + '…'} variant="editorial" />
         </div>
 
         {/* Desktop nav links */}
@@ -94,7 +66,6 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
             </a>
           ))}
           <LanguageSwitcher />
-          <ThemeToggle />
           {notifSlot}
           {authSlot}
         </nav>
@@ -134,7 +105,6 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
           ))}
           <div className="px-4 py-3 border-t border-ink/30 flex items-center justify-between gap-4">
             <LanguageSwitcher />
-            <ThemeToggle />
             {notifSlot}
             {authSlot}
           </div>

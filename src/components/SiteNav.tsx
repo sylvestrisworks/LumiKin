@@ -46,29 +46,24 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
       {/* ── Main row ───────────────────────────────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-8 h-14 flex items-center gap-4">
 
-        {/* Logo */}
+        {/* Logo — editorial nameplate. Live Fraunces text + a superscript
+            accent-red colophon spark; ink/accent tokens flip in dark mode,
+            so no separate asset is needed. */}
         <a
           href={`/${locale}`}
-          className="shrink-0 flex items-center"
+          className="shrink-0 leading-none"
           onClick={() => setMenuOpen(false)}
           aria-label="LumiKin — home"
         >
-          <img
-            src="/lumikin-logo.svg"
-            alt="LumiKin"
-            height={28}
-            width={115}
-            className="dark:hidden"
-            style={{ height: 28, width: 'auto' }}
-          />
-          <img
-            src="/lumikin-logo-dark.svg"
-            alt="LumiKin"
-            height={28}
-            width={115}
-            className="hidden dark:block"
-            style={{ height: 28, width: 'auto' }}
-          />
+          <span
+            className="font-serif text-[1.7rem] tracking-tight text-ink"
+            style={{ fontOpticalSizing: 'auto' }}
+          >
+            LumiKin
+            <span className="align-super text-[0.5em] text-accent ml-[0.04em]" aria-hidden="true">
+              ✦
+            </span>
+          </span>
         </a>
 
         {/* Search — hidden on mobile (shown in second row) */}

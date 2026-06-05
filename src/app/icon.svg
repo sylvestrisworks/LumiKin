@@ -1,0 +1,8 @@
+<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <!-- Favicon: editorial-red spark on a cream rounded tile so it reads at 16px. -->
+  <rect width="40" height="40" rx="8" fill="#f7f1e8"/>
+  <path
+    d="M20 4 L23.1 16.9 L36 20 L23.1 23.1 L20 36 L16.9 23.1 L4 20 L16.9 16.9 Z"
+    fill="#c8102e"
+  />
+</svg>

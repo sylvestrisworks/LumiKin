@@ -1,36 +1,18 @@
-<svg width="196" height="48" viewBox="0 0 196 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="spark" x1="0" y1="8" x2="32" y2="40" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#4f46e5"/>
-      <stop offset="1" stop-color="#7c3aed"/>
-    </linearGradient>
-  </defs>
-
+<svg width="200" height="48" viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!--
-    Spark mark: center (16, 24), outer R=14, inner r=3.5
-    Scaled to sit in a 32×32 box at (0, 8)
-
-    Outer:  Top (16,10)  Right (30,24)  Bottom (16,38)  Left (2,24)
-    Inner at 45°: NE (18.47,21.53)  SE (18.47,26.47)  SW (13.53,26.47)  NW (13.53,21.53)
-  -->
-  <path
-    d="M16 10 L18.47 21.53 L30 24 L18.47 26.47 L16 38 L13.53 26.47 L2 24 L13.53 21.53 Z"
-    fill="url(#spark)"
-  />
-
-  <!--
-    Wordmark — "Lumi" in indigo-600, "Kin" in slate-900
-    Font stack: Plus Jakarta Sans → Inter → system-ui
-    Weight 650 (semibold/bold boundary), tracking tight
+    Wordmark — "LumiKin" set as an editorial nameplate in Fraunces
+    (falls back to Georgia / serif when Fraunces isn't installed), in ink.
+    A small accent-red four-pointed spark sits as a superscript colophon
+    mark after the word — a printer's dingbat, not a separate icon.
   -->
   <text
-    x="42"
-    y="33"
-    font-family="'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif"
-    font-size="22"
-    font-weight="700"
-    letter-spacing="-0.4"
+    x="2"
+    y="34"
+    font-family="Fraunces, Georgia, 'Times New Roman', serif"
+    font-size="30"
+    font-weight="600"
+    letter-spacing="-0.5"
   >
-    <tspan fill="#4f46e5">Lumi</tspan><tspan fill="#0f172a">Kin</tspan>
+    <tspan fill="#14110f">LumiKin</tspan><tspan baseline-shift="super" font-size="13" dx="1" fill="#c8102e">&#10022;</tspan>
   </text>
 </svg>

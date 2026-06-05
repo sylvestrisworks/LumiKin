@@ -635,7 +635,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
         {/* ── Search bar — always visible ────────────────────────────────── */}
         <div className="mb-4 sm:mb-6">
           <Suspense>
-            <SearchBar />
+            <SearchBar variant="editorial" />
           </Suspense>
         </div>
 

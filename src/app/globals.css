@@ -37,27 +37,6 @@
   }
 }
 
-/* ── Animated hero gradient ─────────────────────────────────────────────────── */
-@keyframes gradient-shift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.hero-gradient {
-  background: linear-gradient(135deg, #312e81, #4f46e5, #7c3aed, #2563eb, #312e81);
-  background-size: 300% 300%;
-  animation: gradient-shift 12s ease infinite;
-  will-change: background-position;
-}
-
-.dark .hero-gradient {
-  background: linear-gradient(135deg, #1e1b4b, #4338ca, #6d28d9, #1d4ed8, #1e1b4b);
-  background-size: 300% 300%;
-  animation: gradient-shift 12s ease infinite;
-  will-change: background-position;
-}
-
 /* ── Shimmer on stat cards ──────────────────────────────────────────────────── */
 @keyframes shimmer {
   from { background-position: -200% center; }

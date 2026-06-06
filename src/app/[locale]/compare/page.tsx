@@ -161,10 +161,10 @@ function GamePicker({
   if (prefilling && !selected) {
     return (
       <div className="flex items-center border border-rule px-4 py-3 animate-pulse" aria-busy="true" aria-label={label}>
-        <div className="w-10 h-10 rounded-lg bg-rule/40 shrink-0" />
+        <div className="w-10 h-10 bg-rule/40 shrink-0" />
         <div className="ml-3 flex-1 space-y-1.5">
-          <div className="h-4 w-3/4 bg-rule/40 rounded" />
-          <div className="h-3 w-1/2 bg-rule/40 rounded" />
+          <div className="h-4 w-3/4 bg-rule/40" />
+          <div className="h-3 w-1/2 bg-rule/40" />
         </div>
       </div>
     )
@@ -176,7 +176,7 @@ function GamePicker({
         <div className="flex items-center gap-3 min-w-0">
           {selected.game.backgroundImage && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={selected.game.backgroundImage} alt="" className="w-10 h-10 rounded-lg object-cover shrink-0" />
+            <img src={selected.game.backgroundImage} alt="" className="w-10 h-10 object-cover shrink-0" />
           )}
           <div className="min-w-0">
             <p className="font-semibold text-ink truncate">{selected.game.title}</p>
@@ -185,7 +185,7 @@ function GamePicker({
         </div>
         <button 
           onClick={onClear} 
-          className="shrink-0 ml-3 text-xs text-muted hover:text-red-500 dark:hover:text-red-400 transition-colors"
+          className="shrink-0 ml-3 text-xs text-muted hover:text-accent transition-colors"
           aria-label={t('change')}
         >
           {t('change')}
@@ -216,14 +216,14 @@ function GamePicker({
         )}
       </div>
       {open && suggestions.length > 0 && (
-        <div className="absolute top-full mt-1 left-0 right-0 bg-paper border border-ink shadow-lg z-50 overflow-hidden">
+        <div className="absolute top-full mt-1 left-0 right-0 bg-paper border border-ink z-50 overflow-hidden">
           {suggestions.map(s => (
             <button
               key={s.slug}
               onClick={() => pick(s.slug)}
               className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-ink/[0.03] border-b border-rule/50 last:border-0 text-left"
             >
-              <div className="w-8 h-8 rounded-lg overflow-hidden bg-rule/30 shrink-0">
+              <div className="w-8 h-8 overflow-hidden bg-rule/30 shrink-0">
                 {s.backgroundImage
                   // eslint-disable-next-line @next/next/no-img-element
                   ? <img src={s.backgroundImage} alt="" className="w-full h-full object-cover" />
@@ -234,7 +234,7 @@ function GamePicker({
                 {s.genres[0] && <p className="text-xs text-muted">{s.genres[0]}</p>}
               </div>
               {s.esrbRating && (
-                <span className="text-xs font-bold border border-rule text-muted px-1.5 py-0.5 rounded shrink-0">{s.esrbRating}</span>
+                <span className="text-xs font-bold border border-rule text-muted px-1.5 py-0.5 shrink-0">{s.esrbRating}</span>
               )}
             </button>
           ))}
@@ -278,7 +278,7 @@ function ScoreRow({ label, tooltip, aVal, bVal, higherIsBetter, format }: ScoreR
   return (
     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-0 border-b border-rule/50 last:border-0">
       {/* Game A */}
-      <div className={`flex items-center gap-2 justify-end px-3 py-2.5 rounded-l-lg ${cellBg(aWins)}`}>
+      <div className={`flex items-center gap-2 justify-end px-3 py-2.5 ${cellBg(aWins)}`}>
         <span className={`text-sm tabular-nums ${valColor(aWins)}`}>
           {a !== null ? fmt(a) : '—'}
         </span>
@@ -297,7 +297,7 @@ function ScoreRow({ label, tooltip, aVal, bVal, higherIsBetter, format }: ScoreR
       </div>
 
       {/* Game B */}
-      <div className={`flex items-center gap-2 px-3 py-2.5 rounded-r-lg ${cellBg(bWins)}`}>
+      <div className={`flex items-center gap-2 px-3 py-2.5 ${cellBg(bWins)}`}>
         <div className="w-16 sm:w-20 bg-rule/30 h-2 overflow-hidden">
           <div className={`h-full transition-all ${barColor(bWins)}`}
             style={{ width: b !== null ? `${Math.round(bNum * 100)}%` : '0%' }} />
@@ -323,7 +323,7 @@ function InfoRow({ label, aText, bText, aGood, bGood }: {
 }) {
   return (
     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-0 border-b border-rule/50 last:border-0">
-      <div className={`text-right px-3 py-2.5 rounded-l-lg ${aGood ? 'bg-ivy/[0.06]' : ''}`}>
+      <div className={`text-right px-3 py-2.5 ${aGood ? 'bg-ivy/[0.06]' : ''}`}>
         <span className={`text-xs px-2 py-0.5 border font-semibold ${
           aGood
             ? 'border-ivy text-ivy'
@@ -333,7 +333,7 @@ function InfoRow({ label, aText, bText, aGood, bGood }: {
       <div className="text-center px-2 py-2.5 min-w-[100px] sm:min-w-[120px]">
         <span className="text-xs text-muted">{label}</span>
       </div>
-      <div className={`text-left px-3 py-2.5 rounded-r-lg ${bGood ? 'bg-ivy/[0.06]' : ''}`}>
+      <div className={`text-left px-3 py-2.5 ${bGood ? 'bg-ivy/[0.06]' : ''}`}>
         <span className={`text-xs px-2 py-0.5 border font-semibold ${
           bGood
             ? 'border-ivy text-ivy'
@@ -366,7 +366,7 @@ function TagsSection({ a, b }: { a: GameCardProps; b: GameCardProps }) {
   if (!hasSkills && !hasDP) return null
 
   const Tag = ({ label, color }: { label: string; color: string }) => (
-    <span className={`inline-flex text-[11px] font-semibold px-2 py-0.5 rounded-full ${color}`}>{label}</span>
+    <span className={`inline-flex text-[11px] font-semibold px-2 py-0.5 ${color}`}>{label}</span>
   )
 
   const aTitle = a.game.title.split(/[\s:—–]/)[0]
@@ -501,7 +501,7 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
         <div className="grid grid-cols-[1fr_auto_1fr]">
           {/* Game A */}
           <div className="p-3 sm:p-4 flex items-center gap-2.5">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden bg-rule/30 shrink-0">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 overflow-hidden bg-rule/30 shrink-0">
               {a.game.backgroundImage
                 // eslint-disable-next-line @next/next/no-img-element
                 ? <img src={a.game.backgroundImage} alt="" className="w-full h-full object-cover" />
@@ -516,7 +516,7 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
                   </span>
                 )}
                 {timeLabel(aScore) && (
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${timeBg(aScore?.timeRecommendationColor)}`}>
+                  <span className={`text-xs font-bold px-2 py-0.5 ${timeBg(aScore?.timeRecommendationColor)}`}>
                     {timeLabel(aScore)}
                   </span>
                 )}
@@ -531,7 +531,7 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
 
           {/* Game B */}
           <div className="p-3 sm:p-4 flex items-center gap-2.5 flex-row-reverse sm:flex-row">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden bg-rule/30 shrink-0">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 overflow-hidden bg-rule/30 shrink-0">
               {b.game.backgroundImage
                 // eslint-disable-next-line @next/next/no-img-element
                 ? <img src={b.game.backgroundImage} alt="" className="w-full h-full object-cover" />
@@ -546,7 +546,7 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
                   </span>
                 )}
                 {timeLabel(bScore) && (
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${timeBg(bScore?.timeRecommendationColor)}`}>
+                  <span className={`text-xs font-bold px-2 py-0.5 ${timeBg(bScore?.timeRecommendationColor)}`}>
                     {timeLabel(bScore)}
                   </span>
                 )}
@@ -605,7 +605,7 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
           <div className="grid grid-cols-[1fr_auto_1fr] items-start gap-0 border-b border-rule/50 last:border-0">
             <div className="flex flex-wrap gap-1 justify-end px-3 py-2">
               {aMonetTags.map(tag => (
-                <span key={tag} className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-rule text-muted">{tag}</span>
+                <span key={tag} className="text-[10px] font-semibold px-1.5 py-0.5 border border-rule text-muted">{tag}</span>
               ))}
             </div>
             <div className="text-center px-2 py-2 min-w-[100px] sm:min-w-[120px] self-center">
@@ -613,7 +613,7 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
             </div>
             <div className="flex flex-wrap gap-1 px-3 py-2">
               {bMonetTags.map(tag => (
-                <span key={tag} className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-rule text-muted">{tag}</span>
+                <span key={tag} className="text-[10px] font-semibold px-1.5 py-0.5 border border-rule text-muted">{tag}</span>
               ))}
             </div>
           </div>
@@ -660,7 +660,7 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
       <TagsSection a={a} b={b} />
 
       {/* ── Full review links ── */}
-      <div className="border-t border-rule px-6 py-3 flex justify-between rounded-b-2xl">
+      <div className="border-t border-rule px-6 py-3 flex justify-between">
         <Link href={`/${locale}/game/${a.game.slug}`} className="text-kicker uppercase font-semibold text-accent hover:underline" style={{ fontVariantCaps: 'all-small-caps' }}>
           {t('scFullReview', { title: a.game.title.split(' ').slice(0, 3).join(' ') })} →
         </Link>
@@ -810,7 +810,7 @@ function SuggestionStrip({ highRiskGame }: { highRiskGame: GameCardProps }) {
               <div className="flex items-center gap-1 mt-0.5">
                 {s.esrbRating && <span className="text-xs text-muted">{s.esrbRating}</span>}
                 {s.timeRecommendationMinutes && (
-                  <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${timeBg(s.timeRecommendationColor)}`}>
+                  <span className={`text-xs font-bold px-1.5 py-0.5 ${timeBg(s.timeRecommendationColor)}`}>
                     {s.timeRecommendationMinutes}m
                   </span>
                 )}

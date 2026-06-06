@@ -157,7 +157,7 @@ export default function CarouselRail({ kicker, seeAllHref, iconName, children }:
 
         <div
           ref={scrollRef}
-          className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4
+          className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4 scroll-pl-4 scroll-pr-4
             [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
             snap-x snap-mandatory scroll-smooth"
         >

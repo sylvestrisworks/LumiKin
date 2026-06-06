@@ -65,66 +65,46 @@ function randomKey(): string {
 type Span = { _type: 'span'; _key: string; text: string; marks: string[] }
 type MarkDef = { _key: string; _type: string; href?: string }
 
-/** Parse inline markdown (bold, italic, links) into spans + markDefs. */
+/**
+ * Parse inline markdown (bold, italic, code, links) into spans + markDefs.
+ * Recursive over an "active marks" set so nested formatting works — notably a
+ * link wrapped in emphasis (`*[text](href)*`), which the previous flat parser
+ * dropped as literal text.
+ */
 function parseInline(text: string): { spans: Span[]; markDefs: MarkDef[] } {
-  const spans: Span[] = []
   const markDefs: MarkDef[] = []
-  let buf = ''
-  const flushBuf = (marks: string[] = []) => {
-    if (!buf) return
-    spans.push({ _type: 'span', _key: randomKey(), text: buf, marks })
-    buf = ''
+
+  function walk(input: string, marks: string[]): Span[] {
+    const spans: Span[] = []
+    let buf = ''
+    const flush = () => {
+      if (!buf) return
+      spans.push({ _type: 'span', _key: randomKey(), text: buf, marks: [...marks] })
+      buf = ''
+    }
+    let i = 0
+    while (i < input.length) {
+      const rest = input.slice(i)
+      let m: RegExpMatchArray | null
+      // [link text](href) — label may itself contain formatting
+      if ((m = rest.match(/^\[([^\]]+)\]\(([^)]+)\)/))) {
+        flush()
+        const key = randomKey()
+        markDefs.push({ _key: key, _type: 'link', href: m[2] })
+        spans.push(...walk(m[1], [...marks, key]))
+        i += m[0].length; continue
+      }
+      if ((m = rest.match(/^\*\*\*([^*]+)\*\*\*/))) { flush(); spans.push(...walk(m[1], [...marks, 'strong', 'em'])); i += m[0].length; continue }
+      if ((m = rest.match(/^\*\*([^*]+)\*\*/)))     { flush(); spans.push(...walk(m[1], [...marks, 'strong']));      i += m[0].length; continue }
+      if (!rest.startsWith('**') && (m = rest.match(/^\*([^*\n]+)\*/))) { flush(); spans.push(...walk(m[1], [...marks, 'em'])); i += m[0].length; continue }
+      if ((m = rest.match(/^`([^`]+)`/))) { flush(); spans.push({ _type: 'span', _key: randomKey(), text: m[1], marks: [...marks, 'code'] }); i += m[0].length; continue }
+      buf += input[i]; i++
+    }
+    flush()
+    return spans
   }
-  let i = 0
-  while (i < text.length) {
-    const rest = text.slice(i)
-    // [link text](href)
-    const link = rest.match(/^\[([^\]]+)\]\(([^)]+)\)/)
-    if (link) {
-      flushBuf()
-      const key = randomKey()
-      markDefs.push({ _key: key, _type: 'link', href: link[2] })
-      spans.push({ _type: 'span', _key: randomKey(), text: link[1], marks: [key] })
-      i += link[0].length
-      continue
-    }
-    // ***bold-italic***
-    const bi = rest.match(/^\*\*\*([^*]+)\*\*\*/)
-    if (bi) {
-      flushBuf()
-      spans.push({ _type: 'span', _key: randomKey(), text: bi[1], marks: ['strong', 'em'] })
-      i += bi[0].length
-      continue
-    }
-    // **bold**
-    const b = rest.match(/^\*\*([^*]+)\*\*/)
-    if (b) {
-      flushBuf()
-      spans.push({ _type: 'span', _key: randomKey(), text: b[1], marks: ['strong'] })
-      i += b[0].length
-      continue
-    }
-    // *italic* — guard against ** prefix
-    const em = rest.match(/^\*([^*\n]+)\*/)
-    if (em && !rest.startsWith('**')) {
-      flushBuf()
-      spans.push({ _type: 'span', _key: randomKey(), text: em[1], marks: ['em'] })
-      i += em[0].length
-      continue
-    }
-    // `code`
-    const code = rest.match(/^`([^`]+)`/)
-    if (code) {
-      flushBuf()
-      spans.push({ _type: 'span', _key: randomKey(), text: code[1], marks: ['code'] })
-      i += code[0].length
-      continue
-    }
-    buf += text[i]
-    i++
-  }
-  flushBuf()
-  return { spans, markDefs }
+
+  return { spans: walk(text, []), markDefs }
 }
 
 type Block = {

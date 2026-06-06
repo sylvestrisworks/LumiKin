@@ -35,10 +35,10 @@ What that patience buys, on the screen, is storytelling almost nobody else in ga
 
 Pulled live from the catalogue — these are the *offline* games, scored on what a player gets if they never touch an online lobby:
 
-- *[Red Dead Redemption 2](/en/game/red-dead-redemption-2)* — LumiScore **72/100**, benefit density (BDS) **0.56**, risk intensity (RIS) **0.00**, up to **120 min/day, age 17+**. Near the very top of our entire catalogue. By the rubric, an almost model example of well-built mature gaming.
-- *[L.A. Noire](/en/game/la-noire)* — LumiScore **65/100**, BDS **0.49**, RIS **0.015**. A detective game built on facial-capture interrogation — close to pure deduction.
-- *[Grand Theft Auto V](/en/game/grand-theft-auto-v)* — LumiScore **63/100**, BDS **0.48**, RIS **0.075**. The lower benefit score reflects adult-geared content density, not poor design; the near-zero RIS confirms the *story* uses almost none of the manipulation patterns that drive screen-time concern.
-- *[Bully](/en/game/bully)* — LumiScore **64/100**, BDS **0.47**, age **13+**. Rockstar's most teen-accessible game — a boarding-school story with real social-navigation themes under the mischief.
+- **[Red Dead Redemption 2](/en/game/red-dead-redemption-2)** — LumiScore **72** · benefit 0.56 · risk 0.00 · **up to 120 min/day (17+)**. Near the very top of our entire catalogue — by the rubric, an almost model example of well-built mature gaming.
+- **[L.A. Noire](/en/game/la-noire)** — LumiScore **65** · benefit 0.49 · risk 0.015 · **up to 120 min/day (17+)**. A detective game built on facial-capture interrogation — close to pure deduction.
+- **[Grand Theft Auto V](/en/game/grand-theft-auto-v)** — LumiScore **63** · benefit 0.48 · risk 0.075 · **up to 120 min/day (17+)**. The lower benefit score reflects adult-geared content density, not poor design; the near-zero risk confirms the story uses almost none of the manipulation patterns that drive screen-time concern.
+- **[Bully](/en/game/bully)** — LumiScore **64** · benefit 0.47 · risk 0.01 · **up to 120 min/day (13+)**. Rockstar's most teen-accessible game — a boarding-school story with real social-navigation themes under the mischief.
 
 Notice the pattern: high benefit, near-zero risk intensity, a full two-hour recommendation. The risk intensity scores are *low* because a finished, finite, offline story has nothing to monetise and no clock to run against you. There is no Shark Card in the *RDR2* campaign. There is no lobby. The game wants to tell you a story and then end.
 
@@ -46,8 +46,8 @@ Notice the pattern: high benefit, near-zero risk intensity, a full two-hour reco
 
 Then there is what most players actually log into.
 
-- *[Grand Theft Auto Online](/en/game/grand-theft-auto-online)* — LumiScore **37/100**, BDS **0.47**, RIS **0.70**, **15 min/day — not recommended for children, age 17+**.
-- *[Grand Theft Auto V Enhanced](/en/game/grand-theft-auto-v-enhanced)* — LumiScore **44/100**, BDS **0.46**, RIS **0.58**, **30 min/day, age 17+** — the re-release that pushes the online economy to the front.
+- **[Grand Theft Auto Online](/en/game/grand-theft-auto-online)** — LumiScore **37** · benefit 0.47 · risk 0.70 · **15 min/day, not recommended (17+)**.
+- **[Grand Theft Auto V Enhanced](/en/game/grand-theft-auto-v-enhanced)** — LumiScore **44** · benefit 0.46 · risk 0.58 · **30 min/day (17+)**. The re-release that pushes the online economy to the front.
 
 Look at the benefit scores: GTA Online's BDS (0.47) is essentially the same as the GTA V story's (0.48). The fun is real; the worlds are the same. What changes is the **risk intensity**, which leaps from 0.075 to 0.70 — and drags the time recommendation from two hours down to fifteen minutes, into "not recommended." Same studio, same engine, same map. The number collapses because of what was bolted on top:
 

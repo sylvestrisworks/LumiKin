@@ -73,7 +73,7 @@ export default async function TodaysReview({ locale }: { locale: string }) {
 
   return (
     <section className="bg-paper text-ink">
-      <div className="mx-auto max-w-7xl px-8 py-16 md:py-20">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-16 md:py-20">
         {/* Eyebrow — section header, small-caps, hairline-bounded above */}
         <div className="border-t border-ink pt-4 mb-10">
           <p
@@ -173,22 +173,22 @@ export default async function TodaysReview({ locale }: { locale: string }) {
           )}
 
           {/* Verdict strip — Growth · Risk · Daily limit */}
-          <div className="mt-12 md:mt-16 border-t-2 border-ink border-b border-b-ink py-6 md:py-8 grid grid-cols-3 gap-x-6 md:gap-x-8 items-end">
+          <div className="mt-12 md:mt-16 border-t-2 border-ink border-b border-b-ink py-6 md:py-8 grid grid-cols-3 gap-x-4 md:gap-x-8 items-end">
             <BigScore label={te('verdict.growth')} value={game.bds ?? 0} tone="ivy" />
-            <div className="border-l border-ink/30 pl-6 md:pl-8">
+            <div className="border-l border-ink/30 pl-4 md:pl-8">
               <BigScore label={te('verdict.risk')} value={game.ris ?? 0} tone="accent" />
             </div>
-            <div className="border-l border-ink/30 pl-6 md:pl-8">
+            <div className="border-l border-ink/30 pl-4 md:pl-8">
               <p
                 className="text-kicker uppercase text-muted mb-1"
                 style={{ fontVariantCaps: 'all-small-caps' }}
               >
                 {te('verdict.dailyLimit')}
               </p>
-              <p className="font-serif text-5xl md:text-6xl tracking-tight tabular-nums leading-none mt-1">
+              <p className="font-serif text-[2.75rem] sm:text-5xl md:text-6xl tracking-tight tabular-nums leading-none mt-1">
                 {game.timeRecommendationMinutes ?? '—'}
                 {game.timeRecommendationMinutes != null && (
-                  <span className="text-2xl text-muted ml-1">{te('verdict.minutesShort')}</span>
+                  <span className="text-base sm:text-2xl text-muted ml-1">{te('verdict.minutesShort')}</span>
                 )}
               </p>
             </div>

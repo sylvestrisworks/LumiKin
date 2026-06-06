@@ -22,8 +22,8 @@ export function BigScore({
         {label}
       </p>
       <p
-        className={`font-serif tabular-nums leading-none tracking-tight ${numColor}`}
-        style={{ fontSize: '6.5rem', fontOpticalSizing: 'auto', fontWeight: 500 }}
+        className={`font-serif tabular-nums leading-none tracking-tight text-[2.75rem] sm:text-[4rem] md:text-[6.5rem] ${numColor}`}
+        style={{ fontOpticalSizing: 'auto', fontWeight: 500 }}
       >
         {Math.round(value * 100)}
       </p>

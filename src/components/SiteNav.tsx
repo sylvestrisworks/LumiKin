@@ -26,7 +26,7 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
     <header className="bg-paper text-ink border-b border-ink sticky top-0 z-50">
 
       {/* ── Main row ───────────────────────────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-8 h-14 flex items-center gap-4">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 h-14 flex items-center gap-4">
 
         {/* Logo — editorial nameplate. Live Fraunces text + a superscript
             accent-red colophon spark; ink/accent tokens flip in dark mode,
@@ -81,7 +81,7 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
       </div>
 
       {/* ── Mobile search row ──────────────────────────────────────────────── */}
-      <div className="sm:hidden px-4 pb-3">
+      <div className="sm:hidden px-5 pb-3">
         <SearchBar placeholder={t('discover') + '…'} variant="editorial" />
       </div>
 
@@ -94,7 +94,7 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
               href={l.href}
               onClick={() => setMenuOpen(false)}
               className={
-                'flex items-center px-4 py-4 text-kicker uppercase font-semibold ' +
+                'flex items-center px-5 py-4 text-kicker uppercase font-semibold ' +
                 (l.prominent ? 'text-accent ' : 'text-ink ') +
                 'hover:bg-ink/[0.04] hover:text-accent border-b border-ink/20 last:border-0 transition-colors'
               }
@@ -103,7 +103,7 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
               {l.label}
             </a>
           ))}
-          <div className="px-4 py-3 border-t border-ink/30 flex items-center justify-between gap-4">
+          <div className="px-5 py-3 border-t border-ink/30 flex items-center justify-between gap-4">
             <LanguageSwitcher />
             {notifSlot}
             {authSlot}

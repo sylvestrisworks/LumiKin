@@ -30,7 +30,7 @@ export function Masthead({
 }) {
   return (
     <header className="bg-paper text-ink">
-      <div className="mx-auto max-w-7xl px-8 pt-10 pb-3">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 pt-10 pb-3">
         <div className="flex items-baseline justify-between gap-8">
           <Link
             href="/"
@@ -45,13 +45,13 @@ export function Masthead({
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-8">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="border-t-2 border-ink" />
         <div className="mt-px border-t border-ink/30" />
       </div>
 
-      <nav className="mx-auto max-w-7xl px-8 py-3 flex items-center justify-between gap-8">
-        <ul className="flex items-center gap-8 text-kicker uppercase font-medium">
+      <nav className="mx-auto max-w-7xl px-5 sm:px-8 py-3 flex items-center justify-between gap-x-4 gap-y-2 flex-wrap">
+        <ul className="flex items-center flex-wrap gap-x-5 gap-y-1 sm:gap-x-8 text-kicker uppercase font-medium">
           {sections.map((s) => (
             <li key={s.href}>
               <Link
@@ -64,12 +64,12 @@ export function Masthead({
             </li>
           ))}
         </ul>
-        <time className="text-kicker uppercase text-muted tabular-nums">
+        <time className="text-kicker uppercase text-muted tabular-nums whitespace-nowrap shrink-0">
           {formatDateline(now)}
         </time>
       </nav>
 
-      <div className="mx-auto max-w-7xl px-8">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="border-t border-ink" />
       </div>
     </header>

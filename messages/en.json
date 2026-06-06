@@ -30,8 +30,8 @@
     "navTerms": "Terms"
   },
   "home": {
-    "h1": "Know what your kid is actually playing.",
-    "subhead": "Search {count} games. See the benefits, the risks, and a healthy time per session. Free for parents.",
+    "h1": "A great game can enrich a growing mind. The wrong one needs a grown-up.",
+    "subhead": "LumiKin rates {count} games on benefits, risks, and healthy play time, so you can tell which is which.",
     "searchPlaceholder": "Search a game your kid plays…",
     "browseAll": "Browse all games →",
     "browseByLabel": "Or browse by",
@@ -1103,6 +1103,9 @@
     "indexSubtitle": "Pick your child's main platform to see scored games and safest picks.",
     "tileSummary": "{count} rated · avg {avg}",
     "tileSummaryEmpty": "Awaiting ratings",
+    "ledger": "<b>{ratings}</b> ratings across <b>{platforms}</b> platforms",
+    "avgShort": "avg",
+    "ratedCount": "{count} rated",
     "editorial_playstation": "PlayStation 4 and PS5 span everything from calm puzzle games to intense online multiplayer. Many great titles are available through PS Plus, but the subscription pressure and online exposure varies widely across the catalogue. LumiKin scores make it easy to find which PlayStation games are genuinely worth your child's time — and which ones come with hidden costs or engagement traps.",
     "editorial_xbox": "Xbox One and Xbox Series S|X are home to hundreds of titles available through Xbox Game Pass, making it one of the most accessible platforms for families. LumiKin scores help you navigate the catalog quickly — sorting by safest picks or family co-op highlights lets you build a trusted game list without playing every title yourself.",
     "editorial_nintendo_switch": "Nintendo Switch has one of the most family-friendly first-party libraries of any console, with beloved franchises like Mario, Zelda, and Pokémon consistently earning high benefit scores. The platform is also easy to manage with built-in parental controls and screen time limits. LumiKin scores help you find the standout third-party games worth adding to your collection.",
@@ -1239,9 +1242,9 @@
       "fortniteDek": "Creative islands and modes rated separately from the base game."
     },
     "standfirst": {
-      "kicker": "From the desk",
-      "body": "LumiKin is a small team of parents and reviewers rating what a game grows in a child — and what it costs in attention, money, and calm at home. Benefits come first. Every score traces to a public rubric. And we always name the one thing to check before you buy.",
-      "signoff": "— The LumiKin editors"
+      "kicker": "How LumiKin works",
+      "body": "LumiKin rates games on what they grow in a child — and what they cost in attention, money, and calm at home. Benefits come first. Every score is generated against a public rubric you can read in full, and we always name the one thing to check before you buy.",
+      "signoff": "— Benefits first, always."
     },
     "byTheNumbers": {
       "kicker": "By the numbers",

@@ -25,15 +25,7 @@ const DB_TO_URL: Record<string, string> = {
   'fortnite-creative': 'fortnite',
 }
 
-// ─── UGC platform styling ─────────────────────────────────────────────────────
-const UGC_ACCENT: Record<string, string> = {
-  roblox:              'from-red-950/95 via-red-900/70 to-slate-900/20',
-  'fortnite-creative': 'from-indigo-950/95 via-indigo-900/70 to-slate-900/20',
-}
-const UGC_ICON_BG: Record<string, string> = {
-  roblox:              'bg-red-600 ring-red-400/40',
-  'fortnite-creative': 'bg-blue-600 ring-blue-400/40',
-}
+// ─── UGC platform logos ───────────────────────────────────────────────────────
 const UGC_ICON_NAME: Record<string, IconName> = {
   roblox:              'roblox',
   'fortnite-creative': 'fortnite',
@@ -45,67 +37,17 @@ type PlatformConfig = {
   name: string
   keyword: string     // matched against games.platforms JSON via ILIKE
   browseKey: string   // matches PLATFORM_KEYWORDS key in browse/page.tsx
-  accent: string      // Tailwind gradient for hero
-  iconBg: string      // Tailwind bg+ring for icon
   iconName: IconName  // brand logo
   msgKey: string      // key suffix used in messages: desc_{msgKey}, editorial_{msgKey}
 }
 
 const TRADITIONAL_PLATFORMS: Record<string, PlatformConfig> = {
-  playstation: {
-    name: 'PlayStation',
-    keyword: 'PlayStation',
-    browseKey: 'PlayStation',
-    accent: 'from-blue-950/95 via-blue-900/70 to-slate-900/20',
-    iconBg: 'bg-blue-700 ring-blue-400/40',
-    iconName: 'playstation',
-    msgKey: 'playstation',
-  },
-  xbox: {
-    name: 'Xbox',
-    keyword: 'Xbox',
-    browseKey: 'Xbox',
-    accent: 'from-green-950/95 via-green-900/70 to-slate-900/20',
-    iconBg: 'bg-green-700 ring-green-400/40',
-    iconName: 'xbox',
-    msgKey: 'xbox',
-  },
-  'nintendo-switch': {
-    name: 'Nintendo Switch',
-    keyword: 'Nintendo Switch',
-    browseKey: 'Switch',
-    accent: 'from-red-950/95 via-red-900/70 to-slate-900/20',
-    iconBg: 'bg-red-600 ring-red-400/40',
-    iconName: 'switch',
-    msgKey: 'nintendo_switch',
-  },
-  ios: {
-    name: 'iOS',
-    keyword: 'iOS',
-    browseKey: 'iOS',
-    accent: 'from-sky-950/95 via-sky-900/70 to-slate-900/20',
-    iconBg: 'bg-sky-600 ring-sky-400/40',
-    iconName: 'ios',
-    msgKey: 'ios',
-  },
-  android: {
-    name: 'Android',
-    keyword: 'Android',
-    browseKey: 'Android',
-    accent: 'from-emerald-950/95 via-emerald-900/70 to-slate-900/20',
-    iconBg: 'bg-emerald-600 ring-emerald-400/40',
-    iconName: 'android',
-    msgKey: 'android',
-  },
-  pc: {
-    name: 'PC',
-    keyword: 'PC',
-    browseKey: 'PC',
-    accent: 'from-violet-950/95 via-violet-900/70 to-slate-900/20',
-    iconBg: 'bg-violet-700 ring-violet-400/40',
-    iconName: 'pc',
-    msgKey: 'pc',
-  },
+  playstation:       { name: 'PlayStation',     keyword: 'PlayStation',     browseKey: 'PlayStation', iconName: 'playstation', msgKey: 'playstation' },
+  xbox:              { name: 'Xbox',            keyword: 'Xbox',            browseKey: 'Xbox',        iconName: 'xbox',        msgKey: 'xbox' },
+  'nintendo-switch': { name: 'Nintendo Switch', keyword: 'Nintendo Switch', browseKey: 'Switch',      iconName: 'switch',      msgKey: 'nintendo_switch' },
+  ios:               { name: 'iOS',             keyword: 'iOS',             browseKey: 'iOS',         iconName: 'ios',         msgKey: 'ios' },
+  android:           { name: 'Android',         keyword: 'Android',         browseKey: 'Android',     iconName: 'android',     msgKey: 'android' },
+  pc:                { name: 'PC',              keyword: 'PC',              browseKey: 'PC',          iconName: 'pc',          msgKey: 'pc' },
 }
 
 // ─── Game select + mapper ─────────────────────────────────────────────────────
@@ -465,21 +407,18 @@ async function TraditionalPlatformPage({
           platformName={config.name}
         />
 
-        {/* Hero — platform banner */}
-        <div className="relative overflow-hidden border-2 border-ink bg-slate-900">
-          <div className={`absolute inset-0 bg-gradient-to-br ${config.accent}`} />
-          <div className="relative px-6 py-7 flex items-center gap-5">
-            <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl ${config.iconBg} ring-2 flex items-center justify-center shrink-0 shadow-lg`}>
-              <Icon name={config.iconName} size={48} className="text-white" label={config.name} />
-            </div>
-            <div className="flex-1 min-w-0">
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-              <span className="inline-block text-[11px] font-semibold bg-white/10 text-white/70 border border-white/20 px-2 py-0.5 rounded-full tracking-wide uppercase mb-1.5">
-                {t('badge' as any)}
-              </span>
-              <h1 className="text-3xl sm:text-4xl font-serif text-white tracking-tight">{config.name}</h1>
-              <p className="text-sm text-white/70 mt-1 line-clamp-2">{descText}</p>
-            </div>
+        {/* Hero — editorial nameplate */}
+        <div className="border-2 border-ink bg-paper px-6 py-7 flex items-center gap-5">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 border-2 border-ink flex items-center justify-center shrink-0 text-ink">
+            <Icon name={config.iconName} size={48} className="text-ink" label={config.name} />
+          </div>
+          <div className="flex-1 min-w-0">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            <span className="block text-kicker uppercase font-semibold text-muted mb-1" style={{ fontVariantCaps: 'all-small-caps' }}>
+              {t('badge' as any)}
+            </span>
+            <h1 className="text-3xl sm:text-4xl font-serif text-ink tracking-tight">{config.name}</h1>
+            <p className="text-sm text-muted mt-1 line-clamp-2">{descText}</p>
           </div>
         </div>
 
@@ -775,8 +714,6 @@ export default async function PlatformHubPage({ params }: Props) {
   const avgTime      = statsRow?.avgTime ?? null
   const safestCount  = Number(statsRow?.safestCount ?? 0)
   const topExperience = topExperiences[0] ?? null
-  const accent       = UGC_ACCENT[dbSlug] ?? 'from-slate-950/95 via-slate-900/70 to-slate-900/20'
-  const iconBg       = UGC_ICON_BG[dbSlug] ?? 'bg-ink ring-rule'
   const iconName     = UGC_ICON_NAME[dbSlug] ?? null
   const initials     = platform.title.slice(0, 2).toUpperCase()
 
@@ -807,50 +744,39 @@ export default async function PlatformHubPage({ params }: Props) {
           platformName={platform.title}
         />
 
-        {/* Platform hero */}
-        <div className="relative overflow-hidden border-2 border-ink bg-slate-900">
-          {platform.backgroundImage && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={platform.backgroundImage}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover opacity-30"
-            />
-          )}
-          <div className={`absolute inset-0 bg-gradient-to-br ${accent}`} />
-          <div className="relative px-6 py-7 flex items-center gap-5">
-            <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl ${iconBg} ring-2 flex items-center justify-center shrink-0 shadow-lg`}>
-              {iconName ? (
-                <Icon name={iconName} size={48} className="text-white" label={platform.title} />
-              ) : (
-                <span className="text-3xl font-black text-white select-none">{initials}</span>
-              )}
-            </div>
+        {/* Platform hero — editorial nameplate */}
+        <div className="border-2 border-ink bg-paper px-6 py-7 flex items-center gap-5">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 border-2 border-ink flex items-center justify-center shrink-0 text-ink">
+            {iconName ? (
+              <Icon name={iconName} size={48} className="text-ink" label={platform.title} />
+            ) : (
+              <span className="text-3xl font-black text-ink select-none">{initials}</span>
+            )}
+          </div>
 
-            <div className="flex-1 min-w-0">
-              <span className="inline-block text-[11px] font-semibold bg-white/10 text-white/70 border border-white/20 px-2 py-0.5 rounded-full tracking-wide uppercase mb-1.5">
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {t('badge' as any)}
-              </span>
-              <h1 className="text-3xl sm:text-4xl font-serif text-white tracking-tight">{platform.title}</h1>
-              {platform.description && (
-                <p className="text-sm text-white/70 mt-1 line-clamp-2">{platform.description}</p>
-              )}
-              {(platform.esrbRating || platform.pegiRating) && (
-                <div className="flex items-center gap-2 mt-2">
-                  {platform.esrbRating && (
-                    <span className="text-[10px] font-bold bg-white/10 border border-white/15 text-white/70 px-2 py-0.5 rounded-full">
-                      ESRB {platform.esrbRating}
-                    </span>
-                  )}
-                  {platform.pegiRating && (
-                    <span className="text-[10px] font-bold bg-white/10 border border-white/15 text-white/70 px-2 py-0.5 rounded-full">
-                      PEGI {platform.pegiRating}
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
+          <div className="flex-1 min-w-0">
+            <span className="block text-kicker uppercase font-semibold text-muted mb-1" style={{ fontVariantCaps: 'all-small-caps' }}>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {t('badge' as any)}
+            </span>
+            <h1 className="text-3xl sm:text-4xl font-serif text-ink tracking-tight">{platform.title}</h1>
+            {platform.description && (
+              <p className="text-sm text-muted mt-1 line-clamp-2">{platform.description}</p>
+            )}
+            {(platform.esrbRating || platform.pegiRating) && (
+              <div className="flex items-center gap-2 mt-2">
+                {platform.esrbRating && (
+                  <span className="text-[10px] font-bold border border-rule text-muted px-2 py-0.5">
+                    ESRB {platform.esrbRating}
+                  </span>
+                )}
+                {platform.pegiRating && (
+                  <span className="text-[10px] font-bold border border-rule text-muted px-2 py-0.5">
+                    PEGI {platform.pegiRating}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

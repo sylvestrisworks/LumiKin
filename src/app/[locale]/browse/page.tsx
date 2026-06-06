@@ -635,7 +635,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
         {/* ── Search bar — always visible ────────────────────────────────── */}
         <div className="mb-4 sm:mb-6">
           <Suspense>
-            <SearchBar />
+            <SearchBar variant="editorial" />
           </Suspense>
         </div>
 
@@ -712,9 +712,12 @@ export default async function BrowsePage({ params, searchParams }: Props) {
               <Suspense>
                 <PlatformPicker current={shelfPlatforms} />
               </Suspense>
-              <p className="text-xs text-muted">
+              <p className="text-xs text-muted flex items-center justify-center gap-x-4 gap-y-1 flex-wrap">
                 <Link href={`/${locale}/age`} className="text-accent hover:underline font-medium">
                   {t('byAgeLink')}
+                </Link>
+                <Link href={`/${locale}/discover`} className="text-accent hover:underline font-medium">
+                  {t('findPicks')}
                 </Link>
               </p>
               {(filters.platforms.length > 0 || filters.age !== undefined) && (

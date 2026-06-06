@@ -1,5 +1,12 @@
 {
   "nav": {
+    "byAge": "By Age",
+    "platforms": "Platforms",
+    "myLibrary": "My Library",
+    "familyDashboard": "Family Dashboard",
+    "account": "Account",
+    "signOut": "Sign out",
+    "signIn": "Sign in",
     "brand": "LumiKin",
     "brandSub": "",
     "discover": "Discover",
@@ -120,6 +127,7 @@
     "loading": "Loading results"
   },
   "browse": {
+    "findPicks": "Get guided picks →",
     "title": "Browse games",
     "searchPlaceholder": "Search games…",
     "searchButton": "Search",
@@ -1016,7 +1024,7 @@
     "catAgeGuide": "Age Guide",
     "catParentingTips": "Parenting Tips",
     "metaTitle": "Learn — Parental Guides, News & FAQs | LumiKin",
-    "metaDescription": "Expert guides for parents on screen time, game safety, and age-appropriate gaming. News, tips, and answers to your most common questions."
+    "metaDescription": "In-depth guides for parents on screen time, game safety, and age-appropriate gaming. News, tips, and answers to your most common questions."
   },
   "blog": {
     "breadcrumbLearn": "Learn",

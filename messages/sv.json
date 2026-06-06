@@ -1,5 +1,12 @@
 {
   "nav": {
+    "byAge": "Efter ålder",
+    "platforms": "Plattformar",
+    "myLibrary": "Mitt bibliotek",
+    "familyDashboard": "Familjepanel",
+    "account": "Konto",
+    "signOut": "Logga ut",
+    "signIn": "Logga in",
     "brand": "LumiKin",
     "brandSub": "",
     "discover": "Upptäck",
@@ -153,6 +160,7 @@
     "loading": "Laddar resultat"
   },
   "browse": {
+    "findPicks": "Få vägledda förslag →",
     "title": "Utforska spel",
     "searchPlaceholder": "Sök spel…",
     "searchButton": "Sök",
@@ -1027,7 +1035,7 @@
     "catAgeGuide": "Åldersguide",
     "catParentingTips": "Föräldratips",
     "metaTitle": "Lär dig — föräldraguider, nyheter & FAQ | LumiKin",
-    "metaDescription": "Expertguider för föräldrar om skärmtid, spelsäkerhet och åldersanpassat spelande. Nyheter, tips och svar på de vanligaste frågorna."
+    "metaDescription": "Fördjupande guider för föräldrar om skärmtid, spelsäkerhet och åldersanpassat spelande. Nyheter, tips och svar på de vanligaste frågorna."
   },
   "blog": {
     "breadcrumbLearn": "Lär dig mer",

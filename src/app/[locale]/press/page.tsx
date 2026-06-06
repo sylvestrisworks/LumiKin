@@ -38,11 +38,11 @@ const ONE_PARAGRAPH =
   `LumiKin is a structured game-rating engine for parents. Every game in the database is scored across ${RUBRIC_DIMENSION_COUNT} dimensions — covering cognitive skills, social-emotional growth, motor development, and design risks including dopamine manipulation, monetisation pressure, and social risk. The output is a single LumiScore (0–100), a daily time recommendation, and a set of machine-readable flags. Ratings are produced against the LumiKin methodology, a versioned open rubric, and are available both via a consumer website and a structured API for parental-control vendors and platform operators.`
 
 const PALETTE = [
-  { name: 'Indigo',      hex: '#4f46e5', textClass: 'text-white', usage: 'Logo mark, primary links, CTAs'    },
-  { name: 'Violet',      hex: '#7c3aed', textClass: 'text-white', usage: 'Gradient end, accent highlights'   },
-  { name: 'Slate Dark',  hex: '#0f172a', textClass: 'text-white', usage: 'Wordmark, body text on light bg'   },
-  { name: 'White',       hex: '#ffffff', textClass: 'text-slate-800', usage: 'Page background, light surfaces' },
-  { name: 'Zinc 950',    hex: '#09090b', textClass: 'text-white', usage: 'Dark-mode background'              },
+  { name: 'Editorial Red', hex: '#c8102e', textClass: 'text-white',      usage: 'Accent — spark mark, links, CTAs'  },
+  { name: 'Ink',           hex: '#14110f', textClass: 'text-white',      usage: 'Wordmark, body text on paper'      },
+  { name: 'Paper',         hex: '#f7f1e8', textClass: 'text-slate-800',  usage: 'Page background, light surfaces'   },
+  { name: 'Ochre',         hex: '#94591c', textClass: 'text-white',      usage: 'Secondary accent, badges'          },
+  { name: 'Rule',          hex: '#b8aea0', textClass: 'text-slate-800',  usage: 'Hairlines, dividers'               },
 ]
 
 // ─── Static facts — founder fills these in ───────────────────────────────────
@@ -268,7 +268,7 @@ export default async function PressPage({ params }: Props) {
 
             </div>
             <p className="mt-4 text-xs text-muted">
-              PNG versions available on request. Do not modify the logo or recolour the spark mark gradient.
+              PNG versions available on request. Do not modify the logo or recolour the spark mark.
             </p>
           </div>
 

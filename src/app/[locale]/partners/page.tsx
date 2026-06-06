@@ -176,8 +176,8 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
               covering ten cognitive dimensions (problem solving, spatial awareness, strategic
               thinking, creativity, and more), six social-emotional dimensions (teamwork,
               communication, empathy, ethical reasoning), and four motor dimensions. Each
-              dimension is scored independently by trained reviewers, then weighted and combined
-              into a Benefits Development Score (BDS).
+              dimension is scored independently against the rubric's calibration anchors, then
+              weighted and combined into a Benefits Development Score (BDS).
             </p>
             <p>
               Risk is assessed separately across three scored categories: dopamine manipulation

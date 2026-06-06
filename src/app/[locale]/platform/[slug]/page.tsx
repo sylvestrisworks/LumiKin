@@ -776,7 +776,7 @@ export default async function PlatformHubPage({ params }: Props) {
   const safestCount  = Number(statsRow?.safestCount ?? 0)
   const topExperience = topExperiences[0] ?? null
   const accent       = UGC_ACCENT[dbSlug] ?? 'from-slate-950/95 via-slate-900/70 to-slate-900/20'
-  const iconBg       = UGC_ICON_BG[dbSlug] ?? 'bg-indigo-600 ring-indigo-400/40'
+  const iconBg       = UGC_ICON_BG[dbSlug] ?? 'bg-ink ring-rule'
   const iconName     = UGC_ICON_NAME[dbSlug] ?? null
   const initials     = platform.title.slice(0, 2).toUpperCase()
 

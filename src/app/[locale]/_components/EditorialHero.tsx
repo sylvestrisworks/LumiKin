@@ -16,15 +16,15 @@ export default async function EditorialHero({ locale }: { locale: string }) {
 
   return (
     <section className="bg-paper text-ink">
-      <div className="mx-auto max-w-7xl px-8 pt-16 pb-20 md:pt-20 md:pb-24">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 pt-10 pb-12 md:pt-12 md:pb-14">
         <h1
-          className="font-serif text-display md:text-display-lg tracking-tight leading-[1.02] mb-8 max-w-4xl"
+          className="font-serif text-display md:text-display-lg tracking-tight leading-[1.02] mb-6 max-w-5xl"
           style={{ fontOpticalSizing: 'auto' }}
         >
           {t('h1')}
         </h1>
 
-        <p className="font-serif italic text-xl md:text-2xl text-muted leading-snug max-w-3xl mb-12">
+        <p className="font-serif italic text-xl md:text-2xl text-muted leading-snug max-w-3xl mb-8">
           {t('subhead', { count: stats.total_games_scored })}
         </p>
 

@@ -92,8 +92,8 @@
     "featuredWhy": "Warum:",
     "featuredParentTip": "Tipp für Eltern",
     "featuredCta": "Vollständige Bewertung ansehen →",
-    "h1": "Wisse, was dein Kind wirklich spielt.",
-    "subhead": "Durchsuche {count} Spiele. Sieh die Vorteile, die Risiken und eine gesunde Zeit pro Sitzung. Kostenlos für Eltern.",
+    "h1": "Ein gutes Spiel kann einen wachsenden Geist bereichern. Das falsche braucht einen Erwachsenen.",
+    "subhead": "LumiKin bewertet {count} Spiele nach Nutzen, Risiken und gesunder Spielzeit, damit du den Unterschied erkennst.",
     "browseByLabel": "Oder durchstöbern nach",
     "browseByAge": "Alter",
     "browseByRoblox": "Roblox-Erlebnisse",
@@ -1114,6 +1114,9 @@
     "indexSubtitle": "Wähle die Hauptplattform deines Kindes, um bewertete Spiele und sicherste Auswahl zu sehen.",
     "tileSummary": "{count} bewertet · Ø {avg}",
     "tileSummaryEmpty": "Warten auf Bewertungen",
+    "ledger": "<b>{ratings}</b> Bewertungen auf <b>{platforms}</b> Plattformen",
+    "avgShort": "Ø",
+    "ratedCount": "{count} bewertet",
     "editorial_playstation": "PlayStation 4 and PS5 span everything from calm puzzle games to intense online multiplayer. Many great titles are available through PS Plus, but the subscription pressure and online exposure varies widely across the catalogue. LumiKin scores make it easy to find which PlayStation games are genuinely worth your child's time — and which ones come with hidden costs or engagement traps.",
     "editorial_xbox": "Xbox One and Xbox Series S|X are home to hundreds of titles available through Xbox Game Pass, making it one of the most accessible platforms for families. LumiKin scores help you navigate the catalog quickly — sorting by safest picks or family co-op highlights lets you build a trusted game list without playing every title yourself.",
     "editorial_nintendo_switch": "Nintendo Switch has one of the most family-friendly first-party libraries of any console, with beloved franchises like Mario, Zelda, and Pokémon consistently earning high benefit scores. The platform is also easy to manage with built-in parental controls and screen time limits. LumiKin scores help you find the standout third-party games worth adding to your collection.",
@@ -1272,9 +1275,9 @@
       "fortniteDek": "Kreative Inseln und Modi separat vom Hauptspiel bewertet."
     },
     "standfirst": {
-      "kicker": "Aus der Redaktion",
-      "body": "LumiKin ist ein kleines Team aus Eltern und Testern, das bewertet, was ein Spiel bei einem Kind fördert – und was es an Aufmerksamkeit, Geld und Ruhe zu Hause kostet. Der Nutzen steht an erster Stelle. Jede Bewertung beruht auf einem öffentlichen Bewertungsraster. Und wir benennen immer den einen Punkt, den Sie vor dem Kauf prüfen sollten.",
-      "signoff": "— Die LumiKin-Redaktion"
+      "kicker": "So funktioniert LumiKin",
+      "body": "LumiKin bewertet Spiele danach, was sie in einem Kind fördern — und was sie an Aufmerksamkeit, Geld und Ruhe zu Hause kosten. Der Nutzen kommt zuerst. Jede Bewertung entsteht anhand eines öffentlichen Bewertungsrasters, das du vollständig nachlesen kannst, und wir nennen immer den einen Punkt, den du vor dem Kauf prüfen solltest.",
+      "signoff": "— Nutzen zuerst, immer."
     },
     "byTheNumbers": {
       "kicker": "In Zahlen",

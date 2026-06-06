@@ -9,8 +9,9 @@ import { Masthead } from '@/components/editorial'
 import CoverageStrip from './partners/_components/CoverageStrip'
 import EditorialHero from './_components/EditorialHero'
 import Standfirst from './_components/Standfirst'
-import FrontPageGrid from './_components/FrontPageGrid'
+import TodaysReview from './_components/TodaysReview'
 import ByTheNumbers from './_components/ByTheNumbers'
+import TrackingRow from './_components/TrackingRow'
 import DeskRow from './_components/DeskRow'
 import MethodologyEditorial from './_components/MethodologyEditorial'
 import BrowseByEditorial from './_components/BrowseByEditorial'
@@ -154,11 +155,14 @@ export default async function HomePage({ params, searchParams }: Props) {
       {/* ── Standfirst (editor's note — who we are, the promise) ─────────────── */}
       <Standfirst />
 
-      {/* ── Front page (lead review + "in brief" rail, newspaper grid) ────────── */}
-      <FrontPageGrid locale={locale} />
+      {/* ── Today's review (editorial cover) ─────────────────────────────────── */}
+      <TodaysReview locale={locale} />
 
       {/* ── By the numbers (anatomy of a LumiScore — Pudding-style spread) ────── */}
       <ByTheNumbers locale={locale} />
+
+      {/* ── What we're tracking (3-up listing) ───────────────────────────────── */}
+      <TrackingRow locale={locale} />
 
       {/* ── The desk (3-up Sanity guides) ────────────────────────────────────── */}
       <DeskRow locale={locale} />

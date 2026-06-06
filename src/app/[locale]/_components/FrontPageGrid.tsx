@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { getTranslations } from 'next-intl/server'
-import { Rosette, type RosetteVariant } from '@/components/editorial'
 import { ScoreBar } from '@/components/editorial/ScoreTable'
 import { esrbToAge } from '@/lib/ui'
 import { fetchFeatured } from '../_data/featured'
@@ -13,14 +12,6 @@ import { fetchTrending } from '../_data/trending'
 // the stacked TodaysReview + TrackingRow sections at the top of the homepage.
 // The full per-dimension score tables remain on the review page — a front page
 // leads with verdict + voice, not data tables.
-
-// BDS ≥ 0.60 → recommends; RIS > 0.70 always overrides to caution.
-// Mirrors rosetteVariantFor in TodaysReview so the rosette stays consistent.
-function rosetteVariantFor(bds: number | null, ris: number | null): RosetteVariant {
-  if (ris != null && ris > 0.70) return 'caution'
-  if (bds != null && bds >= 0.60) return 'recommends'
-  return 'caution'
-}
 
 // First one-to-two sentences of the executive summary, capped — the lead deck.
 function deck(text: string | null, max = 220): string | null {
@@ -65,7 +56,6 @@ export default async function FrontPageGrid({ locale }: { locale: string }) {
   // Drop the lead game from the briefs so it never appears twice on the front.
   const briefs = trending.filter((r) => r.slug !== game.slug).slice(0, 4)
 
-  const variant    = rosetteVariantFor(game.bds, game.ris)
   const tip        = game.parentTipBenefits ?? game.parentTip
   const lead       = deck(game.executiveSummary)
   const dateLocale = te('dateline.locale')
@@ -120,9 +110,6 @@ export default async function FrontPageGrid({ locale }: { locale: string }) {
                       aria-hidden
                     />
                   )}
-                </div>
-                <div className="hidden md:block absolute -top-5 -right-5">
-                  <Rosette variant={variant} size={112} rotate={-7} />
                 </div>
               </div>
 

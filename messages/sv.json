@@ -252,6 +252,15 @@
     "advancedFilters": "More filters"
   },
   "discover": {
+    "filterBy": "Filtrera efter",
+    "labelAge": "Ålder",
+    "labelPlatform": "Plattform",
+    "platformMobile": "Mobil",
+    "statUseMonetization": "använder lootlådor eller köp i spelet",
+    "statZeroMonetization": "helt utan köp",
+    "searchPlaceholder": "Sök ett spel som ditt barn spelar…",
+    "exploreBy": "Utforska efter",
+    "filterByAge": "Filtrera efter ålder",
     "tagline": "Med grund i barns utveckling",
     "heading": "Utforska spel",
     "whatMeansCurascore": "Vad innebär en LumiScore?",

@@ -252,6 +252,15 @@
     "advancedFilters": "More filters"
   },
   "discover": {
+    "filterBy": "Filtern nach",
+    "labelAge": "Alter",
+    "labelPlatform": "Plattform",
+    "platformMobile": "Mobil",
+    "statUseMonetization": "nutzen Lootboxen oder In-Game-Käufe",
+    "statZeroMonetization": "ganz ohne Käufe",
+    "searchPlaceholder": "Suche ein Spiel, das dein Kind spielt…",
+    "exploreBy": "Entdecken nach",
+    "filterByAge": "Nach Alter filtern",
     "tagline": "Fundiert in kindlicher Entwicklung",
     "heading": "Spiele entdecken",
     "whatMeansCurascore": "Was bedeutet ein LumiScore?",

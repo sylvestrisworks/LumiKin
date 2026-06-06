@@ -219,6 +219,15 @@
     "complianceOdds": "ODDS compliant"
   },
   "discover": {
+    "filterBy": "Filter by",
+    "labelAge": "Age",
+    "labelPlatform": "Platform",
+    "platformMobile": "Mobile",
+    "statUseMonetization": "use loot boxes or in-game purchases",
+    "statZeroMonetization": "with no purchases at all",
+    "searchPlaceholder": "Search a game your child plays…",
+    "exploreBy": "Explore by",
+    "filterByAge": "Filter by age",
     "tagline": "Grounded in child development",
     "heading": "Discover Games",
     "whatMeansCurascore": "What does a LumiScore mean?",

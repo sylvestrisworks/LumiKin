@@ -252,6 +252,15 @@
     "advancedFilters": "More filters"
   },
   "discover": {
+    "filterBy": "Filtrar por",
+    "labelAge": "Edad",
+    "labelPlatform": "Plataforma",
+    "platformMobile": "Móvil",
+    "statUseMonetization": "usan cajas de botín o compras dentro del juego",
+    "statZeroMonetization": "sin ninguna compra",
+    "searchPlaceholder": "Busca un juego al que juega tu hijo…",
+    "exploreBy": "Explorar por",
+    "filterByAge": "Filtrar por edad",
     "tagline": "Basado en el desarrollo infantil",
     "heading": "Descubre Juegos",
     "whatMeansCurascore": "¿Qué significa un LumiScore?",

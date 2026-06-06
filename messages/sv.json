@@ -252,9 +252,6 @@
     "advancedFilters": "More filters"
   },
   "discover": {
-    "searchPlaceholder": "Sök ett spel som ditt barn spelar…",
-    "exploreBy": "Utforska efter",
-    "filterByAge": "Filtrera efter ålder",
     "tagline": "Med grund i barns utveckling",
     "heading": "Utforska spel",
     "whatMeansCurascore": "Vad innebär en LumiScore?",

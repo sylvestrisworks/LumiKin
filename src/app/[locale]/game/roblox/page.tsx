@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { platformExperiences, experienceScores, games, gameScores } from '@/lib/db/schema'
 import { eq, desc, and, lte, ilike, isNotNull, type SQL } from 'drizzle-orm'
 import ExperienceCard, { type ExperienceSummary } from '@/components/ExperienceCard'
+import Icon from '@/components/Icon'
 import { curascoreTextEditorial } from '@/lib/ui'
 import RobloxFilters, { type RobloxFilterState } from '@/components/RobloxFilters'
 import { getTranslations } from 'next-intl/server'
@@ -89,51 +90,37 @@ export default async function RobloxHubPage({ searchParams }: Props) {
     <div className="min-h-screen bg-paper text-ink">
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
 
-        {/* Platform header */}
-        <div className="relative overflow-hidden border-2 border-ink bg-slate-900">
-          {roblox?.backgroundImage && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={roblox.backgroundImage}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover opacity-30"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-r from-red-950/95 via-red-900/70 to-slate-900/30" />
-          <div className="relative px-6 py-8 flex items-center gap-5">
-            {/* Roblox icon */}
-            <div className="w-[72px] h-[72px] rounded-2xl bg-red-600 flex items-center justify-center shrink-0 shadow-lg ring-2 ring-red-400/40">
-              <span className="text-3xl font-black text-white select-none">R</span>
-            </div>
+        {/* Platform header — editorial nameplate */}
+        <div className="border-2 border-ink bg-paper px-6 py-7 flex items-center gap-5">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 border-2 border-ink flex items-center justify-center shrink-0 text-ink">
+            <Icon name="roblox" size={48} className="text-ink" label="Roblox" />
+          </div>
 
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="text-[11px] font-semibold bg-red-500/25 text-red-200 border border-red-400/30 px-2 py-0.5 rounded-full tracking-wide uppercase">{t('platformBadge')}</span>
-                {platformScore?.curascore != null && (
-                  <span className={`text-[11px] font-bold bg-white/10 border border-white/20 px-2 py-0.5 rounded-full ${curascoreTextEditorial(platformScore.curascore)}`}>
-                    LumiScore {platformScore.curascore}
-                  </span>
-                )}
-              </div>
-              <h1 className="text-2xl font-bold text-white">Roblox</h1>
-              <p className="text-sm text-white/75 mt-1 line-clamp-2">
-                {t('hubTagline')}
-              </p>
-              <div className="flex items-center gap-2 mt-3 flex-wrap">
-                <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
-                  <span className="text-base font-bold text-white">{scored.length}</span>
-                  <span className="text-xs text-white/50 ml-1">{t('rated').toLowerCase()}</span>
-                </div>
-                {platformScore?.timeRecommendationLabel && (
-                  <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
-                    <span className="text-sm font-semibold text-white">{platformScore.timeRecommendationLabel}</span>
-                    <span className="text-xs text-white/50 ml-1">{t('recommendedSuffix')}</span>
-                  </div>
-                )}
-                <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
-                  <span className="text-xs text-white/60">{t('freeToPlay')}</span>
-                </div>
-              </div>
+          <div className="flex-1 min-w-0">
+            <span className="block text-kicker uppercase font-semibold text-muted mb-1" style={{ fontVariantCaps: 'all-small-caps' }}>
+              {t('platformBadge')}
+            </span>
+            <h1 className="text-3xl sm:text-4xl font-serif text-ink tracking-tight">Roblox</h1>
+            <p className="text-sm text-muted mt-1 line-clamp-2">
+              {t('hubTagline')}
+            </p>
+            <div className="flex items-center gap-2 mt-3 flex-wrap">
+              <span className="text-kicker uppercase font-semibold text-muted border border-rule px-2 py-1" style={{ fontVariantCaps: 'all-small-caps' }}>
+                {scored.length} {t('rated')}
+              </span>
+              {platformScore?.curascore != null && (
+                <span className={`text-kicker uppercase font-semibold border border-rule px-2 py-1 ${curascoreTextEditorial(platformScore.curascore)}`} style={{ fontVariantCaps: 'all-small-caps' }}>
+                  LumiScore {platformScore.curascore}
+                </span>
+              )}
+              {platformScore?.timeRecommendationLabel && (
+                <span className="text-kicker uppercase font-semibold text-muted border border-rule px-2 py-1" style={{ fontVariantCaps: 'all-small-caps' }}>
+                  {platformScore.timeRecommendationLabel} {t('recommendedSuffix')}
+                </span>
+              )}
+              <span className="text-kicker uppercase font-semibold text-muted border border-rule px-2 py-1" style={{ fontVariantCaps: 'all-small-caps' }}>
+                {t('freeToPlay')}
+              </span>
             </div>
           </div>
         </div>

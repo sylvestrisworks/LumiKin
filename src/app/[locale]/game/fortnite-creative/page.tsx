@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { platformExperiences, experienceScores, games, gameScores } from '@/lib/db/schema'
 import { eq, desc, and, lte, ilike, isNotNull, inArray, type SQL } from 'drizzle-orm'
 import FortniteCard from '@/components/FortniteCard'
+import Icon from '@/components/Icon'
 import { curascoreTextEditorial } from '@/lib/ui'
 import FortniteFilters, { type FortniteFilterState } from '@/components/FortniteFilters'
 import { getTranslations, getLocale } from 'next-intl/server'
@@ -15,27 +16,11 @@ import type { ExperienceSummary } from '@/components/ExperienceCard'
 // 'fortnite' is the reviewed/scored game — BR is not a separate scored entry
 const FORTNITE_MODE_SLUGS = ['fortnite', 'lego-fortnite', 'fortnite-festival', 'fortnite-rocket-racing'] as const
 
-const MODE_META: Record<string, { initial: string; taglineKey: string; iconBg: string; iconText: string; hoverBorder: string }> = {
-  'fortnite': {
-    initial: 'BR', taglineKey: 'modeBrTagline',
-    iconBg: 'bg-orange-100 dark:bg-orange-900/40', iconText: 'text-orange-600 dark:text-orange-400',
-    hoverBorder: 'hover:border-orange-400 dark:hover:border-orange-600',
-  },
-  'lego-fortnite': {
-    initial: 'LF', taglineKey: 'modeLegoTagline',
-    iconBg: 'bg-yellow-100 dark:bg-yellow-900/40', iconText: 'text-yellow-700 dark:text-yellow-400',
-    hoverBorder: 'hover:border-yellow-400 dark:hover:border-yellow-600',
-  },
-  'fortnite-festival': {
-    initial: '♪', taglineKey: 'modeFestivalTagline',
-    iconBg: 'bg-purple-100 dark:bg-purple-900/40', iconText: 'text-purple-600 dark:text-purple-400',
-    hoverBorder: 'hover:border-purple-400 dark:hover:border-purple-600',
-  },
-  'fortnite-rocket-racing': {
-    initial: 'RR', taglineKey: 'modeRocketRacingTagline',
-    iconBg: 'bg-cyan-100 dark:bg-cyan-900/40', iconText: 'text-cyan-700 dark:text-cyan-400',
-    hoverBorder: 'hover:border-cyan-400 dark:hover:border-cyan-600',
-  },
+const MODE_META: Record<string, { initial: string; taglineKey: string }> = {
+  'fortnite':                { initial: 'BR', taglineKey: 'modeBrTagline' },
+  'lego-fortnite':           { initial: 'LF', taglineKey: 'modeLegoTagline' },
+  'fortnite-festival':       { initial: '♪',  taglineKey: 'modeFestivalTagline' },
+  'fortnite-rocket-racing':  { initial: 'RR', taglineKey: 'modeRocketRacingTagline' },
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -145,50 +130,37 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
     <div className="min-h-screen bg-paper text-ink">
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
 
-        {/* Platform header */}
-        <div className="relative overflow-hidden border-2 border-ink bg-slate-900">
-          {headerBg && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={headerBg}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover opacity-30"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-900/70 to-slate-900/30" />
-          <div className="relative px-6 py-8 flex items-center gap-5">
-            {/* Fortnite Creative icon */}
-            <div className="w-[72px] h-[72px] rounded-2xl bg-blue-600 flex items-center justify-center shrink-0 shadow-lg ring-2 ring-blue-400/40">
-              <span className="text-2xl font-black text-white select-none leading-none">FN</span>
-            </div>
+        {/* Platform header — editorial nameplate */}
+        <div className="border-2 border-ink bg-paper px-6 py-7 flex items-center gap-5">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 border-2 border-ink flex items-center justify-center shrink-0 text-ink">
+            <Icon name="fortnite" size={48} className="text-ink" label={t('title')} />
+          </div>
 
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="text-[11px] font-semibold bg-blue-500/25 text-blue-200 border border-blue-400/30 px-2 py-0.5 rounded-full tracking-wide uppercase">{t('platformBadge')}</span>
-                {platformScore?.curascore != null && (
-                  <span className={`text-[11px] font-bold bg-white/10 border border-white/20 px-2 py-0.5 rounded-full ${curascoreTextEditorial(platformScore.curascore)}`}>
-                    LumiScore {platformScore.curascore}
-                  </span>
-                )}
-              </div>
-              <h1 className="text-2xl font-bold text-white">{t('title')}</h1>
-              <p className="text-sm text-white/75 mt-1 line-clamp-2">
-                {t('platformTagline')}
-              </p>
-              <div className="flex items-center gap-2 mt-3 flex-wrap">
-                <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
-                  <span className="text-base font-bold text-white">{scored.length}</span>
-                  <span className="text-xs text-white/50 ml-1">{t('rated').toLowerCase()}</span>
-                </div>
-                {platformScore?.timeRecommendationLabel && (
-                  <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
-                    <span className="text-sm font-semibold text-white">{platformScore.timeRecommendationLabel}</span>
-                  </div>
-                )}
-                <div className="bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
-                  <span className="text-xs text-white/60">{t('freeToPlay')}</span>
-                </div>
-              </div>
+          <div className="flex-1 min-w-0">
+            <span className="block text-kicker uppercase font-semibold text-muted mb-1" style={{ fontVariantCaps: 'all-small-caps' }}>
+              {t('platformBadge')}
+            </span>
+            <h1 className="text-3xl sm:text-4xl font-serif text-ink tracking-tight">{t('title')}</h1>
+            <p className="text-sm text-muted mt-1 line-clamp-2">
+              {t('platformTagline')}
+            </p>
+            <div className="flex items-center gap-2 mt-3 flex-wrap">
+              <span className="text-kicker uppercase font-semibold text-muted border border-rule px-2 py-1" style={{ fontVariantCaps: 'all-small-caps' }}>
+                {scored.length} {t('rated')}
+              </span>
+              {platformScore?.curascore != null && (
+                <span className={`text-kicker uppercase font-semibold border border-rule px-2 py-1 ${curascoreTextEditorial(platformScore.curascore)}`} style={{ fontVariantCaps: 'all-small-caps' }}>
+                  LumiScore {platformScore.curascore}
+                </span>
+              )}
+              {platformScore?.timeRecommendationLabel && (
+                <span className="text-kicker uppercase font-semibold text-muted border border-rule px-2 py-1" style={{ fontVariantCaps: 'all-small-caps' }}>
+                  {platformScore.timeRecommendationLabel}
+                </span>
+              )}
+              <span className="text-kicker uppercase font-semibold text-muted border border-rule px-2 py-1" style={{ fontVariantCaps: 'all-small-caps' }}>
+                {t('freeToPlay')}
+              </span>
             </div>
           </div>
         </div>
@@ -210,16 +182,17 @@ export default async function FortniteCreativeHubPage({ searchParams }: Props) {
                     className="group flex flex-col border border-rule overflow-hidden hover:border-ink transition-colors h-full"
                   >
                     {/* Thumbnail */}
-                    <div className="relative h-20 shrink-0 overflow-hidden">
+                    <div className="relative h-20 shrink-0 overflow-hidden bg-rule/30">
                       {mode.backgroundImage ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={mode.backgroundImage} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                       ) : (
-                        <div className={`w-full h-full ${meta.iconBg}`} />
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-lg font-serif text-muted select-none">{meta.initial}</span>
+                        </div>
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                      <div className={`absolute bottom-2 left-2 w-7 h-7 rounded-lg flex items-center justify-center ${meta.iconBg} shadow`}>
-                        <span className={`text-[11px] font-black ${meta.iconText}`}>{meta.initial}</span>
+                      <div className="absolute bottom-1.5 left-1.5 bg-paper text-ink text-[11px] font-black px-1.5 py-0.5 leading-none">
+                        {meta.initial}
                       </div>
                     </div>
                     {/* Content */}

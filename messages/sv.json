@@ -1218,16 +1218,6 @@
     "dateline": {
       "locale": "sv-SE"
     },
-    "rosette": {
-      "recommends": {
-        "top": "LUMIKIN · GODKÄND",
-        "bottom": "VÄRT DITT BARNS TID"
-      },
-      "caution": {
-        "top": "LUMIKIN · VARNING",
-        "bottom": "VETA INNAN DU KÖPER"
-      }
-    },
     "verdict": {
       "growth": "Utveckling (BDS)",
       "risk": "Risk (RIS)",

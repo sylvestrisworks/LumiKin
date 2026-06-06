@@ -1185,16 +1185,6 @@
     "dateline": {
       "locale": "en-GB"
     },
-    "rosette": {
-      "recommends": {
-        "top": "LUMIKIN · APPROVED",
-        "bottom": "WORTH YOUR CHILD’S TIME"
-      },
-      "caution": {
-        "top": "LUMIKIN · CAUTION",
-        "bottom": "KNOW BEFORE YOU BUY"
-      }
-    },
     "verdict": {
       "growth": "Growth (BDS)",
       "risk": "Risk (RIS)",

@@ -1218,16 +1218,6 @@
     "dateline": {
       "locale": "fr-FR"
     },
-    "rosette": {
-      "recommends": {
-        "top": "LUMIKIN · APPROUVÉ",
-        "bottom": "TEMPS BIEN INVESTI"
-      },
-      "caution": {
-        "top": "LUMIKIN · ATTENTION",
-        "bottom": "À SAVOIR AVANT D’ACHETER"
-      }
-    },
     "verdict": {
       "growth": "Bénéfices (BDS)",
       "risk": "Risque (RIS)",

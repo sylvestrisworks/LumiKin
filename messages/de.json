@@ -1218,16 +1218,6 @@
     "dateline": {
       "locale": "de-DE"
     },
-    "rosette": {
-      "recommends": {
-        "top": "LUMIKIN · EMPFOHLEN",
-        "bottom": "WERTVOLLE SPIELZEIT"
-      },
-      "caution": {
-        "top": "LUMIKIN · VORSICHT",
-        "bottom": "INFORMIERT KAUFEN"
-      }
-    },
     "verdict": {
       "growth": "Entwicklung (BDS)",
       "risk": "Risiko (RIS)",

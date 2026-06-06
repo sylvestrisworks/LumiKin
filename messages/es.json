@@ -1218,16 +1218,6 @@
     "dateline": {
       "locale": "es-ES"
     },
-    "rosette": {
-      "recommends": {
-        "top": "LUMIKIN · APROBADO",
-        "bottom": "TIEMPO BIEN INVERTIDO"
-      },
-      "caution": {
-        "top": "LUMIKIN · ATENCIÓN",
-        "bottom": "INFÓRMATE ANTES DE COMPRAR"
-      }
-    },
     "verdict": {
       "growth": "Desarrollo (BDS)",
       "risk": "Riesgo (RIS)",

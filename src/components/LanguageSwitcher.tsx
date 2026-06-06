@@ -25,7 +25,7 @@ export default function LanguageSwitcher() {
     <select
       value={locale}
       onChange={handleChange}
-      className="text-xs text-slate-500 bg-transparent border border-slate-200 rounded-lg px-2 py-1.5 hover:border-indigo-300 focus:outline-none focus:border-indigo-400 cursor-pointer"
+      className="text-xs text-muted bg-transparent border border-rule px-2 py-1.5 hover:border-ink focus:outline-none focus:border-ink cursor-pointer transition-colors"
       aria-label="Select language"
     >
       {routing.locales.map(l => (

@@ -4,7 +4,6 @@ import {
   ListingCard,
   type ListingCardData,
   Masthead,
-  Rosette,
   ScoreBar,
   ScoreTable,
   type ScoreRow,
@@ -224,11 +223,9 @@ function DetailPanelV2({ variant = 'standard' }: { variant?: V2Variant } = {}) {
     { name: 'Oscar', age: 6, ok: false },
   ]
 
-  const showRosette = variant !== 'pending'
-
   return (
     <article>
-      {/* Hero row: photo (left, 2/3) + rosette stamp + title (right, 1/3) */}
+      {/* Hero row: photo (left, 2/3) + title (right, 1/3) */}
       <div className="grid md:grid-cols-3 gap-8 items-start">
         <div className="md:col-span-2 relative">
           <div
@@ -239,24 +236,12 @@ function DetailPanelV2({ variant = 'standard' }: { variant?: V2Variant } = {}) {
             }}
             aria-hidden
           />
-          {/* Rosette · md+: pinned to photo corner; mobile renders a smaller stamp above the title */}
-          {showRosette && (
-            <div className="hidden md:block absolute -top-4 -right-4 md:-right-10">
-              <Rosette variant="recommends" size={140} rotate={-7} />
-            </div>
-          )}
           <p className="font-serif italic text-sm text-muted mt-2">
             Photograph · A Minecraft world built by a nine-year-old. <span className="not-italic">Credit: Mojang.</span>
           </p>
         </div>
 
         <div className="md:col-span-1 pt-2">
-          {/* Mobile-only rosette stamp — shrinks + rotates less for the tighter context */}
-          {showRosette && (
-            <div className="md:hidden mb-4 -mt-2">
-              <Rosette variant="recommends" size={88} rotate={-3} />
-            </div>
-          )}
           <p
             className="text-kicker uppercase font-semibold text-accent mb-3"
             style={{ fontVariantCaps: 'all-small-caps' }}
@@ -553,9 +538,6 @@ function HomepageCover() {
           }}
           aria-hidden
         />
-        <div className="hidden md:block absolute -bottom-8 -right-2 md:-right-6">
-          <Rosette variant="recommends" size={160} rotate={-5} />
-        </div>
       </div>
 
       <div className="mt-12 md:mt-16 grid md:grid-cols-3 gap-x-12 gap-y-6">

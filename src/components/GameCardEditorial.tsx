@@ -9,8 +9,6 @@ import {
   EditorialTabs,
   type EditorialTab,
   FullScoresGrid,
-  Rosette,
-  type RosetteVariant,
   ScoreTable,
   type ScoreRow,
 } from '@/components/editorial'
@@ -27,15 +25,6 @@ type UserProfile = {
 
 type Props = GameCardProps & {
   userProfiles?: UserProfile[]
-}
-
-// BDS ≥ 0.60 earns a recommends rosette; everything else (including missing
-// scores) shows caution. RIS > 0.70 always overrides to caution per the
-// rubric tier rules in docs/RUBRIC.md.
-function rosetteVariantFor(bds: number | null, ris: number | null): RosetteVariant {
-  if (ris != null && ris > 0.70) return 'caution'
-  if (bds != null && bds >= 0.60) return 'recommends'
-  return 'caution'
 }
 
 function formatPlatforms(platforms: string[]): string {
@@ -130,14 +119,13 @@ export default function GameCardEditorial({
 
   const bds = scores?.bds ?? null
   const ris = scores?.ris ?? null
-  const variant = rosetteVariantFor(bds, ris)
   const dailyLimit = scores?.timeRecommendationMinutes ?? null
   const recommendedAge = scores?.recommendedMinAge ?? null
   const ageGuidanceLabel = recommendedAge != null ? `${recommendedAge}+` : (game.esrbRating ?? '—')
 
   return (
     <article className="bg-paper text-ink">
-      {/* Hero row: photo (md+ 2/3) + rosette stamp + title (md+ 1/3) */}
+      {/* Hero row: photo (md+ 2/3) + title (md+ 1/3) */}
       <div className="grid md:grid-cols-3 gap-8 items-start">
         <div className="md:col-span-2 relative">
           <div className="aspect-[16/10] w-full bg-ink/10 overflow-hidden">
@@ -159,17 +147,9 @@ export default function GameCardEditorial({
               />
             )}
           </div>
-          {/* Rosette · md+: pinned to photo corner */}
-          <div className="hidden md:block absolute -top-4 -right-4 md:-right-10">
-            <Rosette variant={variant} size={140} rotate={-7} />
-          </div>
         </div>
 
         <div className="md:col-span-1 pt-2">
-          {/* Mobile-only rosette stamp */}
-          <div className="md:hidden mb-4 -mt-2">
-            <Rosette variant={variant} size={88} rotate={-3} />
-          </div>
           <p
             className="text-kicker uppercase font-semibold text-accent mb-3"
             style={{ fontVariantCaps: 'all-small-caps' }}

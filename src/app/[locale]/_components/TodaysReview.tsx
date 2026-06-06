@@ -3,20 +3,10 @@ import Image from 'next/image'
 import { getTranslations } from 'next-intl/server'
 import {
   BigScore,
-  Rosette,
-  type RosetteVariant,
   ScoreTable,
   type ScoreRow,
 } from '@/components/editorial'
 import { fetchFeatured, type FeaturedGameData } from '../_data/featured'
-
-// BDS ≥ 0.60 → recommends; RIS > 0.70 always overrides to caution.
-// Mirrors the rule in GameCardEditorial so the rosette stays consistent across surfaces.
-function rosetteVariantFor(bds: number | null, ris: number | null): RosetteVariant {
-  if (ris != null && ris > 0.70) return 'caution'
-  if (bds != null && bds >= 0.60) return 'recommends'
-  return 'caution'
-}
 
 function benefitRows(g: FeaturedGameData, labels: { cognitive: string; social: string; motor: string }): ScoreRow[] {
   return [
@@ -66,7 +56,6 @@ export default async function TodaysReview({ locale }: { locale: string }) {
   ])
   if (!game) return null
 
-  const variant = rosetteVariantFor(game.bds, game.ris)
   const tip = game.parentTipBenefits ?? game.parentTip
   const quote = pullQuote(game.executiveSummary)
   const reviewDate = formatReviewDate(game.reviewedAt, te('dateline.locale'))
@@ -111,17 +100,9 @@ export default async function TodaysReview({ locale }: { locale: string }) {
                   />
                 )}
               </div>
-              {/* Rosette — pinned to the photo corner on md+, inline on mobile */}
-              <div className="hidden md:block absolute -top-4 -right-4 lg:-right-8">
-                <Rosette variant={variant} size={124} rotate={-7} />
-              </div>
             </div>
 
             <div className="md:col-span-5 pt-1">
-              <div className="md:hidden mb-4 -mt-2">
-                <Rosette variant={variant} size={84} rotate={-3} />
-              </div>
-
               {game.developer && (
                 <p
                   className="text-kicker uppercase font-semibold text-accent mb-3"

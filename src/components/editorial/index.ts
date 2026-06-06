@@ -4,9 +4,6 @@
 export { Masthead } from './Masthead'
 export type { MastheadSection } from './Masthead'
 
-export { Rosette } from './Rosette'
-export type { RosetteVariant } from './Rosette'
-
 export { EditorialIcon } from './Icon'
 export type { EditorialIconName } from './Icon'
 

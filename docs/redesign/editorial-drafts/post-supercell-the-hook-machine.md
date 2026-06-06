@@ -59,10 +59,10 @@ Which makes it the perfect illustration of how LumiScore actually works.
 
 Real numbers, pulled from the live catalogue:
 
-- *[Clash of Clans](/en/game/clash-of-clans)* — LumiScore **33/100**, benefit density (BDS) **0.75**, risk intensity (RIS) **0.79**, time rec **15 min/day — not recommended for children, age 13+**.
-- *[Brawl Stars](/en/game/brawl-stars)* — LumiScore **29/100**, BDS **0.44**, RIS **0.78**, time rec **15 min/day — not recommended for children, age 13+**.
-- *[Clash Royale](/en/game/clash-royale)* — LumiScore **32/100**, BDS **0.41**, RIS **0.74**, time rec **15 min/day — not recommended for children**.
-- *[Hay Day](/en/game/hay-day)* — LumiScore **40/100**, BDS **0.35**, RIS **0.52**, time rec **30 min/day max**.
+- **[Clash of Clans](/en/game/clash-of-clans)** — LumiScore **33** · benefit 0.75 · risk 0.79 · **15 min/day, not recommended (13+)**.
+- **[Brawl Stars](/en/game/brawl-stars)** — LumiScore **29** · benefit 0.44 · risk 0.78 · **15 min/day, not recommended (13+)**.
+- **[Clash Royale](/en/game/clash-royale)** — LumiScore **32** · benefit 0.41 · risk 0.74 · **15 min/day, not recommended**.
+- **[Hay Day](/en/game/hay-day)** — LumiScore **40** · benefit 0.35 · risk 0.52 · **30 min/day max**.
 
 Look at Clash of Clans again. Its benefit score (0.75) is the *highest* of the group — higher than plenty of games we recommend warmly. And it still lands at 15 minutes, not recommended. That is not a bug; it's the whole design of the formula. LumiScore is deliberately **asymmetric**: real benefits cannot buy back a high-risk design. When the appointment clocks, the chest randomness, the clan obligation and the season pass all stack up, the risk intensity climbs past the point where good strategy gameplay can rescue the recommendation. The same rule produces the short numbers in [How much game time is healthy, by age](/en/guides/how-much-game-time-by-age).
 

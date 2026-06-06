@@ -6,6 +6,8 @@ import { getTranslations } from 'next-intl/server'
 import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
 import GameDiscoveryDashboard from '@/components/GameDiscoveryDashboard'
+import { Masthead } from '@/components/editorial'
+import DiscoverHero from './_components/DiscoverHero'
 import type { GameSummary, SwapPair, CatalogStats } from '@/types/game'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -226,13 +228,46 @@ async function getSwapPair(t: DiscoverT, locale: string): Promise<SwapPair | nul
 
 export default async function DiscoverPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
-  const t = await getTranslations({ locale, namespace: 'discover' })
+  const [t, te] = await Promise.all([
+    getTranslations({ locale, namespace: 'discover' }),
+    getTranslations({ locale, namespace: 'editorial' }),
+  ])
 
   const [topGames, swap, stats] = await Promise.all([
     getTopGames(),
     getSwapPair(t, locale),
     getCatalogStats(),
   ])
-  return <GameDiscoveryDashboard topGames={topGames} swap={swap ?? undefined} stats={stats} />
+
+  // Locale-aware Masthead — same construction as the homepage so /discover reads
+  // as the same publication. Sections link into the top-level routes; labels and
+  // tagline come from the editorial namespace. The global SiteNav still renders
+  // above (from layout.tsx) — this is the same coexistence the homepage ships.
+  const dateLocale = te('dateline.locale')
+  const mastheadSections = [
+    { href: `/${locale}/browse`,   label: te('masthead.sections.reviews')  },
+    { href: `/${locale}/discover`, label: te('masthead.sections.discover') },
+    { href: `/${locale}/guides`,   label: te('masthead.sections.guides')   },
+    { href: `/${locale}/compare`,  label: te('masthead.sections.compare')  },
+  ]
+  const formatDateline = (d: Date) => {
+    const day  = d.toLocaleDateString(dateLocale, { weekday: 'short' }).toUpperCase()
+    const date = d.toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
+    return `${day} · ${date}`
+  }
+
+  return (
+    <>
+      <Masthead
+        tagline={te('masthead.tagline')}
+        sections={mastheadSections}
+        formatDateline={formatDateline}
+      />
+      <div className="bg-paper text-ink">
+        <DiscoverHero locale={locale} />
+        <GameDiscoveryDashboard topGames={topGames} swap={swap ?? undefined} stats={stats} />
+      </div>
+    </>
+  )
 }
 

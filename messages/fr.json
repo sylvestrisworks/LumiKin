@@ -252,6 +252,9 @@
     "advancedFilters": "More filters"
   },
   "discover": {
+    "searchPlaceholder": "Recherchez un jeu auquel joue votre enfant…",
+    "exploreBy": "Explorer par",
+    "filterByAge": "Filtrer par âge",
     "tagline": "Ancré dans le développement de l'enfant",
     "heading": "Découvrir des jeux",
     "whatMeansCurascore": "Que signifie un LumiScore ?",

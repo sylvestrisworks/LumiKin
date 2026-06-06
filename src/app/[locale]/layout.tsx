@@ -24,13 +24,13 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen overflow-x-clip">
         <SiteNav authSlot={<NavAuthButton />} notifSlot={<NavNotificationBell />} />
         <div className="flex-1">{children}</div>
         <CookieNotice />
         <BetaBanner />
         <footer className="border-t-2 border-ink bg-paper text-ink">
-          <div className="max-w-7xl mx-auto px-8 py-12">
+          <div className="max-w-7xl mx-auto px-5 sm:px-8 py-12">
             <div className="flex flex-col md:flex-row items-start md:items-baseline justify-between gap-8 md:gap-12">
               <div>
                 <p

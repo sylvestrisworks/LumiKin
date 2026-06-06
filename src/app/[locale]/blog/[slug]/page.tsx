@@ -19,7 +19,7 @@ function formatDate(iso?: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params
-  const post = await sanityClient?.fetch(postBySlugQuery, { slug }).catch(() => null) ?? null
+  const post = await sanityClient?.fetch(postBySlugQuery, { slug, locale }).catch(() => null) ?? null
   if (!post) return { title: 'Post not found — LumiKin' }
 
   const title = post.seoTitle ?? `${post.title} | LumiKin`
@@ -47,7 +47,7 @@ export default async function BlogPostPage({ params }: Props) {
     getTranslations('game'),
     getTranslations('blog'),
   ])
-  const post = await sanityClient?.fetch(postBySlugQuery, { slug }).catch(() => null) ?? null
+  const post = await sanityClient?.fetch(postBySlugQuery, { slug, locale }).catch(() => null) ?? null
   if (!post) notFound()
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'

@@ -8,8 +8,11 @@ export const guidesQuery = groq`
   }
 `
 
+// Prefer the requested locale, fall back to English when no translation exists
+// (de/fr/es have no Sanity translations yet — they must still render the EN doc).
 export const guideBySlugQuery = groq`
-  *[_type == "guide" && slug.current == $slug][0] {
+  *[_type == "guide" && slug.current == $slug && locale in [$locale, "en"]]
+    | order(select(locale == $locale => 0, 1))[0] {
     _id, title, slug, excerpt, coverImage, body, category, publishedAt,
     seoTitle, seoDescription
   }
@@ -24,7 +27,8 @@ export const postsQuery = groq`
 `
 
 export const postBySlugQuery = groq`
-  *[_type == "post" && slug.current == $slug][0] {
+  *[_type == "post" && slug.current == $slug && locale in [$locale, "en"]]
+    | order(select(locale == $locale => 0, 1))[0] {
     _id, title, slug, postType, excerpt, coverImage, body, author, publishedAt,
     seoTitle, seoDescription
   }

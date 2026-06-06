@@ -26,7 +26,7 @@ function formatDate(iso?: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params
-  const guide = await sanityClient?.fetch(guideBySlugQuery, { slug }).catch(() => null) ?? null
+  const guide = await sanityClient?.fetch(guideBySlugQuery, { slug, locale }).catch(() => null) ?? null
   if (!guide) return { title: 'Guide not found — LumiKin' }
 
   const title = guide.seoTitle ?? `${guide.title} | LumiKin`
@@ -54,7 +54,7 @@ export default async function GuidePage({ params }: Props) {
     getTranslations('game'),
     getTranslations('guides'),
   ])
-  const guide = await sanityClient?.fetch(guideBySlugQuery, { slug }).catch(() => null) ?? null
+  const guide = await sanityClient?.fetch(guideBySlugQuery, { slug, locale }).catch(() => null) ?? null
   if (!guide) notFound()
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'

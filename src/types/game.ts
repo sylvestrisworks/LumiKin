@@ -189,10 +189,10 @@ export type SwapPair = {
 }
 
 export type CatalogStats = {
-  totalScored:    number
-  lootBoxFreePct: number   // % of scored games with no loot boxes
-  avgCurascoreE:  number   // avg curascore for E-rated games
-  greenCount:     number   // games with curascore >= 66
+  totalScored:           number
+  greatCount:            number   // games with curascore >= 66
+  monetizedPct:          number   // % using loot boxes or microtransactions
+  zeroMonetizationCount: number   // games with neither loot boxes nor microtransactions
 }
 
 // Lightweight type for search results and cards in list views

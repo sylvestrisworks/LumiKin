@@ -17,6 +17,26 @@ const AGE_SEGMENTS = [
   { labelKey: 'olderTeens',      value: 'M',   esrb: ['T', 'M']             },
 ]
 
+// Platform families mirror PlatformPicker / browse. `keywords` are matched as
+// case-insensitive substrings against each game's stored platform strings
+// (e.g. "Nintendo Switch", "PlayStation 5"). `browseValue` is what /browse
+// expects in its ?platforms= param (Mobile fans out to iOS + Android).
+const PLATFORM_SEGMENTS = [
+  { value: 'PC',          label: 'PC',          keywords: ['PC'],                                browseValue: 'PC'          },
+  { value: 'PlayStation', label: 'PlayStation', keywords: ['PlayStation'],                       browseValue: 'PlayStation' },
+  { value: 'Xbox',        label: 'Xbox',        keywords: ['Xbox'],                              browseValue: 'Xbox'        },
+  { value: 'Switch',      label: 'Switch',      keywords: ['Nintendo Switch', 'Switch'],         browseValue: 'Switch'      },
+  { value: 'Mobile',      labelKey: 'platformMobile', keywords: ['iOS', 'Android', 'iPhone', 'iPad'], browseValue: 'iOS,Android' },
+] as const
+
+type PlatformSegment = typeof PLATFORM_SEGMENTS[number]
+
+function matchesPlatform(game: GameSummary, seg: PlatformSegment | undefined): boolean {
+  if (!seg) return true
+  const plats = game.platforms ?? []
+  return plats.some(p => seg.keywords.some(k => p.toLowerCase().includes(k.toLowerCase())))
+}
+
 const CATEGORY_PILLS = [
   { icon: Brain,    labelKey: 'pillHighBrainPower', href: '/browse?benefits=problem-solving' },
   { icon: Ban,      labelKey: 'pillZeroMicro',      href: '/browse?compliance=DSA'           },
@@ -94,10 +114,10 @@ function LumiScoreScale({ t }: { t: T }) {
 
 function StatStrip({ stats, t, kicker }: { stats: CatalogStats; t: T; kicker: string }) {
   const items = [
-    { value: `${stats.totalScored}`,     label: t('statGamesReviewed'), color: 'text-accent' },
-    { value: `${stats.lootBoxFreePct}%`, label: t('statNoLootBoxes'),   color: 'text-ivy'    },
-    { value: `${stats.avgCurascoreE}`,   label: t('statAvgScoreE'),     color: 'text-warm'   },
-    { value: `${stats.greenCount}`,      label: t('statGamesGreat'),    color: 'text-ivy'    },
+    { value: `${stats.totalScored}`,           label: t('statGamesReviewed'),    color: 'text-ink'  },
+    { value: `${stats.greatCount}`,            label: t('statGamesGreat'),       color: 'text-ivy'  },
+    { value: `${stats.monetizedPct}%`,         label: t('statUseMonetization'),  color: 'text-warm' },
+    { value: `${stats.zeroMonetizationCount}`, label: t('statZeroMonetization'), color: 'text-ivy'  },
   ]
   return (
     <section>
@@ -278,35 +298,46 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
   const te = useTranslations('editorial')
   const tAge = useTranslations('age')
   const locale = useLocale()
-  const [activeAge,   setActiveAge]   = useState<string | null>(null)
-  const [activeGenre, setActiveGenre] = useState<string | null>(null)
+  const [activeAge,      setActiveAge]      = useState<string | null>(null)
+  const [activePlatform, setActivePlatform] = useState<string | null>(null)
+  const [activeGenre,    setActiveGenre]    = useState<string | null>(null)
 
   const allGenres = Array.from(new Set(topGames.flatMap(g => g.genres ?? []))).sort()
 
-  const activeSeg = AGE_SEGMENTS.find(s => s.value === activeAge)
+  const activeSeg      = AGE_SEGMENTS.find(s => s.value === activeAge)
+  const activePlatSeg  = PLATFORM_SEGMENTS.find(s => s.value === activePlatform)
 
   const displayGames = topGames
-    .filter(g => !activeSeg  || (g.esrbRating && activeSeg.esrb.includes(g.esrbRating)))
+    .filter(g => !activeSeg   || (g.esrbRating && activeSeg.esrb.includes(g.esrbRating)))
+    .filter(g => !activePlatSeg || matchesPlatform(g, activePlatSeg))
     .filter(g => !activeGenre || (g.genres ?? []).includes(activeGenre))
     .slice(0, 12)
 
   const browseParams = new URLSearchParams()
-  if (activeSeg)   browseParams.set('age',    activeSeg.value)
-  if (activeGenre) browseParams.set('genres', activeGenre)
+  if (activeSeg)     browseParams.set('age',       activeSeg.value)
+  if (activePlatSeg) browseParams.set('platforms', activePlatSeg.browseValue)
+  if (activeGenre)   browseParams.set('genres',    activeGenre)
   const browseSearch = browseParams.toString()
   const browseHref = `/${locale}/browse${browseSearch ? `?${browseSearch}` : ''}`
 
-  const activeSegLabel = activeSeg ? tAge(activeSeg.labelKey as Parameters<typeof tAge>[0]) : null
-  const gridTitle = activeSegLabel
-    ? `${activeSegLabel}${activeGenre ? ` · ${activeGenre}` : ''}`
-    : activeGenre ? activeGenre : t('topRatedGames')
+  const platformSegLabel = (seg: PlatformSegment) =>
+    'labelKey' in seg ? t(seg.labelKey as Parameters<T>[0]) : seg.label
+
+  const titleParts: string[] = []
+  if (activeSeg)     titleParts.push(tAge(activeSeg.labelKey as Parameters<typeof tAge>[0]))
+  if (activePlatSeg) titleParts.push(platformSegLabel(activePlatSeg))
+  if (activeGenre)   titleParts.push(activeGenre)
+  const gridTitle = titleParts.length > 0 ? titleParts.join(' · ') : t('topRatedGames')
 
   return (
     <div className="mx-auto max-w-7xl px-5 sm:px-8 pb-20 space-y-14">
 
-      {/* ── 1. AGE FILTER ───────────────────────────────────────────────────── */}
+      {/* ── 1. AGE + PLATFORM FILTERS ───────────────────────────────────────── */}
       <section>
-        <SectionKicker>{t('filterByAge')}</SectionKicker>
+        <SectionKicker>{t('filterBy')}</SectionKicker>
+
+        {/* Age */}
+        <p className="text-kicker uppercase text-muted mb-2" style={SMALL_CAPS}>{t('labelAge')}</p>
         <div className="grid grid-cols-2 sm:grid-cols-4 border border-ink divide-x divide-y sm:divide-y-0 divide-ink/30">
           {AGE_SEGMENTS.map((seg) => {
             const isActive = activeAge === seg.value
@@ -321,6 +352,27 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
                 style={SMALL_CAPS}
               >
                 {tAge(seg.labelKey as Parameters<typeof tAge>[0])}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Platform */}
+        <p className="text-kicker uppercase text-muted mb-2 mt-5" style={SMALL_CAPS}>{t('labelPlatform')}</p>
+        <div className="grid grid-cols-3 sm:grid-cols-5 border border-ink divide-x divide-y sm:divide-y-0 divide-ink/30">
+          {PLATFORM_SEGMENTS.map((seg) => {
+            const isActive = activePlatform === seg.value
+            return (
+              <button
+                key={seg.value}
+                onClick={() => setActivePlatform(isActive ? null : seg.value)}
+                aria-pressed={isActive}
+                className={`py-3.5 px-3 text-kicker uppercase transition-colors ${
+                  isActive ? 'bg-ink text-paper font-semibold' : 'text-muted hover:text-ink'
+                }`}
+                style={SMALL_CAPS}
+              >
+                {platformSegLabel(seg)}
               </button>
             )
           })}
@@ -393,7 +445,7 @@ export default function GameDiscoveryDashboard({ topGames = [], swap, stats }: P
             <p className="mb-2 flex justify-center"><Monitor size={36} aria-hidden="true" className="text-rule" /></p>
             <p className="font-serif text-ink/80">{t('noMatchFilters')}</p>
             <button
-              onClick={() => { setActiveAge(null); setActiveGenre(null) }}
+              onClick={() => { setActiveAge(null); setActivePlatform(null); setActiveGenre(null) }}
               className="mt-3 text-kicker uppercase font-semibold text-accent hover:text-ink transition-colors"
               style={SMALL_CAPS}
             >

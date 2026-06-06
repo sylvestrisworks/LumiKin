@@ -1,12 +1,11 @@
 export const revalidate = 3600
 
-import { desc, eq, isNotNull, lte, gte, and, sql, inArray, count, avg } from 'drizzle-orm'
+import { desc, eq, isNotNull, lte, gte, and, sql, inArray, count } from 'drizzle-orm'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { db } from '@/lib/db'
 import { games, gameScores } from '@/lib/db/schema'
 import GameDiscoveryDashboard from '@/components/GameDiscoveryDashboard'
-import { Masthead } from '@/components/editorial'
 import DiscoverHero from './_components/DiscoverHero'
 import type { GameSummary, SwapPair, CatalogStats } from '@/types/game'
 
@@ -28,6 +27,7 @@ async function getTopGames(): Promise<GameSummary[]> {
       title:                     games.title,
       developer:                 games.developer,
       genres:                    games.genres,
+      platforms:                 games.platforms,
       esrbRating:                games.esrbRating,
       backgroundImage:           games.backgroundImage,
       metacriticScore:           games.metacriticScore,
@@ -39,13 +39,14 @@ async function getTopGames(): Promise<GameSummary[]> {
     .innerJoin(gameScores, eq(gameScores.gameId, games.id))
     .where(isNotNull(gameScores.curascore))
     .orderBy(desc(gameScores.curascore))
-    .limit(48)   // more games so genre filtering has enough to work with
+    .limit(48)   // more games so age/platform/genre filtering has enough to work with
 
   return rows.map((r) => ({
     slug:                      r.slug,
     title:                     r.title,
     developer:                 r.developer,
     genres:                    (r.genres as string[]) ?? [],
+    platforms:                 (r.platforms as string[]) ?? [],
     esrbRating:                r.esrbRating,
     backgroundImage:           r.backgroundImage,
     metacriticScore:           r.metacriticScore,
@@ -58,35 +59,33 @@ async function getTopGames(): Promise<GameSummary[]> {
 // ─── Catalog stats ────────────────────────────────────────────────────────────
 
 async function getCatalogStats(): Promise<CatalogStats> {
-  const [totals, eRated, green] = await Promise.all([
+  // One pass over the scored catalogue. The numbers tell a parent-relevant
+  // story: how much we cover, how many are worth playing, how pervasive paid
+  // mechanics are (the eye-opener), and how many are clean of them.
+  const [totals, great] = await Promise.all([
     db.select({
-      total:       count(),
-      noLootBoxes: count(sql`CASE WHEN ${games.hasLootBoxes} = false OR ${games.hasLootBoxes} IS NULL THEN 1 END`),
+      total:     count(),
+      monetized: count(sql`CASE WHEN ${games.hasLootBoxes} = true OR ${games.hasMicrotransactions} = true THEN 1 END`),
+      clean:     count(sql`CASE WHEN (${games.hasLootBoxes} = false OR ${games.hasLootBoxes} IS NULL) AND (${games.hasMicrotransactions} = false OR ${games.hasMicrotransactions} IS NULL) THEN 1 END`),
     })
     .from(games)
     .innerJoin(gameScores, eq(gameScores.gameId, games.id))
     .where(isNotNull(gameScores.curascore)),
-
-    db.select({ avgScore: avg(gameScores.curascore) })
-    .from(games)
-    .innerJoin(gameScores, eq(gameScores.gameId, games.id))
-    .where(and(isNotNull(gameScores.curascore), eq(games.esrbRating, 'E'))),
 
     db.select({ n: count() })
     .from(gameScores)
     .where(and(isNotNull(gameScores.curascore), gte(gameScores.curascore, 66))),
   ])
 
-  const total      = Number(totals[0]?.total ?? 0)
-  const noLootBox  = Number(totals[0]?.noLootBoxes ?? 0)
-  const avgE       = Math.round(Number(eRated[0]?.avgScore ?? 0))
-  const greenCount = Number(green[0]?.n ?? 0)
+  const total     = Number(totals[0]?.total ?? 0)
+  const monetized = Number(totals[0]?.monetized ?? 0)
+  const clean     = Number(totals[0]?.clean ?? 0)
 
   return {
-    totalScored:    total,
-    lootBoxFreePct: total > 0 ? Math.round((noLootBox / total) * 100) : 0,
-    avgCurascoreE:  avgE,
-    greenCount,
+    totalScored:           total,
+    greatCount:            Number(great[0]?.n ?? 0),
+    monetizedPct:          total > 0 ? Math.round((monetized / total) * 100) : 0,
+    zeroMonetizationCount: clean,
   }
 }
 
@@ -228,10 +227,7 @@ async function getSwapPair(t: DiscoverT, locale: string): Promise<SwapPair | nul
 
 export default async function DiscoverPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
-  const [t, te] = await Promise.all([
-    getTranslations({ locale, namespace: 'discover' }),
-    getTranslations({ locale, namespace: 'editorial' }),
-  ])
+  const t = await getTranslations({ locale, namespace: 'discover' })
 
   const [topGames, swap, stats] = await Promise.all([
     getTopGames(),
@@ -239,35 +235,11 @@ export default async function DiscoverPage({ params }: { params: Promise<{ local
     getCatalogStats(),
   ])
 
-  // Locale-aware Masthead — same construction as the homepage so /discover reads
-  // as the same publication. Sections link into the top-level routes; labels and
-  // tagline come from the editorial namespace. The global SiteNav still renders
-  // above (from layout.tsx) — this is the same coexistence the homepage ships.
-  const dateLocale = te('dateline.locale')
-  const mastheadSections = [
-    { href: `/${locale}/browse`,   label: te('masthead.sections.reviews')  },
-    { href: `/${locale}/discover`, label: te('masthead.sections.discover') },
-    { href: `/${locale}/guides`,   label: te('masthead.sections.guides')   },
-    { href: `/${locale}/compare`,  label: te('masthead.sections.compare')  },
-  ]
-  const formatDateline = (d: Date) => {
-    const day  = d.toLocaleDateString(dateLocale, { weekday: 'short' }).toUpperCase()
-    const date = d.toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
-    return `${day} · ${date}`
-  }
-
   return (
-    <>
-      <Masthead
-        tagline={te('masthead.tagline')}
-        sections={mastheadSections}
-        formatDateline={formatDateline}
-      />
-      <div className="bg-paper text-ink">
-        <DiscoverHero locale={locale} />
-        <GameDiscoveryDashboard topGames={topGames} swap={swap ?? undefined} stats={stats} />
-      </div>
-    </>
+    <div className="bg-paper text-ink">
+      <DiscoverHero locale={locale} />
+      <GameDiscoveryDashboard topGames={topGames} swap={swap ?? undefined} stats={stats} />
+    </div>
   )
 }
 

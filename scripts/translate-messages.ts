@@ -21,7 +21,7 @@ config({ path: resolve(process.cwd(), '.env') })
 
 import fs from 'fs'
 import nodePath from 'path'
-import { callGeminiText } from '@/lib/vertex-ai'
+import { callClaudeText, modelForLocale } from '@/lib/anthropic'
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -98,7 +98,10 @@ async function translateBatch(
 
   const voiceNote = LOCALE_VOICE[targetLang] ?? `Voice: natural, friendly, appropriate for parents.`
 
-  const prompt = `You are a local copywriter for a children's game rating website called "LumiKin". You are NOT doing a literal translation — you are writing copy that feels native and natural in ${langName}, as if it were written by a local for a local audience.
+  // Static per-locale instructions → cached system prefix (byte-stable across
+  // every batch for this locale). The volatile per-batch JSON goes in the user
+  // turn so the cache prefix-match holds.
+  const system = `You are a local copywriter for a children's game rating website called "LumiKin". You are NOT doing a literal translation — you are writing copy that feels native and natural in ${langName}, as if it were written by a local for a local audience.
 
 ${voiceNote}
 
@@ -113,12 +116,12 @@ RULES (non-negotiable):
 6. Brand names are NEVER translated: "LumiKin", "ESRB", "Metacritic", "Gemini", "LumiKin".
 7. Keep scoring terms consistent: BDS = "Benefit Density Score", RIS = "Risk Intensity Score" (these stay in English as proper nouns).
 
-Input JSON (English source):
-${JSON.stringify(strings, null, 2)}
+The user message is the English source JSON. Output: localized JSON with the same keys, copy that sounds like it was written by a native speaker.`
 
-Output: localized JSON with the same keys, copy that sounds like it was written by a native speaker.`
-
-  const text = await callGeminiText(prompt)
+  const text = await callClaudeText(JSON.stringify(strings, null, 2), {
+    system,
+    model: modelForLocale(targetLang),
+  })
 
   // Be tolerant of code fences or pre-text — pull out the largest {...} block.
   const m = text.match(/\{[\s\S]*\}/)

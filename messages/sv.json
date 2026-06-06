@@ -92,8 +92,8 @@
     "featuredWhy": "Varför:",
     "featuredParentTip": "Föräldratips",
     "featuredCta": "Se hela bedömningen →",
-    "h1": "Vet vad ditt barn faktiskt spelar.",
-    "subhead": "Sök bland {count} spel. Se fördelarna, riskerna och en hälsosam tid per session. Gratis för föräldrar.",
+    "h1": "Ett bra spel kan berika ett växande sinne. Fel spel behöver en vuxen.",
+    "subhead": "LumiKin bedömer {count} spel utifrån nytta, risker och sund speltid, så att du kan se skillnaden.",
     "browseByLabel": "Eller bläddra efter",
     "browseByAge": "Ålder",
     "browseByRoblox": "Roblox-upplevelser",
@@ -252,6 +252,9 @@
     "advancedFilters": "More filters"
   },
   "discover": {
+    "searchPlaceholder": "Sök ett spel som ditt barn spelar…",
+    "exploreBy": "Utforska efter",
+    "filterByAge": "Filtrera efter ålder",
     "tagline": "Med grund i barns utveckling",
     "heading": "Utforska spel",
     "whatMeansCurascore": "Vad innebär en LumiScore?",
@@ -1275,9 +1278,9 @@
       "fortniteDek": "Kreativa öar och spellägen betygsatta separat från huvudspelet."
     },
     "standfirst": {
-      "kicker": "Från redaktionen",
-      "body": "LumiKin är ett litet team av föräldrar och recensenter som bedömer vad ett spel utvecklar hos ett barn – och vad det kostar i uppmärksamhet, pengar och lugn hemma. Fördelarna kommer först. Varje betyg bygger på en offentlig bedömningsmall. Och vi pekar alltid ut det enda du bör kolla innan du köper.",
-      "signoff": "— LumiKins redaktion"
+      "kicker": "Så fungerar LumiKin",
+      "body": "LumiKin bedömer spel utifrån vad de utvecklar hos ett barn — och vad de kostar i uppmärksamhet, pengar och lugn i hemmet. Nyttan kommer först. Varje poäng tas fram mot en öppen bedömningsmall som du kan läsa i sin helhet, och vi pekar alltid ut den enda sak du bör kontrollera innan du köper.",
+      "signoff": "— Nyttan först, alltid."
     },
     "byTheNumbers": {
       "kicker": "I siffror",

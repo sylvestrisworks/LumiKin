@@ -92,8 +92,8 @@
     "featuredWhy": "Pourquoi :",
     "featuredParentTip": "Conseil aux parents",
     "featuredCta": "Voir la note complète →",
-    "h1": "Sache ce que ton enfant joue vraiment.",
-    "subhead": "Recherche parmi {count} jeux. Vois les bénéfices, les risques et un temps sain par session. Gratuit pour les parents.",
+    "h1": "Un bon jeu peut nourrir un esprit en pleine croissance. Le mauvais a besoin d'un adulte.",
+    "subhead": "LumiKin évalue {count} jeux selon leurs bénéfices, leurs risques et un temps de jeu sain, pour que tu fasses la différence.",
     "browseByLabel": "Ou parcourir par",
     "browseByAge": "Âge",
     "browseByRoblox": "Expériences Roblox",
@@ -252,6 +252,9 @@
     "advancedFilters": "More filters"
   },
   "discover": {
+    "searchPlaceholder": "Recherchez un jeu auquel joue votre enfant…",
+    "exploreBy": "Explorer par",
+    "filterByAge": "Filtrer par âge",
     "tagline": "Ancré dans le développement de l'enfant",
     "heading": "Découvrir des jeux",
     "whatMeansCurascore": "Que signifie un LumiScore ?",
@@ -1275,9 +1278,9 @@
       "fortniteDek": "Îles et modes Creative évalués séparément du jeu de base."
     },
     "standfirst": {
-      "kicker": "De la rédaction",
-      "body": "LumiKin est une petite équipe de parents et de critiques qui évaluent ce qu'un jeu développe chez un enfant — et ce qu'il coûte en attention, en argent et en tranquillité à la maison. Les bénéfices passent d'abord. Chaque note repose sur un barème public. Et nous signalons toujours le point à vérifier avant d'acheter.",
-      "signoff": "— La rédaction de LumiKin"
+      "kicker": "Comment fonctionne LumiKin",
+      "body": "LumiKin évalue les jeux selon ce qu'ils développent chez l'enfant — et ce qu'ils coûtent en attention, en argent et en sérénité à la maison. Les bénéfices passent en premier. Chaque note est établie à partir d'une grille d'évaluation publique que tu peux consulter intégralement, et nous signalons toujours le point à vérifier avant d'acheter.",
+      "signoff": "— Les bénéfices d'abord, toujours."
     },
     "byTheNumbers": {
       "kicker": "En chiffres",

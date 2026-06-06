@@ -92,8 +92,8 @@
     "featuredWhy": "Warum:",
     "featuredParentTip": "Tipp für Eltern",
     "featuredCta": "Vollständige Bewertung ansehen →",
-    "h1": "Wisse, was dein Kind wirklich spielt.",
-    "subhead": "Durchsuche {count} Spiele. Sieh die Vorteile, die Risiken und eine gesunde Zeit pro Sitzung. Kostenlos für Eltern.",
+    "h1": "Ein gutes Spiel kann einen wachsenden Geist bereichern. Das falsche braucht einen Erwachsenen.",
+    "subhead": "LumiKin bewertet {count} Spiele nach Nutzen, Risiken und gesunder Spielzeit, damit du den Unterschied erkennst.",
     "browseByLabel": "Oder durchstöbern nach",
     "browseByAge": "Alter",
     "browseByRoblox": "Roblox-Erlebnisse",
@@ -252,6 +252,9 @@
     "advancedFilters": "More filters"
   },
   "discover": {
+    "searchPlaceholder": "Suche ein Spiel, das dein Kind spielt…",
+    "exploreBy": "Entdecken nach",
+    "filterByAge": "Nach Alter filtern",
     "tagline": "Fundiert in kindlicher Entwicklung",
     "heading": "Spiele entdecken",
     "whatMeansCurascore": "Was bedeutet ein LumiScore?",
@@ -1275,9 +1278,9 @@
       "fortniteDek": "Kreative Inseln und Modi separat vom Hauptspiel bewertet."
     },
     "standfirst": {
-      "kicker": "Aus der Redaktion",
-      "body": "LumiKin ist ein kleines Team aus Eltern und Testern, das bewertet, was ein Spiel bei einem Kind fördert – und was es an Aufmerksamkeit, Geld und Ruhe zu Hause kostet. Der Nutzen steht an erster Stelle. Jede Bewertung beruht auf einem öffentlichen Bewertungsraster. Und wir benennen immer den einen Punkt, den Sie vor dem Kauf prüfen sollten.",
-      "signoff": "— Die LumiKin-Redaktion"
+      "kicker": "So funktioniert LumiKin",
+      "body": "LumiKin bewertet Spiele danach, was sie in einem Kind fördern — und was sie an Aufmerksamkeit, Geld und Ruhe zu Hause kosten. Der Nutzen kommt zuerst. Jede Bewertung entsteht anhand eines öffentlichen Bewertungsrasters, das du vollständig nachlesen kannst, und wir nennen immer den einen Punkt, den du vor dem Kauf prüfen solltest.",
+      "signoff": "— Nutzen zuerst, immer."
     },
     "byTheNumbers": {
       "kicker": "In Zahlen",

@@ -92,8 +92,8 @@
     "featuredWhy": "Por qué:",
     "featuredParentTip": "Consejo para padres",
     "featuredCta": "Ver la valoración completa →",
-    "h1": "Sabe a qué juega tu hija o hijo de verdad.",
-    "subhead": "Busca entre {count} juegos. Ve los beneficios, los riesgos y un tiempo saludable por sesión. Gratis para familias.",
+    "h1": "Un buen juego puede enriquecer una mente en crecimiento. El equivocado necesita a una persona adulta.",
+    "subhead": "LumiKin evalúa {count} juegos según sus beneficios, sus riesgos y un tiempo de juego saludable, para que sepas distinguirlos.",
     "browseByLabel": "O explora por",
     "browseByAge": "Edad",
     "browseByRoblox": "Experiencias de Roblox",
@@ -252,6 +252,9 @@
     "advancedFilters": "More filters"
   },
   "discover": {
+    "searchPlaceholder": "Busca un juego al que juega tu hijo…",
+    "exploreBy": "Explorar por",
+    "filterByAge": "Filtrar por edad",
     "tagline": "Basado en el desarrollo infantil",
     "heading": "Descubre Juegos",
     "whatMeansCurascore": "¿Qué significa un LumiScore?",
@@ -1275,9 +1278,9 @@
       "fortniteDek": "Islas y modos Creative evaluados aparte del juego base."
     },
     "standfirst": {
-      "kicker": "De la redacción",
-      "body": "LumiKin es un pequeño equipo de madres, padres y reseñadores que evalúa lo que un juego desarrolla en un niño — y lo que cuesta en atención, dinero y calma en casa. Los beneficios van primero. Cada puntuación se basa en una rúbrica pública. Y siempre señalamos lo único que conviene comprobar antes de comprar.",
-      "signoff": "— La redacción de LumiKin"
+      "kicker": "Cómo funciona LumiKin",
+      "body": "LumiKin evalúa los juegos por lo que desarrollan en un niño o niña — y por lo que cuestan en atención, dinero y calma en casa. Los beneficios van primero. Cada puntuación se genera con una rúbrica pública que puedes consultar por completo, y siempre señalamos lo único que conviene revisar antes de comprar.",
+      "signoff": "— Los beneficios primero, siempre."
     },
     "byTheNumbers": {
       "kicker": "En cifras",

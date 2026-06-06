@@ -223,7 +223,10 @@ async function importDraft(file: string): Promise<'created' | 'published' | 'exi
   }
 
   const docId = PUBLISH ? publishedId : draftId
-  const bodyBlocks = markdownToBlocks(body)
+  // Strip HTML comments (e.g. the <!-- coverImage / alt --> authoring note) so
+  // they never render as visible body text.
+  const cleanBody = body.replace(/<!--[\s\S]*?-->/g, '')
+  const bodyBlocks = markdownToBlocks(cleanBody)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const doc: any = {

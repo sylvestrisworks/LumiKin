@@ -95,6 +95,29 @@ function collect(doc: Doc): Accessor[] {
   return acc
 }
 
+// ─── Localize internal links to the target locale ───────────────────────────────
+// Internal hrefs are authored locale-prefixed (e.g. /en/game/x). A translated doc
+// must point at same-locale routes (/sv/game/x) or readers bounce back to English.
+// External (http, //) and locale-less paths are left untouched.
+const LOCALE_PREFIX_RE = new RegExp(`^/(${['en', ...Object.keys(LANGUAGE_NAMES)].join('|')})(?=/|#|$)`)
+
+function localizeHrefs(doc: Doc, locale: string): number {
+  let n = 0
+  const blocks = (doc.body ?? doc.answer) as Record<string, unknown>[] | undefined
+  if (!Array.isArray(blocks)) return 0
+  for (const block of blocks) {
+    const defs = block.markDefs as Record<string, unknown>[] | undefined
+    if (!Array.isArray(defs)) continue
+    for (const def of defs) {
+      const href = def.href
+      if (typeof href !== 'string' || !href.startsWith('/') || href.startsWith('//')) continue
+      const next = href.replace(LOCALE_PREFIX_RE, '/' + locale)
+      if (next !== href) { def.href = next; n++ }
+    }
+  }
+  return n
+}
+
 // ─── Translate one doc's strings via the CLI (one call) ──────────────────────────
 
 const lang = LANGUAGE_NAMES[LOCALE] ?? LOCALE
@@ -190,6 +213,7 @@ async function main() {
     const translated = await translateStrings(acc.map(a => a.get()))
     if (!translated) { errors++; console.warn(`  ⚠ ${label} — translation failed`); continue }
     acc.forEach((a, i) => a.set(translated[i]))
+    const relinked = localizeHrefs(out, LOCALE)
 
     const targetId = svId(en._id as string)
     out._id = PUBLISH ? targetId : `drafts.${targetId}`
@@ -200,7 +224,7 @@ async function main() {
     // In publish mode, clear any stale draft of the same locale doc so Studio is clean.
     if (PUBLISH) { try { await client.delete(`drafts.${targetId}`) } catch { /* no draft */ } }
     done++
-    console.log(`  ✓ ${label} → ${out._id} (${acc.length} strings)`)
+    console.log(`  ✓ ${label} → ${out._id} (${acc.length} strings, ${relinked} links localized)`)
   }
 
   console.log(`\nDone. translated=${done} skipped=${skipped} errors=${errors}`)

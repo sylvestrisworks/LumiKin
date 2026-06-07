@@ -30,6 +30,12 @@
     "navTerms": "Villkor"
   },
   "home": {
+    "essayLabel": "Essä",
+    "coverPromise": "Vet vad ett spel gör med ditt barn — innan de spelar.",
+    "readEssay": "Läs essän →",
+    "checkAGame": "Kolla ett spel",
+    "readingRoomKicker": "Läsrummet",
+    "readingRoomIntro": "Guider och essäer för föräldrar som spelar med.",
     "badge": "Förankrat i barns utveckling",
     "hero": "Se precis hur ett spel påverkar ditt barns <yellow>utvecklande sinne</yellow> – innan de trycker på 'spela'.",
     "heroSub": "Varje LumiScore visar spelets verkliga påverkan. Vi analyserar vilka färdigheter det bygger, vilka vanor det skapar och rekommenderar en daglig skärmtidsgräns som faktiskt är meningsfull.",
@@ -1287,6 +1293,12 @@
       "timeLabel": "Rekommenderade minuter per pass",
       "source": "Varje betyg bygger på en offentlig, versionshanterad bedömningsmall.",
       "sourceCta": "Läs metoden →"
+    },
+    "distribution": {
+      "kicker": "Var spelen hamnar",
+      "axisLow": "Mer risk",
+      "axisHigh": "Mer nytta",
+      "caption": "{count} spel · varje betyg på samma skala"
     }
   },
   "shareButton": {

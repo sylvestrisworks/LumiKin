@@ -10,6 +10,7 @@ export type TrendingRow = {
   esrbRating: string | null
   backgroundImage: string | null
 
+  curascore: number | null
   bds: number | null
   ris: number | null
   timeRecommendationMinutes: number | null
@@ -23,6 +24,7 @@ const SELECT = {
   genres:                    games.genres,
   esrbRating:                games.esrbRating,
   backgroundImage:           games.backgroundImage,
+  curascore:                 gameScores.curascore,
   bds:                       gameScores.bds,
   ris:                       gameScores.ris,
   timeRecommendationMinutes: gameScores.timeRecommendationMinutes,

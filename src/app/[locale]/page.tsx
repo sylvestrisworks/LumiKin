@@ -5,14 +5,13 @@ import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { routing } from '@/i18n/routing'
 import { fetchSiteStats } from '@/lib/stats'
-import { Masthead } from '@/components/editorial'
 import CoverageStrip from './partners/_components/CoverageStrip'
-import EditorialHero from './_components/EditorialHero'
-import Standfirst from './_components/Standfirst'
+import CoverStoryHero from './_components/CoverStoryHero'
+import TrackingRow from './_components/TrackingRow'
+import ReadingRoom from './_components/ReadingRoom'
 import TodaysReview from './_components/TodaysReview'
 import ByTheNumbers from './_components/ByTheNumbers'
-import TrackingRow from './_components/TrackingRow'
-import DeskRow from './_components/DeskRow'
+import ScoreDistribution from './_components/ScoreDistribution'
 import MethodologyEditorial from './_components/MethodologyEditorial'
 import BrowseByEditorial from './_components/BrowseByEditorial'
 
@@ -78,26 +77,10 @@ export default async function HomePage({ params, searchParams }: Props) {
     redirect(`/${locale}/browse?${qs.toString()}`)
   }
 
-  const [stats, t, te] = await Promise.all([
+  const [stats, t] = await Promise.all([
     fetchSiteStats(),
     getTranslations('home'),
-    getTranslations('editorial'),
   ])
-
-  // Locale-aware Masthead. Sections link into the existing top-level routes;
-  // labels + tagline come from the editorial namespace seeded in commit d7feeb86.
-  const dateLocale = te('dateline.locale')
-  const mastheadSections = [
-    { href: `/${locale}/browse`,   label: te('masthead.sections.reviews')  },
-    { href: `/${locale}/discover`, label: te('masthead.sections.discover') },
-    { href: `/${locale}/guides`,   label: te('masthead.sections.guides')   },
-    { href: `/${locale}/compare`,  label: te('masthead.sections.compare')  },
-  ]
-  const formatDateline = (d: Date) => {
-    const day  = d.toLocaleDateString(dateLocale, { weekday: 'short' }).toUpperCase()
-    const date = d.toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
-    return `${day} · ${date}`
-  }
 
   // Organization + Brand JSON-LD. Registers "LumiKin" as a known entity and
   // ties the "LumiScore" product term to the brand — fixes the GSC pattern
@@ -140,20 +123,16 @@ export default async function HomePage({ params, searchParams }: Props) {
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(organizationLd) }} />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(faqLd) }} />
 
-    {/* ── Editorial masthead (homepage only in PR1) ────────────────────────── */}
-    <Masthead
-      tagline={te('masthead.tagline')}
-      sections={mastheadSections}
-      formatDateline={formatDateline}
-    />
-
     <div className="bg-paper text-ink">
 
-      {/* ── Editorial hero (cover headline + search + browse link) ───────────── */}
-      <EditorialHero locale={locale} />
+      {/* ── Cover-story hero (featured essay cover + "check a game" search) ───── */}
+      <CoverStoryHero locale={locale} />
 
-      {/* ── Standfirst (editor's note — who we are, the promise) ─────────────── */}
-      <Standfirst />
+      {/* ── What we're tracking (live game scores w/ cover art) ──────────────── */}
+      <TrackingRow locale={locale} />
+
+      {/* ── Reading room (illustrated guides + blog essays) ──────────────────── */}
+      <ReadingRoom locale={locale} />
 
       {/* ── Today's review (editorial cover) ─────────────────────────────────── */}
       <TodaysReview locale={locale} />
@@ -161,11 +140,12 @@ export default async function HomePage({ params, searchParams }: Props) {
       {/* ── By the numbers (anatomy of a LumiScore — Pudding-style spread) ────── */}
       <ByTheNumbers locale={locale} />
 
-      {/* ── What we're tracking (3-up listing) ───────────────────────────────── */}
-      <TrackingRow locale={locale} />
-
-      {/* ── The desk (3-up Sanity guides) ────────────────────────────────────── */}
-      <DeskRow locale={locale} />
+      {/* ── Where games land (LumiScore distribution histogram) ──────────────── */}
+      <section className="bg-paper text-ink">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8 py-16 md:py-20">
+          <ScoreDistribution locale={locale} />
+        </div>
+      </section>
 
       {/* ── Browse by (editorial directory) ──────────────────────────────────── */}
       <BrowseByEditorial locale={locale} />

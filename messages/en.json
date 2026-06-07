@@ -30,6 +30,12 @@
     "navTerms": "Terms"
   },
   "home": {
+    "essayLabel": "Essay",
+    "coverPromise": "Know what a game does to your kid — before they play.",
+    "readEssay": "Read the essay →",
+    "checkAGame": "Check a game",
+    "readingRoomKicker": "Reading room",
+    "readingRoomIntro": "Guides and essays for parents who play along.",
     "h1": "A great game can enrich a growing mind. The wrong one needs a grown-up.",
     "subhead": "LumiKin rates {count} games on benefits, risks, and healthy play time, so you can tell which is which.",
     "searchPlaceholder": "Search a game your kid plays…",
@@ -1254,6 +1260,12 @@
       "timeLabel": "Recommended minutes per session",
       "source": "Every score traces to a public, version-controlled rubric.",
       "sourceCta": "Read the methodology →"
+    },
+    "distribution": {
+      "kicker": "Where games land",
+      "axisLow": "More risk",
+      "axisHigh": "More benefit",
+      "caption": "{count} games · every score on one scale"
     }
   },
   "shareButton": {

@@ -30,6 +30,12 @@
     "navTerms": "Términos"
   },
   "home": {
+    "essayLabel": "Ensayo",
+    "coverPromise": "Sepa qué le hace un juego a su hijo — antes de que juegue.",
+    "readEssay": "Leer el ensayo →",
+    "checkAGame": "Consultar un juego",
+    "readingRoomKicker": "Sala de lectura",
+    "readingRoomIntro": "Guías y ensayos para padres que también juegan.",
     "badge": "Basado en el desarrollo infantil",
     "hero": "Descubre exactamente cómo un juego impacta la <yellow>mente en desarrollo</yellow> de tu hijo(a) — antes de que le dé 'jugar'.",
     "heroSub": "Cada LumiScore revela el impacto real de un juego. Analizamos las habilidades que desarrolla, los hábitos que fomenta y recomendamos un límite de tiempo de pantalla diario que realmente tiene sentido.",
@@ -1287,6 +1293,12 @@
       "timeLabel": "Minutos recomendados por sesión",
       "source": "Cada puntuación se basa en una rúbrica pública y versionada.",
       "sourceCta": "Leer la metodología →"
+    },
+    "distribution": {
+      "kicker": "Dónde se sitúan los juegos",
+      "axisLow": "Más riesgo",
+      "axisHigh": "Más beneficio",
+      "caption": "{count} juegos · cada puntuación en una escala"
     }
   },
   "shareButton": {

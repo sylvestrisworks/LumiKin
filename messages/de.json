@@ -30,6 +30,12 @@
     "navTerms": "Nutzungsbedingungen"
   },
   "home": {
+    "essayLabel": "Essay",
+    "coverPromise": "Wissen, was ein Spiel mit deinem Kind macht — bevor es spielt.",
+    "readEssay": "Essay lesen →",
+    "checkAGame": "Spiel prüfen",
+    "readingRoomKicker": "Leseraum",
+    "readingRoomIntro": "Ratgeber und Essays für Eltern, die mitspielen.",
     "badge": "Basierend auf der Kindesentwicklung",
     "hero": "Erfahre genau, wie ein Spiel die <yellow>Entwicklung</yellow> deines Kindes beeinflusst – noch bevor es auf 'Play' drückt.",
     "heroSub": "Jeder LumiScore zeigt, welchen wirklichen Einfluss ein Spiel hat. Wir analysieren, welche Fähigkeiten es fördert, welche Gewohnheiten es prägt und empfehlen eine tägliche Bildschirmzeit, die wirklich Sinn ergibt.",
@@ -1287,6 +1293,12 @@
       "timeLabel": "Empfohlene Minuten pro Sitzung",
       "source": "Jede Bewertung beruht auf einem öffentlichen, versionierten Bewertungsraster.",
       "sourceCta": "Zur Methodik →"
+    },
+    "distribution": {
+      "kicker": "Wo die Spiele landen",
+      "axisLow": "Mehr Risiko",
+      "axisHigh": "Mehr Nutzen",
+      "caption": "{count} Spiele · jede Bewertung auf einer Skala"
     }
   },
   "shareButton": {

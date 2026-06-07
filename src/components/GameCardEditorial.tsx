@@ -182,6 +182,13 @@ export default function GameCardEditorial({
                 {formatPlatforms(game.platforms)}
               </p>
             )}
+            {(game.developer || game.releaseDate) && (
+              <p className="font-sans">
+                {game.developer}
+                {game.developer && game.releaseDate && ' · '}
+                {game.releaseDate && new Date(game.releaseDate).getFullYear()}
+              </p>
+            )}
           </div>
         </div>
       </div>

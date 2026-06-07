@@ -20,7 +20,7 @@ export default async function BrowseByEditorial({ locale }: { locale: string }) 
 
   return (
     <section className="bg-paper text-ink">
-      <div className="mx-auto max-w-7xl px-8 py-16 md:py-20">
+      <div className="mx-auto max-w-7xl px-8 py-10 md:py-16">
         <div className="border-t border-ink pt-4 mb-6">
           <p
             className="text-kicker uppercase font-semibold text-muted"

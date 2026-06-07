@@ -9,7 +9,7 @@ export default async function Standfirst() {
 
   return (
     <section className="bg-paper text-ink">
-      <div className="mx-auto max-w-7xl px-8 pt-12 pb-10 md:pt-14 md:pb-12">
+      <div className="mx-auto max-w-7xl px-8 pt-6 pb-6 md:pt-10 md:pb-8">
         <div className="border-t border-ink pt-4 mb-6">
           <p
             className="text-kicker uppercase font-semibold text-muted"

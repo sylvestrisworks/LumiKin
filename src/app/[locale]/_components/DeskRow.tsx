@@ -108,7 +108,7 @@ export default async function DeskRow({ locale }: { locale: string }) {
 
   return (
     <section className="bg-paper text-ink">
-      <div className="mx-auto max-w-7xl px-8 py-16 md:py-20">
+      <div className="mx-auto max-w-7xl px-8 py-10 md:py-16">
         <div className="border-t border-ink pt-4 mb-10 flex items-baseline justify-between gap-4 flex-wrap">
           <p
             className="text-kicker uppercase font-semibold text-muted"

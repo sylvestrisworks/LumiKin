@@ -73,7 +73,7 @@ export default async function FrontPageGrid({ locale }: { locale: string }) {
 
   return (
     <section className="bg-paper text-ink">
-      <div className="mx-auto max-w-7xl px-8 pt-8 pb-16 md:pb-20">
+      <div className="mx-auto max-w-7xl px-8 pt-6 pb-10 md:pb-16">
         {/* Front-page rule — heavy/hairline pair, echoing the masthead */}
         <div className="border-t-2 border-ink" />
         <div className="mt-px border-t border-ink/30 mb-8" />

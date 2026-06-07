@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { urlFor } from '@/sanity/lib/image'
 import { fetchDeskGuides, type DeskGuide } from '../_data/desk'
-import { fetchLatestPosts, type Post } from '../_data/posts'
+import { fetchPostsForHome, type Post } from '../_data/posts'
 
 // "Reading room" — surfaces the illustrated Sanity library on the homepage:
 // parental guides + the blog essays (which were previously unsurfaced here),
@@ -86,19 +86,18 @@ function ReadingCard({ card }: { card: CardData }) {
 }
 
 export default async function ReadingRoom({ locale }: { locale: string }) {
-  const [t, te, tLearn, guides, posts] = await Promise.all([
+  const [t, te, tLearn, guides, homePosts] = await Promise.all([
     getTranslations('home'),
     getTranslations('editorial'),
     getTranslations('learn'),
     fetchDeskGuides(locale, 4),
-    fetchLatestPosts(locale, 5),
+    fetchPostsForHome(locale, 2),
   ])
 
   const dateLocale = te('dateline.locale')
 
-  // Drop the newest illustrated essay — the hero already features it.
-  const heroFeatured = posts.find(p => p.coverImage?.asset)
-  const morePosts = posts.filter(p => p._id !== heroFeatured?._id).slice(0, 2)
+  // The hero already features one essay; show the rest here.
+  const morePosts = homePosts.more
 
   const postCard = (p: Post): CardData => ({
     key: `post-${p._id}`,

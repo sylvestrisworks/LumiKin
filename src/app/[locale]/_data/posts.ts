@@ -19,24 +19,19 @@ const postFields = groq`
   _id, title, slug, excerpt, postType, author, publishedAt, coverImage
 `
 
-// Latest essay that actually has a cover — the hero leads with its art, so an
-// un-illustrated post would break the layout.
-export async function fetchFeaturedPost(locale: string): Promise<Post | null> {
-  if (!sanityClient) return null
-  const q = groq`
-    *[_type == "post" && locale == $locale && defined(coverImage.asset)]
-      | order(publishedAt desc)[0]{ ${postFields} }
-  `
-  return sanityClient.fetch<Post | null>(q, { locale }).catch(() => null)
-}
+// Roblox/Fortnite essays earn the hero slot — they map to the highest-intent
+// parent queries ("is Roblox safe?") and out-click a general games piece.
+const HIGH_INTENT = /roblox|fortnite/i
 
-export async function fetchLatestPosts(locale: string, limit = 3): Promise<Post[]> {
-  if (!sanityClient) return []
-  const q = groq`
-    *[_type == "post" && locale == $locale] | order(publishedAt desc) { ${postFields} }
-  `
-  const posts = await sanityClient.fetch<Post[]>(q, { locale }).catch(() => [])
-  return (posts ?? []).slice(0, limit)
+// Single source of truth for "which essay leads the homepage": prefer an
+// illustrated Roblox/Fortnite piece, else fall back to the newest illustrated
+// post. The hero features it and the reading-room excludes it via this same fn.
+export function pickFeaturedPost(posts: Post[]): Post | null {
+  const withCover = posts.filter(p => p.coverImage?.asset)
+  const highIntent = withCover.find(
+    p => HIGH_INTENT.test(p.title) || HIGH_INTENT.test(p.slug?.current ?? ''),
+  )
+  return highIntent ?? withCover[0] ?? null
 }
 
 // Featured essay + the next N posts (excluding the featured one), for the hero
@@ -47,7 +42,7 @@ export async function fetchPostsForHome(locale: string, rest = 3): Promise<{ fea
     *[_type == "post" && locale == $locale] | order(publishedAt desc) { ${postFields} }
   `
   const posts = (await sanityClient.fetch<Post[]>(q, { locale }).catch(() => [])) ?? []
-  const featured = posts.find(p => p.coverImage?.asset) ?? null
+  const featured = pickFeaturedPost(posts)
   const more = posts.filter(p => p._id !== featured?._id).slice(0, rest)
   return { featured, more }
 }

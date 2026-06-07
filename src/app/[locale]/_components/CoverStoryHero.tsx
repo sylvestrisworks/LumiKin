@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import SearchBar from '@/components/SearchBar'
 import { urlFor } from '@/sanity/lib/image'
-import { fetchFeaturedPost } from '../_data/posts'
+import { fetchPostsForHome } from '../_data/posts'
 
 // Magazine cover-story hero. A slim site promise (the page h1) sits above a
 // large illustrated essay cover (Sanity art that was previously unsurfaced),
@@ -37,11 +37,12 @@ function SearchPanel({
 }
 
 export default async function CoverStoryHero({ locale }: { locale: string }) {
-  const [t, te, post] = await Promise.all([
+  const [t, te, homePosts] = await Promise.all([
     getTranslations('home'),
     getTranslations('editorial'),
-    fetchFeaturedPost(locale),
+    fetchPostsForHome(locale),
   ])
+  const post = homePosts.featured
 
   const coverUrl = post?.coverImage?.asset
     ? urlFor(post.coverImage)?.width(1200).height(800).auto('format').url()

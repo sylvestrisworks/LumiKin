@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html suppressHydrationWarning className={`${fraunces.variable} ${caveat.variable}`}>
-      <body className={`${inter.className} antialiased bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors`}>
+      <body className={`${inter.className} antialiased bg-paper text-ink transition-colors`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange={false}>
           {children}
           <Analytics />

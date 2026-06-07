@@ -29,7 +29,7 @@ export default function TableOfContents({ entries }: Props) {
 
   return (
     <nav aria-label="Table of contents" className="text-sm">
-      <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
+      <p className="text-xs font-semibold uppercase tracking-widest text-muted mb-4">
         Contents
       </p>
       <ol className="space-y-1">
@@ -45,8 +45,8 @@ export default function TableOfContents({ entries }: Props) {
               className={[
                 'block py-1 leading-snug transition-colors',
                 activeId === entry.id
-                  ? 'text-slate-900 dark:text-slate-100 font-medium'
-                  : 'text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300',
+                  ? 'text-ink font-medium'
+                  : 'text-muted hover:text-ink',
               ].join(' ')}
             >
               {entry.label}

@@ -35,14 +35,14 @@ export function ScoreMetaLine({ calculatedAt, methodologyVersion, scoringMethod,
   const method       = methodFor(scoringMethod)
 
   return (
-    <p className="text-[13px] text-slate-400 dark:text-slate-500 text-center leading-relaxed">
+    <p className="text-[13px] text-muted text-center leading-relaxed">
       {t('scoredPrefix', { when: scoredLabel })}
       {methodologyVersion && (
         <>
           {' · '}
           <Link
             href={`/${locale}/methodology?version=${methodologyVersion}`}
-            className="hover:text-slate-600 dark:hover:text-slate-300 underline underline-offset-2 decoration-slate-300 dark:decoration-slate-600 transition-colors"
+            className="hover:text-ink underline underline-offset-2 decoration-rule transition-colors"
           >
             {t('methodologyVersion', { version: methodologyVersion })}
           </Link>
@@ -53,7 +53,7 @@ export function ScoreMetaLine({ calculatedAt, methodologyVersion, scoringMethod,
           {' · '}
           <span
             title={method.tooltip}
-            className="cursor-help underline underline-offset-2 decoration-dotted decoration-slate-300 dark:decoration-slate-600"
+            className="cursor-help underline underline-offset-2 decoration-dotted decoration-rule"
           >
             {method.label}
           </span>

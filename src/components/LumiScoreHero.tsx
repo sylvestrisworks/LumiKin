@@ -53,10 +53,10 @@ export function LumiScoreHero({ curascore, recommendedMinAge, esrbRating, pegiRa
   const verdict     = verdictLine(curascore, age)
 
   return (
-    <div className="relative bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 px-6 pt-6 pb-6 text-center">
+    <div className="relative bg-paper rounded-3xl shadow-sm border border-rule px-6 pt-6 pb-6 text-center">
       {action && <div className="absolute top-3 right-3">{action}</div>}
 
-      <p className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
+      <p className="text-xs font-black uppercase tracking-widest text-muted mb-4">
         LumiScore
       </p>
 
@@ -68,7 +68,7 @@ export function LumiScoreHero({ curascore, recommendedMinAge, esrbRating, pegiRa
       </div>
 
       <p
-        className="text-sm text-slate-400 dark:text-slate-500 mt-2"
+        className="text-sm text-muted mt-2"
         style={{ fontVariant: 'small-caps', letterSpacing: '0.06em' }}
       >
         {t('outOf100')}
@@ -79,7 +79,7 @@ export function LumiScoreHero({ curascore, recommendedMinAge, esrbRating, pegiRa
       </p>
 
       {executiveSummary && (
-        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 leading-snug max-w-xs mx-auto">
+        <p className="mt-2 text-sm text-muted leading-snug max-w-xs mx-auto">
           {executiveSummary}
         </p>
       )}

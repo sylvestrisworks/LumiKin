@@ -36,7 +36,8 @@ const NEGATIVE =
   'no text, no words, no letters, no numbers, no typography, no captions, no logos, ' +
   'no watermark, no signature, no labels on any object, every object blank and ' +
   'unmarked, no UI, no photograph, no 3d render, no gradient mesh, no neon, ' +
-  'no empty corners, not a centered vignette on blank background.'
+  'no empty corners, not a centered vignette on blank background, ' +
+  'no numbers or tick-marks on dials gauges or meters, blank unmarked dial faces.'
 
 const PROMPTS: Record<string, string> = {
   // Guide: base-game scoring / a single purchase that bundles single-player +
@@ -87,6 +88,137 @@ const PROMPTS: Record<string, string> = {
     'drum, a small jostling crowd of tiny figures pushing toward the slot. The grand ' +
     'story above and the cash machine below are clearly one structure, reaching all ' +
     'four edges. Cinematic, masterful, with a knowing undertow. ' + STYLE,
+
+  // Blog cover: Blizzard — the finished-craft era vs the live-service storefront.
+  // A diptych workshop: a sealed, completed game on the left; the same world fed
+  // through a coin-slot/subscription machine on the right; a frost-star over both.
+  // Full-bleed, one connected scene, single crimson accent on the meter needle.
+  'blizzard-craft-to-storefront':
+    'A diptych composition filling the whole frame edge to edge, a single great ' +
+    'six-pointed frost-star snowflake arching over the TOP center and linking both ' +
+    'halves. On the LEFT, the craft era: a craftsman\'s workbench where a fantasy ' +
+    'world sits finished and complete — a carved strategy map on a grid board, a ' +
+    'hero\'s sword driven into an anvil, chisels and carving gouges set down at rest, ' +
+    'a closed blank treasure chest, a sealed unmarked game box standing upright, calm ' +
+    'and done. On the RIGHT, the same fantasy world is fed through a storefront ' +
+    'machine: a coin-slot turnstile with a small queue of tiny figures feeding round ' +
+    'tokens into it, a large round meter-gauge whose face is completely smooth and ' +
+    'blank with absolutely no numbers, tick-marks or markings — only a single long ' +
+    'sweeping needle like a ticking subscription clock, an endless conveyor treadmill ' +
+    'looping back on itself, neat stacks of coins. The finished craft on the left and the recurring ' +
+    'storefront on the right are clearly one connected workshop under the presiding ' +
+    'frost-star. There are NO signs, placards, nameplates, banners or labels anywhere ' +
+    'in the scene — every surface is blank. The image bleeds off all four edges and ' +
+    'completely fills the frame with rich detail, no cream border or margin. The single ' +
+    'long sweeping needle on the meter-gauge is the only crimson-red spot-color accent. ' +
+    'Knowing and a little wistful — a great workshop that learned to charge by the ' +
+    'hour. ' + STYLE,
+
+  // Blog cover: the science behind the benefit score. A child's mind as a
+  // cultivated garden — development as growth, not drilling. Full-bleed.
+  'what-good-for-kids-means':
+    'A child\'s head in gentle profile, large and filling the frame, the top of the ' +
+    'skull opening like a flourishing garden instead of a brain: climbing vines, ' +
+    'sprouting seedlings and leaves intertwined with a few friendly cogwheels, a blank ' +
+    'jigsaw puzzle piece, a compass rose and a small open book with blank pages, all ' +
+    'growing together. Roots run down the neck and tendrils spread into the top corners ' +
+    'so the growth touches every edge. One single small seedling at the very center is ' +
+    'the crimson-red spot-color accent. Warm, hopeful — a mind as a cultivated garden. ' +
+    STYLE,
+
+  // Blog cover: flow vs engineered arousal. A mirrored diptych — the calm,
+  // self-paced child vs the wired, over-stimulated one. Full-bleed.
+  'flow-not-just-fun':
+    'The frame split vertically into two mirrored halves that together fill the whole ' +
+    'image edge to edge. On the LEFT, a child sits calmly cross-legged, carried along a ' +
+    'single long smooth flowing curved line like a gentle river that loops serenely ' +
+    'around them — absorbed, settled, at peace. On the RIGHT, the same child sits tensely ' +
+    'amid jagged radiating spark-lines and lightning-like zigzags, a blank-faced ' +
+    'slot-machine reel spinning beside them — restless, jittery, wired. The two halves ' +
+    'meet at the center. The jagged spark-lines on the right are the single crimson-red ' +
+    'spot-color accent. ' + STYLE,
+
+  // Blog cover: co-play. Adult and child together; the shared activity blossoms
+  // into shared wonder. Warm, tender. Full-bleed.
+  'the-case-for-co-play':
+    'An adult and a child sit close together shoulder to shoulder on a cozy couch in the ' +
+    'lower half of the frame, sharing one game controller between them. The cord from the ' +
+    'controller rises and blossoms into a wide constellation of stars and small ' +
+    'play-icons — a kite, a building block, a little rocket — spreading across the whole ' +
+    'upper half and reaching the top corners. A single thread linking their two hands on ' +
+    'the controller is the crimson-red spot-color accent. Warm, tender, connected. ' +
+    STYLE,
+
+  // Blog cover: open-ended vs guided play. Building freely vs running a single
+  // fixed track. Full-bleed split scene.
+  'sandbox-vs-on-rails':
+    'The frame split into two halves that fill it edge to edge. On the LEFT, under a wide ' +
+    'open sky, a child happily builds a sprawling irregular open structure out of loose ' +
+    'blocks of every shape — free, expansive, branching outward to the corner. On the ' +
+    'RIGHT, the same child stands on a single narrow straight track pinched between two ' +
+    'fixed parallel rails running to one small distant doorway — orderly, channeled, one ' +
+    'path only. A single block in the building child\'s hand is the crimson-red ' +
+    'spot-color accent. ' + STYLE,
+
+  // Blog cover: engagement vs addiction. A balance scale weighing a calm hand
+  // against a grasping one. Measured, thoughtful. Full-bleed.
+  'engagement-vs-addiction':
+    'A large old-fashioned balance scale fills the frame, seen straight on. On the LEFT ' +
+    'pan a single game controller rests calmly in an open upturned hand, settled and at ' +
+    'ease. On the RIGHT pan a hand grasps and reaches greedily for a controller that ' +
+    'radiates eager glow-lines, straining. Behind the scale, faint engraved measuring ' +
+    'marks reach the edges. The scale\'s central pivot and balance-needle are the single ' +
+    'crimson-red spot-color accent, tilting slightly. Thoughtful, weighing two states. ' +
+    STYLE,
+
+  // Blog cover: dark patterns. A friendly mascot whose cast shadow is a tangle
+  // of hooks — the manipulation made visible. Knowing, not frightening.
+  'dark-patterns-in-kids-games':
+    'A cheerful rounded cartoon game mascot — a friendly blocky little creature with a ' +
+    'big smile — stands in bright innocent light in the lower center. Cast large on the ' +
+    'wall behind it, its shadow is not its own shape at all but a tangle of fishing ' +
+    'hooks, looping lines, a slot-machine pull-lever and grasping tendrils, spreading ' +
+    'across the whole upper frame to every edge. The friendly figure is oblivious; the ' +
+    'shadow tells the truth. A single hook in the shadow is the crimson-red spot-color ' +
+    'accent. Knowing, a little wry, not frightening. ' + STYLE,
+
+  // Blog cover: the attention economy. A small child at the center of a vast
+  // inward-spiralling funnel of feeds and notifications. Awe of scale.
+  'the-attention-economy-and-kids':
+    'A small child sits at the very center, dwarfed, holding a glowing screen. Around and ' +
+    'above them a vast funnel-shaped vortex spirals inward toward the screen, built from ' +
+    'long blank smooth scrolling ribbons and streamers (completely plain, no writing on ' +
+    'them), bell-shaped notification icons and looping curved arrows, all swirling down ' +
+    'into the device and filling the entire frame to the corners. One single bell-shaped ' +
+    'notification icon in the spiral is the crimson-red spot-color accent. Awe-inspiring ' +
+    'scale, the child small against the machine. ' + STYLE,
+
+  // Blog cover (v2): violent content ≠ real harm. An oblivious child plays with
+  // a blocky toy "weapon"; the cast shadow is gentle ordinary play, not menace.
+  // The disconnect IS the research finding. Full-bleed, balanced weight.
+  'does-violent-content-predict-harm-v2':
+    'A cheerful child stands in the lower center in bright innocent light, mid-play, ' +
+    'holding up a chunky blocky cartoon toy — a pixel-style toy sword and a little ' +
+    'toy blaster — grinning, clearly just pretending. Cast large on the wall behind ' +
+    'them, the shadow is NOT menacing at all: it is simply an ordinary child at happy ' +
+    'play — jumping with arms thrown wide, a small kite and a few stars in the shadow ' +
+    'around them. The fearsome-looking toy and the gentle, harmless shadow plainly do ' +
+    'not match — that contradiction is the whole point. The scene fills the frame edge ' +
+    'to edge, the shadow spreading to the top corners. The blocky toy in the child\'s ' +
+    'hands is the single crimson-red spot-color accent. Reassuring, a little wry, ' +
+    'gaming-positive. ' + STYLE,
+
+  // Blog cover (retired): balance scale, controller vs blank research. Replaced
+  // by -v2 — read as "games vs reading", off-topic for this post.
+  'does-violent-content-predict-harm':
+    'A large balance scale fills the frame, seen straight on, its beam perfectly ' +
+    'horizontal and level in even equilibrium. On the LEFT pan sits a single game ' +
+    'controller; on the RIGHT pan a tall stack of plain loose paper sheets and closed ' +
+    'books with completely smooth blank spines and covers — absolutely no titles, no ' +
+    'writing anywhere. The two pans hang at exactly the same height, the contest ' +
+    'unresolved. Behind, faint engraved hatching like rows of shelves reaching the edges. ' +
+    'The scale\'s central pivot and upright post are the single crimson-red spot-color ' +
+    'accent. Measured, scholarly, even-handed. ' + STYLE,
 }
 
 type SAKey = { client_email: string; private_key: string }

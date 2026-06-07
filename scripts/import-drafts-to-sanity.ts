@@ -15,8 +15,8 @@
  * source markdown flatten to " · "-joined paragraphs and need manual
  * reformatting in Studio before they're presentation-quality.
  */
-import { readFileSync, readdirSync } from 'node:fs'
-import { join } from 'node:path'
+import { readFileSync, readdirSync, existsSync } from 'node:fs'
+import { join, basename } from 'node:path'
 import { createClient } from '@sanity/client'
 
 const DRAFTS_DIR = 'docs/redesign/editorial-drafts'
@@ -35,8 +35,49 @@ if (!token) {
 }
 
 const PUBLISH = process.argv.includes('--publish')
+// Optional substring filter so a single draft can be imported/published in
+// isolation without touching every other file in the folder:
+//   … import-drafts-to-sanity.ts --publish --file=blizzard
+const FILE_FILTER = process.argv.find(a => a.startsWith('--file='))?.slice('--file='.length)
 
 const client = createClient({ projectId, dataset, apiVersion: '2024-01-01', token, useCdn: false })
+
+// ─── Cover image ─────────────────────────────────────────────────────────────
+
+type ImageRef = {
+  _type: 'image'
+  alt?: string
+  asset: { _type: 'reference'; _ref: string }
+}
+
+/** Pull the `<!-- coverImage: <path>  alt: "<text>" -->` authoring note. */
+function parseCover(rawBody: string): { path: string; alt: string } | null {
+  const m = rawBody.match(/coverImage:\s*([^\s]+)[\s\S]*?alt:\s*"([\s\S]*?)"/)
+  if (!m) return null
+  return { path: m[1].trim(), alt: m[2].replace(/\s+/g, ' ').trim() }
+}
+
+/** Upload the cover PNG as a Sanity asset (deduped by filename) and return an image ref. */
+async function uploadCover(relPath: string, alt: string): Promise<ImageRef | null> {
+  const abs = join(process.cwd(), relPath)
+  if (!existsSync(abs)) {
+    console.log(`    ! cover not found on disk: ${relPath} — skipping image`)
+    return null
+  }
+  const filename = basename(relPath)
+  let assetId = await client.fetch<string | null>(
+    `*[_type == "sanity.imageAsset" && originalFilename == $f][0]._id`,
+    { f: filename },
+  )
+  if (!assetId) {
+    const asset = await client.assets.upload('image', readFileSync(abs), { filename })
+    assetId = asset._id
+    console.log(`    ↑ uploaded cover ${filename} → ${assetId}`)
+  } else {
+    console.log(`    = cover ${filename} already uploaded → ${assetId}`)
+  }
+  return { _type: 'image', alt, asset: { _type: 'reference', _ref: assetId } }
+}
 
 // ─── Frontmatter ─────────────────────────────────────────────────────────────
 
@@ -227,6 +268,13 @@ async function importDraft(file: string): Promise<'created' | 'published' | 'exi
     doc.author = 'LumiKin'
   }
 
+  // Cover image: upload the PNG named in the authoring comment and attach it.
+  const cover = parseCover(body)
+  if (cover) {
+    const ref = await uploadCover(cover.path, cover.alt)
+    if (ref) doc.coverImage = ref
+  }
+
   await client.createOrReplace(doc)
 
   // In --publish mode, also clear the stale draft so Studio shows clean state.
@@ -244,9 +292,12 @@ async function importDraft(file: string): Promise<'created' | 'published' | 'exi
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 async function main() {
-  const files = readdirSync(DRAFTS_DIR).filter(f => f.endsWith('.md')).sort()
+  let files = readdirSync(DRAFTS_DIR).filter(f => f.endsWith('.md')).sort()
+  if (FILE_FILTER) files = files.filter(f => f.includes(FILE_FILTER))
   console.log(`Project: ${projectId} / ${dataset}`)
   console.log(`Mode:    ${PUBLISH ? 'PUBLISH (live on the site immediately)' : 'DRAFT (review in Studio first)'}`)
+  if (FILE_FILTER) console.log(`Filter:  --file=${FILE_FILTER} → ${files.length} match(es)`)
+  if (files.length === 0) { console.log('No files matched. Nothing to do.'); return }
   console.log(`Importing ${files.length} files from ${DRAFTS_DIR}/\n`)
   let created = 0, published = 0, exists = 0, skipped = 0
   for (const f of files) {

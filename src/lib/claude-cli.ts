@@ -61,6 +61,12 @@ export function runClaudeCli(
       try {
         const env = JSON.parse(out)
         if (env.type === 'result' && env.subtype === 'success' && typeof env.result === 'string') {
+          // Over-quota / limit notices can come back as a "successful" result body
+          // (exit 0, subtype success) rather than an error — catch that here so
+          // callers abort instead of treating the notice as a translation.
+          if (HARD_QUOTA_RE.test(env.result)) {
+            return done({ ok: false, error: env.result.slice(0, 300), rateLimited: false, quotaExhausted: true })
+          }
           return done({ ok: true, text: env.result })
         }
         const msg = String(env.result ?? env.error ?? err ?? `exit ${code}`)

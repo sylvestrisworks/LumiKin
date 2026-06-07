@@ -341,6 +341,17 @@ async function main() {
   let cacheRead = 0, cacheWrite = 0, inputTokens = 0, outputTokens = 0
   const t0 = Date.now()
 
+  // Circuit breaker: a wall of failures (quota notice returned as "success" text,
+  // systemic CLI/DB error) shouldn't churn the whole queue. Abort after a streak.
+  let consecFails = 0
+  const noteFail = () => {
+    errors++
+    if (++consecFails >= 25 && !aborted) {
+      aborted = true
+      console.error(`\n⛔ 25 consecutive failures — stopping (likely quota/limit or a systemic error).`)
+    }
+  }
+
   while (gamesProcessed < LIMIT) {
     if (aborted) break
     const pageLimit = Math.min(PAGE_SIZE, LIMIT - gamesProcessed)
@@ -388,11 +399,12 @@ async function main() {
           inputTokens += msg.usage.input_tokens                ?? 0
           outputTokens+= msg.usage.output_tokens               ?? 0
         }
-        if (text === null) { errors++; return }   // already logged by the backend
+        if (text === null) { noteFail(); return }   // already logged by the backend
         const parsed = parseJson(text)
-        if (!parsed) { errors++; console.warn(`  ⚠ ${item.slug} [${item.locale}] — unparseable response`); return }
+        if (!parsed) { noteFail(); console.warn(`  ⚠ ${item.slug} [${item.locale}] — unparseable response`); return }
         await persist(item, parsed)
         if (item.isUpdate) updated++; else translated++
+        consecFails = 0
         const done = translated + updated
         if (done % 10 === 0) {
           const rate = (done / ((Date.now() - t0) / 1000)).toFixed(2)
@@ -400,7 +412,7 @@ async function main() {
           console.log(`  +${done} (${translated} new, ${updated} retrans)  ${rate}/s${cacheInfo}  errors=${errors}`)
         }
       } catch (err) {
-        errors++
+        noteFail()
         console.warn(`  ⚠ ${item.slug} [${item.locale}] — ${err instanceof Error ? err.message : String(err)}`)
       }
     }, CONCURRENCY)

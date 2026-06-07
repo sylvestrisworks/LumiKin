@@ -37,7 +37,7 @@ export default async function BrowseByEditorial({ locale }: { locale: string }) 
             <li key={entry.key} className="flex">
               <Link
                 href={entry.href}
-                className="group flex-1 px-6 py-6 md:px-8 md:py-8 hover:bg-ink/[0.03] transition-colors"
+                className="group flex flex-col flex-1 px-6 py-6 md:px-8 md:py-8 hover:bg-ink/[0.03] transition-colors"
               >
                 <h3
                   className="font-serif text-2xl md:text-3xl tracking-tight leading-tight mb-2 group-hover:text-accent transition-colors"
@@ -49,7 +49,7 @@ export default async function BrowseByEditorial({ locale }: { locale: string }) 
                   {te(`browseBy.${entry.dekKey}`)}
                 </p>
                 <p
-                  className="mt-4 text-kicker uppercase font-semibold text-ink/60 group-hover:text-accent transition-colors"
+                  className="mt-auto pt-4 text-kicker uppercase font-semibold text-ink/60 group-hover:text-accent transition-colors"
                   style={{ fontVariantCaps: 'all-small-caps' }}
                 >
                   {te('actions.browse')}

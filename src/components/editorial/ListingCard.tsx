@@ -22,7 +22,7 @@ export type ListingCardData = {
 // break, but every editorial caller should pass an i18n value.
 export function ListingCard({ card, readLabel = 'Read review →' }: { card: ListingCardData; readLabel?: string }) {
   return (
-    <article className="flex flex-col border-b border-ink pb-8">
+    <article className="flex flex-col h-full border-b border-ink pb-8">
       {/* Real cover art when we have it, treated to match the editorial palette
           (same filter as TodaysReview/DeskRow); gradient stand-in otherwise. */}
       {card.photoUrl ? (

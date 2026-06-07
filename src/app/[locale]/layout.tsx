@@ -48,7 +48,6 @@ export default async function LocaleLayout({
                   className="flex flex-wrap gap-x-6 gap-y-2 text-kicker uppercase font-semibold"
                   style={{ fontVariantCaps: 'all-small-caps' }}
                 >
-                  <a href={`/${locale}/discover`} className="text-ink hover:text-accent transition-colors">{t('navDiscover')}</a>
                   <a href={`/${locale}/browse`}   className="text-ink hover:text-accent transition-colors">{t('navBrowse')}</a>
                   <a href={`/${locale}/compare`}  className="text-ink hover:text-accent transition-colors">{t('navCompare')}</a>
                   <a href={`/${locale}/privacy`}  className="text-ink hover:text-accent transition-colors">{t('navPrivacy')}</a>

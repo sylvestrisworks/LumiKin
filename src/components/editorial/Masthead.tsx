@@ -4,7 +4,6 @@ export type MastheadSection = { href: string; label: string }
 
 const DEFAULT_SECTIONS: MastheadSection[] = [
   { href: '/browse',   label: 'Reviews' },
-  { href: '/discover', label: 'Discover' },
   { href: '/learn',    label: 'Guides' },
   { href: '/compare',  label: 'Compare' },
 ]

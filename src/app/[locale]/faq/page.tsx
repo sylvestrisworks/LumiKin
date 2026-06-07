@@ -719,7 +719,7 @@ export default async function FaqPage({ params }: { params: Promise<{ locale: st
               {t('browseGames')}
             </Link>
             <Link
-              href={`/${locale}/discover`}
+              href={`/${locale}/age`}
               className="px-5 py-2 text-ink text-kicker uppercase font-semibold border border-rule hover:border-ink hover:text-accent transition-colors"
               style={{ fontVariantCaps: 'all-small-caps' }}
             >

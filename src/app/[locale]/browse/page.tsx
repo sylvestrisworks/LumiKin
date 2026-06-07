@@ -17,9 +17,11 @@ import FortniteCarouselRow from '@/components/FortniteCarouselRow'
 import AgePicker from '@/components/AgePicker'
 import PlatformPicker from '@/components/PlatformPicker'
 import { type ExperienceSummary } from '@/components/ExperienceCard'
+import DiscoverPanels from '@/components/DiscoverPanels'
+import { getCatalogStats, getSwapPair } from '@/lib/discover-data'
 import { auth } from '@/auth'
 import { calcAge } from '@/lib/age'
-import type { GameSummary } from '@/types/game'
+import type { GameSummary, CatalogStats, SwapPair } from '@/types/game'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -550,10 +552,12 @@ export default async function BrowsePage({ params, searchParams }: Props) {
     .innerJoin(platformExperiences, eq(platformExperiences.platformId, games.id))
     .where(eq(games.contentType, 'platform'))
 
-  // Shelf mode: fetch carousels + Roblox/Fortnite
+  // Shelf mode: fetch carousels + Roblox/Fortnite + folded-in discover panels
   let carousels: CarouselRowData[] = []
   let robloxExperiences: ExperienceSummary[] = []
   let fortniteExperiences: ExperienceSummary[] = []
+  let catalogStats: CatalogStats | null = null
+  let swap: SwapPair | null = null
   let rows: Row[] = []
   let total = 0
 
@@ -588,7 +592,9 @@ export default async function BrowsePage({ params, searchParams }: Props) {
       inputConfidence:           experienceScores.inputConfidence,
     }
 
-    ;[carousels, robloxExperiences, fortniteExperiences] = await Promise.all([
+    const td = await getTranslations({ locale, namespace: 'discover' })
+
+    ;[carousels, robloxExperiences, fortniteExperiences, catalogStats, swap] = await Promise.all([
       getCarouselRows(shelfPlatforms, shelfAge, locale),
       robloxRow
         ? db.select(expSelect).from(platformExperiences)
@@ -604,6 +610,8 @@ export default async function BrowsePage({ params, searchParams }: Props) {
             .orderBy(desc(experienceScores.curascore))
             .limit(8)
         : Promise.resolve([]),
+      getCatalogStats(),
+      getSwapPair(td, locale),
     ])
   } else {
     const result = await queryGames(filters, childFilter)
@@ -639,12 +647,10 @@ export default async function BrowsePage({ params, searchParams }: Props) {
           </Suspense>
         </div>
 
-        {/* ── Shelf mode ─────────────────────────────────────────────────── */}
-        {isShelfMode ? (
-          <div className="max-w-6xl mx-auto overflow-x-hidden">
-
-            {/* Pickers + child affordance */}
-            <div className="space-y-3 text-center mb-6">
+        {/* ── Persistent pickers — quick age/platform + child affordance.
+               Shown in both shelf and results modes so the controls parents
+               like never disappear when a filter is applied. ──────────────── */}
+        <div className="space-y-3 text-center mb-6">
               {!uid && (
                 <Link
                   href={`/${locale}/account`}
@@ -716,16 +722,17 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                 <Link href={`/${locale}/age`} className="text-accent hover:underline font-medium">
                   {t('byAgeLink')}
                 </Link>
-                <Link href={`/${locale}/discover`} className="text-accent hover:underline font-medium">
-                  {t('findPicks')}
-                </Link>
               </p>
-              {(filters.platforms.length > 0 || filters.age !== undefined) && (
+              {(activeFilterCount > 0 || filters.q) && (
                 <a href={`/${locale}/browse`} className="inline-block text-kicker uppercase text-muted hover:text-accent transition-colors" style={{ fontVariantCaps: 'all-small-caps' }}>
                   {t('clearFiltersShort')}
                 </a>
               )}
             </div>
+
+        {/* ── Shelf mode: carousels + folded-in discover panels ──────────── */}
+        {isShelfMode ? (
+          <div className="max-w-6xl mx-auto overflow-x-hidden">
 
             {/* Roblox — top of shelf, most parents arrive for this */}
             <RobloxCarouselRow experiences={robloxExperiences as ExperienceSummary[]} />
@@ -735,7 +742,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
 
             {/* Curated carousels */}
             {carousels.length > 0 && (
-              <div className="pb-10">
+              <div className="pb-4">
                 {carousels.map((row, i) => (
                   <CarouselRow
                     key={row.id}
@@ -748,6 +755,12 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                   />
                 ))}
               </div>
+            )}
+
+            {/* Folded-in discover panels — LumiScore scale, catalogue stats,
+                Safe Swap, and research facts (previously the /discover route) */}
+            {catalogStats && (
+              <DiscoverPanels stats={catalogStats} swap={swap ?? undefined} />
             )}
 
           </div>
@@ -768,50 +781,8 @@ export default async function BrowsePage({ params, searchParams }: Props) {
           {/* Main content */}
           <main className="flex-1 min-w-0">
 
-            {/* Child selector pills */}
-            {profiles.length > 0 && (
-              <div className="flex items-center gap-2 flex-wrap mb-4">
-                {/* FIX: "For:" översatt */}
-                <span className="text-kicker uppercase text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>{t('forChild')}</span>
-                {/* FIX: "Everyone" översatt */}
-                <a
-                  href={`/${locale}/browse?${new URLSearchParams(
-                    Object.entries(sp as Record<string, string>)
-                      .filter(([k]) => k !== 'child' && k !== 'page')
-                  ).toString()}`}
-                  className={`text-xs px-3 min-h-[44px] inline-flex items-center font-medium border transition-colors ${
-                    !selectedChild
-                      ? 'bg-ink border-ink text-paper'
-                      : 'border-rule text-ink hover:border-ink hover:text-accent'
-                  }`}
-                >
-                  {t('forEveryone')}
-                </a>
-                {profiles.map(p => {
-                  const age = calcAge(p.birthDate, p.birthYear)
-                  const childParams = new URLSearchParams(
-                    Object.entries(sp as Record<string, string>)
-                      .filter(([k]) => k !== 'child' && k !== 'page')
-                  )
-                  childParams.set('child', String(p.id))
-                  return (
-                    <a
-                      key={p.id}
-                      href={`/${locale}/browse?${childParams.toString()}`}
-                      className={`text-xs px-3 min-h-[44px] inline-flex items-center font-medium border transition-colors ${
-                        selectedChild?.id === p.id
-                          ? 'bg-accent border-accent text-paper'
-                          : 'border-rule text-ink hover:border-ink hover:text-accent'
-                      }`}
-                    >
-                      {p.name} <span className="opacity-70">({age})</span>
-                    </a>
-                  )
-                })}
-              </div>
-            )}
-
-            {/* Back to browse */}
+            {/* Back to browse (child pills + pickers live in the persistent
+                header above, shared with shelf mode) */}
             <div className="mb-3">
               <Link href={`/${locale}/browse`} className="text-kicker uppercase text-muted hover:text-accent transition-colors" style={{ fontVariantCaps: 'all-small-caps' }}>
                 ← {t('backToBrowse')}

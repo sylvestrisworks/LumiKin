@@ -657,6 +657,39 @@ export const gogLibrary = pgTable('gog_library', {
 }))
 
 // ============================================
+// XBOX (MICROSOFT) INTEGRATION
+// ============================================
+
+// We persist only the long-lived Microsoft (MSA) refresh token; the short-lived
+// XBL/XSTS tokens are re-derived from it at sync time (see src/lib/xbox/api.ts).
+export const xboxConnections = pgTable('xbox_connections', {
+  id:           serial('id').primaryKey(),
+  userId:       text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }).unique(),
+  xuid:         varchar('xuid', { length: 50 }).notNull().unique(),
+  gamertag:     varchar('gamertag', { length: 255 }),
+  accessToken:  text('access_token').notNull(),   // encrypted MSA access token
+  refreshToken: text('refresh_token').notNull(),   // encrypted MSA refresh token
+  expiresAt:    timestamp('expires_at').notNull(),
+  lastSyncedAt: timestamp('last_synced_at'),
+  createdAt:    timestamp('created_at').defaultNow(),
+})
+
+// Raw Xbox title-history records (games the account has played/owns)
+export const xboxLibrary = pgTable('xbox_library', {
+  id:        serial('id').primaryKey(),
+  userId:    text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  xuid:      varchar('xuid', { length: 50 }).notNull(),
+  titleId:   varchar('title_id', { length: 50 }).notNull(),
+  name:      varchar('name', { length: 500 }),
+  // Matched game in our catalog (null if no match found)
+  gameId:    integer('game_id').references(() => games.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  uniqueEntry: uniqueIndex('xbox_library_unique').on(table.userId, table.titleId),
+  userIdx:     index('xbox_library_user_idx').on(table.userId),
+}))
+
+// ============================================
 // NINTENDO PARENTAL CONTROLS INTEGRATION
 // ============================================
 

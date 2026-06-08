@@ -11,7 +11,6 @@ import TrackingRow from './_components/TrackingRow'
 import ReadingRoom from './_components/ReadingRoom'
 import TodaysReview from './_components/TodaysReview'
 import ByTheNumbers from './_components/ByTheNumbers'
-import ScoreDistribution from './_components/ScoreDistribution'
 import MethodologyEditorial from './_components/MethodologyEditorial'
 import BrowseByEditorial from './_components/BrowseByEditorial'
 import FamilyShelfPitch from './_components/FamilyShelfPitch'
@@ -141,13 +140,6 @@ export default async function HomePage({ params, searchParams }: Props) {
 
       {/* ── By the numbers (anatomy of a LumiScore — Pudding-style spread) ────── */}
       <ByTheNumbers locale={locale} />
-
-      {/* ── Where games land (LumiScore distribution histogram) ──────────────── */}
-      <section className="bg-paper text-ink">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 py-16 md:py-20">
-          <ScoreDistribution locale={locale} />
-        </div>
-      </section>
 
       {/* ── Family shelf pitch (signed-out visitors only) ────────────────────── */}
       <AnonOnly>

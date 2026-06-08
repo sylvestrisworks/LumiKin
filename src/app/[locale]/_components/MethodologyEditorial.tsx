@@ -24,7 +24,7 @@ export default async function MethodologyEditorial({ locale }: { locale: string 
 
   return (
     <section className="bg-paper text-ink">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-16 md:py-20">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-12 md:py-14">
         <div className="border-t border-ink pt-4 mb-6">
           <p
             className="text-kicker uppercase font-semibold text-muted"

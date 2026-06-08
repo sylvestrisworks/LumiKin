@@ -691,6 +691,7 @@
     "spendPressure": "Presión de gasto"
   },
   "dashboard": {
+    "standfirst": "Toda tu familia y a qué pueden jugar de tu biblioteca, de un vistazo.",
     "title": "Panel familiar",
     "signedInAs": "Conectado como {email}",
     "owned": "{count} poseídos",
@@ -708,6 +709,25 @@
     "metaTitle": "Panel familiar — LumiKin"
   },
   "library": {
+    "standfirst": "Toda tu biblioteca en un solo lugar: filtra por hijo, ordena por lo que importa y ve de un vistazo qué merece su tiempo.",
+    "toDashboard": "Panel",
+    "viewForLabel": "Ver para:",
+    "platformLabel": "Plataforma:",
+    "genreLabel": "Género:",
+    "ratingLabel": "Clasificación:",
+    "searchLabel": "Buscar:",
+    "searchPlaceholder": "Busca en tu biblioteca…",
+    "clearAll": "Borrar todo",
+    "manageProfile": "Gestionar el perfil de {name} →",
+    "featuredKicker": "Lo mejor de tu biblioteca",
+    "featuredDek": "Tu juego mejor valorado ahora mismo: unos {minutes} minutos al día es lo ideal.",
+    "readReview": "Leer reseña →",
+    "avgDailyLimit": "Límite diario medio",
+    "minShort": "min",
+    "unscoredNote": "{count} sin evaluar todavía",
+    "ageFitOk": "✓ Edad adecuada",
+    "ageFitTooYoung": "⚠ Desde {min} años",
+    "age": "Edad {age}",
     "title": "Mi biblioteca",
     "owned": "Poseídos",
     "wishlist": "Lista de deseos",

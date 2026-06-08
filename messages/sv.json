@@ -691,6 +691,7 @@
     "spendPressure": "Köptryck"
   },
   "dashboard": {
+    "standfirst": "Hela familjen och vad de kan spela från din hylla — på ett ögonkast.",
     "title": "Familjens instrumentpanel",
     "signedInAs": "Inloggad som {email}",
     "owned": "{count} ägda",
@@ -708,6 +709,25 @@
     "metaTitle": "Familjeöversikt — LumiKin"
   },
   "library": {
+    "standfirst": "Hela din hylla på ett ställe — filtrera per barn, sortera efter det som betyder något och se direkt vad som är värt deras tid.",
+    "toDashboard": "Översikt",
+    "viewForLabel": "Visa för:",
+    "platformLabel": "Plattform:",
+    "genreLabel": "Genre:",
+    "ratingLabel": "Åldersgräns:",
+    "searchLabel": "Sök:",
+    "searchPlaceholder": "Sök i ditt bibliotek…",
+    "clearAll": "Rensa alla",
+    "manageProfile": "Hantera {name}s profil →",
+    "featuredKicker": "Bäst i hyllan",
+    "featuredDek": "Ditt högst betygsatta spel just nu — runt {minutes} minuter om dagen är lagom.",
+    "readReview": "Läs recension →",
+    "avgDailyLimit": "Snitt daglig gräns",
+    "minShort": "min",
+    "unscoredNote": "{count} ännu inte bedömda",
+    "ageFitOk": "✓ Rätt ålder",
+    "ageFitTooYoung": "⚠ Från {min} år",
+    "age": "Ålder {age}",
     "title": "Mitt bibliotek",
     "owned": "Ägda",
     "wishlist": "Önskelista",

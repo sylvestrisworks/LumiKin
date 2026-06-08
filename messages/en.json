@@ -680,6 +680,7 @@
     "spendPressure": "Spend pressure"
   },
   "dashboard": {
+    "standfirst": "Everyone in your family, and what they can play from your shelf — at a glance.",
     "title": "Family Dashboard",
     "signedInAs": "Signed in as {email}",
     "owned": "{count} owned",
@@ -697,6 +698,25 @@
     "metaTitle": "Family Dashboard — LumiKin"
   },
   "library": {
+    "standfirst": "Your whole shelf in one place — filter by child, sort by what matters, and see at a glance what's worth their time.",
+    "toDashboard": "Dashboard",
+    "viewForLabel": "View for:",
+    "platformLabel": "Platform:",
+    "genreLabel": "Genre:",
+    "ratingLabel": "Rating:",
+    "searchLabel": "Search:",
+    "searchPlaceholder": "Search your library…",
+    "clearAll": "Clear all",
+    "manageProfile": "Manage {name}'s profile →",
+    "featuredKicker": "Top of your shelf",
+    "featuredDek": "Your highest-rated game right now — about {minutes} minutes a day is the sweet spot.",
+    "readReview": "Read review →",
+    "avgDailyLimit": "Avg daily limit",
+    "minShort": "min",
+    "unscoredNote": "{count} not yet rated",
+    "ageFitOk": "✓ Right age",
+    "ageFitTooYoung": "⚠ Ages {min}+",
+    "age": "Age {age}",
     "title": "My Library",
     "owned": "Owned",
     "wishlist": "Wishlist",

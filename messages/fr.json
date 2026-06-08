@@ -691,6 +691,7 @@
     "spendPressure": "Pression dépensière"
   },
   "dashboard": {
+    "standfirst": "Toute votre famille et ce à quoi elle peut jouer dans votre ludothèque — en un coup d'œil.",
     "title": "Tableau de bord familial",
     "signedInAs": "Connecté en tant que {email}",
     "owned": "{count} possédés",
@@ -708,6 +709,25 @@
     "metaTitle": "Tableau de bord famille — LumiKin"
   },
   "library": {
+    "standfirst": "Toute votre ludothèque au même endroit — filtrez par enfant, triez selon vos critères et voyez d'un coup d'œil ce qui vaut leur temps.",
+    "toDashboard": "Tableau de bord",
+    "viewForLabel": "Afficher pour :",
+    "platformLabel": "Plateforme :",
+    "genreLabel": "Genre :",
+    "ratingLabel": "Classification :",
+    "searchLabel": "Rechercher :",
+    "searchPlaceholder": "Rechercher dans votre ludothèque…",
+    "clearAll": "Tout effacer",
+    "manageProfile": "Gérer le profil de {name} →",
+    "featuredKicker": "Le meilleur de votre ludothèque",
+    "featuredDek": "Votre jeu le mieux noté actuellement — environ {minutes} minutes par jour, c'est l'idéal.",
+    "readReview": "Lire la critique →",
+    "avgDailyLimit": "Limite quotidienne moy.",
+    "minShort": "min",
+    "unscoredNote": "{count} pas encore évalués",
+    "ageFitOk": "✓ Âge adapté",
+    "ageFitTooYoung": "⚠ Dès {min} ans",
+    "age": "Âge {age}",
     "title": "Ma bibliothèque",
     "owned": "Possédés",
     "wishlist": "Liste de souhaits",

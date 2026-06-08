@@ -6,6 +6,7 @@ import { eq } from 'drizzle-orm'
 import { curascoreTextEditorial } from '@/lib/ui'
 import Icon from '@/components/Icon'
 import { calcAge } from '@/lib/age'
+import { gamesForChild, libHealthScore } from '@/lib/childMatch'
 import ProfileManager from '@/components/ProfileManager'
 import PlatformConnectionsWidget from '@/components/PlatformConnectionsWidget'
 import { getLocale, getTranslations } from 'next-intl/server'
@@ -18,17 +19,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: t('metaTitle' as any) }
 }
 export const dynamic = 'force-dynamic'
-
-function esrbToMinAge(rating: string | null | undefined): number | null {
-  switch (rating) {
-    case 'E':   return 0
-    case 'E10': return 10
-    case 'T':   return 13
-    case 'M':   return 17
-    case 'AO':  return 18
-    default:    return null
-  }
-}
 
 type LibraryGame = {
   slug: string
@@ -72,23 +62,6 @@ export default async function FamilyDashboard() {
   const owned   = libraryRows.filter(r => r.listType === 'owned') as LibraryGame[]
   const wlCount = libraryRows.filter(r => r.listType === 'wishlist').length
 
-  function gamesForChild(age: number, platforms: string[]): LibraryGame[] {
-    return owned.filter(g => {
-      const minAge = g.recommendedMinAge ?? esrbToMinAge(g.esrbRating)
-      const ageOk  = minAge == null || minAge <= age
-      const platOk = platforms.length === 0 || (g.platforms as string[]).some(gp =>
-        platforms.some(cp => gp.toLowerCase().includes(cp.toLowerCase()))
-      )
-      return ageOk && platOk
-    }).sort((a, b) => (b.curascore ?? 0) - (a.curascore ?? 0))
-  }
-
-  function libHealthScore(games: LibraryGame[]): number | null {
-    const scored = games.filter(g => g.curascore != null)
-    if (!scored.length) return null
-    return Math.round(scored.reduce((s, g) => s + g.curascore!, 0) / scored.length)
-  }
-
   return (
     <div className="min-h-screen bg-paper text-ink">
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
@@ -97,7 +70,8 @@ export default async function FamilyDashboard() {
         <div className="flex items-center justify-between border-b border-ink pb-6">
           <div>
             <h1 className="font-serif text-display-sm text-ink">{t('title')}</h1>
-            <p className="text-muted text-sm mt-1">{t('signedInAs', { email: session.user.email ?? '' })}</p>
+            <p className="font-serif italic text-muted text-lg mt-2 max-w-xl leading-snug">{t('standfirst')}</p>
+            <p className="text-muted text-sm mt-2">{t('signedInAs', { email: session.user.email ?? '' })}</p>
           </div>
           <div className="flex items-center gap-3 text-sm">
             <a href={`/${locale}/library`} className="flex items-center gap-1.5 px-3 py-1.5 border border-rule text-ink hover:border-ink hover:text-accent transition-colors text-kicker uppercase font-semibold" style={{ fontVariantCaps: 'all-small-caps' }}>
@@ -132,7 +106,7 @@ export default async function FamilyDashboard() {
         {/* Child cards */}
         {profiles.map(profile => {
           const age         = calcAge(profile.birthDate, profile.birthYear)
-          const childGames  = gamesForChild(age, (profile.platforms as string[]) ?? [])
+          const childGames  = gamesForChild(owned, age, (profile.platforms as string[]) ?? [])
           const healthScore = libHealthScore(childGames)
 
           return (
@@ -178,7 +152,7 @@ export default async function FamilyDashboard() {
                       {childGames.slice(0, 12).map(g => (
                         <a key={g.slug} href={`/${locale}/game/${g.slug}`} className="relative shrink-0 w-20 h-20 overflow-hidden bg-rule/30 hover:ring-1 hover:ring-ink transition-all">
                           {g.backgroundImage
-                            ? <img src={g.backgroundImage} alt={g.title} className="w-full h-full object-cover" />
+                            ? <img src={g.backgroundImage} alt={g.title} className="w-full h-full object-cover" style={{ filter: 'saturate(1.05) contrast(1.03)' }} />
                             : <div className="w-full h-full bg-rule/40 flex items-center justify-center text-xs font-serif text-muted">{g.title.slice(0,2).toUpperCase()}</div>
                           }
                           {g.curascore != null && (

@@ -691,6 +691,7 @@
     "spendPressure": "Kaufanreize"
   },
   "dashboard": {
+    "standfirst": "Deine ganze Familie und was sie aus deiner Sammlung spielen kann — auf einen Blick.",
     "title": "Familien-Dashboard",
     "signedInAs": "Angemeldet als {email}",
     "owned": "{count} besessen",
@@ -708,6 +709,25 @@
     "metaTitle": "Familien-Dashboard — LumiKin"
   },
   "library": {
+    "standfirst": "Deine ganze Sammlung an einem Ort — nach Kind filtern, nach Wichtigem sortieren und auf einen Blick sehen, was ihre Zeit wert ist.",
+    "toDashboard": "Übersicht",
+    "viewForLabel": "Anzeigen für:",
+    "platformLabel": "Plattform:",
+    "genreLabel": "Genre:",
+    "ratingLabel": "Freigabe:",
+    "searchLabel": "Suche:",
+    "searchPlaceholder": "Bibliothek durchsuchen…",
+    "clearAll": "Alle löschen",
+    "manageProfile": "Profil von {name} verwalten →",
+    "featuredKicker": "Spitzenreiter",
+    "featuredDek": "Dein aktuell bestbewertetes Spiel — etwa {minutes} Minuten pro Tag sind ideal.",
+    "readReview": "Test lesen →",
+    "avgDailyLimit": "Ø Tageslimit",
+    "minShort": "Min.",
+    "unscoredNote": "{count} noch nicht bewertet",
+    "ageFitOk": "✓ Passendes Alter",
+    "ageFitTooYoung": "⚠ Ab {min} Jahren",
+    "age": "Alter {age}",
     "title": "Meine Bibliothek",
     "owned": "Besessen",
     "wishlist": "Wunschliste",

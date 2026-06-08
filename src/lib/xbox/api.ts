@@ -39,6 +39,9 @@ export function buildAuthUrl(state: string, redirectUri: string): string {
     redirect_uri:  redirectUri,
     scope:         SCOPE,
     state,
+    // Always show the account chooser — without this, Microsoft silently reuses
+    // the browser's existing session, so users can't pick which Xbox account to link.
+    prompt:        'select_account',
   })
   return `${MSA_AUTHORIZE}?${params}`
 }

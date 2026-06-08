@@ -2,13 +2,15 @@ import { auth, signIn } from '@/auth'
 import { getLocale, getTranslations } from 'next-intl/server'
 import AccountMenu from './AccountMenu'
 
-async function handleSignIn() {
+// Signing in from the nav lands the user on their library — the home for the
+// import flow — instead of bouncing back to wherever they happened to be.
+async function handleSignIn(locale: string) {
   'use server'
-  await signIn('google')
+  await signIn('google', { redirectTo: `/${locale}/library` })
 }
 
 export default async function NavAuthButton() {
-  const [session, t] = await Promise.all([auth(), getTranslations('nav')])
+  const [session, t, locale] = await Promise.all([auth(), getTranslations('nav'), getLocale()])
 
   if (session?.user) {
     const { name, email, image } = session.user
@@ -16,7 +18,7 @@ export default async function NavAuthButton() {
   }
 
   return (
-    <form action={handleSignIn}>
+    <form action={handleSignIn.bind(null, locale)}>
       <button
         type="submit"
         className="text-kicker uppercase font-semibold text-ink

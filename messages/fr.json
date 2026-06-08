@@ -710,6 +710,8 @@
   },
   "library": {
     "standfirst": "Toute votre ludothèque au même endroit — filtrez par enfant, triez selon vos critères et voyez d'un coup d'œil ce qui vaut leur temps.",
+    "addKidsNudge": "Vous avez ajouté des jeux — ajoutez maintenant vos enfants pour voir ce qui convient à chacun.",
+    "addKidsNudgeCta": "Créer des profils →",
     "toDashboard": "Tableau de bord",
     "viewForLabel": "Afficher pour :",
     "platformLabel": "Plateforme :",
@@ -1000,7 +1002,17 @@
     "hours": "{hours}h",
     "minutes": "{minutes}min"
   },
+  "promo": {
+    "shelfKicker": "Pour les parents",
+    "shelfTitle": "Composez la ludothèque de votre famille",
+    "shelfDek": "Enregistrez les jeux de vos enfants, suivez le temps d'écran recommandé et voyez d'un coup d'œil ce qui convient à chaque enfant — gratuit.",
+    "shelfPoint1": "Enregistrez et suivez chaque jeu de votre famille",
+    "shelfPoint2": "Des suggestions adaptées à l'âge de chaque enfant",
+    "shelfPoint3": "Importez votre ludothèque Steam en une étape",
+    "shelfCta": "Créer ma ludothèque gratuite"
+  },
   "libraryButton": {
+    "loggedOutPitch": "Gratuit — connectez-vous pour l'enregistrer dans votre ludothèque, suivre le temps d'écran et voir s'il convient à vos enfants.",
     "addToLibrary": "Ajouter à la bibliothèque",
     "inLibrary": "Dans la bibliothèque",
     "wishlist": "Liste de souhaits",
@@ -1322,6 +1334,7 @@
     }
   },
   "shareButton": {
+    "shareText": "{title} — LumiScore {score}/100 pour les parents. Voir l'analyse complète :",
     "copyLink": "Copier le lien",
     "copied": "Copié",
     "share": "Partager"

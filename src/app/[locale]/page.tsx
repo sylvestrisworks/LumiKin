@@ -14,6 +14,8 @@ import ByTheNumbers from './_components/ByTheNumbers'
 import ScoreDistribution from './_components/ScoreDistribution'
 import MethodologyEditorial from './_components/MethodologyEditorial'
 import BrowseByEditorial from './_components/BrowseByEditorial'
+import FamilyShelfPitch from './_components/FamilyShelfPitch'
+import AnonOnly from '@/components/AnonOnly'
 
 // Old homepage catalog params — redirect to /browse
 const CATALOG_PARAMS = ['age', 'platform', 'platforms', 'sort', 'genres', 'benefits', 'risk']
@@ -146,6 +148,11 @@ export default async function HomePage({ params, searchParams }: Props) {
           <ScoreDistribution locale={locale} />
         </div>
       </section>
+
+      {/* ── Family shelf pitch (signed-out visitors only) ────────────────────── */}
+      <AnonOnly>
+        <FamilyShelfPitch locale={locale} />
+      </AnonOnly>
 
       {/* ── Browse by (editorial directory) ──────────────────────────────────── */}
       <BrowseByEditorial locale={locale} />

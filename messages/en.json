@@ -699,6 +699,8 @@
   },
   "library": {
     "standfirst": "Your whole shelf in one place — filter by child, sort by what matters, and see at a glance what's worth their time.",
+    "addKidsNudge": "You've added games — now add your kids to see what fits each child.",
+    "addKidsNudgeCta": "Set up profiles →",
     "toDashboard": "Dashboard",
     "viewForLabel": "View for:",
     "platformLabel": "Platform:",
@@ -989,7 +991,17 @@
     "hours": "{hours}h",
     "minutes": "{minutes}m"
   },
+  "promo": {
+    "shelfKicker": "For parents",
+    "shelfTitle": "Build your family's shelf",
+    "shelfDek": "Save the games your kids play, track recommended screen time, and see at a glance what fits each child — free.",
+    "shelfPoint1": "Save and track every game your family plays",
+    "shelfPoint2": "Get age-fit picks for each child",
+    "shelfPoint3": "Import your Steam library in one step",
+    "shelfCta": "Create your free shelf"
+  },
   "libraryButton": {
+    "loggedOutPitch": "Free — sign in to save this to your library, track screen time, and see whether it fits your kids.",
     "addToLibrary": "Add to Library",
     "inLibrary": "In Library",
     "wishlist": "Wishlist",
@@ -1289,6 +1301,7 @@
     }
   },
   "shareButton": {
+    "shareText": "{title} — LumiScore {score}/100 for parents. See the full breakdown:",
     "copyLink": "Copy link",
     "copied": "Copied",
     "share": "Share"

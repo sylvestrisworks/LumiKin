@@ -710,6 +710,8 @@
   },
   "library": {
     "standfirst": "Deine ganze Sammlung an einem Ort — nach Kind filtern, nach Wichtigem sortieren und auf einen Blick sehen, was ihre Zeit wert ist.",
+    "addKidsNudge": "Du hast Spiele hinzugefügt — füge jetzt deine Kinder hinzu, um zu sehen, was zu jedem Kind passt.",
+    "addKidsNudgeCta": "Profile einrichten →",
     "toDashboard": "Übersicht",
     "viewForLabel": "Anzeigen für:",
     "platformLabel": "Plattform:",
@@ -1000,7 +1002,17 @@
     "hours": "{hours}h",
     "minutes": "{minutes}min"
   },
+  "promo": {
+    "shelfKicker": "Für Eltern",
+    "shelfTitle": "Bau das Spielregal deiner Familie",
+    "shelfDek": "Speichere die Spiele deiner Kinder, behalte die empfohlene Bildschirmzeit im Blick und sieh auf einen Blick, was zu jedem Kind passt — kostenlos.",
+    "shelfPoint1": "Jedes Spiel deiner Familie speichern und verfolgen",
+    "shelfPoint2": "Altersgerechte Empfehlungen für jedes Kind",
+    "shelfPoint3": "Deine Steam-Bibliothek in einem Schritt importieren",
+    "shelfCta": "Kostenloses Regal erstellen"
+  },
   "libraryButton": {
+    "loggedOutPitch": "Kostenlos — melde dich an, um dies in deiner Bibliothek zu speichern, die Bildschirmzeit zu verfolgen und zu sehen, ob es zu deinen Kindern passt.",
     "addToLibrary": "Zur Bibliothek hinzufügen",
     "inLibrary": "In Bibliothek",
     "wishlist": "Wunschliste",
@@ -1322,6 +1334,7 @@
     }
   },
   "shareButton": {
+    "shareText": "{title} — LumiScore {score}/100 für Eltern. Sieh dir die ganze Analyse an:",
     "copyLink": "Link kopieren",
     "copied": "Kopiert",
     "share": "Teilen"

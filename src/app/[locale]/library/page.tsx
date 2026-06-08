@@ -272,6 +272,19 @@ export default async function LibraryPage({
           </p>
         </div>
 
+        {/* Add-kids nudge — the Dashboard unlock, shown once games exist but no child profiles do */}
+        {rows.length > 0 && profiles.length === 0 && (
+          <a
+            href={`/${locale}/dashboard`}
+            className="flex items-center justify-between gap-3 border-l-2 border-accent bg-ink/[0.03] px-4 py-3 hover:bg-ink/[0.06] transition-colors"
+          >
+            <span className="text-sm text-ink">{t('addKidsNudge')}</span>
+            <span className="text-kicker uppercase font-semibold text-accent shrink-0" style={{ fontVariantCaps: 'all-small-caps' }}>
+              {t('addKidsNudgeCta')}
+            </span>
+          </a>
+        )}
+
         {/* Featured pick */}
         {featured && (
           <section>

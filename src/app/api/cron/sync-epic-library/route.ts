@@ -12,10 +12,12 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { epicConnections, epicLibrary, games, userGames } from '@/lib/db/schema'
+import { epicConnections, epicLibrary } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { logCronRun } from '@/lib/cron-logger'
 import { decryptToken, encryptToken } from '@/lib/token-crypto'
+import { buildGameTitleMap, matchTitle } from '@/lib/library/match'
+import { upsertOwnedGames } from '@/lib/library/owned'
 
 export const maxDuration = 300
 
@@ -130,9 +132,9 @@ export async function GET(req: NextRequest) {
   const connections = await db.select().from(epicConnections)
   if (connections.length === 0) return NextResponse.json({ ok: true, synced: 0 })
 
-  // Load all game titles for matching (once, shared across all users)
-  const allGames = await db.select({ id: games.id, title: games.title }).from(games)
-  const gameTitleMap = new Map(allGames.map(g => [g.title.toLowerCase(), g.id]))
+  // Load all game titles for matching (once, shared across all users).
+  // Skip the scores join — the cron only needs the matched gameId.
+  const gameTitleMap = await buildGameTitleMap({ withScores: false })
 
   let synced = 0
 
@@ -155,9 +157,10 @@ export async function GET(req: NextRequest) {
     )
 
     // Upsert into epic_library + try to match game IDs
+    const matchedGameIds: number[] = []
     for (const item of entitlements) {
       const title  = titleMap.get(item.catalogItemId) ?? null
-      const gameId = title ? (gameTitleMap.get(title.toLowerCase()) ?? null) : null
+      const gameId = title ? (matchTitle(title, gameTitleMap)?.id ?? null) : null
 
       await db
         .insert(epicLibrary)
@@ -175,14 +178,11 @@ export async function GET(req: NextRequest) {
           set: { title, gameId, appName: item.appName ?? null },
         })
 
-      // Add matched games to user_games library
-      if (gameId) {
-        await db
-          .insert(userGames)
-          .values({ userId: conn.userId, gameId, listType: 'owned' })
-          .onConflictDoNothing()
-      }
+      if (gameId) matchedGameIds.push(gameId)
     }
+
+    // Add matched games to the user's owned library, tagged as Epic-sourced
+    await upsertOwnedGames(conn.userId, matchedGameIds, 'epic')
 
     await db.update(epicConnections).set({ lastSyncedAt: new Date() }).where(eq(epicConnections.id, conn.id))
     console.log(`[sync-epic-library] Synced ${entitlements.length} entitlements for user ${conn.userId}`)

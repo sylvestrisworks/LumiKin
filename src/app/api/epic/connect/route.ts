@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { db } from '@/lib/db'
-import { epicConnections, epicLibrary, userGames } from '@/lib/db/schema'
+import { epicConnections, epicLibrary } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import { removeOwnedBySource } from '@/lib/library/owned'
 
 export async function GET() {
   const session = await auth()
@@ -35,8 +36,8 @@ export async function DELETE() {
     await Promise.all([
       db.delete(epicConnections).where(eq(epicConnections.userId, session.user.id)),
       db.delete(epicLibrary).where(eq(epicLibrary.userId, session.user.id)),
-      // Remove Epic-sourced owned games from library
-      db.delete(userGames).where(eq(userGames.userId, session.user.id)),
+      // Remove only Epic-sourced owned games — leave Steam/GOG/manual entries intact.
+      removeOwnedBySource(session.user.id, 'epic'),
     ])
   }
 

@@ -5,7 +5,7 @@ import {
 } from 'lucide-react'
 import {
   SiPlaystation, SiApple,
-  SiAndroid, SiRoblox, SiFortnite, SiEpicgames, SiSteam,
+  SiAndroid, SiRoblox, SiFortnite, SiEpicgames, SiSteam, SiGogdotcom,
 } from '@icons-pack/react-simple-icons'
 
 const ICONS = {
@@ -29,7 +29,9 @@ const ICONS = {
   roblox:      SiRoblox,
   fortnite:    SiFortnite,
   epicgames:   SiEpicgames,
+  epic:        SiEpicgames,
   steam:       SiSteam,
+  gog:         SiGogdotcom,
 } as const
 
 export type IconName = keyof typeof ICONS

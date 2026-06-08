@@ -413,6 +413,9 @@ export const userGames = pgTable('user_games', {
   userId:         text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   gameId:         integer('game_id').notNull().references(() => games.id, { onDelete: 'cascade' }),
   listType:       varchar('list_type', { length: 20 }).notNull().default('owned'), // 'owned' | 'wishlist'
+  // Where this entry came from: 'manual' (added by hand) | 'steam' | 'epic' | 'gog' | 'xbox'.
+  // Lets us disconnect a platform surgically and attribute ownership in the UI.
+  source:         varchar('source', { length: 20 }).notNull().default('manual'),
   addedAt:        timestamp('added_at').defaultNow(),
 }, (table) => ({
   uniqueEntry:    uniqueIndex('user_game_list_unique').on(table.userId, table.gameId, table.listType),
@@ -620,6 +623,37 @@ export const epicLibrary = pgTable('epic_library', {
 }, (table) => ({
   uniqueEntry: uniqueIndex('epic_library_unique').on(table.userId, table.catalogItemId),
   userIdx:     index('epic_library_user_idx').on(table.userId),
+}))
+
+// ============================================
+// GOG (GALAXY) INTEGRATION
+// ============================================
+
+export const gogConnections = pgTable('gog_connections', {
+  id:           serial('id').primaryKey(),
+  userId:       text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }).unique(),
+  gogUserId:    varchar('gog_user_id', { length: 50 }).notNull().unique(),
+  username:     varchar('username', { length: 255 }),
+  accessToken:  text('access_token').notNull(),   // encrypted
+  refreshToken: text('refresh_token').notNull(),   // encrypted
+  expiresAt:    timestamp('expires_at').notNull(),
+  lastSyncedAt: timestamp('last_synced_at'),
+  createdAt:    timestamp('created_at').defaultNow(),
+})
+
+// Raw GOG owned-product records (the products the user owns on GOG)
+export const gogLibrary = pgTable('gog_library', {
+  id:        serial('id').primaryKey(),
+  userId:    text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  gogUserId: varchar('gog_user_id', { length: 50 }).notNull(),
+  productId: varchar('product_id', { length: 50 }).notNull(),
+  title:     varchar('title', { length: 500 }),
+  // Matched game in our catalog (null if no match found)
+  gameId:    integer('game_id').references(() => games.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  uniqueEntry: uniqueIndex('gog_library_unique').on(table.userId, table.productId),
+  userIdx:     index('gog_library_user_idx').on(table.userId),
 }))
 
 // ============================================

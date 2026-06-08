@@ -1,0 +1,16 @@
+name: Sync GOG Library
+
+on:
+  schedule:
+    - cron: '45 3 * * *'   # 03:45 UTC daily (after Epic sync at 03:30)
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger sync-gog-library cron
+        run: |
+          curl -s -f -X GET \
+            "${{ secrets.APP_URL }}/api/cron/sync-gog-library" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

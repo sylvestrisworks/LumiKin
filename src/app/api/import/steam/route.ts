@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { db } from '@/lib/db'
-import { games, gameScores, userGames } from '@/lib/db/schema'
-import { eq, and, ilike, sql } from 'drizzle-orm'
+import { userGames } from '@/lib/db/schema'
+import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { rateLimit } from '@/lib/rate-limit'
+import { buildGameTitleMap, matchTitle } from '@/lib/library/match'
+import { upsertOwnedGames } from '@/lib/library/owned'
 
 const STEAM_API = 'https://api.steampowered.com'
 
@@ -62,11 +64,6 @@ async function fetchSteamLibrary(steamId: string): Promise<SteamGame[] | null> {
   return gamesList.sort((a, b) => b.playtime_forever - a.playtime_forever).slice(0, 200)
 }
 
-// Normalise title for loose matching: lowercase, strip punctuation, collapse spaces
-function normalise(s: string) {
-  return s.toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim()
-}
-
 // ── Main route ────────────────────────────────────────────────────────────────
 
 const BodySchema = z.discriminatedUnion('action', [
@@ -119,20 +116,7 @@ export async function POST(req: NextRequest) {
     const ownedSet = new Set(alreadyOwned.map(r => r.gameId))
 
     // Build a map of all our games: normalised title → { id, slug, title, curascore }
-    const allGames = await db
-      .select({
-        id:        games.id,
-        slug:      games.slug,
-        title:     games.title,
-        curascore: gameScores.curascore,
-      })
-      .from(games)
-      .leftJoin(gameScores, eq(gameScores.gameId, games.id))
-
-    const gameMap = new Map<string, typeof allGames[0]>()
-    for (const g of allGames) {
-      gameMap.set(normalise(g.title), g)
-    }
+    const gameMap = await buildGameTitleMap()
 
     type MatchedGame = { gameId: number; slug: string; title: string; curascore: number | null; steamName: string; alreadyOwned: boolean }
     type UnmatchedGame = { steamName: string; appid: number }
@@ -141,14 +125,7 @@ export async function POST(req: NextRequest) {
     const unmatched: UnmatchedGame[] = []
 
     for (const sg of steamGames) {
-      const norm = normalise(sg.name)
-      let found = gameMap.get(norm) ?? null
-
-      // Fallback: try stripping common suffixes (™, ®, edition markers)
-      if (!found) {
-        const stripped = norm.replace(/\b(definitive|complete|goty|game of the year|remastered|deluxe|gold|standard)\b/g, '').replace(/\s+/g, ' ').trim()
-        found = gameMap.get(stripped) ?? null
-      }
+      const found = matchTitle(sg.name, gameMap)
 
       if (found) {
         matched.push({
@@ -187,26 +164,12 @@ export async function POST(req: NextRequest) {
 
     if (gameIds.length === 0) return NextResponse.json({ added: 0 })
 
-    // Only insert games not already owned
-    const alreadyOwned = await db
-      .select({ gameId: userGames.gameId })
-      .from(userGames)
-      .where(and(eq(userGames.userId, uid), eq(userGames.listType, 'owned')))
-    const ownedSet = new Set(alreadyOwned.map(r => r.gameId))
-
-    const toInsert = gameIds
-      .filter(id => !ownedSet.has(id))
-      .map(gameId => ({ userId: uid, gameId, listType: 'owned' as const }))
-
-    if (toInsert.length > 0) {
-      try {
-        await db.insert(userGames).values(toInsert).onConflictDoNothing()
-      } catch (err) {
-        console.error('[import/steam] Insert failed — invalid gameId in batch:', err)
-        return NextResponse.json({ error: 'Some game IDs were invalid' }, { status: 400 })
-      }
+    try {
+      const { added } = await upsertOwnedGames(uid, gameIds, 'steam')
+      return NextResponse.json({ added })
+    } catch (err) {
+      console.error('[import/steam] Insert failed — invalid gameId in batch:', err)
+      return NextResponse.json({ error: 'Some game IDs were invalid' }, { status: 400 })
     }
-
-    return NextResponse.json({ added: toInsert.length })
   }
 }

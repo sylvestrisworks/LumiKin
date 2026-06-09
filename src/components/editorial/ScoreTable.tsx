@@ -3,7 +3,7 @@
 
 export type ScoreTone = 'ink' | 'accent'
 
-export type ScoreRow = { code: string; label: string; value: number }
+export type ScoreRow = { code: string; label: string; value: number; note?: string }
 
 export function ScoreBar({
   value,
@@ -45,12 +45,17 @@ export function ScoreTable({
         <tbody>
           {rows.map((r, i) => (
             <tr key={r.code} className={i === 0 ? 'border-t border-ink/20' : 'border-t border-ink/10'}>
-              <td className="py-3 pr-4 text-muted text-sm w-10 tabular-nums">{r.code}</td>
-              <td className="py-3 pr-6 text-ink text-sm">{r.label}</td>
-              <td className="py-3 pr-6 w-1/2">
+              <td className="py-3 pr-4 align-top text-muted text-sm w-10 tabular-nums">{r.code}</td>
+              <td className="py-3 pr-6 align-top">
+                <span className="text-ink text-sm block">{r.label}</span>
+                {r.note && (
+                  <span className="text-muted text-xs block mt-0.5 leading-snug">{r.note}</span>
+                )}
+              </td>
+              <td className="py-3 pr-6 align-top w-1/2">
                 <ScoreBar value={r.value} tone={tone} />
               </td>
-              <td className="py-3 text-ink text-sm tabular-nums text-right w-16">
+              <td className="py-3 align-top text-ink text-sm tabular-nums text-right w-16">
                 {r.value.toFixed(2)}
               </td>
             </tr>

@@ -10,7 +10,6 @@ import CoverStoryHero from './_components/CoverStoryHero'
 import TrackingRow from './_components/TrackingRow'
 import ReadingRoom from './_components/ReadingRoom'
 import TodaysReview from './_components/TodaysReview'
-import ByTheNumbers from './_components/ByTheNumbers'
 import MethodologyEditorial from './_components/MethodologyEditorial'
 import BrowseByEditorial from './_components/BrowseByEditorial'
 import FamilyShelfPitch from './_components/FamilyShelfPitch'
@@ -135,11 +134,8 @@ export default async function HomePage({ params, searchParams }: Props) {
       {/* ── Reading room (illustrated guides + blog essays) ──────────────────── */}
       <ReadingRoom locale={locale} />
 
-      {/* ── Today's review (editorial cover) ─────────────────────────────────── */}
+      {/* ── How a rating is built (worked example + anatomy of a LumiScore) ──── */}
       <TodaysReview locale={locale} />
-
-      {/* ── By the numbers (anatomy of a LumiScore — Pudding-style spread) ────── */}
-      <ByTheNumbers locale={locale} />
 
       {/* ── Family shelf pitch (signed-out visitors only) ────────────────────── */}
       <AnonOnly>

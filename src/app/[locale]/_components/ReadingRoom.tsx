@@ -132,8 +132,8 @@ export default async function ReadingRoom({ locale }: { locale: string }) {
 
   return (
     <section className="bg-paper text-ink">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-12 md:py-14">
-        <div className="border-t border-ink pt-4 mb-10 flex items-baseline justify-between gap-4 flex-wrap">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-8 md:py-10">
+        <div className="border-t border-ink pt-4 mb-6 flex items-baseline justify-between gap-4 flex-wrap">
           <p className="text-kicker uppercase font-semibold text-muted" style={{ fontVariantCaps: 'all-small-caps' }}>
             {t('readingRoomKicker')}
           </p>

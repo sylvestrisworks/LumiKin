@@ -51,7 +51,7 @@ export default async function CoverStoryHero({ locale }: { locale: string }) {
 
   return (
     <section className="bg-paper text-ink">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 pt-10 pb-12 md:pt-12 md:pb-14">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 pt-10 pb-8 md:pt-12 md:pb-10">
 
         {/* Site promise — the page h1, kept modest so the cover carries the weight */}
         <h1

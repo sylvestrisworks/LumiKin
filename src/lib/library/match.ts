@@ -30,9 +30,23 @@ export function normalizeTitle(s: string): string {
 // Edition / packaging markers that distinguish a store SKU from our catalogue title.
 const EDITION_MARKERS = /\b(definitive|complete|goty|game of the year|remastered|deluxe|gold|standard|ultimate|enhanced|anniversary)\b/g
 
+// Trailing platform qualifiers stores append to the same game (e.g. Xbox/Steam
+// list "Minecraft for Nintendo Switch", "Hades - Windows"). Stripped from the
+// END only, so a title like "PC Building Simulator" is never touched.
+const PLATFORM_SUFFIX = /\s+(for\s+)?(nintendo\s+switch|windows(\s+1[01])?|win\s*1[01]|pc|xbox(\s+one|\s+series\s+[xs])?|playstation(\s+[45])?|ps[45])\s*$/
+
+/** Repeatedly strip trailing platform qualifiers from an already-normalised title. */
+function stripPlatformSuffix(norm: string): string {
+  let out = norm
+  let prev: string
+  do { prev = out; out = out.replace(PLATFORM_SUFFIX, '').trim() } while (out !== prev && out.length > 0)
+  return out
+}
+
 /**
- * Match a store title against a normalised catalogue map.
- * Tries an exact normalised hit first, then retries with edition markers stripped.
+ * Match a store title against a normalised catalogue map. Tries an exact
+ * normalised hit, then progressively looser candidates: edition markers
+ * stripped, trailing platform qualifiers stripped, and both.
  */
 export function matchTitle(
   title: string,
@@ -42,9 +56,17 @@ export function matchTitle(
   const exact = gameMap.get(norm)
   if (exact) return exact
 
-  const stripped = norm.replace(EDITION_MARKERS, '').replace(/\s+/g, ' ').trim()
-  if (stripped && stripped !== norm) {
-    return gameMap.get(stripped) ?? null
+  const noEdition  = norm.replace(EDITION_MARKERS, '').replace(/\s+/g, ' ').trim()
+  const candidates = [
+    noEdition,
+    stripPlatformSuffix(norm),
+    stripPlatformSuffix(noEdition),
+  ]
+  for (const c of candidates) {
+    if (c && c !== norm) {
+      const found = gameMap.get(c)
+      if (found) return found
+    }
   }
   return null
 }

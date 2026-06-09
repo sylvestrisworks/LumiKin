@@ -14,6 +14,7 @@ import MethodologyEditorial from './_components/MethodologyEditorial'
 import BrowseByEditorial from './_components/BrowseByEditorial'
 import FamilyShelfPitch from './_components/FamilyShelfPitch'
 import AnonOnly from '@/components/AnonOnly'
+import FromTheBlog from './_components/FromTheBlog'
 
 // Old homepage catalog params — redirect to /browse
 const CATALOG_PARAMS = ['age', 'platform', 'platforms', 'sort', 'genres', 'benefits', 'risk']
@@ -144,6 +145,9 @@ export default async function HomePage({ params, searchParams }: Props) {
 
       {/* ── Browse by (editorial directory) ──────────────────────────────────── */}
       <BrowseByEditorial locale={locale} />
+
+      {/* ── From the blog (essays — a "keep reading" beat before the closer) ──── */}
+      <FromTheBlog locale={locale} />
 
       {/* ── How scores work (editorial methodology) ──────────────────────────── */}
       <MethodologyEditorial locale={locale} />

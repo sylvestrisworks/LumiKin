@@ -35,7 +35,13 @@
     "readEssay": "Read the essay →",
     "checkAGame": "Check a game",
     "readingRoomKicker": "Reading room",
-    "readingRoomIntro": "Guides and essays for parents who play along.",
+    "readingRoomIntro": "Practical guides for parents who play along.",
+
+    "blogKicker": "From the blog",
+
+    "blogIntro": "Essays on how games are built — and what that means for the kids who play them.",
+
+    "allEssays": "All essays →",
     "h1": "A great game can enrich a growing mind. The wrong one needs a grown-up.",
     "subhead": "LumiKin rates {count} games on benefits, risks, and healthy play time, so you can tell which is which.",
     "searchPlaceholder": "Search a game your kid plays…",

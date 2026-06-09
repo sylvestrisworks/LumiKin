@@ -96,15 +96,6 @@ export default async function AccountPage() {
             </div>
             <div className="border-t border-rule/60 pt-3">
               <Link
-                href={`/${locale}/settings/epic`}
-                className="flex items-center justify-between text-sm text-ink/80 hover:text-accent transition-colors"
-              >
-                <span className="flex items-center gap-2"><Icon name="epicgames" size={16} aria-hidden="true" /> Epic Games</span>
-                <span className="text-muted text-xs">{t('manage')} →</span>
-              </Link>
-            </div>
-            <div className="border-t border-rule/60 pt-3">
-              <Link
                 href={`/${locale}/settings/gog`}
                 className="flex items-center justify-between text-sm text-ink/80 hover:text-accent transition-colors"
               >

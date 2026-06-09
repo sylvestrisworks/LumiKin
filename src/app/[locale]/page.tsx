@@ -10,8 +10,6 @@ import CoverStoryHero from './_components/CoverStoryHero'
 import TrackingRow from './_components/TrackingRow'
 import ReadingRoom from './_components/ReadingRoom'
 import TodaysReview from './_components/TodaysReview'
-import ByTheNumbers from './_components/ByTheNumbers'
-import ScoreDistribution from './_components/ScoreDistribution'
 import MethodologyEditorial from './_components/MethodologyEditorial'
 import BrowseByEditorial from './_components/BrowseByEditorial'
 
@@ -134,18 +132,8 @@ export default async function HomePage({ params, searchParams }: Props) {
       {/* ── Reading room (illustrated guides + blog essays) ──────────────────── */}
       <ReadingRoom locale={locale} />
 
-      {/* ── Today's review (editorial cover) ─────────────────────────────────── */}
+      {/* ── How a rating is built (worked example + anatomy of a LumiScore) ──── */}
       <TodaysReview locale={locale} />
-
-      {/* ── By the numbers (anatomy of a LumiScore — Pudding-style spread) ────── */}
-      <ByTheNumbers locale={locale} />
-
-      {/* ── Where games land (LumiScore distribution histogram) ──────────────── */}
-      <section className="bg-paper text-ink">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 py-16 md:py-20">
-          <ScoreDistribution locale={locale} />
-        </div>
-      </section>
 
       {/* ── Browse by (editorial directory) ──────────────────────────────────── */}
       <BrowseByEditorial locale={locale} />

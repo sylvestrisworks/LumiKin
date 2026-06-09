@@ -6,46 +6,67 @@ import {
   ScoreTable,
   type ScoreRow,
 } from '@/components/editorial'
+import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import { fetchFeatured, type FeaturedGameData } from '../_data/featured'
 
-function benefitRows(g: FeaturedGameData, labels: { cognitive: string; social: string; motor: string }): ScoreRow[] {
+// Benefit/risk rows carry an inline `note` — the one-line "what this measures"
+// gloss for each dimension group, pulled from the featuredMeter*Title keys.
+// This is the teaching cue that was missing: numbers with their meaning attached.
+function benefitRows(
+  g: FeaturedGameData,
+  labels: { cognitive: string; social: string; motor: string },
+  notes: { cognitive: string; social: string; motor: string },
+): ScoreRow[] {
   return [
-    { code: 'B1', label: labels.cognitive, value: g.cognitiveScore       ?? 0 },
-    { code: 'B2', label: labels.social,    value: g.socialEmotionalScore ?? 0 },
-    { code: 'B3', label: labels.motor,     value: g.motorScore           ?? 0 },
+    { code: 'B1', label: labels.cognitive, value: g.cognitiveScore       ?? 0, note: notes.cognitive },
+    { code: 'B2', label: labels.social,    value: g.socialEmotionalScore ?? 0, note: notes.social },
+    { code: 'B3', label: labels.motor,     value: g.motorScore           ?? 0, note: notes.motor },
   ]
 }
 
-function riskRows(g: FeaturedGameData, labels: { dopamine: string; monetization: string; social: string }): ScoreRow[] {
+function riskRows(
+  g: FeaturedGameData,
+  labels: { dopamine: string; monetization: string; social: string },
+  notes: { dopamine: string; monetization: string; social: string },
+): ScoreRow[] {
   return [
-    { code: 'R1', label: labels.dopamine,     value: g.dopamineRisk     ?? 0 },
-    { code: 'R2', label: labels.monetization, value: g.monetizationRisk ?? 0 },
-    { code: 'R3', label: labels.social,       value: g.socialRisk       ?? 0 },
+    { code: 'R1', label: labels.dopamine,     value: g.dopamineRisk     ?? 0, note: notes.dopamine },
+    { code: 'R2', label: labels.monetization, value: g.monetizationRisk ?? 0, note: notes.monetization },
+    { code: 'R3', label: labels.social,       value: g.socialRisk       ?? 0, note: notes.social },
   ]
 }
 
-// Lift the opening one-to-two sentences of the executive summary as a magazine
-// pull-quote — the cue that a human read the game and formed a judgment.
-function pullQuote(text: string | null, max = 200): string | null {
-  if (!text) return null
-  const trimmed = text.trim()
-  let cut = trimmed
-  let count = 0
-  for (let i = 0; i < trimmed.length; i++) {
-    if (trimmed[i] === '.' && trimmed[i + 1] === ' ') {
-      count++
-      if (count === 2 || i + 1 >= max) { cut = trimmed.slice(0, i + 1); break }
-    }
-  }
-  if (cut.length > max) cut = cut.slice(0, max - 1).trimEnd() + '…'
-  return cut
-}
+// "By the numbers" anatomy figures — the abstract primer, now folded in beside
+// the concrete scores so the scale and the example sit together. Values are
+// rubric constants (docs/RUBRIC.md): 60 sub-dimensions, two composites, the
+// 0–100 scale, the 15–120-minute session range.
+const ANATOMY: Array<{ value: string; labelKey: 'dimensionsLabel' | 'scoresLabel' | 'scaleLabel' | 'timeLabel' }> = [
+  { value: '60',     labelKey: 'dimensionsLabel' },
+  { value: '2',      labelKey: 'scoresLabel' },
+  { value: '0–100',  labelKey: 'scaleLabel' },
+  { value: '15–120', labelKey: 'timeLabel' },
+]
 
-function formatReviewDate(d: Date | null, locale: string): string | null {
-  if (!d) return null
-  return new Date(d)
-    .toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' })
-    .toUpperCase()
+// Small-caps eyebrow used to label each of the three acts of the walkthrough,
+// preceded by a serif step numeral in the margin.
+function ActLabel({ n, children }: { n: number; children: React.ReactNode }) {
+  return (
+    <div className="flex items-baseline gap-3 mb-5">
+      <span
+        className="font-serif text-2xl leading-none text-accent tabular-nums"
+        style={{ fontOpticalSizing: 'auto', fontWeight: 500 }}
+        aria-hidden
+      >
+        {n}
+      </span>
+      <span
+        className="text-kicker uppercase font-semibold text-muted"
+        style={{ fontVariantCaps: 'all-small-caps' }}
+      >
+        {children}
+      </span>
+    </div>
+  )
 }
 
 export default async function TodaysReview({ locale }: { locale: string }) {
@@ -57,40 +78,51 @@ export default async function TodaysReview({ locale }: { locale: string }) {
   if (!game) return null
 
   const tip = game.parentTipBenefits ?? game.parentTip
-  const quote = pullQuote(game.executiveSummary)
-  const reviewDate = formatReviewDate(game.reviewedAt, te('dateline.locale'))
+  const reasoning = game.timeRecommendationReasoning
 
   return (
     <section className="bg-paper text-ink">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-16 md:py-20">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-8 md:py-10">
         {/* Eyebrow — section header, small-caps, hairline-bounded above */}
-        <div className="border-t border-ink pt-4 mb-10">
+        <div className="border-t border-ink pt-4 mb-6">
           <p
             className="text-kicker uppercase font-semibold text-muted"
             style={{ fontVariantCaps: 'all-small-caps' }}
           >
-            {te('sections.todaysReview')}
+            {te('byTheNumbers.kicker')}
           </p>
         </div>
 
-        <Link
-          href={`/${locale}/game/${game.slug}`}
-          className="group block"
-          aria-label={`${te('sections.todaysReview')} — ${game.title}`}
+        {/* Headline + standfirst — frames the whole section as a teaching
+            walkthrough, not a featured game. */}
+        <h2
+          className="font-serif text-display-sm md:text-display tracking-tight leading-[1.05] mb-6 max-w-4xl"
+          style={{ fontOpticalSizing: 'auto' }}
         >
-          {/* Cover row: photo (md+ 7/12) + title block (md+ 5/12) */}
-          <div className="grid md:grid-cols-12 gap-8 md:gap-12 items-start">
-            <div className="md:col-span-7 relative">
+          {th('featuredEyebrow')}
+        </h2>
+        <p className="font-serif italic text-xl md:text-2xl text-muted leading-snug max-w-3xl mb-12">
+          {th('featuredIntro')}
+        </p>
+
+        {/* ── Act 1 · The game (the specimen) ──────────────────────────────── */}
+        <div className="border-t border-ink/30 pt-8">
+          <ActLabel n={1}>{th('featuredStep1')}</ActLabel>
+          <Link
+            href={`/${locale}/game/${game.slug}`}
+            className="group grid sm:grid-cols-12 gap-6 sm:gap-8 items-center"
+            aria-label={`${th('featuredStep1')} — ${game.title}`}
+          >
+            <div className="sm:col-span-4 md:col-span-3">
               <div className="aspect-[16/10] w-full bg-ink/10 overflow-hidden">
                 {game.backgroundImage ? (
                   <Image
                     src={game.backgroundImage}
-                    alt={`${game.title} — today's LumiKin review`}
-                    width={1200}
-                    height={750}
+                    alt={game.title}
+                    width={640}
+                    height={400}
                     className="w-full h-full object-cover"
                     style={{ filter: 'saturate(1.05) contrast(1.03)' }}
-                    priority
                   />
                 ) : (
                   <div
@@ -101,60 +133,32 @@ export default async function TodaysReview({ locale }: { locale: string }) {
                 )}
               </div>
             </div>
-
-            <div className="md:col-span-5 pt-1">
+            <div className="sm:col-span-8 md:col-span-9">
               {game.developer && (
                 <p
-                  className="text-kicker uppercase font-semibold text-accent mb-3"
+                  className="text-kicker uppercase font-semibold text-accent mb-2"
                   style={{ fontVariantCaps: 'all-small-caps' }}
                 >
-                  Review · {game.developer}
+                  {game.developer}
+                  {game.esrbRating && <span className="text-muted"> · {game.esrbRating}</span>}
                 </p>
               )}
-
-              <h2
-                className="font-serif text-display-sm tracking-tight leading-[1.02] mb-4 group-hover:text-accent transition-colors"
+              <h3
+                className="font-serif text-display-sm tracking-tight leading-[1.05] group-hover:text-accent transition-colors"
                 style={{ fontOpticalSizing: 'auto' }}
               >
                 {game.title}
-              </h2>
-
-              {/* Byline + dateline — the human cue that a person reviewed this,
-                  and when. Hairline rule separates them from the title block. */}
-              <div className="border-t border-ink/30 pt-3 mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <span className="font-sans italic text-sm text-muted">
-                  {te('meta.byline')}
-                </span>
-                {reviewDate && (
-                  <>
-                    <span className="text-muted/60" aria-hidden>·</span>
-                    <time
-                      className="text-kicker uppercase text-muted tabular-nums"
-                      style={{ fontVariantCaps: 'all-small-caps' }}
-                    >
-                      {reviewDate}
-                    </time>
-                  </>
-                )}
-              </div>
+              </h3>
             </div>
-          </div>
+          </Link>
+        </div>
 
-          {/* Pull-quote — the sharpest line of the verdict, set large. One of the
-              classic editorial cues that a human read and judged the thing. */}
-          {quote && (
-            <blockquote className="mt-10 md:mt-14 border-t border-ink pt-8 max-w-5xl">
-              <p
-                className="font-serif italic text-2xl md:text-4xl leading-[1.18] tracking-tight text-ink"
-                style={{ fontOpticalSizing: 'auto' }}
-              >
-                {quote}
-              </p>
-            </blockquote>
-          )}
+        {/* ── Act 2 · What we found (the teaching heart) ───────────────────── */}
+        <div className="border-t border-ink/30 pt-8 mt-12">
+          <ActLabel n={2}>{th('featuredStep2')}</ActLabel>
 
-          {/* Verdict strip — Growth · Risk · Daily limit */}
-          <div className="mt-12 md:mt-16 border-t-2 border-ink border-b border-b-ink py-6 md:py-8 grid grid-cols-3 gap-x-4 md:gap-x-8 items-end">
+          {/* Verdict strip — the two composites + the session length they imply. */}
+          <div className="border-t-2 border-ink border-b border-b-ink py-6 md:py-8 grid grid-cols-3 gap-x-4 md:gap-x-8 items-end">
             <BigScore label={te('verdict.growth')} value={game.bds ?? 0} tone="ivy" />
             <div className="border-l border-ink/30 pl-4 md:pl-8">
               <BigScore label={te('verdict.risk')} value={game.ris ?? 0} tone="accent" />
@@ -175,33 +179,87 @@ export default async function TodaysReview({ locale }: { locale: string }) {
             </div>
           </div>
 
-          {/* Score breakdown — benefits + risks, side-by-side. Cover excerpt of
-              the full per-dimension tables on the review page. */}
+          {/* Score breakdown — benefits + risks, each dimension annotated with
+              what it measures. The piece that was missing before. */}
           <div className="mt-12 grid md:grid-cols-2 gap-10 md:gap-16">
             <ScoreTable
               title={th('featuredBenefits')}
-              rows={benefitRows(game, {
-                cognitive: th('featuredMeterCognitive'),
-                social:    th('featuredMeterSocial'),
-                motor:     th('featuredMeterMotor'),
-              })}
+              rows={benefitRows(
+                game,
+                {
+                  cognitive: th('featuredMeterCognitive'),
+                  social:    th('featuredMeterSocial'),
+                  motor:     th('featuredMeterMotor'),
+                },
+                {
+                  cognitive: th('featuredMeterCognitiveTitle'),
+                  social:    th('featuredMeterSocialTitle'),
+                  motor:     th('featuredMeterMotorTitle'),
+                },
+              )}
               tone="ink"
             />
             <ScoreTable
               title={th('featuredRisks')}
-              rows={riskRows(game, {
-                dopamine:     th('featuredMeterDopamine'),
-                monetization: th('featuredMeterMonetization'),
-                social:       th('featuredMeterSocialRisk'),
-              })}
+              rows={riskRows(
+                game,
+                {
+                  dopamine:     th('featuredMeterDopamine'),
+                  monetization: th('featuredMeterMonetization'),
+                  social:       th('featuredMeterSocialRisk'),
+                },
+                {
+                  dopamine:     th('featuredMeterDopamineTitle'),
+                  monetization: th('featuredMeterMonetizationTitle'),
+                  social:       th('featuredMeterSocialRiskTitle'),
+                },
+              )}
               tone="accent"
             />
           </div>
 
-          {/* Parent tip — handwritten margin annotation, one of the three sanctioned
+          {/* Anatomy figures — the abstract scale, sitting beside the concrete
+              scores so the primer and the example are reunited. */}
+          <dl className="mt-12 grid grid-cols-2 md:grid-cols-4 border-t-2 border-b border-ink md:divide-x divide-ink/30">
+            {ANATOMY.map(({ value, labelKey }) => (
+              <div key={labelKey} className="py-6 md:px-6 md:first:pl-0 md:last:pr-0">
+                <dd
+                  className="font-serif tabular-nums leading-none tracking-tight text-ink mb-3"
+                  style={{ fontSize: '3.25rem', fontOpticalSizing: 'auto', fontWeight: 500 }}
+                >
+                  {value}
+                </dd>
+                <dt
+                  className="text-kicker uppercase text-muted"
+                  style={{ fontVariantCaps: 'all-small-caps' }}
+                >
+                  {te(`byTheNumbers.${labelKey}`)}
+                </dt>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        {/* ── Act 3 · What we suggest ──────────────────────────────────────── */}
+        <div className="border-t border-ink/30 pt-8 mt-12">
+          <ActLabel n={3}>{th('featuredStep3')}</ActLabel>
+
+          {reasoning && (
+            <p className="font-serif text-lg md:text-xl leading-relaxed text-ink/90 max-w-3xl">
+              <span
+                className="text-kicker uppercase font-semibold text-ink mr-2"
+                style={{ fontVariantCaps: 'all-small-caps' }}
+              >
+                {th('featuredWhy')}
+              </span>
+              {reasoning}
+            </p>
+          )}
+
+          {/* Parent tip — how to act on the score. One of the three sanctioned
               personality moments per docs/redesign/EDITORIAL_PLAN.md. */}
           {tip && (
-            <aside className="mt-12 border-l-2 border-accent pl-6 max-w-3xl">
+            <aside className="mt-10 border-l-2 border-accent pl-6 max-w-3xl">
               <p
                 className="text-kicker uppercase font-semibold text-ink mb-3"
                 style={{ fontVariantCaps: 'all-small-caps' }}
@@ -213,17 +271,37 @@ export default async function TodaysReview({ locale }: { locale: string }) {
               </p>
             </aside>
           )}
+        </div>
 
-          {/* Read-the-review CTA — small-caps, hairline above, underlines on hover */}
-          <div className="mt-12 border-t border-ink pt-4 flex items-baseline justify-end">
-            <span
-              className="text-kicker uppercase font-semibold text-ink group-hover:text-accent transition-colors"
-              style={{ fontVariantCaps: 'all-small-caps' }}
-            >
-              {te('sections.readReview')}
-            </span>
-          </div>
-        </Link>
+        {/* Closer — sourcing line + methodology routes. The score isn't a black
+            box; it traces to a public, version-controlled rubric. */}
+        <div className="mt-12 border-t border-ink pt-4 flex flex-wrap items-baseline gap-x-8 gap-y-2">
+          <p className="font-serif italic text-lg text-muted mr-auto">
+            {te('byTheNumbers.source')}
+          </p>
+          <Link
+            href={`/${locale}/game/${game.slug}`}
+            className="text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
+            {th('featuredCta')}
+          </Link>
+          <Link
+            href={`/${locale}/methodology`}
+            className="text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
+            {th('methodologyReadFull')}
+          </Link>
+          <a
+            href={`/lumikin-methodology-v${CURRENT_METHODOLOGY_VERSION}.pdf`}
+            download
+            className="text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors"
+            style={{ fontVariantCaps: 'all-small-caps' }}
+          >
+            {th('methodologyDownloadPdf')}
+          </a>
+        </div>
       </div>
     </section>
   )

@@ -9,30 +9,31 @@ import {
 import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import { fetchFeatured, type FeaturedGameData } from '../_data/featured'
 
-// Benefit/risk rows carry an inline `note` — the one-line "what this measures"
-// gloss for each dimension group, pulled from the featuredMeter*Title keys.
-// This is the teaching cue that was missing: numbers with their meaning attached.
+// Per-dimension copy bundle: `label` is the row name, `note` the always-visible
+// one-line gloss (featuredMeter*Title), `def` the fuller explanation shown on
+// hover/focus (glossary). Numbers always carry their meaning, with depth a
+// cursor away.
+type DimCopy = { label: string; note: string; def: string }
+
 function benefitRows(
   g: FeaturedGameData,
-  labels: { cognitive: string; social: string; motor: string },
-  notes: { cognitive: string; social: string; motor: string },
+  c: { cognitive: DimCopy; social: DimCopy; motor: DimCopy },
 ): ScoreRow[] {
   return [
-    { code: 'B1', label: labels.cognitive, value: g.cognitiveScore       ?? 0, note: notes.cognitive },
-    { code: 'B2', label: labels.social,    value: g.socialEmotionalScore ?? 0, note: notes.social },
-    { code: 'B3', label: labels.motor,     value: g.motorScore           ?? 0, note: notes.motor },
+    { code: 'B1', label: c.cognitive.label, value: g.cognitiveScore       ?? 0, note: c.cognitive.note, def: c.cognitive.def },
+    { code: 'B2', label: c.social.label,    value: g.socialEmotionalScore ?? 0, note: c.social.note,    def: c.social.def },
+    { code: 'B3', label: c.motor.label,     value: g.motorScore           ?? 0, note: c.motor.note,     def: c.motor.def },
   ]
 }
 
 function riskRows(
   g: FeaturedGameData,
-  labels: { dopamine: string; monetization: string; social: string },
-  notes: { dopamine: string; monetization: string; social: string },
+  c: { dopamine: DimCopy; monetization: DimCopy; social: DimCopy },
 ): ScoreRow[] {
   return [
-    { code: 'R1', label: labels.dopamine,     value: g.dopamineRisk     ?? 0, note: notes.dopamine },
-    { code: 'R2', label: labels.monetization, value: g.monetizationRisk ?? 0, note: notes.monetization },
-    { code: 'R3', label: labels.social,       value: g.socialRisk       ?? 0, note: notes.social },
+    { code: 'R1', label: c.dopamine.label,     value: g.dopamineRisk     ?? 0, note: c.dopamine.note,     def: c.dopamine.def },
+    { code: 'R2', label: c.monetization.label, value: g.monetizationRisk ?? 0, note: c.monetization.note, def: c.monetization.def },
+    { code: 'R3', label: c.social.label,       value: g.socialRisk       ?? 0, note: c.social.note,       def: c.social.def },
   ]
 }
 
@@ -70,15 +71,17 @@ function ActLabel({ n, children }: { n: number; children: React.ReactNode }) {
 }
 
 export default async function TodaysReview({ locale }: { locale: string }) {
-  const [game, te, th] = await Promise.all([
+  const [game, te, th, tg] = await Promise.all([
     fetchFeatured(locale),
     getTranslations('editorial'),
     getTranslations('home'),
+    getTranslations('glossary'),
   ])
   if (!game) return null
 
   const tip = game.parentTipBenefits ?? game.parentTip
   const reasoning = game.timeRecommendationReasoning
+  const minutes = game.timeRecommendationMinutes
 
   return (
     <section className="bg-paper text-ink">
@@ -184,36 +187,20 @@ export default async function TodaysReview({ locale }: { locale: string }) {
           <div className="mt-12 grid md:grid-cols-2 gap-10 md:gap-16">
             <ScoreTable
               title={th('featuredBenefits')}
-              rows={benefitRows(
-                game,
-                {
-                  cognitive: th('featuredMeterCognitive'),
-                  social:    th('featuredMeterSocial'),
-                  motor:     th('featuredMeterMotor'),
-                },
-                {
-                  cognitive: th('featuredMeterCognitiveTitle'),
-                  social:    th('featuredMeterSocialTitle'),
-                  motor:     th('featuredMeterMotorTitle'),
-                },
-              )}
+              rows={benefitRows(game, {
+                cognitive: { label: th('featuredMeterCognitive'), note: th('featuredMeterCognitiveTitle'), def: tg('dimCognitive') },
+                social:    { label: th('featuredMeterSocial'),    note: th('featuredMeterSocialTitle'),    def: tg('dimSocial') },
+                motor:     { label: th('featuredMeterMotor'),     note: th('featuredMeterMotorTitle'),     def: tg('dimMotor') },
+              })}
               tone="ink"
             />
             <ScoreTable
               title={th('featuredRisks')}
-              rows={riskRows(
-                game,
-                {
-                  dopamine:     th('featuredMeterDopamine'),
-                  monetization: th('featuredMeterMonetization'),
-                  social:       th('featuredMeterSocialRisk'),
-                },
-                {
-                  dopamine:     th('featuredMeterDopamineTitle'),
-                  monetization: th('featuredMeterMonetizationTitle'),
-                  social:       th('featuredMeterSocialRiskTitle'),
-                },
-              )}
+              rows={riskRows(game, {
+                dopamine:     { label: th('featuredMeterDopamine'),     note: th('featuredMeterDopamineTitle'),     def: tg('dimDopamine') },
+                monetization: { label: th('featuredMeterMonetization'), note: th('featuredMeterMonetizationTitle'), def: tg('dimMonetization') },
+                social:       { label: th('featuredMeterSocialRisk'),   note: th('featuredMeterSocialRiskTitle'),   def: tg('dimSocialRisk') },
+              })}
               tone="accent"
             />
           </div>
@@ -244,8 +231,34 @@ export default async function TodaysReview({ locale }: { locale: string }) {
         <div className="border-t border-ink/30 pt-8 mt-12">
           <ActLabel n={3}>{th('featuredStep3')}</ActLabel>
 
+          {/* Suggestion lead — restates the recommendation as plain advice, so
+              Act 3 lands a takeaway rather than just footnoting Act 2's number. */}
+          {minutes != null && (
+            <p className="font-serif text-2xl md:text-4xl leading-[1.15] tracking-tight text-ink max-w-3xl">
+              {th.rich('suggestLead', {
+                minutes,
+                b: (c) => <span className="text-accent">{c}</span>,
+              })}
+            </p>
+          )}
+
+          {/* Age guidance — the content-rating cue, kept separate from the
+              developmental time recommendation (per RUBRIC: R4 ≠ time tier). */}
+          {game.esrbRating && (
+            <p className="mt-5 flex items-baseline gap-2 flex-wrap">
+              <span
+                className="text-kicker uppercase text-muted"
+                style={{ fontVariantCaps: 'all-small-caps' }}
+              >
+                {te('verdict.ageGuidance')}
+              </span>
+              <span className="text-muted/60" aria-hidden>·</span>
+              <span className="font-serif text-xl text-ink">{game.esrbRating}</span>
+            </p>
+          )}
+
           {reasoning && (
-            <p className="font-serif text-lg md:text-xl leading-relaxed text-ink/90 max-w-3xl">
+            <p className="mt-8 font-serif text-lg md:text-xl leading-relaxed text-ink/90 max-w-3xl">
               <span
                 className="text-kicker uppercase font-semibold text-ink mr-2"
                 style={{ fontVariantCaps: 'all-small-caps' }}

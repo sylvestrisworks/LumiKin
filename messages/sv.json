@@ -36,11 +36,9 @@
     "checkAGame": "Kolla ett spel",
     "readingRoomKicker": "Läsrummet",
     "readingRoomIntro": "Praktiska guider för föräldrar som spelar med.",
-
+    "suggestLead": "För det här spelet föreslår vi ungefär <b>{minutes} minuter</b> spel om dagen.",
     "blogKicker": "Från bloggen",
-
     "blogIntro": "Essäer om hur spel byggs – och vad det betyder för barnen som spelar dem.",
-
     "allEssays": "Alla essäer →",
     "badge": "Förankrat i barns utveckling",
     "hero": "Se precis hur ett spel påverkar ditt barns <yellow>utvecklande sinne</yellow> – innan de trycker på 'spela'.",
@@ -799,7 +797,12 @@
     "legal": "Juridik",
     "privacyPolicy": "Integritetspolicy",
     "termsOfService": "Användarvillkor",
-    "metaTitle": "Kontoinställningar — LumiKin"
+    "metaTitle": "Kontoinställningar — LumiKin",
+    "appearance": "Utseende",
+    "appearanceHint": "Följer din enhets inställning som standard. Välj Ljust eller Mörkt för att åsidosätta.",
+    "themeSystem": "System",
+    "themeLight": "Ljust",
+    "themeDark": "Mörkt"
   },
   "notifications": {
     "title": "Aviseringar",
@@ -1219,6 +1222,12 @@
     "backToAges": "All ages"
   },
   "glossary": {
+    "dimCognitive": "Hur mycket spelet tränar problemlösning, planering, rumslig förmåga, kreativitet och minne. Högre poäng betyder mer mental träning.",
+    "dimSocial": "Om spelandet bygger samarbete, kommunikation, empati och etiskt tänkande – ofta genom co-op eller communityfunktioner.",
+    "dimMotor": "Öga-hand-koordination, finmotorik och reaktionstid – och i aktiva spel verklig fysisk rörelse.",
+    "dimDopamine": "Mekanik som kan tippa över i tvång: slumpmässiga belöningar, dagliga streaks, FOMO-event och nära-på-vinster. Högre poäng betyder starkare sug att fortsätta spela.",
+    "dimMonetization": "Kommersiellt tryck på spelaren – pay-to-win-fördelar, dolda spelvalutor och design som riktar sig mot barns köp.",
+    "dimSocialRisk": "Exponering för främlingar, giftig konkurrens och identitets- eller statuspress i spelets sociala miljöer.",
     "variableRewards": "Belöningar som ges enligt ett oförutsägbart schema — ibland får du en bra drop, ibland ingenting. Samma mekanik som driver enarmade banditer; håller spelaren engagerad längre än fasta belöningar.",
     "streaks": "Mekanik som räknar sammanhängande speldagar i rad. Att hoppa över en dag bryter streaken och förlorar progression, vilket pressar barn att logga in även när de inte vill.",
     "fomo": "Fear of Missing Out (rädsla att missa något). Tidsbegränsade event, säsongsbundna föremål eller engångsbelöningar som straffar spelaren för att inte spela just nu.",

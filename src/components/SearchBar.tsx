@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { useRouter } from '@/navigation'
-import { useTranslations, useLocale } from 'next-intl'
+import { useState, useEffect, useRef, useCallback, useId } from 'react'
+import Image from 'next/image'
+import { Link, useRouter } from '@/navigation'
+import { useTranslations } from 'next-intl'
 import type { GameSummary } from '@/types/game'
 
 type SearchResult = GameSummary & { resultType?: 'game' | 'experience' }
@@ -34,13 +35,10 @@ function splitTitle(title: string): [string, string | null] {
   return [title, null]
 }
 
-type SearchBarVariant = 'default' | 'editorial'
-
-export default function SearchBar({ placeholder, variant = 'default' }: { placeholder?: string; variant?: SearchBarVariant }) {
-  const editorial = variant === 'editorial'
+export default function SearchBar({ placeholder }: { placeholder?: string }) {
   const t       = useTranslations('search')
   const tGenres = useTranslations('genres')
-  const locale = useLocale()
+  const listboxId = useId()
   const defaultPlaceholder = placeholder ?? t('placeholder')
   const [query, setQuery]         = useState('')
   const [results, setResults]     = useState<SearchResult[]>([])
@@ -113,6 +111,17 @@ export default function SearchBar({ placeholder, variant = 'default' }: { placeh
     }
   }, [router])
 
+  // A miss is never a dead end — fall through to the browse catalogue,
+  // which supports full-text filtering via ?q=.
+  const browseFallback = useCallback(() => {
+    const q = query.trim()
+    if (!q) return
+    setOpen(false)
+    setQuery('')
+    setSearched(false)
+    router.push(`/browse?q=${encodeURIComponent(q)}`)
+  }, [query, router])
+
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (!open) return
     const count = results.length
@@ -132,6 +141,8 @@ export default function SearchBar({ placeholder, variant = 'default' }: { placeh
         navigate(results[focusedIdx])
       } else if (results.length > 0) {
         navigate(results[0])
+      } else {
+        browseFallback()
       }
     } else if (e.key === 'Escape') {
       setOpen(false)
@@ -145,6 +156,8 @@ export default function SearchBar({ placeholder, variant = 'default' }: { placeh
       navigate(results[focusedIdx])
     } else if (results.length > 0) {
       navigate(results[0])
+    } else {
+      browseFallback()
     }
   }
 
@@ -171,16 +184,17 @@ export default function SearchBar({ placeholder, variant = 'default' }: { placeh
             onKeyDown={handleKeyDown}
             placeholder={defaultPlaceholder}
             autoComplete="off"
+            role="combobox"
             aria-autocomplete="list"
             aria-expanded={showDropdown}
-            className={editorial
-              ? 'w-full pl-12 pr-4 py-3.5 text-base border border-ink/60 bg-paper text-ink font-serif transition-colors focus:outline-none focus:border-accent placeholder:italic placeholder:text-muted'
-              : 'w-full pl-12 pr-4 py-3.5 text-base rounded-xl border border-rule bg-paper text-ink shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-muted'
-            }
+            aria-controls={listboxId}
+            aria-activedescendant={focusedIdx >= 0 ? `${listboxId}-opt-${focusedIdx}` : undefined}
+            aria-label={defaultPlaceholder}
+            className="w-full pl-12 pr-4 py-3.5 text-base border border-ink/60 bg-paper text-ink font-serif transition-colors focus:outline-none focus:border-accent placeholder:italic placeholder:text-muted"
           />
           {loading && (
             <div className="absolute right-4 top-1/2 -translate-y-1/2" aria-label={t('loading')} role="status">
-              <div className={`w-4 h-4 border-2 ${editorial ? 'border-accent' : 'border-indigo-500'} border-t-transparent rounded-full animate-spin`} />
+              <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin" />
             </div>
           )}
         </div>
@@ -190,48 +204,37 @@ export default function SearchBar({ placeholder, variant = 'default' }: { placeh
       {showDropdown && (
         <div
           role="listbox"
-          className={editorial
-            ? 'absolute top-full -mt-px left-0 right-0 bg-paper border border-ink/60 z-[200] overflow-hidden max-h-[70vh] overflow-y-auto'
-            : 'absolute top-full mt-1.5 left-0 right-0 bg-paper border border-rule rounded-xl shadow-lg z-[200] overflow-hidden max-h-[70vh] overflow-y-auto'
-          }
+          id={listboxId}
+          className="absolute top-full -mt-px left-0 right-0 bg-paper border border-ink/60 z-[200] overflow-hidden max-h-[70vh] overflow-y-auto"
         >
           {results.length > 0 ? (
             results.map((game, idx) => {
               const [mainTitle, subtitle] = splitTitle(game.title)
               const isFocused = idx === focusedIdx
-              const rowCls = editorial
-                ? `w-full flex items-center gap-3 px-4 py-3 text-left border-b border-ink/20 last:border-0 transition-colors ${isFocused ? 'bg-ink/[0.06]' : 'hover:bg-ink/[0.03]'}`
-                : `w-full flex items-center gap-3 px-4 py-3 text-left border-b border-rule last:border-0 transition-colors ${isFocused ? 'bg-indigo-50 dark:bg-indigo-900/30' : 'hover:bg-ink/[0.03]'}`
               return (
                 <button
                   key={game.slug}
                   ref={el => { itemRefs.current[idx] = el }}
                   role="option"
+                  id={`${listboxId}-opt-${idx}`}
                   aria-selected={isFocused}
-                  className={rowCls}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-left border-b border-ink/20 last:border-0 transition-colors ${isFocused ? 'bg-ink/[0.06]' : 'hover:bg-ink/[0.03]'}`}
                   onClick={() => navigate(game)}
                   onMouseEnter={() => setFocusedIdx(idx)}
                 >
                   {/* Thumbnail */}
-                  <div className={editorial
-                    ? 'w-10 h-10 overflow-hidden bg-ink/10 shrink-0 flex items-center justify-center'
-                    : 'w-10 h-10 rounded-lg overflow-hidden bg-indigo-100 shrink-0 flex items-center justify-center'
-                  }>
+                  <div className="w-10 h-10 overflow-hidden bg-ink/10 shrink-0 flex items-center justify-center">
                     {game.backgroundImage ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={game.backgroundImage} alt="" className="w-full h-full object-cover" />
+                      <Image src={game.backgroundImage} alt="" width={40} height={40} className="w-full h-full object-cover" />
                     ) : (
-                      <span className={editorial ? 'text-xs font-bold text-ink/50 font-serif' : 'text-xs font-bold text-indigo-600'}>
+                      <span className="text-xs font-bold text-ink/50 font-serif">
                         {mainTitle.slice(0, 2).toUpperCase()}
                       </span>
                     )}
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <p className={editorial
-                      ? 'text-base font-serif font-medium text-ink truncate'
-                      : 'text-sm font-semibold text-ink truncate'
-                    }>
+                    <p className="text-base font-serif font-medium text-ink truncate">
                       {mainTitle}
                       {subtitle && (
                         <span className="font-normal text-muted"> · {subtitle}</span>
@@ -257,19 +260,17 @@ export default function SearchBar({ placeholder, variant = 'default' }: { placeh
             })
           ) : showNoResults ? (
             <div className="px-5 py-4 text-center">
-              <p className={editorial ? 'text-sm font-serif italic text-muted' : 'text-sm text-muted'}>
+              <p className="text-sm font-serif italic text-muted">
                 {t('noResults', { query })}
               </p>
-              <a
-                href={`/${locale}/browse`}
-                className={editorial
-                  ? 'mt-2 inline-block text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors'
-                  : 'mt-2 inline-block text-xs text-indigo-600 hover:underline font-medium'
-                }
-                style={editorial ? { fontVariantCaps: 'all-small-caps' } : undefined}
+              <Link
+                href={`/browse?q=${encodeURIComponent(query.trim())}`}
+                onClick={() => { setOpen(false); setQuery(''); setSearched(false) }}
+                className="mt-2 inline-block text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors"
+                style={{ fontVariantCaps: 'all-small-caps' }}
               >
                 {t('browseAll')}
-              </a>
+              </Link>
             </div>
           ) : null}
         </div>

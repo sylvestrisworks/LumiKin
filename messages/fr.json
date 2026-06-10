@@ -27,7 +27,10 @@
     "navBrowse": "Explorer",
     "navCompare": "Comparer",
     "navPrivacy": "Confidentialité",
-    "navTerms": "Conditions"
+    "navTerms": "Conditions",
+    "navMethodology": "Méthodologie",
+    "navFaq": "FAQ",
+    "navPress": "Presse"
   },
   "home": {
     "essayLabel": "Essai",

@@ -27,7 +27,10 @@
     "navBrowse": "Stöbern",
     "navCompare": "Vergleichen",
     "navPrivacy": "Datenschutz",
-    "navTerms": "Nutzungsbedingungen"
+    "navTerms": "Nutzungsbedingungen",
+    "navMethodology": "Methodik",
+    "navFaq": "FAQ",
+    "navPress": "Presse"
   },
   "home": {
     "essayLabel": "Essay",

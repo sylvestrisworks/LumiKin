@@ -14,6 +14,7 @@ import {
 } from '@/components/editorial'
 import type { ComplianceBadge, DarkPattern, GameCardProps, SerializedScores } from '@/types/game'
 import { calcAge } from '@/lib/age'
+import { esrbToAge } from '@/lib/ui'
 import { localizeGenre } from '@/lib/i18n/genres'
 
 type UserProfile = {
@@ -121,7 +122,12 @@ export default function GameCardEditorial({
   const ris = scores?.ris ?? null
   const dailyLimit = scores?.timeRecommendationMinutes ?? null
   const recommendedAge = scores?.recommendedMinAge ?? null
-  const ageGuidanceLabel = recommendedAge != null ? `${recommendedAge}+` : (game.esrbRating ?? '—')
+  // Always speak one vocabulary in the verdict strip: "N+". Fall back from our
+  // own recommendation to the ESRB tier converted to a minimum age.
+  const ageGuidanceLabel =
+    recommendedAge != null ? `${recommendedAge}+`
+    : game.esrbRating      ? esrbToAge(game.esrbRating)
+    : '—'
 
   return (
     <article className="bg-paper text-ink">

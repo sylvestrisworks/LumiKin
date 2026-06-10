@@ -1,6 +1,7 @@
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
+import { Link } from '@/navigation'
 import { routing } from '@/i18n/routing'
 import SiteNav from '@/components/SiteNav'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
@@ -48,12 +49,14 @@ export default async function LocaleLayout({
                   className="flex flex-wrap gap-x-6 gap-y-2 text-kicker uppercase font-semibold"
                   style={{ fontVariantCaps: 'all-small-caps' }}
                 >
-                  <a href={`/${locale}/browse`}   className="text-ink hover:text-accent transition-colors">{t('navBrowse')}</a>
-                  <a href={`/${locale}/compare`}  className="text-ink hover:text-accent transition-colors">{t('navCompare')}</a>
-                  <a href={`/${locale}/privacy`}  className="text-ink hover:text-accent transition-colors">{t('navPrivacy')}</a>
-                  <a href={`/${locale}/terms`}    className="text-ink hover:text-accent transition-colors">{t('navTerms')}</a>
-                  <a href="/feed.xml"             className="text-ink hover:text-accent transition-colors">RSS</a>
-                  <a href="/feed.json"            className="text-ink hover:text-accent transition-colors">JSON Feed</a>
+                  <Link href="/browse"      className="text-ink hover:text-accent transition-colors">{t('navBrowse')}</Link>
+                  <Link href="/compare"     className="text-ink hover:text-accent transition-colors">{t('navCompare')}</Link>
+                  <Link href="/methodology" className="text-ink hover:text-accent transition-colors">{t('navMethodology')}</Link>
+                  <Link href="/faq"         className="text-ink hover:text-accent transition-colors">{t('navFaq')}</Link>
+                  <Link href="/press"       className="text-ink hover:text-accent transition-colors">{t('navPress')}</Link>
+                  <Link href="/privacy"     className="text-ink hover:text-accent transition-colors">{t('navPrivacy')}</Link>
+                  <Link href="/terms"       className="text-ink hover:text-accent transition-colors">{t('navTerms')}</Link>
+                  <a href="/feed.xml"       className="text-ink hover:text-accent transition-colors">RSS</a>
                 </nav>
                 <LanguageSwitcher />
               </div>

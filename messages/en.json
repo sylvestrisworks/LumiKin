@@ -27,7 +27,10 @@
     "navBrowse": "Browse",
     "navCompare": "Compare",
     "navPrivacy": "Privacy",
-    "navTerms": "Terms"
+    "navTerms": "Terms",
+    "navMethodology": "Methodology",
+    "navFaq": "FAQ",
+    "navPress": "Press"
   },
   "home": {
     "essayLabel": "Essay",

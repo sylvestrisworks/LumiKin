@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { Link } from '@/navigation'
 import { useTranslations } from 'next-intl'
 import { curascoreTextEditorial, esrbToAge } from '@/lib/ui'
@@ -21,11 +22,12 @@ export default function GameCompactCard({ game }: Props) {
       {/* Thumbnail */}
       <div className="relative h-28 bg-rule/30 overflow-hidden shrink-0">
         {game.backgroundImage ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={game.backgroundImage}
             alt=""
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 280px"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-rule/40">
@@ -69,16 +71,16 @@ export default function GameCompactCard({ game }: Props) {
           </span>
         )}
 
-        {/* Time recommendation */}
-        {game.timeRecommendationMinutes != null && (
-          <div className="mt-auto pt-1">
-            <span className="text-xs text-muted">{game.timeRecommendationMinutes} {t('minDay')}</span>
+        {/* Footer row — time recommendation + monetization flag share one line */}
+        {(game.timeRecommendationMinutes != null || game.hasLootBoxes || game.hasMicrotransactions) && (
+          <div className="mt-auto pt-1 flex items-center justify-between gap-2">
+            {game.timeRecommendationMinutes != null ? (
+              <span className="text-xs text-muted">{game.timeRecommendationMinutes} {t('minDay')}</span>
+            ) : <span />}
+            {(game.hasLootBoxes || game.hasMicrotransactions) && (
+              <span className="text-xs text-warm" title={t('hasMonetization')}>💰 {t('monetization')}</span>
+            )}
           </div>
-        )}
-
-        {/* Monetization flag */}
-        {(game.hasLootBoxes || game.hasMicrotransactions) && (
-          <span className="text-xs text-warm mt-auto" title={t('hasMonetization')}>💰 {t('monetization')}</span>
         )}
       </div>
     </Link>

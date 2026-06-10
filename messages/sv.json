@@ -27,7 +27,10 @@
     "navBrowse": "Utforska",
     "navCompare": "Jämför",
     "navPrivacy": "Integritet",
-    "navTerms": "Villkor"
+    "navTerms": "Villkor",
+    "navMethodology": "Metodik",
+    "navFaq": "Vanliga frågor",
+    "navPress": "Press"
   },
   "home": {
     "essayLabel": "Essä",

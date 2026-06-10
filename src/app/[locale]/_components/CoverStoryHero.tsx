@@ -22,7 +22,7 @@ function SearchPanel({
       >
         {kicker}
       </p>
-      <SearchBar placeholder={placeholder} variant="editorial" />
+      <SearchBar placeholder={placeholder} />
       <div className="mt-4">
         <Link
           href={browseHref}
@@ -51,7 +51,7 @@ export default async function CoverStoryHero({ locale }: { locale: string }) {
 
   return (
     <section className="bg-paper text-ink">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 pt-10 pb-16 md:pt-12 md:pb-20">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 pt-10 pb-8 md:pt-12 md:pb-10">
 
         {/* Site promise — the page h1, kept modest so the cover carries the weight */}
         <h1
@@ -60,6 +60,19 @@ export default async function CoverStoryHero({ locale }: { locale: string }) {
         >
           {t('coverPromise')}
         </h1>
+
+        {/* Mobile: the core action lands right under the promise, before the
+            magazine layer. Desktop keeps it in the right rail below the essay. */}
+        {coverUrl && postHref && (
+          <div className="md:hidden mb-10 border-b border-ink pb-8">
+            <SearchPanel
+              kicker={t('checkAGame')}
+              placeholder={t('searchPlaceholder')}
+              browseHref={`/${locale}/browse`}
+              browseLabel={t('browseAll')}
+            />
+          </div>
+        )}
 
         {coverUrl && postHref ? (
           <div className="grid md:grid-cols-12 gap-10 md:gap-12 lg:gap-16 items-start">
@@ -110,8 +123,8 @@ export default async function CoverStoryHero({ locale }: { locale: string }) {
                 {t('readEssay')}
               </Link>
 
-              {/* Hairline, then the core action */}
-              <div className="border-t border-ink mt-8 pt-8">
+              {/* Hairline, then the core action (desktop — mobile gets it above the cover) */}
+              <div className="hidden md:block border-t border-ink mt-8 pt-8">
                 <SearchPanel
                   kicker={t('checkAGame')}
                   placeholder={t('searchPlaceholder')}

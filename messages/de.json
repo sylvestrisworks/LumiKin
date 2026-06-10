@@ -36,11 +36,9 @@
     "checkAGame": "Spiel prüfen",
     "readingRoomKicker": "Leseraum",
     "readingRoomIntro": "Praktische Ratgeber für Eltern, die mitspielen.",
-
+    "suggestLead": "Für dieses Spiel empfehlen wir etwa <b>{minutes} Minuten</b> Spielzeit pro Tag.",
     "blogKicker": "Aus dem Blog",
-
     "blogIntro": "Essays darüber, wie Spiele gemacht werden – und was das für die Kinder bedeutet, die sie spielen.",
-
     "allEssays": "Alle Essays →",
     "badge": "Basierend auf der Kindesentwicklung",
     "hero": "Erfahre genau, wie ein Spiel die <yellow>Entwicklung</yellow> deines Kindes beeinflusst – noch bevor es auf 'Play' drückt.",
@@ -797,7 +795,12 @@
     "legal": "Rechtliches",
     "privacyPolicy": "Datenschutz",
     "termsOfService": "Nutzungsbedingungen",
-    "metaTitle": "Kontoeinstellungen — LumiKin"
+    "metaTitle": "Kontoeinstellungen — LumiKin",
+    "appearance": "Darstellung",
+    "appearanceHint": "Folgt standardmäßig deiner Geräteeinstellung. Wähle Hell oder Dunkel, um sie zu überschreiben.",
+    "themeSystem": "System",
+    "themeLight": "Hell",
+    "themeDark": "Dunkel"
   },
   "notifications": {
     "title": "Benachrichtigungen",
@@ -1207,6 +1210,12 @@
     "backToAges": "All ages"
   },
   "glossary": {
+    "dimCognitive": "Wie stark das Spiel Problemlösung, Planung, räumliches Denken, Kreativität und Gedächtnis fordert. Ein höherer Wert bedeutet mehr geistiges Training.",
+    "dimSocial": "Ob das Spielen Teamwork, Kommunikation, Empathie und ethisches Denken fördert – meist über Koop- oder Community-Funktionen.",
+    "dimMotor": "Hand-Augen-Koordination, Feinmotorik und Reaktionszeit – und bei aktiven Spielen echte körperliche Bewegung.",
+    "dimDopamine": "Mechaniken, die in Zwang umschlagen können: variable Belohnungen, tägliche Streaks, FOMO-Events und Near-Miss-Design. Ein höherer Wert bedeutet mehr Sog, weiterzuspielen.",
+    "dimMonetization": "Kommerzieller Druck auf die Spieler – Pay-to-win-Vorteile, verschleierte Spielwährungen und Designs, die auf die Ausgaben von Kindern abzielen.",
+    "dimSocialRisk": "Kontakt mit Fremden, toxischer Wettbewerb und Identitäts- oder Statusdruck in den sozialen Räumen des Spiels.",
     "variableRewards": "Belohnungen mit einem unvorhersehbaren Zeitplan — mal gibt es einen großen Drop, mal nichts. Dieselbe Mechanik wie bei Spielautomaten; sie hält Spieler länger eingebunden als feste Belohnungen.",
     "streaks": "Mechaniken, die aufeinanderfolgende Spieltage zählen. Ein Tag Pause beendet die Streak und vernichtet den Fortschritt — das setzt Kinder unter Druck einzuloggen, selbst wenn sie keine Lust haben.",
     "fomo": "Fear of Missing Out (Angst, etwas zu verpassen). Zeitlich begrenzte Events, saisonale Items oder einmalige Belohnungen, die Spieler dafür bestrafen, gerade nicht zu spielen.",

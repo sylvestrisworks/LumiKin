@@ -36,11 +36,9 @@
     "checkAGame": "Vérifier un jeu",
     "readingRoomKicker": "Salle de lecture",
     "readingRoomIntro": "Des guides pratiques pour les parents qui jouent aussi.",
-
+    "suggestLead": "Pour ce jeu, nous suggérons environ <b>{minutes} minutes</b> de jeu par jour.",
     "blogKicker": "Du blog",
-
     "blogIntro": "Des essais sur la conception des jeux – et ce que cela signifie pour les enfants qui y jouent.",
-
     "allEssays": "Tous les essais →",
     "badge": "Basé sur le développement de l'enfant",
     "hero": "Découvrez précisément comment un jeu impacte l'esprit <yellow>en développement</yellow> de votre enfant — avant qu'il n'appuie sur « jouer ».",
@@ -797,7 +795,12 @@
     "legal": "Mentions légales",
     "privacyPolicy": "Politique de confidentialité",
     "termsOfService": "Conditions d'utilisation",
-    "metaTitle": "Paramètres du compte — LumiKin"
+    "metaTitle": "Paramètres du compte — LumiKin",
+    "appearance": "Apparence",
+    "appearanceHint": "Suit le réglage de votre appareil par défaut. Choisissez Clair ou Sombre pour le remplacer.",
+    "themeSystem": "Système",
+    "themeLight": "Clair",
+    "themeDark": "Sombre"
   },
   "notifications": {
     "title": "Notifications",
@@ -1207,6 +1210,12 @@
     "backToAges": "All ages"
   },
   "glossary": {
+    "dimCognitive": "À quel point le jeu sollicite la résolution de problèmes, la planification, le raisonnement spatial, la créativité et la mémoire. Un score plus élevé signifie plus d'exercice mental.",
+    "dimSocial": "Si le jeu développe le travail d’équipe, la communication, l’empathie et le raisonnement éthique – souvent via le coopératif ou les fonctions communautaires.",
+    "dimMotor": "Coordination œil-main, motricité fine et temps de réaction – et, dans les jeux actifs, un vrai mouvement physique.",
+    "dimDopamine": "Des mécaniques qui peuvent basculer dans la compulsion : récompenses aléatoires, séries quotidiennes, événements FOMO et quasi-gains. Un score plus élevé signifie une plus forte incitation à continuer.",
+    "dimMonetization": "La pression commerciale sur le joueur – avantages pay-to-win, monnaies virtuelles opaques et conceptions ciblant les dépenses des enfants.",
+    "dimSocialRisk": "L’exposition aux inconnus, la compétition toxique et la pression sur l’identité ou le statut dans les espaces sociaux du jeu.",
     "variableRewards": "Récompenses données selon un calendrier imprévisible — parfois un super drop, parfois rien. La même mécanique qui anime les machines à sous ; elle retient les joueurs plus longtemps que des récompenses fixes.",
     "streaks": "Mécaniques qui comptent les jours de jeu consécutifs. Sauter un jour casse la série et fait perdre la progression, ce qui pousse les enfants à se connecter même quand ils n'en ont pas envie.",
     "fomo": "Fear of Missing Out (peur de manquer quelque chose). Événements limités, objets saisonniers ou récompenses uniques qui punissent les joueurs de ne pas jouer maintenant.",

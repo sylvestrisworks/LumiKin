@@ -36,11 +36,9 @@
     "checkAGame": "Consultar un juego",
     "readingRoomKicker": "Sala de lectura",
     "readingRoomIntro": "Guías prácticas para padres que también juegan.",
-
+    "suggestLead": "Para este juego, sugerimos unos <b>{minutes} minutos</b> de juego al día.",
     "blogKicker": "Del blog",
-
     "blogIntro": "Ensayos sobre cómo se construyen los juegos y lo que eso significa para los niños que los juegan.",
-
     "allEssays": "Todos los ensayos →",
     "badge": "Basado en el desarrollo infantil",
     "hero": "Descubre exactamente cómo un juego impacta la <yellow>mente en desarrollo</yellow> de tu hijo(a) — antes de que le dé 'jugar'.",
@@ -797,7 +795,12 @@
     "legal": "Legal",
     "privacyPolicy": "Política de privacidad",
     "termsOfService": "Términos de servicio",
-    "metaTitle": "Configuración de cuenta — LumiKin"
+    "metaTitle": "Configuración de cuenta — LumiKin",
+    "appearance": "Apariencia",
+    "appearanceHint": "Sigue la configuración de tu dispositivo por defecto. Elige Claro u Oscuro para anularla.",
+    "themeSystem": "Sistema",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro"
   },
   "notifications": {
     "title": "Notificaciones",
@@ -1207,6 +1210,12 @@
     "backToAges": "All ages"
   },
   "glossary": {
+    "dimCognitive": "Cuánto ejercita el juego la resolución de problemas, la planificación, el razonamiento espacial, la creatividad y la memoria. Una puntuación más alta significa más ejercicio mental.",
+    "dimSocial": "Si el juego desarrolla el trabajo en equipo, la comunicación, la empatía y el razonamiento ético, normalmente mediante cooperativo o funciones de comunidad.",
+    "dimMotor": "Coordinación ojo-mano, motricidad fina y tiempo de reacción; y, en juegos activos, movimiento físico real.",
+    "dimDopamine": "Mecánicas que pueden derivar en compulsión: recompensas variables, rachas diarias, eventos FOMO y diseño de casi-victoria. Una puntuación más alta significa más impulso a seguir jugando.",
+    "dimMonetization": "Presión comercial sobre el jugador: ventajas pay-to-win, monedas del juego poco claras y diseños que apuntan al gasto de los niños.",
+    "dimSocialRisk": "Exposición a desconocidos, competencia tóxica y presión de identidad o estatus en los espacios sociales del juego.",
     "variableRewards": "Recompensas que se entregan con un calendario impredecible — a veces un buen drop, a veces nada. La misma mecánica que mueve las máquinas tragaperras; mantiene al jugador enganchado más tiempo que las recompensas fijas.",
     "streaks": "Mecánicas que cuentan días consecutivos de juego. Saltarse un día rompe la racha y se pierde el progreso, lo que presiona a los niños a entrar incluso cuando no quieren.",
     "fomo": "Fear of Missing Out (miedo a perderse algo). Eventos por tiempo limitado, objetos de temporada o recompensas únicas que penalizan al jugador por no jugar ahora.",

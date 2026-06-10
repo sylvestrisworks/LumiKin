@@ -1,9 +1,13 @@
 // Per-dimension score table with hairline rows and an ink-on-paper bar per row.
 // Tone selects which color the bar fills: ink for benefits, accent for risks.
 
+import { Term } from '@/components/Term'
+
 export type ScoreTone = 'ink' | 'accent'
 
-export type ScoreRow = { code: string; label: string; value: number; note?: string }
+// `note` is the always-visible one-line gloss under the label; `def` is the
+// fuller explanation surfaced on hover/focus via Term.
+export type ScoreRow = { code: string; label: string; value: number; note?: string; def?: string }
 
 export function ScoreBar({
   value,
@@ -47,7 +51,9 @@ export function ScoreTable({
             <tr key={r.code} className={i === 0 ? 'border-t border-ink/20' : 'border-t border-ink/10'}>
               <td className="py-3 pr-4 align-top text-muted text-sm w-10 tabular-nums">{r.code}</td>
               <td className="py-3 pr-6 align-top">
-                <span className="text-ink text-sm block">{r.label}</span>
+                <span className="text-ink text-sm block">
+                  {r.def ? <Term def={r.def}>{r.label}</Term> : r.label}
+                </span>
                 {r.note && (
                   <span className="text-muted text-xs block mt-0.5 leading-snug">{r.note}</span>
                 )}

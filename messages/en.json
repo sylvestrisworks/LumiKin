@@ -36,11 +36,9 @@
     "checkAGame": "Check a game",
     "readingRoomKicker": "Reading room",
     "readingRoomIntro": "Practical guides for parents who play along.",
-
+    "suggestLead": "For this game, we suggest about <b>{minutes} minutes</b> of play a day.",
     "blogKicker": "From the blog",
-
     "blogIntro": "Essays on how games are built — and what that means for the kids who play them.",
-
     "allEssays": "All essays →",
     "h1": "A great game can enrich a growing mind. The wrong one needs a grown-up.",
     "subhead": "LumiKin rates {count} games on benefits, risks, and healthy play time, so you can tell which is which.",
@@ -786,7 +784,12 @@
     "legal": "Legal",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
-    "metaTitle": "Account Settings — LumiKin"
+    "metaTitle": "Account Settings — LumiKin",
+    "appearance": "Appearance",
+    "appearanceHint": "Defaults to your device setting. Choose Light or Dark to override it.",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark"
   },
   "notifications": {
     "title": "Notifications",
@@ -1196,6 +1199,12 @@
     "backToAges": "All ages"
   },
   "glossary": {
+    "dimCognitive": "How hard the game works problem-solving, planning, spatial reasoning, creativity and memory. A higher score means more of a mental workout.",
+    "dimSocial": "Whether play builds teamwork, communication, empathy and ethical reasoning — usually through co-op or community features.",
+    "dimMotor": "Hand-eye coordination, fine motor control and reaction time — and, in active games, real physical movement.",
+    "dimDopamine": "Engagement mechanics that can tip into compulsion: variable rewards, daily streaks, FOMO events and near-miss design. A higher score means more pull to keep playing.",
+    "dimMonetization": "Commercial pressure on the player — pay-to-win advantages, obscured in-game currencies, and designs that target children's spending.",
+    "dimSocialRisk": "Exposure to strangers, toxic competition, and identity or status pressure in the game's social spaces.",
     "variableRewards": "Rewards given on an unpredictable schedule — sometimes you get a great drop, sometimes nothing. The same mechanic that powers slot machines; it keeps players engaged longer than fixed rewards.",
     "streaks": "Mechanics that track consecutive days of play. Skipping a day breaks the streak and forfeits progress, which pressures kids to log in even when they don’t want to.",
     "fomo": "Fear of Missing Out. Limited-time events, seasonal items, or one-off rewards that punish players for not playing right now.",

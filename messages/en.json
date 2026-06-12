@@ -602,6 +602,14 @@
     "methodHandTooltip": "Scored by an editor rather than the automated pipeline.",
     "lastUpdated": "Last updated {when}"
   },
+  "reviewTier": {
+    "automatedLabel": "Automated review",
+    "automatedTooltip": "Scored by LumiKin's automated pipeline using the published rubric, with periodic spot-check auditing — not individually verified by a human reviewer. Tap to read how scoring works.",
+    "editorLabel": "Editor reviewed",
+    "editorTooltip": "Scored by a LumiKin editor against the published rubric. Tap to read the methodology.",
+    "communityLabel": "Community reviewed",
+    "communityTooltip": "Scored with community input against the published rubric. Tap to read the methodology."
+  },
   "parentTips": {
     "heading": "Parent Tips",
     "noTips": "No tips yet — be the first to help other parents.",

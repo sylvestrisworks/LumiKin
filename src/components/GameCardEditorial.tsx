@@ -16,6 +16,7 @@ import type { ComplianceBadge, DarkPattern, GameCardProps, SerializedScores } fr
 import { calcAge } from '@/lib/age'
 import { esrbToAge } from '@/lib/ui'
 import { localizeGenre } from '@/lib/i18n/genres'
+import { ReviewTierBadge } from '@/components/ReviewTierBadge'
 
 type UserProfile = {
   id: number
@@ -229,6 +230,11 @@ export default function GameCardEditorial({
                 {label}
               </p>
             </div>
+            {scores.reviewTier && (
+              <div className="mt-3">
+                <ReviewTierBadge reviewTier={scores.reviewTier} />
+              </div>
+            )}
             {scores.executiveSummary && (
               <p className="mt-4 font-serif text-lg italic text-muted leading-snug max-w-prose">
                 {scores.executiveSummary}

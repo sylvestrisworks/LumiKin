@@ -211,6 +211,7 @@ function makeSerializedScores(computed: ReturnType<typeof calculateGameScores>):
     debateRounds:              null,
     methodologyVersion:        null,
     scoringMethod:             null,
+    reviewTier:                'expert',
   }
 }
 

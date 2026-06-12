@@ -1249,6 +1249,14 @@
     "methodHandTooltip": "Von einem Redakteur bewertet statt durch die automatische Pipeline.",
     "lastUpdated": "Zuletzt aktualisiert {when}"
   },
+  "reviewTier": {
+    "automatedLabel": "Automatische Prüfung",
+    "automatedTooltip": "Bewertet durch die automatisierte Pipeline von LumiKin anhand der veröffentlichten Methodik, mit regelmäßigen Stichprobenprüfungen – nicht einzeln von einer Person verifiziert. Zum Nachlesen der Bewertung tippen.",
+    "editorLabel": "Redaktionell geprüft",
+    "editorTooltip": "Von einer LumiKin-Redaktion anhand der veröffentlichten Methodik bewertet. Zum Lesen der Methodik tippen.",
+    "communityLabel": "Von der Community geprüft",
+    "communityTooltip": "Mit Beiträgen der Community anhand der veröffentlichten Methodik bewertet. Zum Lesen der Methodik tippen."
+  },
   "editorial": {
     "masthead": {
       "tagline": "Spielebewertungen für Eltern",

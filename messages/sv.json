@@ -1249,6 +1249,14 @@
     "methodHandTooltip": "Bedömd av en redaktör, inte via det automatiserade systemet.",
     "lastUpdated": "Senast uppdaterad {when}"
   },
+  "reviewTier": {
+    "automatedLabel": "Automatisk granskning",
+    "automatedTooltip": "Bedömd av LumiKins automatiska pipeline enligt den publicerade metoden, med regelbundna stickprovskontroller – inte individuellt verifierad av en mänsklig granskare. Tryck för att läsa hur bedömningen fungerar.",
+    "editorLabel": "Granskad av redaktör",
+    "editorTooltip": "Bedömd av en LumiKin-redaktör enligt den publicerade metoden. Tryck för att läsa metoden.",
+    "communityLabel": "Granskad av community",
+    "communityTooltip": "Bedömd med bidrag från vår community enligt den publicerade metoden. Tryck för att läsa metoden."
+  },
   "editorial": {
     "masthead": {
       "tagline": "Spelbedömningar för föräldrar",

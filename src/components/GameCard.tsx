@@ -673,6 +673,7 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
           esrbRating={game.esrbRating}
           pegiRating={game.pegiRating}
           executiveSummary={scores.executiveSummary}
+          reviewTier={scores.reviewTier}
           action={<ShareButton data={{ game, scores, review, darkPatterns, compliance }} />}
         >
           {scores.timeRecommendationMinutes != null && (

@@ -1249,6 +1249,14 @@
     "methodHandTooltip": "Calificado por un editor en lugar del sistema automatizado.",
     "lastUpdated": "Última actualización: {when}"
   },
+  "reviewTier": {
+    "automatedLabel": "Revisión automática",
+    "automatedTooltip": "Puntuado por el sistema automatizado de LumiKin con la metodología publicada y auditorías periódicas por muestreo; no verificado individualmente por un revisor humano. Toca para ver cómo funciona la puntuación.",
+    "editorLabel": "Revisado por un editor",
+    "editorTooltip": "Puntuado por un editor de LumiKin según la metodología publicada. Toca para leer la metodología.",
+    "communityLabel": "Revisado por la comunidad",
+    "communityTooltip": "Puntuado con aportes de la comunidad según la metodología publicada. Toca para leer la metodología."
+  },
   "editorial": {
     "masthead": {
       "tagline": "Valoraciones de juegos para familias",

@@ -1249,6 +1249,14 @@
     "methodHandTooltip": "Évalué par un éditeur plutôt que par le processus automatisé.",
     "lastUpdated": "Dernière mise à jour {when}"
   },
+  "reviewTier": {
+    "automatedLabel": "Évaluation automatisée",
+    "automatedTooltip": "Noté par le pipeline automatisé de LumiKin selon la méthodologie publiée, avec des audits ponctuels réguliers ; non vérifié individuellement par un évaluateur humain. Touchez pour découvrir le fonctionnement de la notation.",
+    "editorLabel": "Évalué par un éditeur",
+    "editorTooltip": "Noté par un éditeur de LumiKin selon la méthodologie publiée. Touchez pour lire la méthodologie.",
+    "communityLabel": "Évalué par la communauté",
+    "communityTooltip": "Noté avec la contribution de la communauté selon la méthodologie publiée. Touchez pour lire la méthodologie."
+  },
   "editorial": {
     "masthead": {
       "tagline": "Évaluations de jeux pour les parents",

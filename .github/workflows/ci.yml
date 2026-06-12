@@ -1,0 +1,32 @@
+name: CI
+
+# Runs the unit test suite (including the credibility regression guard) on every
+# push and pull request. The regression guard fails the build if bracketed
+# editorial placeholders, duplicated score-label strings, a drifted methodology
+# version, or the retired "PlaySmart" brand are reintroduced.
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Run tests
+        run: npm test

@@ -27,6 +27,11 @@ next-env.d.ts
 skills-lock.json
 *.tsbuildinfo
 
+# Pipeline run output & scratch (kept local, never committed)
+*.log
+*.csv
+.tmp/
+
 # OS
 .DS_Store
 Thumbs.db

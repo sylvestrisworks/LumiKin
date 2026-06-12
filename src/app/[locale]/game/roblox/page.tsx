@@ -8,6 +8,7 @@ import { eq, desc, and, lte, ilike, isNotNull, type SQL } from 'drizzle-orm'
 import ExperienceCard, { type ExperienceSummary } from '@/components/ExperienceCard'
 import Icon from '@/components/Icon'
 import { curascoreTextEditorial } from '@/lib/ui'
+import { isListable } from '@/lib/scoring/quality-floor'
 import RobloxFilters, { type RobloxFilterState } from '@/components/RobloxFilters'
 import { getTranslations } from 'next-intl/server'
 
@@ -83,8 +84,15 @@ export default async function RobloxHubPage({ searchParams }: Props) {
     inputConfidence:           score?.inputConfidence ?? null,
   }))
 
-  const scored   = experiences.filter(e => e.curascore != null)
-  const unscored = experiences.filter(e => e.curascore == null)
+  // Quality floor: keep junk templates ("Baseplate"), raw guest creators, and
+  // exploit tooling ("Lua Script Execution") out of the listing. Their detail
+  // pages stay reachable by direct URL — we only suppress catalogue listing.
+  const listable = experiences.filter(e =>
+    isListable({ title: e.title, creatorName: e.creatorName, visitCount: e.visitCount, activePlayers: e.activePlayers }),
+  )
+
+  const scored   = listable.filter(e => e.curascore != null)
+  const unscored = listable.filter(e => e.curascore == null)
 
   return (
     <div className="min-h-screen bg-paper text-ink">

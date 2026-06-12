@@ -21,7 +21,8 @@ import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import { calculateExperienceRisk, calculateExperienceBenefits, applyScoreFloors } from '@/lib/scoring/experience-risk'
 import { deriveTimeRecommendation } from '@/lib/scoring/time'
 import { logCronRun } from '@/lib/cron-logger'
-import { buildPrompt, callGemini, saveScore, type ExperienceRow } from '@/lib/scoring/experience-evaluator'
+import { buildPrompt, callGemini, saveScore, quarantineScore, type ExperienceRow } from '@/lib/scoring/experience-evaluator'
+import { isExploitTooling } from '@/lib/scoring/quality-floor'
 
 export const maxDuration = 300
 
@@ -155,6 +156,18 @@ export async function GET(req: NextRequest) {
     const startedAt = Date.now()
 
     const evaluateOne = async (exp: ExperienceRow, platformSlug: string): Promise<string> => {
+      // Denylist: exploit/cheat/free-admin tooling is quarantined without an AI
+      // call — it must never receive a real score, and asking the model wastes
+      // budget on content we will hide regardless.
+      if (isExploitTooling(exp.title, exp.description)) {
+        await quarantineScore(exp)
+        if (exp.needsRescore) {
+          await db.update(platformExperiences).set({ needsRescore: false }).where(eq(platformExperiences.id, exp.id))
+        }
+        console.log(`[review-experiences] ${exp.title} → quarantined (exploit tooling)`)
+        return exp.slug
+      }
+
       console.log(`[review-experiences] Evaluating: ${exp.title} [${platformSlug}]`)
       const result = await callGemini(buildPrompt(exp, platformSlug))
       const saved  = await saveScore(exp, result, platformSlug)

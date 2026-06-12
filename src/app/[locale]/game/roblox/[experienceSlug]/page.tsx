@@ -410,7 +410,11 @@ export default async function ExperiencePage({ params }: Props) {
                     displayScore.timeRecommendationColor === 'amber'  ? 'border-warm text-warm' :
                                                                         'border-accent text-accent'
                   }`}>
-                    <span>{t('recommended', { label: displayScore.timeRecommendationLabel })}</span>
+                    {/* For the "Not recommended…" tier (red), show the label
+                        alone — prefixing it with "Recommended:" contradicts it. */}
+                    <span>{displayScore.timeRecommendationColor === 'red'
+                      ? displayScore.timeRecommendationLabel
+                      : t('recommended', { label: displayScore.timeRecommendationLabel })}</span>
                     {displayScore.recommendedMinAge != null && (
                       <span className="text-xs font-normal opacity-70">· {t('age', { age: displayScore.recommendedMinAge })}</span>
                     )}

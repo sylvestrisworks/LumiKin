@@ -404,7 +404,11 @@ export default async function FortniteMapPage({ params }: Props) {
                     displayScore.timeRecommendationColor === 'amber'  ? 'border-warm text-warm' :
                                                                         'border-accent text-accent'
                   }`}>
-                    <span>{t('recommendedPrefix', { label: displayScore.timeRecommendationLabel })}</span>
+                    {/* For the "Not recommended…" tier (red), show the label
+                        alone — prefixing it with "Recommended:" contradicts it. */}
+                    <span>{displayScore.timeRecommendationColor === 'red'
+                      ? displayScore.timeRecommendationLabel
+                      : t('recommendedPrefix', { label: displayScore.timeRecommendationLabel })}</span>
                     {displayScore.recommendedMinAge != null && (
                       <span className="text-xs font-normal opacity-70">· {t('ageSuffix', { age: displayScore.recommendedMinAge })}</span>
                     )}

@@ -41,7 +41,7 @@ export default async function RobloxHubPage({ searchParams }: Props) {
 
   const [platformScore] = roblox
     ? await db
-        .select({ curascore: gameScores.curascore, timeRecommendationLabel: gameScores.timeRecommendationLabel })
+        .select({ curascore: gameScores.curascore, timeRecommendationLabel: gameScores.timeRecommendationLabel, timeRecommendationColor: gameScores.timeRecommendationColor })
         .from(gameScores)
         .where(eq(gameScores.gameId, roblox.id))
         .limit(1)
@@ -115,7 +115,12 @@ export default async function RobloxHubPage({ searchParams }: Props) {
               )}
               {platformScore?.timeRecommendationLabel && (
                 <span className="text-kicker uppercase font-semibold text-muted border border-rule px-2 py-1" style={{ fontVariantCaps: 'all-small-caps' }}>
-                  {platformScore.timeRecommendationLabel} {t('recommendedSuffix')}
+                  {/* The label is already a complete verdict (e.g. "Not recommended
+                      for children"); only the positive time tiers take the
+                      "recommended" suffix, otherwise it doubles the word. */}
+                  {platformScore.timeRecommendationColor === 'red'
+                    ? platformScore.timeRecommendationLabel
+                    : `${platformScore.timeRecommendationLabel} ${t('recommendedSuffix')}`}
                 </span>
               )}
               <span className="text-kicker uppercase font-semibold text-muted border border-rule px-2 py-1" style={{ fontVariantCaps: 'all-small-caps' }}>

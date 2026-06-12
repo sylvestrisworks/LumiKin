@@ -8,6 +8,7 @@ import Link from 'next/link'
 import Icon from '@/components/Icon'
 import ProfileManager from '@/components/ProfileManager'
 import AccountActions from '@/components/AccountActions'
+import ThemeToggle from '@/components/ThemeToggle'
 
 import type { Metadata } from 'next'
 
@@ -104,6 +105,14 @@ export default async function AccountPage() {
               </Link>
             </div>
           </div>
+        </section>
+
+        {/* ── Appearance ───────────────────────────────────────────────────── */}
+        <section>
+          <h2 className="text-kicker uppercase font-semibold text-muted mb-3 px-1" style={{ fontVariantCaps: 'all-small-caps' }}>
+            {t('appearance')}
+          </h2>
+          <ThemeToggle />
         </section>
 
         {/* ── Legal ────────────────────────────────────────────────────────── */}

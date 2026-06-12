@@ -611,7 +611,8 @@
     "bechdelPass": "Supera el test",
     "bechdelFail": "No supera el test",
     "bundledOnlineHeader": "Modo online incluido — riesgo adicional",
-    "bundledOnlinePreamble": "El LumiScore de arriba solo refleja la campaña de un solo jugador."
+    "bundledOnlinePreamble": "El LumiScore de arriba solo refleja la campaña de un solo jugador.",
+    "priceFree": "Gratis"
   },
   "parentTips": {
     "heading": "Consejos para padres",
@@ -1300,7 +1301,8 @@
       "avgPlaytime": "Tiempo medio de juego",
       "reviewed": "Revisado",
       "methodology": "Cómo calculamos las puntuaciones →",
-      "byline": "Por la redacción de LumiKin"
+      "byline": "Por la redacción de LumiKin",
+      "priceFree": "Gratis"
     },
     "search": {
       "placeholder": "Buscar entre {count} reseñas",

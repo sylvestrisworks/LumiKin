@@ -337,12 +337,10 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
   }
 
   if (filters.price === 'free') {
-    conditions.push(
-      or(
-        eq(games.basePrice, 0),
-        isNull(games.basePrice),
-      )!
-    )
+    // Only titles we KNOW are free (base price explicitly 0). A null base price
+    // means "price unknown / not ingested" — the vast majority of the catalogue
+    // — and must NOT be presented as free-to-play.
+    conditions.push(eq(games.basePrice, 0))
   } else if (filters.price === '20') {
     conditions.push(
       and(

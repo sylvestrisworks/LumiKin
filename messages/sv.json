@@ -611,7 +611,8 @@
     "bechdelPass": "Klarar testet",
     "bechdelFail": "Klarar inte testet",
     "bundledOnlineHeader": "Online-del, separat riskbedömning",
-    "bundledOnlinePreamble": "LumiScore-poängen ovan gäller enbart spelets enspelarläge."
+    "bundledOnlinePreamble": "LumiScore-poängen ovan gäller enbart spelets enspelarläge.",
+    "priceFree": "Gratis"
   },
   "parentTips": {
     "heading": "Föräldratips",
@@ -1300,7 +1301,8 @@
       "avgPlaytime": "Genomsnittlig speltid",
       "reviewed": "Granskad",
       "methodology": "Så beräknas poängen →",
-      "byline": "Av LumiKins redaktörer"
+      "byline": "Av LumiKins redaktörer",
+      "priceFree": "Gratis"
     },
     "search": {
       "placeholder": "Sök bland {count} recensioner",

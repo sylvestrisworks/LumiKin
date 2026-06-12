@@ -941,7 +941,11 @@ export default function GameCard({ game, scores, review, darkPatterns, complianc
         <div className="border-t border-rule px-5 py-3 flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted">
           <span>
             <span className="font-semibold text-muted">{t('base')}: </span>
-            {game.basePrice != null ? `$${game.basePrice.toFixed(2)}` : t('baseUnknown')}
+            {game.basePrice == null
+              ? t('baseUnknown')
+              : game.basePrice === 0
+                ? t('priceFree')
+                : `$${game.basePrice.toFixed(2)}`}
           </span>
           {game.avgPlaytimeHours != null && game.avgPlaytimeHours > 0 && (
             <span>

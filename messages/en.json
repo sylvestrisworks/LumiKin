@@ -578,7 +578,8 @@
     "bechdelPass": "Passes the test",
     "bechdelFail": "Fails the test",
     "bundledOnlineHeader": "Bundled online mode — additional risk",
-    "bundledOnlinePreamble": "The LumiScore above reflects the single-player campaign only."
+    "bundledOnlinePreamble": "The LumiScore above reflects the single-player campaign only.",
+    "priceFree": "Free"
   },
   "lumiScoreHero": {
     "verdictGreatAge": "Great pick for ages {age}+ — low engagement risks",
@@ -1267,7 +1268,8 @@
       "avgPlaytime": "Avg playtime",
       "reviewed": "Reviewed",
       "methodology": "How scores are calculated →",
-      "byline": "By the LumiKin editors"
+      "byline": "By the LumiKin editors",
+      "priceFree": "Free"
     },
     "search": {
       "placeholder": "Search {count} reviews",

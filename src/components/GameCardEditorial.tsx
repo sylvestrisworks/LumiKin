@@ -504,7 +504,9 @@ export default function GameCardEditorial({
             >
               {t('meta.basePrice')}
             </span>
-            <span className="tabular-nums text-ink">${game.basePrice}</span>
+            <span className="tabular-nums text-ink">
+              {game.basePrice === 0 ? t('meta.priceFree') : `$${game.basePrice}`}
+            </span>
           </span>
         )}
         {game.avgPlaytimeHours != null && (

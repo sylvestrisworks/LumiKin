@@ -51,12 +51,10 @@ What the research does not show, despite popular framing, is that loot boxes *ca
 
 A few worked examples, pulled live from the catalogue:
 
-| Game | ESRB | LumiScore | RIS | LumiKin time rec |
-|---|---|---|---|---|
-| *[Genshin Impact](/en/game/genshin-impact)* | T | 45 | 0.64 | Up to 30 min/day, age 13+ |
-| *[Apex Legends](/en/game/apex-legends)* | T | 41 | 0.71 | Not recommended for children, age 17+ |
-| *[Arknights](/en/game/arknights)* | T | 42 | 0.65 | 30 min/day max, age 13+ |
-| *[Zenless Zone Zero](/en/game/zenless-zone-zero)* | T | 51 | 0.43 | Up to 60 min/day, age 17+ |
+- *[Genshin Impact](/en/game/genshin-impact)* — ESRB T, LumiScore **45**, RIS **0.64**, time rec **up to 30 min/day, age 13+**.
+- *[Apex Legends](/en/game/apex-legends)* — ESRB T, LumiScore **41**, RIS **0.71**, **not recommended for children, age 17+**.
+- *[Arknights](/en/game/arknights)* — ESRB T, LumiScore **42**, RIS **0.65**, time rec **30 min/day max, age 13+**.
+- *[Zenless Zone Zero](/en/game/zenless-zone-zero)* — ESRB T, LumiScore **51**, RIS **0.43**, time rec **up to 60 min/day, age 17+**.
 
 All four are ESRB T (Teen). The ESRB rating is not wrong about the content — these games are appropriate for teens in that sense — but the LumiScore reflects something the content rating does not: the design pressure. The recommended time drops sharply, the recommended age rises, and several end up in the "not recommended for children" bucket because the loot-box layer dominates the daily experience.
 

@@ -46,12 +46,10 @@ LumiKin's `recommendedMinAge` is a separate field from the content rating, calcu
 
 Four real cases from the catalogue, all ESRB T:
 
-| Game | ESRB | LumiKin age | Why |
-|---|---|---|---|
-| *[Trauma Center: New Blood](/en/game/trauma-center-new-blood)* | T | 7+ | Surgery sim with cartoon medical content. The T rating reflects content not present in any way that lands on a seven-year-old. LumiScore 84. |
-| *[Atelier Shallie: Alchemists of the Dusk Sea](/en/game/atelier-shallie-alchemists-of-the-dusk-sea)* | T | 13+ | Resource-management JRPG. The boards' age and the rubric's age agree. LumiScore 85. |
-| *[Monster Hunter 4 Ultimate](/en/game/monster-hunter-4-ultimate)* | T | 17+ | Combat depth and social-pressure mechanics push the rubric's recommendation above the board's. LumiScore 83. |
-| *[Baldur's Gate II: Shadows of Amn](/en/game/baldurs-gate-ii-shadows-of-amn)* | T | 17+ | A modern T rating that doesn't reflect the original content density. LumiScore 90. |
+- *[Trauma Center: New Blood](/en/game/trauma-center-new-blood)* — ESRB T, LumiKin age **7+**. Surgery sim with cartoon medical content; the T rating reflects content not present in any way that lands on a seven-year-old. LumiScore 84.
+- *[Atelier Shallie: Alchemists of the Dusk Sea](/en/game/atelier-shallie-alchemists-of-the-dusk-sea)* — ESRB T, LumiKin age **13+**. Resource-management JRPG; the boards' age and the rubric's age agree. LumiScore 85.
+- *[Monster Hunter 4 Ultimate](/en/game/monster-hunter-4-ultimate)* — ESRB T, LumiKin age **17+**. Combat depth and social-pressure mechanics push the rubric's recommendation above the board's. LumiScore 83.
+- *[Baldur's Gate II: Shadows of Amn](/en/game/baldurs-gate-ii-shadows-of-amn)* — ESRB T, LumiKin age **17+**. A modern T rating that doesn't reflect the original content density. LumiScore 90.
 
 Same age icon on the box. Four different recommendations. The point isn't that ESRB is wrong — it's that "Teen" is a label about content, and the practical question of *which thirteen-year-old, this game, today* needs more than that.
 

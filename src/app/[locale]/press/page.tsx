@@ -53,29 +53,34 @@ const LOCATION         = 'Stockholm, Sweden'
 const PRESS_EMAIL      = 'johan@sylvestris.works'
 const RESPONSE_TIME    = '1 business day'
 
-// Scaffold — replace placeholder text with real statements before launch
-const QUOTABLE_FACTS: { fact: string; source: string | null; sourceLabel: string | null }[] = [
-  {
-    fact: '[Placeholder — e.g. "Nine out of ten top-grossing mobile games target under-13s with at least one monetisation mechanic."]',
-    source: null,
-    sourceLabel: null,
-  },
-  {
-    fact: '[Placeholder — e.g. "LumiKin\'s database covers X mainstream titles and Y Roblox experiences, making it the largest structured child-safety rating set outside of ESRB and PEGI."]',
-    source: null,
-    sourceLabel: null,
-  },
-  {
-    fact: '[Placeholder — e.g. "The average daily-time recommendation produced by LumiKin\'s scoring model is X minutes — compared to the X–X minutes parents report their children actually play."]',
-    source: null,
-    sourceLabel: null,
-  },
-  {
-    fact: '[Placeholder — e.g. "UGC platforms like Roblox now account for a majority of gaming time for children under 12, yet carry no ESRB or PEGI rating."]',
-    source: null,
-    sourceLabel: null,
-  },
-]
+type QuotableFact = { fact: string; source: string | null; sourceLabel: string | null }
+
+// Quotable facts are derived from LumiKin's own database and methodology at request
+// time — no fabricated statistics or external claims. Each carries a verifiable source
+// LumiKin can stand behind (its live coverage stats and its published rubric).
+function buildQuotableFacts(stats: SiteStats): QuotableFact[] {
+  const totalTitles = stats.total_games_scored + stats.total_ugc_experiences_scored
+  const facts: QuotableFact[] = [
+    {
+      fact: `LumiKin has scored ${totalTitles.toLocaleString('en')} titles to date — ${stats.total_games_scored.toLocaleString('en')} mainstream games across ${stats.platforms.length} platforms and ${stats.total_ugc_experiences_scored.toLocaleString('en')} Roblox and Fortnite Creative experiences that carry no ESRB or PEGI rating.`,
+      source: '/press#at-a-glance',
+      sourceLabel: 'LumiKin database (updated hourly)',
+    },
+    {
+      fact: `Every title is scored across ${RUBRIC_DIMENSION_COUNT} structured dimensions — covering cognitive, social-emotional and motor development alongside dopamine-manipulation, monetisation and social-risk design — under a single published, versioned rubric.`,
+      source: '/methodology',
+      sourceLabel: `LumiKin Methodology v${CURRENT_METHODOLOGY_VERSION}`,
+    },
+  ]
+  if (stats.median_hours_publish_to_score_ugc != null) {
+    facts.push({
+      fact: `The median time from a Roblox or Fortnite Creative experience being published to receiving a LumiKin score is ${stats.median_hours_publish_to_score_ugc} hours.`,
+      source: '/press#at-a-glance',
+      sourceLabel: 'LumiKin database (updated hourly)',
+    })
+  }
+  return facts
+}
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -95,6 +100,7 @@ export default async function PressPage({ params }: Props) {
   const totalTitles   = stats.total_games_scored + stats.total_ugc_experiences_scored
   const platformCount = stats.platforms.length
   const languageCount = stats.languages.length
+  const quotableFacts = buildQuotableFacts(stats)
 
   const AT_A_GLANCE = [
     { label: 'Titles scored',        value: totalTitles.toLocaleString('en')                    },
@@ -140,7 +146,7 @@ export default async function PressPage({ params }: Props) {
       </section>
 
       {/* ── At a glance ──────────────────────────────────────────────────────── */}
-      <section className="border-t border-ink bg-paper">
+      <section id="at-a-glance" className="border-t border-ink bg-paper scroll-mt-20">
         <div className="max-w-5xl mx-auto px-6 py-16">
           <p className="text-kicker uppercase font-semibold text-muted mb-10">
             At a glance
@@ -170,7 +176,7 @@ export default async function PressPage({ params }: Props) {
             Quotable facts
           </p>
           <ol className="space-y-8">
-            {QUOTABLE_FACTS.map(({ fact, source, sourceLabel }, i) => (
+            {quotableFacts.map(({ fact, source, sourceLabel }, i) => (
               <li key={i} className="flex gap-5">
                 <span className="font-serif text-2xl text-rule shrink-0 w-6 text-right leading-tight">
                   {i + 1}
@@ -182,17 +188,10 @@ export default async function PressPage({ params }: Props) {
                   {source && sourceLabel && (
                     <a
                       href={source}
-                      target="_blank"
-                      rel="noopener noreferrer"
                       className="mt-1 inline-block text-sm text-accent underline underline-offset-2 hover:no-underline"
                     >
                       Source: {sourceLabel}
                     </a>
-                  )}
-                  {!source && (
-                    <p className="mt-1 text-xs text-muted italic">
-                      Source link to be added
-                    </p>
                   )}
                 </div>
               </li>

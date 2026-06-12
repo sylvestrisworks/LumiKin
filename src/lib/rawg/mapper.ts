@@ -81,6 +81,51 @@ export function extractRiskFlags(tags: RawgTag[]): RiskFlags {
   }
 }
 
+// ─── Developer attribution ─────────────────────────────────────────────────────
+//
+// RAWG's `developers` array lists every studio credited on a title, in no
+// reliable order — for Minecraft the first entry is "4J Studios" (the console
+// porting house), not Mojang. Blindly taking developers[0] mis-attributes any
+// title that was ported or co-developed.
+//
+// We prefer the first developer that is NOT a known porting / co-development
+// house. If every credited developer is a porting house (or none are listed),
+// we fall back to the publisher, which is the original studio far more often
+// than a porting house is.
+
+const PORTING_STUDIOS = new Set([
+  '4j studios', 'iron galaxy', 'iron galaxy studios', 'aspyr', 'aspyr media',
+  'bluepoint games', 'virtuos', 'mass media', 'mass media inc', 'shiver entertainment',
+  'panic button', 'panic button games', 'feral interactive', 'd3t', 'tantalus media',
+  'tantalus', 'qloc', 'nixxes software', 'climax studios', 'abstraction games',
+  'straight right', 'blitworks', 'sickhead games', 'code mystics', 'mercenary technology',
+  'grip digital', 'saber interactive', 'shin\'en multimedia', 'fun labs', 'turn me up games',
+])
+
+const isPortingStudio = (name: string): boolean =>
+  PORTING_STUDIOS.has(name.trim().toLowerCase())
+
+/**
+ * Choose the primary developer for a title, skipping known porting / co-dev
+ * houses and falling back to the publisher when attribution is ambiguous.
+ */
+export function pickPrimaryDeveloper(
+  developers: Array<{ name: string }> | null | undefined,
+  publishers: Array<{ name: string }> | null | undefined,
+): string | null {
+  const devNames = (developers ?? []).map((d) => d.name).filter(Boolean)
+  const pubName  = (publishers ?? [])[0]?.name ?? null
+
+  if (devNames.length === 0) return pubName
+  if (devNames.length === 1) return devNames[0]
+
+  const primary = devNames.find((n) => !isPortingStudio(n))
+  if (primary) return primary
+
+  // Every credited developer is a porting house → prefer the publisher.
+  return pubName ?? devNames[0]
+}
+
 // ─── Mappers ──────────────────────────────────────────────────────────────────
 
 // Maps a RAWG list-endpoint summary (no description/developer/publisher)
@@ -109,7 +154,7 @@ export function mapDetailToInsert(game: RawgGameDetail): GameInsert {
   return {
     ...mapSummaryToInsert(game),
     description: game.description_raw ?? null,
-    developer:   game.developers[0]?.name ?? null,
+    developer:   pickPrimaryDeveloper(game.developers, game.publishers),
     publisher:   game.publishers[0]?.name ?? null,
   }
 }

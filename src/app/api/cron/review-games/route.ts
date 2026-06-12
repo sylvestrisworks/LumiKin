@@ -17,6 +17,7 @@ import { games, gameScores, reviews, userGames, notifications } from '@/lib/db/s
 import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
 import { eq, isNotNull, isNull, or } from 'drizzle-orm'
 import { calculateGameScores } from '@/lib/scoring/engine'
+import { findInheritedBundledNote, type FlaggedGame } from '@/lib/scoring/bundled-online'
 import { callGeminiTool, GEMINI_FLASH } from '@/lib/vertex-ai'
 import { logCronRun } from '@/lib/cron-logger'
 
@@ -430,6 +431,14 @@ export async function GET(req: NextRequest) {
 
     console.log(`[review-games] Found ${pending.length} unreviewed games`)
 
+    // Bundled-online flag set, loaded once. A new edition/remaster of a flagged
+    // title (e.g. "GTA V Enhanced") is ingested without the note, so the prompt
+    // would otherwise fold the online mode back into the score. Inherit it.
+    const flaggedGames: FlaggedGame[] = await db
+      .select({ id: games.id, slug: games.slug, title: games.title, bundledOnlineNote: games.bundledOnlineNote })
+      .from(games)
+      .where(isNotNull(games.bundledOnlineNote))
+
     const reviewed: string[] = []
     const errors:   string[] = []
     const startedAt = Date.now()
@@ -437,6 +446,16 @@ export async function GET(req: NextRequest) {
     const processGame = async (row: typeof pending[number]) => {
       const game = row.games
       try {
+        if (!game.bundledOnlineNote) {
+          const inherited = findInheritedBundledNote(game, flaggedGames)
+          if (inherited) {
+            game.bundledOnlineNote = inherited.note  // picked up by buildReviewPrompt below
+            await db.update(games)
+              .set({ bundledOnlineNote: inherited.note, updatedAt: new Date() })
+              .where(eq(games.id, game.id))
+            console.log(`[review-games] ${game.slug}: inherited bundledOnlineNote (${inherited.via})`)
+          }
+        }
         console.log(`[review-games] Reviewing: ${game.title}`)
         const prompt      = buildReviewPrompt(game)
         const reviewInput = await callGeminiReview(prompt)

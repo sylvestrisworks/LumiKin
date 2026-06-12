@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { fetchSiteStats, fetchRecentScores } from '@/lib/stats'
-import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
+import { METHODOLOGY_PDF_PATH } from '@/lib/methodology'
 import CoverageStrip from './_components/CoverageStrip'
 import ContactForm from './_components/ContactForm'
 import ApiSampleBlock from './_components/ApiSampleBlock'
@@ -197,7 +197,6 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
             </p>
           </div>
           <div className="mt-10 flex flex-wrap gap-4 items-center">
-            {/* TODO (Step 11): link to /methodology once page exists */}
             <a
               href={`/${locale}/methodology`}
               className="text-sm font-semibold text-accent underline underline-offset-4 hover:no-underline"
@@ -205,7 +204,7 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
               Read the full methodology →
             </a>
             <a
-              href={`/lumikin-methodology-v${CURRENT_METHODOLOGY_VERSION}.pdf`}
+              href={METHODOLOGY_PDF_PATH}
               download
               className="text-sm font-semibold text-accent underline underline-offset-4 hover:no-underline"
             >

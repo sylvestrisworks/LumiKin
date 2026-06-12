@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { fetchSiteStats, type SiteStats } from '@/lib/stats'
-import { CURRENT_METHODOLOGY_VERSION, RUBRIC_DIMENSION_COUNT } from '@/lib/methodology'
+import { CURRENT_METHODOLOGY_VERSION, RUBRIC_DIMENSION_COUNT, METHODOLOGY_PDF_PATH } from '@/lib/methodology'
 import PlausibleGoal from '@/components/PlausibleGoal'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lumikin.org'
@@ -344,7 +344,7 @@ export default async function PressPage({ params }: Props) {
               Read methodology v{CURRENT_METHODOLOGY_VERSION} →
             </Link>
             <a
-              href={`/lumikin-methodology-v${CURRENT_METHODOLOGY_VERSION}.pdf`}
+              href={METHODOLOGY_PDF_PATH}
               download
               className="inline-flex items-center border border-rule px-5 py-2.5 text-kicker uppercase font-semibold text-ink hover:border-ink hover:text-accent transition-colors"
             >

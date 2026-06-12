@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { Term } from '@/components/Term'
-import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
+import { METHODOLOGY_PDF_PATH } from '@/lib/methodology'
 
 export default async function MethodologyEditorial({ locale }: { locale: string }) {
   const [t, tg, te] = await Promise.all([
@@ -86,7 +86,7 @@ export default async function MethodologyEditorial({ locale }: { locale: string 
             {t('methodologyReadFull')}
           </Link>
           <a
-            href={`/lumikin-methodology-v${CURRENT_METHODOLOGY_VERSION}.pdf`}
+            href={METHODOLOGY_PDF_PATH}
             download
             className="text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors"
             style={{ fontVariantCaps: 'all-small-caps' }}

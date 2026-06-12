@@ -62,12 +62,32 @@ export const METHODOLOGY_REGISTRY: MethodologyVersion[] = [
     changelogSummary: 'Age-Floor Policy formalised; R4.5 (fear/horror) added as a third age-floor dimension alongside R4.1 and R4.2. Fear floors: 0→0, 1→7, 2→10, 3→13. Context modifiers (trivialized, defenceless_target, mixed_sexual_violent) introduced for R4.1 and R4.2. Games with fearHorror ≥ 1 may receive a higher recommendedMinAge than under v1.0.',
     isCurrent:        true,
     toc:              TOC_V11,
-    pdfAvailable:     false,
+    pdfAvailable:     true,
   },
 ]
 
 export const CURRENT_METHODOLOGY_VERSION =
   METHODOLOGY_REGISTRY.find(m => m.isCurrent)!.version
+
+/**
+ * Single source of truth for the downloadable methodology PDF.
+ *
+ * Points at the newest registry version that actually has a committed PDF
+ * artifact (`pdfAvailable: true`). This prevents the homepage/partners/press
+ * links from 404ing when the current methodology version ships before its PDF
+ * has been generated. Once `scripts/generate-methodology-pdf.ts` produces the
+ * PDF for the current version and its registry entry flips `pdfAvailable` to
+ * true, every link upgrades to the current version automatically.
+ *
+ * Every surface that links the methodology PDF MUST read `METHODOLOGY_PDF_PATH`
+ * (or `METHODOLOGY_PDF_VERSION`) — never hand-build the path from a version
+ * string — so the displayed page and the downloadable artifact cannot drift.
+ */
+export const METHODOLOGY_PDF_VERSION =
+  [...METHODOLOGY_REGISTRY].reverse().find(m => m.pdfAvailable)?.version
+  ?? CURRENT_METHODOLOGY_VERSION
+
+export const METHODOLOGY_PDF_PATH = `/lumikin-methodology-v${METHODOLOGY_PDF_VERSION}.pdf`
 
 /** Total number of scoring dimensions defined in the rubric (B1+B2+B3+R1+R2+R3+R4). */
 export const RUBRIC_DIMENSION_COUNT = 49

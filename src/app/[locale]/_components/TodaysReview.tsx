@@ -6,7 +6,7 @@ import {
   ScoreTable,
   type ScoreRow,
 } from '@/components/editorial'
-import { CURRENT_METHODOLOGY_VERSION } from '@/lib/methodology'
+import { METHODOLOGY_PDF_PATH } from '@/lib/methodology'
 import { fetchFeatured, type FeaturedGameData } from '../_data/featured'
 
 // Per-dimension copy bundle: `label` is the row name, `note` the always-visible
@@ -307,7 +307,7 @@ export default async function TodaysReview({ locale }: { locale: string }) {
             {th('methodologyReadFull')}
           </Link>
           <a
-            href={`/lumikin-methodology-v${CURRENT_METHODOLOGY_VERSION}.pdf`}
+            href={METHODOLOGY_PDF_PATH}
             download
             className="text-kicker uppercase font-semibold text-ink hover:text-accent transition-colors"
             style={{ fontVariantCaps: 'all-small-caps' }}

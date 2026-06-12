@@ -662,14 +662,18 @@
     "dp12Desc": "Time-limited content/events designed to create urgency"
   },
   "compliance": {
-    "heading": "Regulatory Compliance",
-    "footer": "Tap a badge for details. Grey = not yet assessed.",
+    "heading": "Regulatory design checks",
+    "stateMet": "Assessed: meets criteria",
+    "stateConcerns": "Assessed: concerns noted",
+    "stateNotAssessed": "Not yet assessed",
+    "criteriaPrefix": "What LumiKin checks:",
+    "disclaimer": "These reflect LumiKin's assessment of the game's design practices against each framework's criteria — not a legal compliance determination.",
     "dsaLabel": "EU Digital Services Act",
-    "dsaDesc": "Meets transparency requirements for minors under the EU Digital Services Act.",
+    "dsaDesc": "whether the game's design gives minors the transparency the EU Digital Services Act expects — plain terms, honest defaults, and clear reporting routes.",
     "gdprkLabel": "GDPR Children",
-    "gdprkDesc": "Proper consent and age-gating in place for users under 16 (GDPR Article 8).",
+    "gdprkDesc": "whether age assurance and consent flows are designed for under-16s, in the spirit of GDPR Article 8.",
     "oddsLabel": "Loot Box Odds",
-    "oddsDesc": "Publishes drop rates for paid random rewards (required in CN, JP, KR)."
+    "oddsDesc": "whether paid random-reward drop rates are disclosed, as required in China, Japan and South Korea."
   },
   "carousel": {
     "seeAll": "See all →",

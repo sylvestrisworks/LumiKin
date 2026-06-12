@@ -665,14 +665,18 @@
     "dp12Desc": "Zeitlich begrenzte Inhalte/Events, die Dringlichkeit erzeugen sollen."
   },
   "compliance": {
-    "heading": "Rechtliche Vorgaben",
-    "footer": "Tippe auf ein Symbol für Details. Grau = noch nicht bewertet.",
+    "heading": "Prüfung der Design-Konformität",
+    "stateMet": "Bewertet: erfüllt die Kriterien",
+    "stateConcerns": "Bewertet: Bedenken vermerkt",
+    "stateNotAssessed": "Noch nicht bewertet",
+    "criteriaPrefix": "Was LumiKin prüft:",
+    "disclaimer": "Spiegeln LumiKins Einschätzung der Design-Praktiken des Spiels anhand der Kriterien des jeweiligen Rahmens wider – keine rechtliche Feststellung der Konformität.",
     "dsaLabel": "Gesetz über digitale Dienste der EU",
-    "dsaDesc": "Erfüllt die Transparenzanforderungen für Minderjährige gemäß dem Gesetz über digitale Dienste der EU.",
+    "dsaDesc": "ob das Design des Spiels Minderjährigen die Transparenz bietet, die das Gesetz über digitale Dienste der EU erwartet: klare Bedingungen, ehrliche Voreinstellungen und sichtbare Meldewege.",
     "gdprkLabel": "DSGVO Kinder",
-    "gdprkDesc": "Ordnungsgemäße Zustimmung und Altersprüfung für Nutzer unter 16 Jahren (DSGVO Artikel 8).",
+    "gdprkDesc": "ob Altersprüfung und Einwilligungsabläufe für unter 16-Jährige gestaltet sind, im Sinne von DSGVO Artikel 8.",
     "oddsLabel": "Gewinnchancen bei Lootboxen",
-    "oddsDesc": "Gibt die Wahrscheinlichkeiten für zufällige, kostenpflichtige Belohnungen an (in CN, JP, KR verpflichtend)."
+    "oddsDesc": "ob die Wahrscheinlichkeiten für kostenpflichtige Zufallsbelohnungen offengelegt werden, wie in China, Japan und Südkorea vorgeschrieben."
   },
   "carousel": {
     "seeAll": "Alle ansehen →",

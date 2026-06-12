@@ -665,14 +665,18 @@
     "dp12Desc": "Contenido o eventos con límite de tiempo diseñados para generar urgencia."
   },
   "compliance": {
-    "heading": "Cumplimiento normativo",
-    "footer": "Toca una insignia para ver detalles. Gris = aún no evaluado.",
+    "heading": "Comprobaciones de diseño normativo",
+    "stateMet": "Evaluado: cumple los criterios",
+    "stateConcerns": "Evaluado: se observan dudas",
+    "stateNotAssessed": "Aún no evaluado",
+    "criteriaPrefix": "Qué comprueba LumiKin:",
+    "disclaimer": "Reflejan la evaluación de LumiKin de las prácticas de diseño del juego frente a los criterios de cada marco, no una determinación legal de cumplimiento.",
     "dsaLabel": "Ley de Servicios Digitales de la UE",
-    "dsaDesc": "Cumple con los requisitos de transparencia para menores bajo la Ley de Servicios Digitales de la UE.",
+    "dsaDesc": "si el diseño del juego ofrece a los menores la transparencia que exige la Ley de Servicios Digitales de la UE: términos claros, valores predeterminados honestos y vías de denuncia visibles.",
     "gdprkLabel": "GDPR para Niños",
-    "gdprkDesc": "Consentimiento adecuado y verificación de edad implementados para usuarios menores de 16 años (Artículo 8 del GDPR).",
+    "gdprkDesc": "si la verificación de edad y los flujos de consentimiento están diseñados para menores de 16 años, en el espíritu del Artículo 8 del GDPR.",
     "oddsLabel": "Probabilidades de Loot Boxes",
-    "oddsDesc": "Publica las tasas de aparición para recompensas aleatorias pagadas (requerido en CN, JP, KR)."
+    "oddsDesc": "si se publican las probabilidades de las recompensas aleatorias de pago, como exigen China, Japón y Corea del Sur."
   },
   "carousel": {
     "seeAll": "Ver todo →",

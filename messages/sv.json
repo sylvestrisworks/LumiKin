@@ -665,14 +665,18 @@
     "dp12Desc": "Tidsbegränsat innehåll eller evenemang som är utformade för att skapa en känsla av brådska."
   },
   "compliance": {
-    "heading": "Regelefterlevnad",
-    "footer": "Klicka på en symbol för detaljer. Grå = ej utvärderad än.",
+    "heading": "Granskning av regelefterlevnad i designen",
+    "stateMet": "Bedömd: uppfyller kriterierna",
+    "stateConcerns": "Bedömd: invändningar noterade",
+    "stateNotAssessed": "Ännu inte bedömd",
+    "criteriaPrefix": "Vad LumiKin kontrollerar:",
+    "disclaimer": "Återspeglar LumiKins bedömning av spelets designpraxis utifrån varje ramverks kriterier – inte ett rättsligt avgörande om efterlevnad.",
     "dsaLabel": "EU Digital Services Act",
-    "dsaDesc": "Uppfyller transparens-krav för minderåriga enligt Digital Services Act.",
+    "dsaDesc": "om spelets design ger minderåriga den transparens som Digital Services Act förväntar sig – tydliga villkor, ärliga standardinställningar och synliga vägar för anmälan.",
     "gdprkLabel": "GDPR Barn",
-    "gdprkDesc": "Korrekt samtycke och ålderskontroll finns på plats för användare under 16 år (GDPR, Artikel 8).",
+    "gdprkDesc": "om ålderskontroll och samtyckesflöden är utformade för barn under 16 år, i andan av GDPR artikel 8.",
     "oddsLabel": "Loot Box-odds",
-    "oddsDesc": "Redovisar sannolikheter för att få betalda slumpmässiga belöningar (obligatoriskt i Kina, Japan, Sydkorea)."
+    "oddsDesc": "om sannolikheterna för betalda slumpmässiga belöningar redovisas, som krävs i Kina, Japan och Sydkorea."
   },
   "carousel": {
     "seeAll": "Se alla →",

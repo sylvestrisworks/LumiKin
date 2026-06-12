@@ -12,11 +12,12 @@ import {
   ScoreTable,
   type ScoreRow,
 } from '@/components/editorial'
-import type { ComplianceBadge, DarkPattern, GameCardProps, SerializedScores } from '@/types/game'
+import type { DarkPattern, GameCardProps, SerializedScores } from '@/types/game'
 import { calcAge } from '@/lib/age'
 import { esrbToAge } from '@/lib/ui'
 import { localizeGenre } from '@/lib/i18n/genres'
 import { ReviewTierBadge } from '@/components/ReviewTierBadge'
+import { resolveComplianceStatus, withAllRegulations, type ResolvedComplianceStatus } from '@/lib/compliance'
 
 type UserProfile = {
   id: number
@@ -118,6 +119,7 @@ export default function GameCardEditorial({
   const t       = useTranslations('editorial')
   const td      = useTranslations('darkPatterns')
   const tGenres = useTranslations('genres')
+  const tc      = useTranslations('compliance')
 
   const bds = scores?.bds ?? null
   const ris = scores?.ris ?? null
@@ -437,40 +439,60 @@ export default function GameCardEditorial({
         </section>
       )}
 
-      {/* Compliance — small-caps line just above the meta footer.
-          Each regulation gets a status-tone color and, if there are notes
-          worth surfacing, an italic disclosure line below. */}
-      {compliance.length > 0 && (
-        <div className="mt-12 border-t border-ink/30 pt-4 max-w-5xl">
-          <p
-            className="text-kicker uppercase text-muted"
-            style={{ fontVariantCaps: 'all-small-caps' }}
-          >
-            Regulatory compliance ·{' '}
-            {compliance.map((c, i) => (
-              <span key={c.regulation}>
-                {i > 0 && <span className="text-rule mx-2">·</span>}
-                <span className={statusToneClass(c.status)}>{c.regulation}</span>
-              </span>
-            ))}
-          </p>
-          {compliance.some((c) => c.notes) && (
-            <ul className="mt-2 space-y-1">
-              {compliance.filter((c) => c.notes).map((c) => (
-                <li
-                  key={c.regulation}
-                  className="font-serif italic text-sm text-muted leading-snug"
-                >
-                  <span className={`not-italic font-semibold ${statusToneClass(c.status)} mr-1`}>
-                    {c.regulation}:
+      {/* Compliance — three explicit states (meets criteria / concerns noted /
+          not yet assessed). A "concerns" verdict only renders when there is a
+          documented assessment behind it; otherwise it shows as "not yet
+          assessed" so we never publicly assert a legal outcome. Criteria and a
+          methodology-not-legal disclaimer are always surfaced. */}
+      {compliance.length > 0 && (() => {
+        const badges = withAllRegulations(compliance)
+        const stateShort = (s: ResolvedComplianceStatus) =>
+          s === 'met' ? tc('stateMet') : s === 'concerns' ? tc('stateConcerns') : tc('stateNotAssessed')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const criteriaFor = (reg: string): string =>
+          reg === 'DSA' ? tc('dsaDesc' as any) : reg === 'GDPR-K' ? tc('gdprkDesc' as any) : tc('oddsDesc' as any)
+        return (
+          <div className="mt-12 border-t border-ink/30 pt-4 max-w-5xl">
+            <p
+              className="text-kicker uppercase text-muted"
+              style={{ fontVariantCaps: 'all-small-caps' }}
+            >
+              {tc('heading')} ·{' '}
+              {badges.map((c, i) => {
+                const st = resolveComplianceStatus(c)
+                return (
+                  <span key={c.regulation}>
+                    {i > 0 && <span className="text-rule mx-2">·</span>}
+                    <span className={complianceToneClass(st)}>{c.regulation}</span>
+                    <span className="text-muted"> — {stateShort(st)}</span>
                   </span>
-                  {c.notes}
-                </li>
-              ))}
+                )
+              })}
+            </p>
+            <ul className="mt-2 space-y-1">
+              {badges.map((c) => {
+                const st = resolveComplianceStatus(c)
+                return (
+                  <li
+                    key={c.regulation}
+                    className="font-serif italic text-sm text-muted leading-snug"
+                  >
+                    <span className={`not-italic font-semibold ${complianceToneClass(st)} mr-1`}>
+                      {c.regulation}:
+                    </span>
+                    <span className="not-italic">{tc('criteriaPrefix')} </span>
+                    {criteriaFor(c.regulation)}
+                    {st !== 'not_assessed' && c.notes?.trim() ? ` — ${c.notes}` : ''}
+                  </li>
+                )
+              })}
             </ul>
-          )}
-        </div>
-      )}
+            <p className="mt-3 text-xs text-muted not-italic leading-relaxed">
+              {tc('disclaimer')}
+            </p>
+          </div>
+        )
+      })()}
 
       {/* Meta footer — base price, avg playtime, reviewed date, methodology link. */}
       <div className="mt-16 border-t border-ink pt-4 flex flex-wrap items-baseline gap-x-8 gap-y-2 text-sm font-sans">
@@ -554,10 +576,10 @@ function DebateTranscript({ text }: { text: string | null }) {
   )
 }
 
-function statusToneClass(status: ComplianceBadge['status']): string {
+function complianceToneClass(status: ResolvedComplianceStatus): string {
   switch (status) {
-    case 'compliant':     return 'text-ivy'
-    case 'non_compliant': return 'text-accent'
-    case 'not_assessed':  return 'text-muted'
+    case 'met':      return 'text-ivy'
+    case 'concerns': return 'text-warm'
+    case 'not_assessed': return 'text-muted'
   }
 }

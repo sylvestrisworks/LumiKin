@@ -102,7 +102,13 @@ type WorkItem = {
 
 function systemFor(locale: Locale): string {
   const lang = LANGUAGE_NAMES[locale]
-  return `You are translating game-review content from English into ${lang} for parents. Faithfulness matters more than fluency — a less elegant but accurate translation beats a polished one that adds or drops information.
+  const svStyle = locale === 'sv' ? `
+
+SWEDISH STYLE:
+- Avoid em dashes (—). English overuses them; Swedish prose rarely does. Replace with a comma, a colon, parentheses, or split into two sentences — whichever reads most naturally. Use an em dash only when no other punctuation works.
+- Do not translate word-for-word. Render the meaning in idiomatic Swedish; recast English sentence structures and idioms rather than calquing them.
+- The result must read as if a professional Swedish writer wrote it from scratch — not a translation. Avoid stilted phrasing, anglicisms, and tell-tale AI patterns (formulaic transitions, "Det är viktigt att notera", over-hedging).` : ''
+  return `You are translating game-review content from English into ${lang} for parents. Faithfulness matters more than fluency — a less elegant but accurate translation beats a polished one that adds or drops information.${svStyle}
 
 FORMAT:
 - Return ONLY a valid JSON object with the same keys as the input object.

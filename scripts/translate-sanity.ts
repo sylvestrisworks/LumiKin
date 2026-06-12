@@ -121,7 +121,13 @@ function localizeHrefs(doc: Doc, locale: string): number {
 // ─── Translate one doc's strings via the CLI (one call) ──────────────────────────
 
 const lang = LANGUAGE_NAMES[LOCALE] ?? LOCALE
-const SYSTEM = `You are translating website editorial content (parental game-guidance articles) from English into ${lang}. Faithful, natural ${lang} for parents — never add, drop, or summarize.
+const SV_STYLE = LOCALE === 'sv' ? `
+
+SWEDISH STYLE:
+- Avoid em dashes (—). English overuses them; Swedish prose rarely does. Replace with a comma, a colon, parentheses, or split into two sentences — whichever reads most naturally. Use an em dash only when no other punctuation works.
+- Do not translate word-for-word. Render the meaning in idiomatic Swedish; recast English sentence structures and idioms rather than calquing them.
+- The result must read as if a professional Swedish writer wrote it from scratch — not a translation. Avoid stilted phrasing, anglicisms, and tell-tale AI patterns (formulaic transitions, "Det är viktigt att notera", over-hedging).` : ''
+const SYSTEM = `You are translating website editorial content (parental game-guidance articles) from English into ${lang}. Faithful, natural ${lang} for parents — never add, drop, or summarize.${SV_STYLE}
 
 You receive a JSON array of strings. Return ONLY a JSON array of the SAME length and SAME order, where each element is the ${lang} translation of the corresponding input element.
 - Do NOT merge, split, reorder, add, or remove array elements — the output array length must exactly equal the input array length.

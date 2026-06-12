@@ -56,6 +56,13 @@ async function translateToLocales(
     ? `\nDO NOT TRANSLATE these terms — they MUST appear verbatim in the translation if they appear in the source:\n${dntTerms.map(t => `  - ${t}`).join('\n')}\n`
     : ''
 
+  const svStyle = locales.includes('sv' as Locale)
+    ? `\nSWEDISH STYLE (for the "sv" output only):
+- Avoid em dashes (—). English overuses them; Swedish prose rarely does. Replace with a comma, a colon, parentheses, or split into two sentences — whichever reads most naturally. Use an em dash only when no other punctuation works.
+- Do not translate word-for-word. Render the meaning in idiomatic Swedish; recast English sentence structures and idioms rather than calquing them.
+- The result must read as if a professional Swedish writer wrote it from scratch — not a translation. Avoid stilted phrasing, anglicisms, and tell-tale AI patterns (formulaic transitions, "Det är viktigt att notera", over-hedging).\n`
+    : ''
+
   const prompt = `You are translating game-review content from English into ${localeList} for parents. Faithfulness matters more than fluency — a less elegant but accurate translation beats a polished one that adds or drops information.
 
 FORMAT:
@@ -69,7 +76,7 @@ CONTENT FIDELITY (most important):
 - Each translated field's length should be roughly 80–130% of the source field length. If a field is hard to translate concisely, stay close to source length rather than shortening.
 - Keep the same number of sentences as the source (±1 is acceptable).
 - Do NOT invent facts about gameplay, ratings, mechanics, or risks that are not stated in the source.
-${dntBlock}
+${dntBlock}${svStyle}
 TONE:
 - Parent-friendly and informative, never fear-based.
 - Match the source register — if the source is plain language, do not get fancy in the translation.

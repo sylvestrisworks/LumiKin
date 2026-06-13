@@ -102,8 +102,8 @@ const PORTING_STUDIOS = new Set([
   'grip digital', 'saber interactive', 'shin\'en multimedia', 'fun labs', 'turn me up games',
 ])
 
-const isPortingStudio = (name: string): boolean =>
-  PORTING_STUDIOS.has(name.trim().toLowerCase())
+export const isPortingStudio = (name: string | null | undefined): boolean =>
+  !!name && PORTING_STUDIOS.has(name.trim().toLowerCase())
 
 /**
  * Choose the primary developer for a title, skipping known porting / co-dev

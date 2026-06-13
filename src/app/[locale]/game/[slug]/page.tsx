@@ -490,7 +490,13 @@ export default async function GamePage({ params }: Props) {
   // Library / Compare / Share — rendered twice: above the card on mobile
   // (otherwise these actions sit below the entire review), in the right rail
   // on desktop. Only one instance is visible per breakpoint.
-  const actionRow = (
+  //
+  // This MUST be a function, not a shared element: rendering the same element
+  // instance (which contains client components — ShareButton, the next-intl
+  // Link) in two positions breaks React's RSC serialization and 500s the whole
+  // page ("Cannot read properties of null (reading 'is')"). Each call returns
+  // fresh element instances.
+  const actionRow = () => (
     <div className="flex items-center justify-between gap-3 flex-wrap">
       {uid && game.id ? (
         <LibraryButton
@@ -501,7 +507,7 @@ export default async function GamePage({ params }: Props) {
       ) : <div />}
       <div className="flex items-center gap-2">
         <Link
-          href={`/compare?a=${game.slug}`}
+          href={{ pathname: '/compare', query: { a: game.slug } }}
           className="inline-flex items-center gap-1.5 px-3 py-2 text-kicker uppercase font-semibold text-ink border border-rule hover:border-ink hover:text-accent transition-colors"
           style={{ fontVariantCaps: 'all-small-caps' }}
         >
@@ -565,7 +571,7 @@ export default async function GamePage({ params }: Props) {
 
             {/* ── Left column: the game card ─────────────────────────────────── */}
             <div className="lg:col-span-8 min-w-0">
-              <div className="lg:hidden mb-6">{actionRow}</div>
+              <div className="lg:hidden mb-6">{actionRow()}</div>
               <GameCard {...data} userProfiles={userProfiles} />
 
               {/* Parent-intent FAQ — visible + FAQPage JSON-LD, all locales */}
@@ -588,7 +594,7 @@ export default async function GamePage({ params }: Props) {
             <aside className="mt-6 lg:mt-0 lg:col-span-4 space-y-4">
 
               {/* Library / Wishlist + Compare + Share (desktop rail) */}
-              <div className="hidden lg:block">{actionRow}</div>
+              <div className="hidden lg:block">{actionRow()}</div>
 
               {/* Parent Tips */}
               {game.id && (

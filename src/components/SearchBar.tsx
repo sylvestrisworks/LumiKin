@@ -9,6 +9,7 @@ import type { GameSummary } from '@/types/game'
 type SearchResult = GameSummary & { resultType?: 'game' | 'experience' }
 import { esrbToAge, curascoreTextEditorial } from '@/lib/ui'
 import { localizeGenre } from '@/lib/i18n/genres'
+import { safeImageUrl } from '@/lib/images'
 
 function esrbBadge(rating: string | null) {
   if (!rating) return null
@@ -224,8 +225,8 @@ export default function SearchBar({ placeholder }: { placeholder?: string }) {
                 >
                   {/* Thumbnail */}
                   <div className="w-10 h-10 overflow-hidden bg-ink/10 shrink-0 flex items-center justify-center">
-                    {game.backgroundImage ? (
-                      <Image src={game.backgroundImage} alt="" width={40} height={40} className="w-full h-full object-cover" />
+                    {safeImageUrl(game.backgroundImage) ? (
+                      <Image src={safeImageUrl(game.backgroundImage)!} alt="" width={40} height={40} className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-xs font-bold text-ink/50 font-serif">
                         {mainTitle.slice(0, 2).toUpperCase()}

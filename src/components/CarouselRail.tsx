@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { curascoreTextEditorial } from '@/lib/ui'
+import { safeImageUrl } from '@/lib/images'
 import Icon, { type IconName } from '@/components/Icon'
 
 const SMALL_CAPS = { fontVariantCaps: 'all-small-caps' as const }
@@ -45,6 +46,7 @@ export type CarouselTileProps = {
 export function CarouselTile({
   index, href, image, title, score, ageLabel, ageTitle, footer, meta, pending = false,
 }: CarouselTileProps) {
+  const safeImg = safeImageUrl(image)
   return (
     <Link
       href={href}
@@ -53,9 +55,9 @@ export function CarouselTile({
     >
       {/* Image */}
       <div className="relative h-28 sm:h-32 overflow-hidden bg-rule/30">
-        {image ? (
+        {safeImg ? (
           <Image
-            src={image}
+            src={safeImg}
             alt=""
             fill
             sizes="208px"

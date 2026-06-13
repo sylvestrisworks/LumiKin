@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useTranslations, useLocale } from 'next-intl'
 import { curascoreTextEditorial } from '@/lib/ui'
+import { safeImageUrl } from '@/lib/images'
 import { CONFIDENCE_THRESHOLD } from '@/lib/scoring/experience-risk'
 
 export type ExperienceSummary = {
@@ -46,9 +47,9 @@ export default function ExperienceCard({ exp }: { exp: ExperienceSummary }) {
     >
       {/* Thumbnail */}
       <div className="relative h-28 bg-rule/30 overflow-hidden shrink-0">
-        {exp.thumbnailUrl ? (
+        {safeImageUrl(exp.thumbnailUrl) ? (
           <Image
-            src={exp.thumbnailUrl}
+            src={safeImageUrl(exp.thumbnailUrl)!}
             alt=""
             fill
             sizes="160px"

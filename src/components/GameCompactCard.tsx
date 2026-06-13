@@ -5,6 +5,7 @@ import { Link } from '@/navigation'
 import { useTranslations } from 'next-intl'
 import { curascoreTextEditorial, esrbToAge } from '@/lib/ui'
 import { localizeGenre } from '@/lib/i18n/genres'
+import { safeImageUrl } from '@/lib/images'
 import type { GameSummary } from '@/types/game'
 
 type Props = {
@@ -14,6 +15,7 @@ type Props = {
 export default function GameCompactCard({ game }: Props) {
   const t       = useTranslations('gameCompact')
   const tGenres = useTranslations('genres')
+  const safeImg = safeImageUrl(game.backgroundImage)
   return (
     <Link
       href={`/game/${game.slug}`}
@@ -21,9 +23,9 @@ export default function GameCompactCard({ game }: Props) {
     >
       {/* Thumbnail */}
       <div className="relative h-28 bg-rule/30 overflow-hidden shrink-0">
-        {game.backgroundImage ? (
+        {safeImg ? (
           <Image
-            src={game.backgroundImage}
+            src={safeImg}
             alt=""
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 280px"

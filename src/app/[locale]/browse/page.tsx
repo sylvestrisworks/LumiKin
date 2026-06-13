@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { eq, desc, asc, sql, and, lte, gte, gt, ilike, inArray, isNull, isNotNull, or, type SQL } from 'drizzle-orm'
 import { curascoreTextEditorial } from '@/lib/ui'
+import { safeImageUrl } from '@/lib/images'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { games, gameScores, childProfiles, platformExperiences, experienceScores } from '@/lib/db/schema'
@@ -913,9 +914,9 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                         className="flex items-center gap-3 sm:gap-4 py-2.5 sm:py-3 px-1 sm:px-2 hover:translate-x-0.5 transition-transform group"
                       >
                         <div className="w-10 h-10 sm:w-12 sm:h-12 overflow-hidden shrink-0 bg-rule/30">
-                          {row.backgroundImage ? (
+                          {safeImageUrl(row.backgroundImage) ? (
                             <Image
-                              src={row.backgroundImage}
+                              src={safeImageUrl(row.backgroundImage)!}
                               alt={row.title}
                               width={48}
                               height={48}

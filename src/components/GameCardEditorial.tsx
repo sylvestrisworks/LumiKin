@@ -15,6 +15,7 @@ import {
 import type { DarkPattern, GameCardProps, SerializedScores } from '@/types/game'
 import { calcAge } from '@/lib/age'
 import { esrbToAge } from '@/lib/ui'
+import { safeImageUrl } from '@/lib/images'
 import { localizeGenre } from '@/lib/i18n/genres'
 import { ReviewTierBadge } from '@/components/ReviewTierBadge'
 import { resolveComplianceStatus, withAllRegulations, type ResolvedComplianceStatus } from '@/lib/compliance'
@@ -138,9 +139,9 @@ export default function GameCardEditorial({
       <div className="grid md:grid-cols-3 gap-8 items-start">
         <div className="md:col-span-2 relative">
           <div className="aspect-[16/10] w-full bg-ink/10 overflow-hidden">
-            {game.backgroundImage ? (
+            {safeImageUrl(game.backgroundImage) ? (
               <Image
-                src={game.backgroundImage}
+                src={safeImageUrl(game.backgroundImage)!}
                 alt={game.title}
                 width={1200}
                 height={750}

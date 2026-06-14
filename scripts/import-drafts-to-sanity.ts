@@ -57,6 +57,22 @@ function parseCover(rawBody: string): { path: string; alt: string } | null {
   return { path: m[1].trim(), alt: m[2].replace(/\s+/g, ' ').trim() }
 }
 
+/**
+ * Inline body figures. Authored as a standalone comment on its own line:
+ *   <!-- figure: path/to/chart.png  alt: "..." -->
+ * Each is replaced with an `@@FIGURE<n>@@` sentinel line so it survives block
+ * parsing in place, then swapped for an uploaded image block afterwards.
+ */
+const FIGURE_RE = /<!--\s*figure:\s*([^\s]+)[\s\S]*?alt:\s*"([\s\S]*?)"\s*-->/g
+function extractFigures(body: string): { body: string; figures: { path: string; alt: string }[] } {
+  const figures: { path: string; alt: string }[] = []
+  const replaced = body.replace(FIGURE_RE, (_m, path: string, alt: string) => {
+    const idx = figures.push({ path: path.trim(), alt: alt.replace(/\s+/g, ' ').trim() }) - 1
+    return `\n\n@@FIGURE${idx}@@\n\n`
+  })
+  return { body: replaced, figures }
+}
+
 /** Upload the cover PNG as a Sanity asset (deduped by filename) and return an image ref. */
 async function uploadCover(relPath: string, alt: string): Promise<ImageRef | null> {
   const abs = join(process.cwd(), relPath)
@@ -244,10 +260,25 @@ async function importDraft(file: string): Promise<'created' | 'published' | 'exi
   }
 
   const docId = PUBLISH ? publishedId : draftId
-  // Strip HTML comments (e.g. the <!-- coverImage / alt --> authoring note) so
-  // they never render as visible body text.
-  const cleanBody = body.replace(/<!--[\s\S]*?-->/g, '')
-  const bodyBlocks = markdownToBlocks(cleanBody)
+  // Pull inline figures out first (leaving @@FIGURE<n>@@ sentinels in place),
+  // then strip the remaining HTML comments (e.g. the coverImage note) so they
+  // never render as visible body text.
+  const { body: withSentinels, figures } = extractFigures(body)
+  const cleanBody = withSentinels.replace(/<!--[\s\S]*?-->/g, '')
+  const bodyBlocks: unknown[] = markdownToBlocks(cleanBody)
+
+  // Swap each sentinel paragraph for an uploaded inline image block.
+  for (let i = 0; i < bodyBlocks.length; i++) {
+    const b = bodyBlocks[i] as Block
+    const text = b._type === 'block' ? b.children.map(s => s.text).join('') : ''
+    const fm2 = text.trim().match(/^@@FIGURE(\d+)@@$/)
+    if (!fm2) continue
+    const fig = figures[Number(fm2[1])]
+    const ref = fig ? await uploadCover(fig.path, fig.alt) : null
+    bodyBlocks[i] = ref
+      ? { _key: randomKey(), ...ref }
+      : mkBlock('normal', '') // drop the sentinel if the figure is missing
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const doc: any = {

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { fetchSiteStats, fetchRecentScores } from '@/lib/stats'
 import { METHODOLOGY_PDF_PATH } from '@/lib/methodology'
+import { ORGANIZATION_ID, founderRef } from '@/lib/author'
+import EditorStatement from '@/components/EditorStatement'
 import CoverageStrip from './_components/CoverageStrip'
 import ContactForm from './_components/ContactForm'
 import ApiSampleBlock from './_components/ApiSampleBlock'
@@ -36,8 +38,12 @@ export const metadata: Metadata = {
 const ORG_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
+  // Shared @id + founder so this node and the homepage Organization resolve to
+  // the same entity and link to the founder Person. See src/lib/author.ts.
+  '@id': ORGANIZATION_ID,
   name: 'LumiKin',
   url: SITE_URL,
+  founder: founderRef,
   description:
     'LumiKin provides structured child-safety ratings and a game analysis API for parental control vendors, ISPs, app stores, and education platforms. The LumiKin methodology scores games on developmental benefits and design risks, producing versioned, machine-readable ratings.',
   logo: `${SITE_URL}/lumikin-logo.svg`,
@@ -212,6 +218,14 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
             </a>
           </div>
         </div>
+      </section>
+
+      {/* ── The editor behind the ratings (credentialed block) ────────────────── */}
+      <section className="max-w-5xl mx-auto px-6 py-20">
+        <h2 className="text-kicker uppercase font-semibold text-muted mb-8">
+          The editor behind the ratings
+        </h2>
+        <EditorStatement />
       </section>
 
       {/* ── API preview ───────────────────────────────────────────────────────── */}

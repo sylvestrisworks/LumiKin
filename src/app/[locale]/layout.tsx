@@ -52,6 +52,7 @@ export default async function LocaleLayout({
                   <Link href="/browse"      className="text-ink hover:text-accent transition-colors">{t('navBrowse')}</Link>
                   <Link href="/compare"     className="text-ink hover:text-accent transition-colors">{t('navCompare')}</Link>
                   <Link href="/methodology" className="text-ink hover:text-accent transition-colors">{t('navMethodology')}</Link>
+                  <Link href="/about"       className="text-ink hover:text-accent transition-colors">{t('navAbout')}</Link>
                   <Link href="/faq"         className="text-ink hover:text-accent transition-colors">{t('navFaq')}</Link>
                   <Link href="/press"       className="text-ink hover:text-accent transition-colors">{t('navPress')}</Link>
                   <Link href="/privacy"     className="text-ink hover:text-accent transition-colors">{t('navPrivacy')}</Link>

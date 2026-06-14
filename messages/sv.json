@@ -723,6 +723,8 @@
   },
   "library": {
     "standfirst": "Hela din hylla på ett ställe — filtrera per barn, sortera efter det som betyder något och se direkt vad som är värt deras tid.",
+    "addKidsNudge": "Du har lagt till spel — lägg nu till dina barn för att se vad som passar varje barn.",
+    "addKidsNudgeCta": "Skapa profiler →",
     "toDashboard": "Översikt",
     "viewForLabel": "Visa för:",
     "platformLabel": "Plattform:",
@@ -1018,7 +1020,17 @@
     "hours": "{hours}t",
     "minutes": "{minutes}m"
   },
+  "promo": {
+    "shelfKicker": "För föräldrar",
+    "shelfTitle": "Bygg familjens spelhylla",
+    "shelfDek": "Spara spelen dina barn spelar, följ rekommenderad skärmtid och se direkt vad som passar varje barn — gratis.",
+    "shelfPoint1": "Spara och följ varje spel familjen spelar",
+    "shelfPoint2": "Få åldersanpassade tips för varje barn",
+    "shelfPoint3": "Importera ditt Steam-bibliotek i ett steg",
+    "shelfCta": "Skapa din gratishylla"
+  },
   "libraryButton": {
+    "loggedOutPitch": "Gratis — logga in för att spara det här i ditt bibliotek, följa skärmtid och se om det passar dina barn.",
     "addToLibrary": "Lägg till i bibliotek",
     "inLibrary": "I biblioteket",
     "wishlist": "Önskelista",
@@ -1355,6 +1367,7 @@
     }
   },
   "shareButton": {
+    "shareText": "{title} — LumiScore {score}/100 för föräldrar. Se hela analysen:",
     "copyLink": "Kopiera länk",
     "copied": "Kopierad",
     "share": "Dela"

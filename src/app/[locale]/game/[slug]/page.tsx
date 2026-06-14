@@ -295,11 +295,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function GamePage({ params }: Props) {
   const { slug, locale: routeLocale } = await params
-  const [data, session, t, tGC, locale] = await Promise.all([
+  const [data, session, t, tGC, tLib, tShare, locale] = await Promise.all([
     fetchGameData(slug),
     auth(),
     getTranslations('game'),
     getTranslations('gameCard'),
+    getTranslations('libraryButton'),
+    getTranslations('shareButton'),
     getLocale(),
   ])
   if (!data) {
@@ -498,11 +500,14 @@ export default async function GamePage({ params }: Props) {
   // fresh element instances.
   const actionRow = () => (
     <div className="flex items-center justify-between gap-3 flex-wrap">
-      {uid && game.id ? (
+      {game.id ? (
         <LibraryButton
           gameId={game.id}
           initialOwned={initialOwned}
           initialWishlisted={initialWishlisted}
+          signedIn={!!uid}
+          gameSlug={game.slug}
+          locale={locale}
         />
       ) : <div />}
       <div className="flex items-center gap-2">
@@ -514,7 +519,12 @@ export default async function GamePage({ params }: Props) {
           <GitCompareArrows size={15} strokeWidth={2.5} aria-hidden />
           {tGC('compareThis')}
         </Link>
-        <ShareButton title={game.title} />
+        <ShareButton
+          title={game.title}
+          shareText={scores?.curascore != null
+            ? tShare('shareText', { title: game.title, score: scores.curascore })
+            : undefined}
+        />
       </div>
     </div>
   )
@@ -595,6 +605,13 @@ export default async function GamePage({ params }: Props) {
 
               {/* Library / Wishlist + Compare + Share (desktop rail) */}
               <div className="hidden lg:block">{actionRow()}</div>
+
+              {/* Logged-out value line — turns the save action into a free pitch */}
+              {!uid && game.id && (
+                <p className="text-xs text-muted leading-relaxed -mt-1">
+                  {tLib('loggedOutPitch')}
+                </p>
+              )}
 
               {/* Parent Tips */}
               {game.id && (

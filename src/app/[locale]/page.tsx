@@ -13,6 +13,8 @@ import ReadingRoom from './_components/ReadingRoom'
 import TodaysReview from './_components/TodaysReview'
 import MethodologyEditorial from './_components/MethodologyEditorial'
 import BrowseByEditorial from './_components/BrowseByEditorial'
+import FamilyShelfPitch from './_components/FamilyShelfPitch'
+import AnonOnly from '@/components/AnonOnly'
 import FromTheBlog from './_components/FromTheBlog'
 
 // Old homepage catalog params — redirect to /browse
@@ -140,6 +142,11 @@ export default async function HomePage({ params, searchParams }: Props) {
 
       {/* ── How a rating is built (worked example + anatomy of a LumiScore) ──── */}
       <TodaysReview locale={locale} />
+
+      {/* ── Family shelf pitch (signed-out visitors only) ────────────────────── */}
+      <AnonOnly>
+        <FamilyShelfPitch locale={locale} />
+      </AnonOnly>
 
       {/* ── Browse by (editorial directory) ──────────────────────────────────── */}
       <BrowseByEditorial locale={locale} />

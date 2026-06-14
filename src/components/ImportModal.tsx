@@ -29,11 +29,10 @@ type ConnectionStatus = {
 }
 
 type Step = 'input' | 'loading' | 'preview' | 'done'
-type Platform = 'steam' | 'epic' | 'gog' | 'xbox'
+type Platform = 'steam' | 'gog' | 'xbox'
 
-const PLATFORMS: { id: Platform; label: string; icon: 'steam' | 'epic' | 'gog' | 'xbox' }[] = [
+const PLATFORMS: { id: Platform; label: string; icon: 'steam' | 'gog' | 'xbox' }[] = [
   { id: 'steam', label: 'Steam', icon: 'steam' },
-  { id: 'epic',  label: 'Epic',  icon: 'epic' },
   { id: 'gog',   label: 'GOG',   icon: 'gog' },
   { id: 'xbox',  label: 'Xbox',  icon: 'xbox' },
 ]
@@ -61,8 +60,7 @@ export default function ImportModal({ onClose }: { onClose: () => void }) {
   const [addedCount, setAddedCount] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // ── Connection state (Epic + GOG) ─────────────────────────────────────────────
-  const [epicStatus, setEpicStatus] = useState<ConnectionStatus | null>(null)
+  // ── Connection state (GOG + Xbox) ─────────────────────────────────────────────
   const [gogStatus,  setGogStatus]  = useState<ConnectionStatus | null>(null)
   const [xboxStatus, setXboxStatus] = useState<ConnectionStatus | null>(null)
   const [connecting, setConnecting] = useState(false)
@@ -72,7 +70,6 @@ export default function ImportModal({ onClose }: { onClose: () => void }) {
   const [connError, setConnError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/epic/connect').then(r => r.json()).then(setEpicStatus).catch(() => setEpicStatus({ connected: false }))
     fetch('/api/gog/connect').then(r => r.json()).then(setGogStatus).catch(() => setGogStatus({ connected: false }))
     fetch('/api/xbox/connect').then(r => r.json()).then(setXboxStatus).catch(() => setXboxStatus({ connected: false }))
   }, [])
@@ -122,21 +119,6 @@ export default function ImportModal({ onClose }: { onClose: () => void }) {
       next.has(id) ? next.delete(id) : next.add(id)
       return next
     })
-  }
-
-  // ── Epic handler ────────────────────────────────────────────────────────────
-  async function connectEpic() {
-    setConnecting(true)
-    setConnError(null)
-    try {
-      const res  = await fetch('/api/epic/connect/start', { method: 'POST' })
-      const data = await res.json() as { authUrl?: string; error?: string }
-      if (!data.authUrl) throw new Error(data.error ?? 'Could not start connection')
-      window.location.href = data.authUrl
-    } catch (err) {
-      setConnError(String(err).replace('Error: ', ''))
-      setConnecting(false)
-    }
   }
 
   // ── Xbox handler ──────────────────────────────────────────────────────────────
@@ -360,31 +342,6 @@ export default function ImportModal({ onClose }: { onClose: () => void }) {
               </p>
               <p className="text-sm text-muted mt-1">{t('successSub')}</p>
             </div>
-          )}
-
-          {/* ── EPIC ───────────────────────────────────────────────────────── */}
-          {platform === 'epic' && (
-            epicStatus === null ? (
-              <p className="text-sm text-muted py-8 text-center">Loading…</p>
-            ) : epicStatus.connected ? (
-              <ConnectedCard name="Epic" status={epicStatus} />
-            ) : (
-              <div className="space-y-4">
-                <p className="text-sm text-ink/80 leading-relaxed">
-                  Connect your Epic Games account and we&apos;ll import the games you own, then keep
-                  your library up to date automatically. You&apos;ll be sent to Epic to sign in.
-                </p>
-                {connError && <p className="text-sm text-accent border border-accent px-3 py-2">{connError}</p>}
-                <button
-                  onClick={connectEpic}
-                  disabled={connecting}
-                  className="w-full py-2.5 bg-ink hover:bg-accent disabled:opacity-50 text-paper text-kicker uppercase font-semibold transition-colors"
-                  style={{ fontVariantCaps: 'all-small-caps' }}
-                >
-                  {connecting ? 'Redirecting to Epic…' : 'Connect Epic Games account'}
-                </button>
-              </div>
-            )
           )}
 
           {/* ── GOG ────────────────────────────────────────────────────────── */}

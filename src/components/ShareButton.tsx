@@ -6,9 +6,11 @@ import { useTranslations } from 'next-intl'
 type Props = {
   title: string
   url?: string
+  /** Optional descriptive text carried into the native share sheet (e.g. the LumiScore hook). */
+  shareText?: string
 }
 
-export default function ShareButton({ title, url }: Props) {
+export default function ShareButton({ title, url, shareText }: Props) {
   const t = useTranslations('shareButton')
   const [copied, setCopied] = useState(false)
   const [hasNativeShare, setHasNativeShare] = useState(false)
@@ -41,7 +43,7 @@ export default function ShareButton({ title, url }: Props) {
 
   async function nativeShare() {
     if (navigator.share) {
-      await navigator.share({ title, url: getUrl() }).catch(() => {})
+      await navigator.share({ title, text: shareText, url: getUrl() }).catch(() => {})
     }
   }
 

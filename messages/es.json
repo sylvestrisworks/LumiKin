@@ -723,6 +723,8 @@
   },
   "library": {
     "standfirst": "Toda tu biblioteca en un solo lugar: filtra por hijo, ordena por lo que importa y ve de un vistazo qué merece su tiempo.",
+    "addKidsNudge": "Has añadido juegos: ahora añade a tus hijos para ver qué le conviene a cada uno.",
+    "addKidsNudgeCta": "Crear perfiles →",
     "toDashboard": "Panel",
     "viewForLabel": "Ver para:",
     "platformLabel": "Plataforma:",
@@ -1018,7 +1020,17 @@
     "hours": "{hours}h",
     "minutes": "{minutes}min"
   },
+  "promo": {
+    "shelfKicker": "Para padres",
+    "shelfTitle": "Crea la estantería de tu familia",
+    "shelfDek": "Guarda los juegos de tus hijos, controla el tiempo de pantalla recomendado y ve de un vistazo qué le conviene a cada niño — gratis.",
+    "shelfPoint1": "Guarda y controla cada juego que juega tu familia",
+    "shelfPoint2": "Recomendaciones según la edad de cada niño",
+    "shelfPoint3": "Importa tu biblioteca de Steam en un solo paso",
+    "shelfCta": "Crea tu estantería gratis"
+  },
   "libraryButton": {
+    "loggedOutPitch": "Gratis: inicia sesión para guardarlo en tu biblioteca, controlar el tiempo de pantalla y ver si le conviene a tus hijos.",
     "addToLibrary": "Añadir a biblioteca",
     "inLibrary": "En biblioteca",
     "wishlist": "Lista de deseos",
@@ -1355,6 +1367,7 @@
     }
   },
   "shareButton": {
+    "shareText": "{title} — LumiScore {score}/100 para padres. Mira el análisis completo:",
     "copyLink": "Copiar enlace",
     "copied": "Copiado",
     "share": "Compartir"

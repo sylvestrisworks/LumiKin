@@ -39,6 +39,9 @@ export function buildAuthUrl(state: string, redirectUri: string): string {
     redirect_uri:  redirectUri,
     scope:         SCOPE,
     state,
+    // Always show the account chooser — without this, Microsoft silently reuses
+    // the browser's existing session, so users can't pick which Xbox account to link.
+    prompt:        'select_account',
   })
   return `${MSA_AUTHORIZE}?${params}`
 }
@@ -119,7 +122,10 @@ async function xblAuthenticate(msaAccessToken: string): Promise<{ token: string 
     }),
     signal: AbortSignal.timeout(15_000),
   })
-  if (!res.ok) throw new Error(`XBL authenticate failed: ${res.status}`)
+  if (!res.ok) {
+    const body = await res.text().catch(() => '')
+    throw new Error(`XBL authenticate failed: ${res.status} ${body}`)
+  }
   const data = await res.json() as XblResponse
   return { token: data.Token }
 }
@@ -137,7 +143,12 @@ async function xstsAuthorize(xblToken: string): Promise<XstsAuth> {
     }),
     signal: AbortSignal.timeout(15_000),
   })
-  if (!res.ok) throw new Error(`XSTS authorize failed: ${res.status}`)
+  if (!res.ok) {
+    // XSTS error bodies carry an XErr code that pinpoints the cause
+    // (e.g. 2148916233 no Xbox account, 2148916238 child account, 2148916235 region).
+    const body = await res.text().catch(() => '')
+    throw new Error(`XSTS authorize failed: ${res.status} ${body}`)
+  }
   const data = await res.json() as XblResponse
   const claim = data.DisplayClaims.xui[0]
   if (!claim?.uhs || !claim?.xid) throw new Error('XSTS response missing uhs/xuid')

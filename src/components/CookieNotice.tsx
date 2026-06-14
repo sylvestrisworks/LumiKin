@@ -5,6 +5,10 @@ import { useTranslations } from 'next-intl'
 
 const STORAGE_KEY = 'ps-cookie-dismissed'
 
+// Fired on dismiss so other bottom-anchored overlays (BetaBanner) can take
+// their turn instead of stacking on top of this card.
+export const COOKIE_DISMISSED_EVENT = 'lumikin:cookie-dismissed'
+
 export default function CookieNotice() {
   const t = useTranslations('cookie')
   const [visible, setVisible] = useState(false)
@@ -22,6 +26,7 @@ export default function CookieNotice() {
     setTimeout(() => {
       localStorage.setItem(STORAGE_KEY, '1')
       setVisible(false)
+      window.dispatchEvent(new Event(COOKIE_DISMISSED_EVENT))
     }, 400)
   }
 

@@ -14,6 +14,7 @@ import {
   applyScoreFloors,
   computeInputConfidence,
 } from '@/lib/scoring/experience-risk'
+import { isExploitTooling } from '@/lib/scoring/quality-floor'
 import { deriveTimeRecommendation } from '@/lib/scoring/time'
 import { callGeminiTool, type GeminiTool } from '@/lib/vertex-ai'
 
@@ -227,7 +228,54 @@ export type SavedScore = {
   appliedFloors:   Array<{ dimension: string; from: number; to: number; reason: string }>
 }
 
+/**
+ * Write the flagged "Not enough info to rate / pending human review" state for
+ * an experience whose primary function is exploit / cheat / free-admin tooling.
+ *
+ * Such experiences must NEVER carry a high LumiScore (the June 2026 audit found
+ * "[Place 1] Lua Script Execution" scored 80). We persist a quarantine row:
+ * no curascore, zero input confidence (so every display surface shows the
+ * "not enough info" pill instead of a number), and scoringMethod 'quarantined'
+ * so it is auditable. No AI call is needed or trusted for these.
+ */
+export async function quarantineScore(experience: ExperienceRow): Promise<SavedScore> {
+  const row = {
+    experienceId:       experience.id,
+    curascore:          null,
+    curascoreAiSuggested: null,
+    inputConfidence:    0,
+    summary:            'Flagged for human review: this experience appears to be exploit, cheat, or free-admin tooling rather than child-appropriate content.',
+    benefitsNarrative:  null,
+    risksNarrative:     null,
+    parentTip:          null,
+    scoringMethod:      'quarantined' as const,
+    methodologyVersion: CURRENT_METHODOLOGY_VERSION,
+    calculatedAt:       new Date(),
+    updatedAt:          new Date(),
+  }
+
+  const [existing] = await db
+    .select({ id: experienceScores.id })
+    .from(experienceScores)
+    .where(eq(experienceScores.experienceId, experience.id))
+    .limit(1)
+
+  if (existing) {
+    await db.update(experienceScores).set(row).where(eq(experienceScores.id, existing.id))
+  } else {
+    await db.insert(experienceScores).values(row)
+  }
+
+  return { curascore: 0, inputConfidence: 0, riskScore: 0, benefitScore: 0, appliedFloors: [] }
+}
+
 export async function saveScore(experience: ExperienceRow, eval_: EvalInput, platformSlug: string): Promise<SavedScore> {
+  // Denylist guard: exploit/cheat/free-admin tooling can never receive a real
+  // score regardless of what the AI returned. Route to the quarantine state.
+  if (isExploitTooling(experience.title, experience.description)) {
+    return quarantineScore(experience)
+  }
+
   const floored = applyScoreFloors(
     {
       dopamineTrapScore: eval_.risks.dopamineTrapScore,

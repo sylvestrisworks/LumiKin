@@ -1,10 +1,13 @@
 export const dynamic = 'force-dynamic'
 
 import { Suspense } from 'react'
+import { unstable_cache } from 'next/cache'
+import Image from 'next/image'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { eq, desc, asc, sql, and, lte, gte, gt, ilike, inArray, isNull, isNotNull, or, type SQL } from 'drizzle-orm'
 import { curascoreTextEditorial } from '@/lib/ui'
+import { safeImageUrl } from '@/lib/images'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { games, gameScores, childProfiles, platformExperiences, experienceScores } from '@/lib/db/schema'
@@ -132,31 +135,45 @@ function escapeIlike(s: string): string {
   return s.replace(/[\\%_]/g, ch => '\\' + ch)
 }
 
+// The eight curated-shelf queries, cached for 10 minutes per (platforms, age)
+// combination — the catalogue changes daily at most, and /browse is
+// force-dynamic, so without this every shelf hit pays ~8 round-trips.
+// `unstable_cache` keys on the arguments automatically; Dates come back as
+// ISO strings, which `toCarouselGame` already normalizes.
+const fetchCarouselGames = unstable_cache(
+  async (platforms: string[], age: string | undefined) => {
+    const platformFilter: SQL | undefined = platforms.length > 0
+      ? or(...platforms.map(p => sql`${games.platforms}::text ILIKE ${'%' + escapeIlike(p) + '%'}`))
+      : undefined
+
+    const ratings = age ? (ESRB_FOR_AGE[age] ?? ['E', 'E10+', 'T']) : null
+    const ageFilter: SQL = age && ratings
+      ? inArray(games.esrbRating, ratings)
+      : or(isNull(games.esrbRating), inArray(games.esrbRating, ['E', 'E10+', 'T', 'M']))!
+
+    const base = (extra?: SQL) => and(isNotNull(gameScores.curascore), platformFilter, ageFilter, extra)
+
+    const [topRated, coopPlay, highBenefit, vrGames, beginnerGames, newAndGood, popular, trending] = await Promise.all([
+      db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base()).orderBy(desc(gameScores.curascore), sql`${games.rawgAdded} DESC NULLS LAST`).limit(12),
+      db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base(gte(gameScores.socialEmotionalScore, 0.5))).orderBy(desc(gameScores.socialEmotionalScore)).limit(12),
+      db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base(gte(gameScores.cognitiveScore, 0.6))).orderBy(desc(gameScores.bds)).limit(12),
+      db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(isNotNull(gameScores.curascore), eq(games.isVr, true), ageFilter)).orderBy(desc(gameScores.curascore)).limit(12),
+      db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(isNotNull(gameScores.curascore), platformFilter, inArray(games.esrbRating, ['E', 'E10+']), lte(gameScores.ris, 0.25), gte(gameScores.curascore, 55))).orderBy(desc(gameScores.curascore)).limit(12),
+      db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base(gte(gameScores.curascore, 60))).orderBy(desc(games.releaseDate)).limit(12),
+      db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(base(), isNotNull(games.metacriticScore))).orderBy(desc(games.rawgAdded), desc(games.metacriticScore)).limit(12),
+      db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(base(), isNotNull(games.trendingScore), gt(games.trendingScore, 0))).orderBy(desc(games.trendingScore)).limit(12).catch(() => []),
+    ])
+
+    return { topRated, coopPlay, highBenefit, vrGames, beginnerGames, newAndGood, popular, trending }
+  },
+  ['browse-carousel-games'],
+  { revalidate: 600 },
+)
+
 async function getCarouselRows(platforms: string[], age: string | undefined, locale: string): Promise<CarouselRowData[]> {
-  const t = await getTranslations({ locale, namespace: 'browse' })
-  const platformFilter: SQL | undefined = platforms.length > 0
-    ? or(...platforms.map(p => sql`${games.platforms}::text ILIKE ${'%' + escapeIlike(p) + '%'}`))
-    : undefined
-
-  const ratings = age ? (ESRB_FOR_AGE[age] ?? ['E', 'E10+', 'T']) : null
-  const ageFilter: SQL = age && ratings
-    ? inArray(games.esrbRating, ratings)
-    : or(isNull(games.esrbRating), inArray(games.esrbRating, ['E', 'E10+', 'T', 'M']))!
-
-  const base = (extra?: SQL) => and(isNotNull(gameScores.curascore), platformFilter, ageFilter, extra)
-
-  const trendingCutoff = new Date()
-  trendingCutoff.setMonth(trendingCutoff.getMonth() - 18)
-
-  const [topRated, coopPlay, highBenefit, vrGames, beginnerGames, newAndGood, popular, trending] = await Promise.all([
-    db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base()).orderBy(desc(gameScores.curascore), sql`${games.rawgAdded} DESC NULLS LAST`).limit(12),
-    db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base(gte(gameScores.socialEmotionalScore, 0.5))).orderBy(desc(gameScores.socialEmotionalScore)).limit(12),
-    db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base(gte(gameScores.cognitiveScore, 0.6))).orderBy(desc(gameScores.bds)).limit(12),
-    db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(isNotNull(gameScores.curascore), eq(games.isVr, true), ageFilter)).orderBy(desc(gameScores.curascore)).limit(12),
-    db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(isNotNull(gameScores.curascore), platformFilter, inArray(games.esrbRating, ['E', 'E10+']), lte(gameScores.ris, 0.25), gte(gameScores.curascore, 55))).orderBy(desc(gameScores.curascore)).limit(12),
-    db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(base(gte(gameScores.curascore, 60))).orderBy(desc(games.releaseDate)).limit(12),
-    db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(base(), isNotNull(games.metacriticScore))).orderBy(desc(games.rawgAdded), desc(games.metacriticScore)).limit(12),
-    db.select(CAROUSEL_SELECT).from(games).innerJoin(gameScores, eq(gameScores.gameId, games.id)).where(and(base(), isNotNull(games.trendingScore), gt(games.trendingScore, 0))).orderBy(desc(games.trendingScore)).limit(12).catch(() => []),
+  const [t, { topRated, coopPlay, highBenefit, vrGames, beginnerGames, newAndGood, popular, trending }] = await Promise.all([
+    getTranslations({ locale, namespace: 'browse' }),
+    fetchCarouselGames(platforms, age),
   ])
 
   const b = `/${locale}/browse`
@@ -178,6 +195,53 @@ async function getCarouselRows(platforms: string[], age: string | undefined, loc
 
   return rows.filter(r => r.games.length > 0)
 }
+
+// Top Roblox / Fortnite Creative experiences for the shelf — same 10-minute
+// cache rationale as fetchCarouselGames (3 queries per hit otherwise).
+const fetchShelfExperiences = unstable_cache(
+  async () => {
+    const [robloxRow, fortniteRow] = await Promise.all([
+      db.select({ id: games.id }).from(games).where(eq(games.slug, 'roblox')).limit(1).then(r => r[0] ?? null),
+      db.select({ id: games.id }).from(games).where(eq(games.slug, 'fortnite-creative')).limit(1).then(r => r[0] ?? null),
+    ])
+
+    const expSelect = {
+      slug:          platformExperiences.slug,
+      title:         platformExperiences.title,
+      thumbnailUrl:  platformExperiences.thumbnailUrl,
+      creatorName:   platformExperiences.creatorName,
+      activePlayers: platformExperiences.activePlayers,
+      visitCount:    platformExperiences.visitCount,
+      curascore:     experienceScores.curascore,
+      timeRecommendationMinutes: experienceScores.timeRecommendationMinutes,
+      recommendedMinAge:         experienceScores.recommendedMinAge,
+      strangerRisk:              experienceScores.strangerRisk,
+      monetizationScore:         experienceScores.monetizationScore,
+      inputConfidence:           experienceScores.inputConfidence,
+    }
+
+    const [roblox, fortnite] = await Promise.all([
+      robloxRow
+        ? db.select(expSelect).from(platformExperiences)
+            .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
+            .where(and(eq(platformExperiences.platformId, robloxRow.id), eq(platformExperiences.isPublic, true)))
+            .orderBy(desc(platformExperiences.activePlayers))
+            .limit(8)
+        : Promise.resolve([]),
+      fortniteRow
+        ? db.select(expSelect).from(platformExperiences)
+            .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
+            .where(and(eq(platformExperiences.platformId, fortniteRow.id), isNotNull(platformExperiences.thumbnailUrl), eq(platformExperiences.isPublic, true)))
+            .orderBy(desc(experienceScores.curascore))
+            .limit(8)
+        : Promise.resolve([]),
+    ])
+
+    return { roblox, fortnite }
+  },
+  ['browse-shelf-experiences'],
+  { revalidate: 600 },
+)
 
 // ─── Age → ESRB mapping ───────────────────────────────────────────────────────
 
@@ -274,12 +338,10 @@ async function queryGames(filters: ActiveFilters, child?: ChildFilter): Promise<
   }
 
   if (filters.price === 'free') {
-    conditions.push(
-      or(
-        eq(games.basePrice, 0),
-        isNull(games.basePrice),
-      )!
-    )
+    // Only titles we KNOW are free (base price explicitly 0). A null base price
+    // means "price unknown / not ingested" — the vast majority of the catalogue
+    // — and must NOT be presented as free-to-play.
+    conditions.push(eq(games.basePrice, 0))
   } else if (filters.price === '20') {
     conditions.push(
       and(
@@ -572,47 +634,17 @@ export default async function BrowsePage({ params, searchParams }: Props) {
       : (selectedChild?.platforms ?? [])
 
   if (isShelfMode) {
-    const [robloxRow, fortniteRow] = await Promise.all([
-      db.select({ id: games.id }).from(games).where(eq(games.slug, 'roblox')).limit(1).then(r => r[0] ?? null),
-      db.select({ id: games.id }).from(games).where(eq(games.slug, 'fortnite-creative')).limit(1).then(r => r[0] ?? null),
-    ])
-
-    const expSelect = {
-      slug:          platformExperiences.slug,
-      title:         platformExperiences.title,
-      thumbnailUrl:  platformExperiences.thumbnailUrl,
-      creatorName:   platformExperiences.creatorName,
-      activePlayers: platformExperiences.activePlayers,
-      visitCount:    platformExperiences.visitCount,
-      curascore:     experienceScores.curascore,
-      timeRecommendationMinutes: experienceScores.timeRecommendationMinutes,
-      recommendedMinAge:         experienceScores.recommendedMinAge,
-      strangerRisk:              experienceScores.strangerRisk,
-      monetizationScore:         experienceScores.monetizationScore,
-      inputConfidence:           experienceScores.inputConfidence,
-    }
-
     const td = await getTranslations({ locale, namespace: 'discover' })
 
-    ;[carousels, robloxExperiences, fortniteExperiences, catalogStats, swap] = await Promise.all([
+    let shelfExperiences: Awaited<ReturnType<typeof fetchShelfExperiences>>
+    ;[carousels, shelfExperiences, catalogStats, swap] = await Promise.all([
       getCarouselRows(shelfPlatforms, shelfAge, locale),
-      robloxRow
-        ? db.select(expSelect).from(platformExperiences)
-            .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
-            .where(and(eq(platformExperiences.platformId, robloxRow.id), eq(platformExperiences.isPublic, true)))
-            .orderBy(desc(platformExperiences.activePlayers))
-            .limit(8)
-        : Promise.resolve([]),
-      fortniteRow
-        ? db.select(expSelect).from(platformExperiences)
-            .leftJoin(experienceScores, eq(experienceScores.experienceId, platformExperiences.id))
-            .where(and(eq(platformExperiences.platformId, fortniteRow.id), isNotNull(platformExperiences.thumbnailUrl), eq(platformExperiences.isPublic, true)))
-            .orderBy(desc(experienceScores.curascore))
-            .limit(8)
-        : Promise.resolve([]),
+      fetchShelfExperiences(),
       getCatalogStats(),
       getSwapPair(td, locale),
     ])
+    robloxExperiences   = shelfExperiences.roblox   as ExperienceSummary[]
+    fortniteExperiences = shelfExperiences.fortnite as ExperienceSummary[]
   } else {
     const result = await queryGames(filters, childFilter)
     rows  = result.rows
@@ -643,7 +675,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
         {/* ── Search bar — always visible ────────────────────────────────── */}
         <div className="mb-4 sm:mb-6">
           <Suspense>
-            <SearchBar variant="editorial" />
+            <SearchBar />
           </Suspense>
         </div>
 
@@ -882,11 +914,12 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                         className="flex items-center gap-3 sm:gap-4 py-2.5 sm:py-3 px-1 sm:px-2 hover:translate-x-0.5 transition-transform group"
                       >
                         <div className="w-10 h-10 sm:w-12 sm:h-12 overflow-hidden shrink-0 bg-rule/30">
-                          {row.backgroundImage ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={row.backgroundImage}
+                          {safeImageUrl(row.backgroundImage) ? (
+                            <Image
+                              src={safeImageUrl(row.backgroundImage)!}
                               alt={row.title}
+                              width={48}
+                              height={48}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                           ) : (

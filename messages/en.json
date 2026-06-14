@@ -27,7 +27,11 @@
     "navBrowse": "Browse",
     "navCompare": "Compare",
     "navPrivacy": "Privacy",
-    "navTerms": "Terms"
+    "navTerms": "Terms",
+    "navMethodology": "Methodology",
+    "navAbout": "About",
+    "navFaq": "FAQ",
+    "navPress": "Press"
   },
   "home": {
     "essayLabel": "Essay",
@@ -575,7 +579,8 @@
     "bechdelPass": "Passes the test",
     "bechdelFail": "Fails the test",
     "bundledOnlineHeader": "Bundled online mode — additional risk",
-    "bundledOnlinePreamble": "The LumiScore above reflects the single-player campaign only."
+    "bundledOnlinePreamble": "The LumiScore above reflects the single-player campaign only.",
+    "priceFree": "Free"
   },
   "lumiScoreHero": {
     "verdictGreatAge": "Great pick for ages {age}+ — low engagement risks",
@@ -598,6 +603,14 @@
     "methodHandLabel": "Hand-curated",
     "methodHandTooltip": "Scored by an editor rather than the automated pipeline.",
     "lastUpdated": "Last updated {when}"
+  },
+  "reviewTier": {
+    "automatedLabel": "Automated review",
+    "automatedTooltip": "Scored by LumiKin's automated pipeline using the published rubric, with periodic spot-check auditing — not individually verified by a human reviewer. Tap to read how scoring works.",
+    "editorLabel": "Editor reviewed",
+    "editorTooltip": "Scored by a LumiKin editor against the published rubric. Tap to read the methodology.",
+    "communityLabel": "Community reviewed",
+    "communityTooltip": "Scored with community input against the published rubric. Tap to read the methodology."
   },
   "parentTips": {
     "heading": "Parent Tips",
@@ -651,14 +664,18 @@
     "dp12Desc": "Time-limited content/events designed to create urgency"
   },
   "compliance": {
-    "heading": "Regulatory Compliance",
-    "footer": "Tap a badge for details. Grey = not yet assessed.",
+    "heading": "Regulatory design checks",
+    "stateMet": "Assessed: meets criteria",
+    "stateConcerns": "Assessed: concerns noted",
+    "stateNotAssessed": "Not yet assessed",
+    "criteriaPrefix": "What LumiKin checks:",
+    "disclaimer": "These reflect LumiKin's assessment of the game's design practices against each framework's criteria — not a legal compliance determination.",
     "dsaLabel": "EU Digital Services Act",
-    "dsaDesc": "Meets transparency requirements for minors under the EU Digital Services Act.",
+    "dsaDesc": "whether the game's design gives minors the transparency the EU Digital Services Act expects — plain terms, honest defaults, and clear reporting routes.",
     "gdprkLabel": "GDPR Children",
-    "gdprkDesc": "Proper consent and age-gating in place for users under 16 (GDPR Article 8).",
+    "gdprkDesc": "whether age assurance and consent flows are designed for under-16s, in the spirit of GDPR Article 8.",
     "oddsLabel": "Loot Box Odds",
-    "oddsDesc": "Publishes drop rates for paid random rewards (required in CN, JP, KR)."
+    "oddsDesc": "whether paid random-reward drop rates are disclosed, as required in China, Japan and South Korea."
   },
   "carousel": {
     "seeAll": "See all →",
@@ -1264,7 +1281,8 @@
       "avgPlaytime": "Avg playtime",
       "reviewed": "Reviewed",
       "methodology": "How scores are calculated →",
-      "byline": "By the LumiKin editors"
+      "byline": "By the LumiKin editors",
+      "priceFree": "Free"
     },
     "search": {
       "placeholder": "Search {count} reviews",

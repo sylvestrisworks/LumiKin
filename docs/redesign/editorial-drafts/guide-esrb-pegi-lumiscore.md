@@ -45,11 +45,9 @@ If a game is rated PEGI 3 because its violence is cartoon and its language is cl
 
 Three real LumiKin scores from the catalogue today:
 
-| Game | ESRB | PEGI | LumiScore | LumiKin time rec |
-|---|---|---|---|---|
-| *[Minecraft](/en/game/minecraft)* | E10+ | 7 | 71 / 100 | Up to 2 hours/day |
-| *[Roblox](/en/game/roblox)* (platform) | E10+ | 7 | 32 / 100 | Not recommended |
-| *[Monopoly GO!](/en/game/monopoly-go)* | E | — | 18 / 100 | Not recommended |
+- *[Minecraft](/en/game/minecraft)* — ESRB E10+, PEGI 7, LumiScore **71 / 100**, time rec **up to 2 hours/day**.
+- *[Roblox](/en/game/roblox)* (platform) — ESRB E10+, PEGI 7, LumiScore **32 / 100**, **not recommended**.
+- *[Monopoly GO!](/en/game/monopoly-go)* — ESRB E, PEGI —, LumiScore **18 / 100**, **not recommended**.
 
 All three sit at the lower end of the ESRB/PEGI age scale — there is nothing graphic in any of them. The LumiScore range from 18 to 71 reflects something the content rating cannot: the design pressure. *Minecraft* in its base form has almost none of it. *Roblox*'s platform-wide score reflects the average pressure across the host platform's monetisation and social-risk infrastructure (per-experience scores can be much higher — see [How we score Roblox experiences](/en/blog/how-we-score-roblox-and-fortnite-creative)). *Monopoly GO!* sits at the deep end of the slot-machine-mechanics pool.
 

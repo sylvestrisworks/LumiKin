@@ -41,13 +41,11 @@ The hour is identical on the clock. The hour is not identical in the brain. Any 
 
 We calculate two numbers per game from a public rubric — the **Benefit Density Score (BDS, 0–1)** and the **Risk Intensity Score (RIS, 0–1)**. The base session length is read off the RIS:
 
-| RIS | Base recommendation |
-|---|---|
-| 0.00 – 0.15 | Up to 120 min/day |
-| 0.16 – 0.30 | Up to 90 min/day |
-| 0.31 – 0.50 | Up to 60 min/day |
-| 0.51 – 0.70 | Up to 30 min/day |
-| 0.71 + | 15 min or not recommended |
+- **RIS 0.00 – 0.15** — up to 120 min/day.
+- **RIS 0.16 – 0.30** — up to 90 min/day.
+- **RIS 0.31 – 0.50** — up to 60 min/day.
+- **RIS 0.51 – 0.70** — up to 30 min/day.
+- **RIS 0.71 +** — 15 min, or not recommended.
 
 Then two adjustments are applied:
 

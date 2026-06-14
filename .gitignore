@@ -7,6 +7,7 @@ scripts/*.json
 
 # Claude Code local config (may contain secrets)
 .claude/settings.local.json
+.claude/scheduled_tasks.lock
 
 # Build output
 .next/
@@ -26,6 +27,12 @@ tsconfig.tsbuildinfo
 next-env.d.ts
 skills-lock.json
 *.tsbuildinfo
+
+# Pipeline run output & scratch (kept local, never committed)
+*.log
+*.csv
+.tmp/
+scripts/_*.ts
 
 # OS
 .DS_Store

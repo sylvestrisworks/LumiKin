@@ -27,7 +27,11 @@
     "navBrowse": "Utforska",
     "navCompare": "Jämför",
     "navPrivacy": "Integritet",
-    "navTerms": "Villkor"
+    "navTerms": "Villkor",
+    "navMethodology": "Metodik",
+    "navAbout": "Om",
+    "navFaq": "Vanliga frågor",
+    "navPress": "Press"
   },
   "home": {
     "essayLabel": "Essä",
@@ -608,7 +612,8 @@
     "bechdelPass": "Klarar testet",
     "bechdelFail": "Klarar inte testet",
     "bundledOnlineHeader": "Online-del, separat riskbedömning",
-    "bundledOnlinePreamble": "LumiScore-poängen ovan gäller enbart spelets enspelarläge."
+    "bundledOnlinePreamble": "LumiScore-poängen ovan gäller enbart spelets enspelarläge.",
+    "priceFree": "Gratis"
   },
   "parentTips": {
     "heading": "Föräldratips",
@@ -662,14 +667,18 @@
     "dp12Desc": "Tidsbegränsat innehåll eller evenemang som är utformade för att skapa en känsla av brådska."
   },
   "compliance": {
-    "heading": "Regelefterlevnad",
-    "footer": "Klicka på en symbol för detaljer. Grå = ej utvärderad än.",
+    "heading": "Granskning av regelefterlevnad i designen",
+    "stateMet": "Bedömd: uppfyller kriterierna",
+    "stateConcerns": "Bedömd: invändningar noterade",
+    "stateNotAssessed": "Ännu inte bedömd",
+    "criteriaPrefix": "Vad LumiKin kontrollerar:",
+    "disclaimer": "Återspeglar LumiKins bedömning av spelets designpraxis utifrån varje ramverks kriterier – inte ett rättsligt avgörande om efterlevnad.",
     "dsaLabel": "EU Digital Services Act",
-    "dsaDesc": "Uppfyller transparens-krav för minderåriga enligt Digital Services Act.",
+    "dsaDesc": "om spelets design ger minderåriga den transparens som Digital Services Act förväntar sig – tydliga villkor, ärliga standardinställningar och synliga vägar för anmälan.",
     "gdprkLabel": "GDPR Barn",
-    "gdprkDesc": "Korrekt samtycke och ålderskontroll finns på plats för användare under 16 år (GDPR, Artikel 8).",
+    "gdprkDesc": "om ålderskontroll och samtyckesflöden är utformade för barn under 16 år, i andan av GDPR artikel 8.",
     "oddsLabel": "Loot Box-odds",
-    "oddsDesc": "Redovisar sannolikheter för att få betalda slumpmässiga belöningar (obligatoriskt i Kina, Japan, Sydkorea)."
+    "oddsDesc": "om sannolikheterna för betalda slumpmässiga belöningar redovisas, som krävs i Kina, Japan och Sydkorea."
   },
   "carousel": {
     "seeAll": "Se alla →",
@@ -1258,6 +1267,14 @@
     "methodHandTooltip": "Bedömd av en redaktör, inte via det automatiserade systemet.",
     "lastUpdated": "Senast uppdaterad {when}"
   },
+  "reviewTier": {
+    "automatedLabel": "Automatisk granskning",
+    "automatedTooltip": "Bedömd av LumiKins automatiska pipeline enligt den publicerade metoden, med regelbundna stickprovskontroller – inte individuellt verifierad av en mänsklig granskare. Tryck för att läsa hur bedömningen fungerar.",
+    "editorLabel": "Granskad av redaktör",
+    "editorTooltip": "Bedömd av en LumiKin-redaktör enligt den publicerade metoden. Tryck för att läsa metoden.",
+    "communityLabel": "Granskad av community",
+    "communityTooltip": "Bedömd med bidrag från vår community enligt den publicerade metoden. Tryck för att läsa metoden."
+  },
   "editorial": {
     "masthead": {
       "tagline": "Spelbedömningar för föräldrar",
@@ -1297,7 +1314,8 @@
       "avgPlaytime": "Genomsnittlig speltid",
       "reviewed": "Granskad",
       "methodology": "Så beräknas poängen →",
-      "byline": "Av LumiKins redaktörer"
+      "byline": "Av LumiKins redaktörer",
+      "priceFree": "Gratis"
     },
     "search": {
       "placeholder": "Sök bland {count} recensioner",

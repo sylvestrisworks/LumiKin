@@ -1,9 +1,11 @@
 'use client'
 
 import { useRef, type ReactNode } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { curascoreTextEditorial } from '@/lib/ui'
+import { safeImageUrl } from '@/lib/images'
 import Icon, { type IconName } from '@/components/Icon'
 
 const SMALL_CAPS = { fontVariantCaps: 'all-small-caps' as const }
@@ -44,6 +46,7 @@ export type CarouselTileProps = {
 export function CarouselTile({
   index, href, image, title, score, ageLabel, ageTitle, footer, meta, pending = false,
 }: CarouselTileProps) {
+  const safeImg = safeImageUrl(image)
   return (
     <Link
       href={href}
@@ -52,12 +55,13 @@ export function CarouselTile({
     >
       {/* Image */}
       <div className="relative h-28 sm:h-32 overflow-hidden bg-rule/30">
-        {image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={image}
+        {safeImg ? (
+          <Image
+            src={safeImg}
             alt=""
-            className="w-full h-full object-cover group-hover/tile:scale-105 transition-transform duration-300"
+            fill
+            sizes="208px"
+            className="object-cover group-hover/tile:scale-105 transition-transform duration-300"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-rule/40">

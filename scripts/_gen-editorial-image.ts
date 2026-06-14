@@ -114,6 +114,24 @@ const PROMPTS: Record<string, string> = {
     'Knowing and a little wistful — a great workshop that learned to charge by the ' +
     'hour. ' + STYLE,
 
+  // Blog cover: how games changed across the century. A long river of play
+  // flowing left→right: wholesome and open at the source, gradually wired with
+  // coins, hooks and timers downstream — the same play, now mechanised. Warm,
+  // knowing, gaming-positive, not frightening. Full-bleed.
+  'century-of-play':
+    'A long winding river flows from the far LEFT to the far RIGHT across the whole ' +
+    'frame, filling it edge to edge. At its LEFT source the play is simple and ' +
+    'wholesome — a child runs freely on an open hill, loose building blocks, a kite, a ' +
+    'little castle, a few birds, wide calm sky. As the river flows toward the RIGHT it ' +
+    'grows steadily busier and more tangled: along the banks and floating on the current ' +
+    'appear small fishing hooks, looping clock-timers and hourglasses, a slot-machine ' +
+    'pull-lever, stacked coins tumbling into the water, closed treasure chests riding the ' +
+    'flow — the same play, now wired with mechanisms. The transformation is gradual and ' +
+    'continuous along the river, not a hard split. The scene reaches all four edges with ' +
+    'rich detail and no empty margin. A single coin mid-river is the only crimson-red ' +
+    'spot-color accent. Warm, knowing, a little wry, gaming-positive — change observed, ' +
+    'not feared. ' + STYLE,
+
   // Blog cover: the science behind the benefit score. A child's mind as a
   // cultivated garden — development as growth, not drilling. Full-bleed.
   'what-good-for-kids-means':

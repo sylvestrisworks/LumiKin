@@ -67,6 +67,8 @@ export type SerializedScores = {
   debateRounds: number | null
   methodologyVersion: string | null
   scoringMethod: string | null
+  /** How this score was reviewed: 'automated' | 'community' | 'expert'. */
+  reviewTier: string | null
 }
 
 export type SerializedReview = {

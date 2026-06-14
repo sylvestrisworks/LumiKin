@@ -6,6 +6,9 @@ import { VERSION_COMPONENTS } from '@/lib/methodology-versions'
 import TableOfContents from './_components/TableOfContents'
 import VersionBanner from './_components/VersionBanner'
 import PlausibleScrollDepth from '@/components/PlausibleScrollDepth'
+import AuthorByline from '@/components/AuthorByline'
+import EditorStatement from '@/components/EditorStatement'
+import { SITE_URL, ORGANIZATION_ID, authorRef, ldJson } from '@/lib/author'
 
 export const dynamic = 'force-dynamic'
 
@@ -45,8 +48,24 @@ export default async function MethodologyPage({
 
   const pdfPath = entry.pdfAvailable ? `/lumikin-methodology-v${entry.version}.pdf` : null
 
+  // Methodology document schema. Cites the founder Person as `author` (by @id —
+  // the full Person node lives on /about) and marks this URL as its own page.
+  const methodologyLd = {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: `LumiKin Methodology v${entry.version}`,
+    description:
+      'The full LumiKin scoring methodology: how LumiKin rates games on cognitive benefits, social-emotional development, dopamine manipulation design, and monetization pressure.',
+    author: authorRef,
+    publisher: { '@id': ORGANIZATION_ID },
+    datePublished: entry.publishedDate,
+    version: entry.version,
+    mainEntityOfPage: `${SITE_URL}/${locale}/methodology`,
+  }
+
   return (
     <div className={`${lora.variable} bg-paper text-ink`}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson(methodologyLd) }} />
       <PlausibleScrollDepth goal="methodology_deep_read" threshold={50} />
       <VersionBanner version={entry} locale={locale} />
 
@@ -84,6 +103,9 @@ export default async function MethodologyPage({
               </>
             )}
           </div>
+          <div className="mt-4">
+            <AuthorByline variant="compact" />
+          </div>
         </div>
 
         {/* ── Document cover (print / PDF only) ────────────────────────────── */}
@@ -114,6 +136,14 @@ export default async function MethodologyPage({
           {/* Prose content */}
           <article className="methodology-prose min-w-0">
             <MDXContent />
+
+            {/* ── Editor / author statement (credentialed block + byline) ────── */}
+            <div className="mt-16 pt-10 border-t-2 border-ink print:hidden">
+              <EditorStatement />
+              <div className="mt-10">
+                <AuthorByline variant="full" />
+              </div>
+            </div>
           </article>
         </div>
       </div>

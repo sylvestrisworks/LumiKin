@@ -5,6 +5,7 @@ import type { Metadata } from 'next'
 import { eq, and } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { games, gameScores, reviews, darkPatterns, complianceStatus, userGames, childProfiles, gameTranslations, slugRedirects } from '@/lib/db/schema'
+import { Link } from '@/navigation'
 import GameCard from '@/components/GameCardEditorial'
 import GameFAQ from '@/components/GameFAQ'
 import { RelatedGameCard } from '@/components/RelatedGameCard'
@@ -114,6 +115,7 @@ async function fetchGameData(slug: string): Promise<GameCardProps | null> {
         debateRounds:             score.debateRounds ?? null,
         methodologyVersion:       score.methodologyVersion ?? null,
         scoringMethod:            score.scoringMethod ?? null,
+        reviewTier:               review?.reviewTier ?? null,
       }
     : null
 
@@ -487,6 +489,46 @@ export default async function GamePage({ params }: Props) {
   // game_translations has overlaid it. Emits on every locale.
   const ageRatingLine = [game.esrbRating, game.pegiRating].filter(Boolean).join(' · ') || null
 
+  // Library / Compare / Share — rendered twice: above the card on mobile
+  // (otherwise these actions sit below the entire review), in the right rail
+  // on desktop. Only one instance is visible per breakpoint.
+  //
+  // This MUST be a function, not a shared element: rendering the same element
+  // instance (which contains client components — ShareButton, the next-intl
+  // Link) in two positions breaks React's RSC serialization and 500s the whole
+  // page ("Cannot read properties of null (reading 'is')"). Each call returns
+  // fresh element instances.
+  const actionRow = () => (
+    <div className="flex items-center justify-between gap-3 flex-wrap">
+      {game.id ? (
+        <LibraryButton
+          gameId={game.id}
+          initialOwned={initialOwned}
+          initialWishlisted={initialWishlisted}
+          signedIn={!!uid}
+          gameSlug={game.slug}
+          locale={locale}
+        />
+      ) : <div />}
+      <div className="flex items-center gap-2">
+        <Link
+          href={{ pathname: '/compare', query: { a: game.slug } }}
+          className="inline-flex items-center gap-1.5 px-3 py-2 text-kicker uppercase font-semibold text-ink border border-rule hover:border-ink hover:text-accent transition-colors"
+          style={{ fontVariantCaps: 'all-small-caps' }}
+        >
+          <GitCompareArrows size={15} strokeWidth={2.5} aria-hidden />
+          {tGC('compareThis')}
+        </Link>
+        <ShareButton
+          title={game.title}
+          shareText={scores?.curascore != null
+            ? tShare('shareText', { title: game.title, score: scores.curascore })
+            : undefined}
+        />
+      </div>
+    </div>
+  )
+
   return (
     <>
       <PlausibleSearchReferrer />
@@ -513,22 +555,22 @@ export default async function GamePage({ params }: Props) {
             className="mb-6 flex items-center gap-1.5 text-kicker uppercase text-muted"
             style={{ fontVariantCaps: 'all-small-caps' }}
           >
-            <a href={`/${locale}`} className="hover:text-accent transition-colors">
+            <Link href="/" className="hover:text-accent transition-colors">
               {t('navHome')}
-            </a>
+            </Link>
             <span aria-hidden className="text-rule">/</span>
-            <a href={`/${locale}/browse`} className="hover:text-accent transition-colors">
+            <Link href="/browse" className="hover:text-accent transition-colors">
               {t('navBrowse')}
-            </a>
+            </Link>
             <span aria-hidden className="text-rule">/</span>
             {canonicalPlatform && (
               <>
-                <a
-                  href={`/${locale}/platform/${canonicalPlatform.slug}`}
+                <Link
+                  href={`/platform/${canonicalPlatform.slug}`}
                   className="hover:text-accent transition-colors"
                 >
                   {canonicalPlatform.label}
-                </a>
+                </Link>
                 <span aria-hidden className="text-rule">/</span>
               </>
             )}
@@ -539,6 +581,7 @@ export default async function GamePage({ params }: Props) {
 
             {/* ── Left column: the game card ─────────────────────────────────── */}
             <div className="lg:col-span-8 min-w-0">
+              <div className="lg:hidden mb-6">{actionRow()}</div>
               <GameCard {...data} userProfiles={userProfiles} />
 
               {/* Parent-intent FAQ — visible + FAQPage JSON-LD, all locales */}
@@ -560,35 +603,8 @@ export default async function GamePage({ params }: Props) {
             {/* ── Right rail: supporting actions + context ───────────────────── */}
             <aside className="mt-6 lg:mt-0 lg:col-span-4 space-y-4">
 
-              {/* Library / Wishlist + Compare + Share */}
-              <div className="flex items-center justify-between gap-3 flex-wrap">
-                {game.id ? (
-                  <LibraryButton
-                    gameId={game.id}
-                    initialOwned={initialOwned}
-                    initialWishlisted={initialWishlisted}
-                    signedIn={!!uid}
-                    gameSlug={game.slug}
-                    locale={locale}
-                  />
-                ) : <div />}
-                <div className="flex items-center gap-2">
-                  <a
-                    href={`/${locale}/compare?a=${game.slug}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 text-kicker uppercase font-semibold text-ink border border-rule hover:border-ink hover:text-accent transition-colors"
-                    style={{ fontVariantCaps: 'all-small-caps' }}
-                  >
-                    <GitCompareArrows size={15} strokeWidth={2.5} aria-hidden />
-                    {tGC('compareThis')}
-                  </a>
-                  <ShareButton
-                    title={game.title}
-                    shareText={scores?.curascore != null
-                      ? tShare('shareText', { title: game.title, score: scores.curascore })
-                      : undefined}
-                  />
-                </div>
-              </div>
+              {/* Library / Wishlist + Compare + Share (desktop rail) */}
+              <div className="hidden lg:block">{actionRow()}</div>
 
               {/* Logged-out value line — turns the save action into a free pitch */}
               {!uid && game.id && (

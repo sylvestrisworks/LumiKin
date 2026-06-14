@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { curascoreText } from '@/lib/ui'
+import { ReviewTierBadge } from './ReviewTierBadge'
 
 const ESRB_MIN_AGE: Record<string, number> = { E: 6, 'E10+': 10, T: 13, M: 17, AO: 18 }
 
@@ -39,13 +40,15 @@ type Props = {
   esrbRating: string | null
   pegiRating: number | null
   executiveSummary: string | null
+  /** How this score was reviewed: 'automated' | 'community' | 'expert'. */
+  reviewTier?: string | null
   /** Overlaid in the top-right corner — pass the ShareButton here. */
   action?: React.ReactNode
   /** Rendered below the executive summary — pass time rec + debate badge here. */
   children?: React.ReactNode
 }
 
-export function LumiScoreHero({ curascore, recommendedMinAge, esrbRating, pegiRating, executiveSummary, action, children }: Props) {
+export function LumiScoreHero({ curascore, recommendedMinAge, esrbRating, pegiRating, executiveSummary, reviewTier, action, children }: Props) {
   const t           = useTranslations('gameCard')
   const verdictLine = useVerdictLine()
   const scoreColor  = curascoreText(curascore)
@@ -77,6 +80,12 @@ export function LumiScoreHero({ curascore, recommendedMinAge, esrbRating, pegiRa
       <p className={`mt-3 text-xl font-black tracking-tight ${scoreColor}`}>
         {verdict}
       </p>
+
+      {reviewTier && (
+        <div className="mt-3 flex justify-center">
+          <ReviewTierBadge reviewTier={reviewTier} />
+        </div>
+      )}
 
       {executiveSummary && (
         <p className="mt-2 text-sm text-muted leading-snug max-w-xs mx-auto">

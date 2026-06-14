@@ -7,6 +7,7 @@ import Link from 'next/link'
 import type { GameCardProps, GameSummary } from '@/types/game'
 import { esrbToAge, curascoreTextEditorial } from '@/lib/ui'
 import Icon from '@/components/Icon'
+import { ReviewTierBadge } from '@/components/ReviewTierBadge'
 
 // ─── Dark pattern label keys ─────────────────────────────────────────────────
 
@@ -520,6 +521,7 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
                     {timeLabel(aScore)}
                   </span>
                 )}
+                {aScore?.reviewTier && <ReviewTierBadge reviewTier={aScore.reviewTier} />}
               </div>
             </div>
           </div>
@@ -550,6 +552,7 @@ function Scorecard({ a, b }: { a: GameCardProps; b: GameCardProps }) {
                     {timeLabel(bScore)}
                   </span>
                 )}
+                {bScore?.reviewTier && <ReviewTierBadge reviewTier={bScore.reviewTier} />}
               </div>
             </div>
           </div>

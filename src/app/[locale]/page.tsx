@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { routing } from '@/i18n/routing'
 import { fetchSiteStats } from '@/lib/stats'
+import { ORGANIZATION_ID, founderRef } from '@/lib/author'
 import CoverageStrip from './partners/_components/CoverageStrip'
 import CoverStoryHero from './_components/CoverStoryHero'
 import TrackingRow from './_components/TrackingRow'
@@ -91,6 +92,9 @@ export default async function HomePage({ params, searchParams }: Props) {
   const organizationLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
+    // Stable @id so the founder Person (and the partners-page Organization node)
+    // resolve to the same entity. See src/lib/author.ts.
+    '@id': ORGANIZATION_ID,
     name: 'LumiKin',
     url: SITE_URL,
     logo: `${SITE_URL}/lumikin-logo.svg`,
@@ -99,6 +103,7 @@ export default async function HomePage({ params, searchParams }: Props) {
       '@type': 'Brand',
       name: 'LumiScore',
     },
+    founder: founderRef,
   }
   // FAQ JSON-LD — three parent-intent questions surfaced as FAQPage schema.
   // Emitted on every locale; the faq* keys are populated in all 5 messages files.

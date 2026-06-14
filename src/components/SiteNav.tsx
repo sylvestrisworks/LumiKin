@@ -2,24 +2,26 @@
 
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
-import { useTranslations, useLocale } from 'next-intl'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/navigation'
 import SearchBar from './SearchBar'
 import LanguageSwitcher from './LanguageSwitcher'
 
 export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.ReactNode; notifSlot?: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false)
-  const t      = useTranslations('nav')
-  const locale = useLocale()
+  const t = useTranslations('nav')
 
   // Primary nav maps to how parents actually arrive: explore the catalogue,
   // by their child's age, by platform ("is Roblox ok?"), or read guidance.
   // Personal destinations (library, family dashboard, account) live in the
   // account menu so logged-out visitors never hit dead-ends.
+  // The prominent link is marked with an accent underline on ink text — accent
+  // red as a text color is reserved for risk/verdict semantics.
   const NAV_LINKS: { href: string; label: string; prominent?: boolean }[] = [
-    { href: `/${locale}/browse`,   label: t('browse'),    prominent: true },
-    { href: `/${locale}/age`,      label: t('byAge')                      },
-    { href: `/${locale}/platform`, label: t('platforms')                  },
-    { href: `/${locale}/learn`,    label: t('learn')                      },
+    { href: '/browse',   label: t('browse'),    prominent: true },
+    { href: '/age',      label: t('byAge')                      },
+    { href: '/platform', label: t('platforms')                  },
+    { href: '/learn',    label: t('learn')                      },
   ]
 
   return (
@@ -31,8 +33,8 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
         {/* Logo — editorial nameplate. Live Fraunces text + a superscript
             accent-red colophon spark; ink/accent tokens flip in dark mode,
             so no separate asset is needed. */}
-        <a
-          href={`/${locale}`}
+        <Link
+          href="/"
           className="shrink-0 leading-none"
           onClick={() => setMenuOpen(false)}
           aria-label="LumiKin — home"
@@ -46,24 +48,27 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
               ✦
             </span>
           </span>
-        </a>
+        </Link>
 
         {/* Search — hidden on mobile (shown in second row) */}
         <div className="hidden sm:flex flex-1 max-w-md items-center">
-          <SearchBar placeholder={t('discover') + '…'} variant="editorial" />
+          <SearchBar placeholder={t('discover') + '…'} />
         </div>
 
         {/* Desktop nav links */}
         <nav className="hidden sm:flex items-center gap-6 text-kicker uppercase font-semibold ml-auto shrink-0">
           {NAV_LINKS.map(l => (
-            <a
+            <Link
               key={l.href}
               href={l.href}
-              className={(l.prominent ? 'text-accent ' : 'text-ink ') + 'hover:text-accent transition-colors'}
+              className={
+                (l.prominent ? 'underline decoration-accent decoration-2 underline-offset-4 ' : '') +
+                'text-ink hover:text-accent transition-colors'
+              }
               style={{ fontVariantCaps: 'all-small-caps' }}
             >
               {l.label}
-            </a>
+            </Link>
           ))}
           <LanguageSwitcher />
           {notifSlot}
@@ -82,26 +87,26 @@ export default function SiteNav({ authSlot, notifSlot }: { authSlot?: React.Reac
 
       {/* ── Mobile search row ──────────────────────────────────────────────── */}
       <div className="sm:hidden px-5 pb-3">
-        <SearchBar placeholder={t('discover') + '…'} variant="editorial" />
+        <SearchBar placeholder={t('discover') + '…'} />
       </div>
 
       {/* ── Mobile nav dropdown ────────────────────────────────────────────── */}
       {menuOpen && (
         <nav className="sm:hidden border-t border-ink/30 bg-paper">
           {NAV_LINKS.map(l => (
-            <a
+            <Link
               key={l.href}
               href={l.href}
               onClick={() => setMenuOpen(false)}
               className={
-                'flex items-center px-5 py-4 text-kicker uppercase font-semibold ' +
-                (l.prominent ? 'text-accent ' : 'text-ink ') +
+                'flex items-center px-5 py-4 text-kicker uppercase font-semibold text-ink ' +
+                (l.prominent ? 'underline decoration-accent decoration-2 underline-offset-4 ' : '') +
                 'hover:bg-ink/[0.04] hover:text-accent border-b border-ink/20 last:border-0 transition-colors'
               }
               style={{ fontVariantCaps: 'all-small-caps' }}
             >
               {l.label}
-            </a>
+            </Link>
           ))}
           <div className="px-5 py-3 border-t border-ink/30 flex items-center justify-between gap-4">
             <LanguageSwitcher />

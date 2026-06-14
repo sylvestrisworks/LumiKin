@@ -27,7 +27,11 @@
     "navBrowse": "Explorer",
     "navCompare": "Comparer",
     "navPrivacy": "Confidentialité",
-    "navTerms": "Conditions"
+    "navTerms": "Conditions",
+    "navMethodology": "Méthodologie",
+    "navAbout": "À propos",
+    "navFaq": "FAQ",
+    "navPress": "Presse"
   },
   "home": {
     "essayLabel": "Essai",
@@ -608,7 +612,8 @@
     "bechdelPass": "Réussit le test",
     "bechdelFail": "Échoue au test",
     "bundledOnlineHeader": "Mode en ligne inclus — risque additionnel",
-    "bundledOnlinePreamble": "Le LumiScore ci-dessus reflète uniquement la campagne solo."
+    "bundledOnlinePreamble": "Le LumiScore ci-dessus reflète uniquement la campagne solo.",
+    "priceFree": "Gratuit"
   },
   "parentTips": {
     "heading": "Conseils parents",
@@ -662,14 +667,18 @@
     "dp12Desc": "Contenu/événements à durée limitée conçus pour créer un sentiment d'urgence."
   },
   "compliance": {
-    "heading": "Conformité réglementaire",
-    "footer": "Touchez un badge pour en savoir plus. Gris = non encore évalué.",
+    "heading": "Vérifications de conception réglementaire",
+    "stateMet": "Évalué : répond aux critères",
+    "stateConcerns": "Évalué : réserves signalées",
+    "stateNotAssessed": "Pas encore évalué",
+    "criteriaPrefix": "Ce que LumiKin vérifie :",
+    "disclaimer": "Reflètent l'évaluation par LumiKin des pratiques de conception du jeu au regard des critères de chaque cadre, et non une décision juridique de conformité.",
     "dsaLabel": "Règlement sur les services numériques de l'UE",
-    "dsaDesc": "Conforme aux exigences de transparence pour les mineurs en vertu du Règlement sur les services numériques de l'UE.",
+    "dsaDesc": "si la conception du jeu offre aux mineurs la transparence attendue par le Règlement sur les services numériques de l'UE : conditions claires, réglages par défaut honnêtes et voies de signalement visibles.",
     "gdprkLabel": "RGPD Enfants",
-    "gdprkDesc": "Consentement approprié et mécanismes de vérification de l'âge mis en place pour les utilisateurs de moins de 16 ans (Article 8 du RGPD).",
+    "gdprkDesc": "si la vérification de l'âge et les parcours de consentement sont conçus pour les moins de 16 ans, dans l'esprit de l'article 8 du RGPD.",
     "oddsLabel": "Probabilités des loot boxes",
-    "oddsDesc": "Publie les taux d'obtention des récompenses aléatoires payantes (exigé en Chine, au Japon, en Corée du Sud)."
+    "oddsDesc": "si les taux d'obtention des récompenses aléatoires payantes sont publiés, comme l'exigent la Chine, le Japon et la Corée du Sud."
   },
   "carousel": {
     "seeAll": "Tout voir →",
@@ -1258,6 +1267,14 @@
     "methodHandTooltip": "Évalué par un éditeur plutôt que par le processus automatisé.",
     "lastUpdated": "Dernière mise à jour {when}"
   },
+  "reviewTier": {
+    "automatedLabel": "Évaluation automatisée",
+    "automatedTooltip": "Noté par le pipeline automatisé de LumiKin selon la méthodologie publiée, avec des audits ponctuels réguliers ; non vérifié individuellement par un évaluateur humain. Touchez pour découvrir le fonctionnement de la notation.",
+    "editorLabel": "Évalué par un éditeur",
+    "editorTooltip": "Noté par un éditeur de LumiKin selon la méthodologie publiée. Touchez pour lire la méthodologie.",
+    "communityLabel": "Évalué par la communauté",
+    "communityTooltip": "Noté avec la contribution de la communauté selon la méthodologie publiée. Touchez pour lire la méthodologie."
+  },
   "editorial": {
     "masthead": {
       "tagline": "Évaluations de jeux pour les parents",
@@ -1297,7 +1314,8 @@
       "avgPlaytime": "Temps de jeu moyen",
       "reviewed": "Évalué",
       "methodology": "Comment les notes sont calculées →",
-      "byline": "Par la rédaction LumiKin"
+      "byline": "Par la rédaction LumiKin",
+      "priceFree": "Gratuit"
     },
     "search": {
       "placeholder": "Rechercher parmi {count} critiques",

@@ -27,7 +27,11 @@
     "navBrowse": "Stöbern",
     "navCompare": "Vergleichen",
     "navPrivacy": "Datenschutz",
-    "navTerms": "Nutzungsbedingungen"
+    "navTerms": "Nutzungsbedingungen",
+    "navMethodology": "Methodik",
+    "navAbout": "Über uns",
+    "navFaq": "FAQ",
+    "navPress": "Presse"
   },
   "home": {
     "essayLabel": "Essay",
@@ -608,7 +612,8 @@
     "bechdelPass": "Besteht den Test",
     "bechdelFail": "Besteht den Test nicht",
     "bundledOnlineHeader": "Online-Modus enthalten — zusätzliches Risiko",
-    "bundledOnlinePreamble": "Der LumiScore oben bezieht sich nur auf die Einzelspieler-Kampagne."
+    "bundledOnlinePreamble": "Der LumiScore oben bezieht sich nur auf die Einzelspieler-Kampagne.",
+    "priceFree": "Kostenlos"
   },
   "parentTips": {
     "heading": "Elterntipps",
@@ -662,14 +667,18 @@
     "dp12Desc": "Zeitlich begrenzte Inhalte/Events, die Dringlichkeit erzeugen sollen."
   },
   "compliance": {
-    "heading": "Rechtliche Vorgaben",
-    "footer": "Tippe auf ein Symbol für Details. Grau = noch nicht bewertet.",
+    "heading": "Prüfung der Design-Konformität",
+    "stateMet": "Bewertet: erfüllt die Kriterien",
+    "stateConcerns": "Bewertet: Bedenken vermerkt",
+    "stateNotAssessed": "Noch nicht bewertet",
+    "criteriaPrefix": "Was LumiKin prüft:",
+    "disclaimer": "Spiegeln LumiKins Einschätzung der Design-Praktiken des Spiels anhand der Kriterien des jeweiligen Rahmens wider – keine rechtliche Feststellung der Konformität.",
     "dsaLabel": "Gesetz über digitale Dienste der EU",
-    "dsaDesc": "Erfüllt die Transparenzanforderungen für Minderjährige gemäß dem Gesetz über digitale Dienste der EU.",
+    "dsaDesc": "ob das Design des Spiels Minderjährigen die Transparenz bietet, die das Gesetz über digitale Dienste der EU erwartet: klare Bedingungen, ehrliche Voreinstellungen und sichtbare Meldewege.",
     "gdprkLabel": "DSGVO Kinder",
-    "gdprkDesc": "Ordnungsgemäße Zustimmung und Altersprüfung für Nutzer unter 16 Jahren (DSGVO Artikel 8).",
+    "gdprkDesc": "ob Altersprüfung und Einwilligungsabläufe für unter 16-Jährige gestaltet sind, im Sinne von DSGVO Artikel 8.",
     "oddsLabel": "Gewinnchancen bei Lootboxen",
-    "oddsDesc": "Gibt die Wahrscheinlichkeiten für zufällige, kostenpflichtige Belohnungen an (in CN, JP, KR verpflichtend)."
+    "oddsDesc": "ob die Wahrscheinlichkeiten für kostenpflichtige Zufallsbelohnungen offengelegt werden, wie in China, Japan und Südkorea vorgeschrieben."
   },
   "carousel": {
     "seeAll": "Alle ansehen →",
@@ -1258,6 +1267,14 @@
     "methodHandTooltip": "Von einem Redakteur bewertet statt durch die automatische Pipeline.",
     "lastUpdated": "Zuletzt aktualisiert {when}"
   },
+  "reviewTier": {
+    "automatedLabel": "Automatische Prüfung",
+    "automatedTooltip": "Bewertet durch die automatisierte Pipeline von LumiKin anhand der veröffentlichten Methodik, mit regelmäßigen Stichprobenprüfungen – nicht einzeln von einer Person verifiziert. Zum Nachlesen der Bewertung tippen.",
+    "editorLabel": "Redaktionell geprüft",
+    "editorTooltip": "Von einer LumiKin-Redaktion anhand der veröffentlichten Methodik bewertet. Zum Lesen der Methodik tippen.",
+    "communityLabel": "Von der Community geprüft",
+    "communityTooltip": "Mit Beiträgen der Community anhand der veröffentlichten Methodik bewertet. Zum Lesen der Methodik tippen."
+  },
   "editorial": {
     "masthead": {
       "tagline": "Spielebewertungen für Eltern",
@@ -1297,7 +1314,8 @@
       "avgPlaytime": "Durchschnittliche Spielzeit",
       "reviewed": "Geprüft",
       "methodology": "So entstehen die Werte →",
-      "byline": "Von der LumiKin-Redaktion"
+      "byline": "Von der LumiKin-Redaktion",
+      "priceFree": "Kostenlos"
     },
     "search": {
       "placeholder": "Suche in {count} Rezensionen",

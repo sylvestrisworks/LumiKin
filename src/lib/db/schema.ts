@@ -79,6 +79,12 @@ export const games = pgTable('games', {
 }, (table) => ({
   slugIdx: uniqueIndex('slug_idx').on(table.slug),
   titleIdx: index('title_idx').on(table.title),
+  // /browse filters released titles (release_date <= now) on every request and
+  // offers newest/trending/popular/metacritic sorts; none of these were indexed.
+  releaseDateIdx:    index('games_release_date_idx').on(table.releaseDate),
+  trendingScoreIdx:  index('games_trending_score_idx').on(table.trendingScore),
+  rawgAddedIdx:      index('games_rawg_added_idx').on(table.rawgAdded),
+  metacriticIdx:     index('games_metacritic_idx').on(table.metacriticScore),
 }));
 
 
@@ -283,7 +289,16 @@ export const gameScores = pgTable('game_scores', {
 
   // Timestamps
   calculatedAt: timestamp('calculated_at').defaultNow(),
-});
+}, (table) => ({
+  // Hot paths: /browse default sort + every catalogue stat filters/sorts on
+  // curascore; recent-scores + 7/30-day stats sort/range-scan calculatedAt;
+  // /browse risk filters + sorts use ris; benefit sort + carousels use bds.
+  // game_scores has only the implicit unique(game_id) without these.
+  curascoreIdx:    index('game_scores_curascore_idx').on(table.curascore),
+  calculatedAtIdx: index('game_scores_calculated_at_idx').on(table.calculatedAt),
+  risIdx:          index('game_scores_ris_idx').on(table.ris),
+  bdsIdx:          index('game_scores_bds_idx').on(table.bds),
+}));
 
 
 // ============================================
@@ -586,7 +601,13 @@ export const experienceScores = pgTable('experience_scores', {
   // Timestamps
   calculatedAt: timestamp('calculated_at').defaultNow(),
   updatedAt:    timestamp('updated_at').defaultNow(),
-});
+}, (table) => ({
+  // UGC shelves + stats filter/sort on curascore; recent-UGC + day-window
+  // stats sort/range-scan calculatedAt. Only the implicit unique(experience_id)
+  // existed before.
+  curascoreIdx:    index('experience_scores_curascore_idx').on(table.curascore),
+  calculatedAtIdx: index('experience_scores_calculated_at_idx').on(table.calculatedAt),
+}));
 
 // ============================================
 // INGEST STATE (background game crawler cursor)

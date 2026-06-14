@@ -41,10 +41,13 @@ export type CarouselTileProps = {
   /** Per-type extra (time-rec, active players) rendered as small-caps body text. */
   meta?:     ReactNode
   pending?:  boolean
+  /** LCP candidate: eager-load with high fetch priority and a descriptive alt.
+      Set on the lead tile of the first above-the-fold row only. */
+  priority?: boolean
 }
 
 export function CarouselTile({
-  index, href, image, title, score, ageLabel, ageTitle, footer, meta, pending = false,
+  index, href, image, title, score, ageLabel, ageTitle, footer, meta, pending = false, priority = false,
 }: CarouselTileProps) {
   const safeImg = safeImageUrl(image)
   return (
@@ -58,9 +61,13 @@ export function CarouselTile({
         {safeImg ? (
           <Image
             src={safeImg}
-            alt=""
+            // Decorative by default (the title is shown as text below, so an
+            // empty alt avoids a duplicate screen-reader announcement). The LCP
+            // tile gets a real alt so it qualifies as an LCP candidate.
+            alt={priority ? title : ''}
             fill
             sizes="208px"
+            priority={priority}
             className="object-cover group-hover/tile:scale-105 transition-transform duration-300"
           />
         ) : (

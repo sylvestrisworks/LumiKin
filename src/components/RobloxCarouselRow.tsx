@@ -31,6 +31,7 @@ export default function RobloxCarouselRow({ experiences }: { experiences: Experi
             <CarouselTile
               key={exp.slug}
               index={i + 1}
+              priority={i === 0}
               href={`/${locale}/game/roblox/${exp.slug}`}
               image={exp.thumbnailUrl}
               title={exp.title}

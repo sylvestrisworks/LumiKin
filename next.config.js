@@ -13,6 +13,14 @@ const withMDX = createMDX({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    // AVIF first (Next.js defaults to WebP only). Cover art is the bulk of
+    // page weight on the catalogue/browse surfaces, so AVIF's smaller payload
+    // is a direct LCP/transfer win; WebP stays as the fallback.
+    formats: ['image/avif', 'image/webp'],
+    // Game cover/background art is effectively immutable once ingested, so let
+    // the optimizer cache each derivative for 31 days instead of the 60s
+    // default — far fewer re-optimizations on repeat/crawler traffic.
+    minimumCacheTTL: 2_678_400,
     remotePatterns: [
       { protocol: 'https', hostname: 'media.rawg.io' },
       { protocol: 'https', hostname: 'images.igdb.com' },
